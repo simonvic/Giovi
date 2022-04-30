@@ -44,4 +44,8 @@ public class Variables {
 		}
 		variables.put(identifier, variable);
 	}
+
+	public void update(String identifier, Object value) {
+		update(new Variable<>(identifier, value));
+	}
 }

@@ -11,7 +11,6 @@ public class Sequence {
 	public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 	public static List<Object> of(Object start, Object end, Object step) {
-		List<Object> sequence = new ArrayList<>();
 		if (start instanceof Double || end instanceof Double || step instanceof Double) {
 			return Sequence.of(
 				Double.parseDouble(start.toString()),
@@ -31,16 +30,30 @@ public class Sequence {
 
 	public static List<Object> of(Double start, Double end, Double step) {
 		List<Object> sequence = new ArrayList<>();
-		for (Double i = start; i <= end; i += step) {
-			sequence.add(i);
+		if (start <= end) {
+			for (Double i = start; i <= end; i += step) {
+				sequence.add(i);
+			}
+		} else {
+			for (Double i = start; i >= end; i -= step) {
+				sequence.add(i);
+			}
 		}
 		return sequence;
 	}
 
+
 	public static List<Object> of(Integer start, Integer end, Integer step) {
 		List<Object> sequence = new ArrayList<>();
-		for (Integer i = start; i <= end; i += step) {
-			sequence.add(i);
+
+		if (start <= end) {
+			for (Integer i = start; i <= end; i += step) {
+				sequence.add(i);
+			}
+		} else {
+			for (Integer i = start; i >= end; i -= step) {
+				sequence.add(i);
+			}
 		}
 		return sequence;
 	}

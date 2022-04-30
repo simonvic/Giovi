@@ -30,9 +30,13 @@ public class TestSequenceOperator {
 			Arguments.of("[0..0]", List.of(0)),
 			Arguments.of("[0..10..2]", List.of(0, 2, 4, 6, 8, 10)),
 			Arguments.of("[0..100..10]", List.of(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
-			Arguments.of("[0..10..10]", List.of(0, 10))
-		);
+			Arguments.of("[0..10..10]", List.of(0, 10)),
 
+			Arguments.of("[5..0]", List.of(5, 4, 3, 2, 1, 0)),
+			Arguments.of("[10..0..2]", List.of(10, 8, 6, 4, 2, 0)),
+			Arguments.of("[100..10..10]", List.of(100, 90, 80, 70, 60, 50, 40, 30, 20, 10)),
+			Arguments.of("[10..0..10]", List.of(10, 0))
+		);
 	}
 
 	@ParameterizedTest
@@ -43,11 +47,16 @@ public class TestSequenceOperator {
 
 	private static Stream<Arguments> produceEqualListsDouble() {
 		return Stream.of(
-			Arguments.of("[0.0..5.0]", List.of(0d, 1d, 2d, 3d, 4d, 5d)),
-			Arguments.of("[0.0..0.0]", List.of(0d)),
-			Arguments.of("[0.0..10.0..2.0]", List.of(0d, 2d, 4d, 6d, 8d, 10d)),
-			Arguments.of("[0.0..100.0..10.0]", List.of(0d, 10d, 20d, 30d, 40d, 50d, 60d, 70d, 80d, 90d, 100d)),
-			Arguments.of("[0.0..10.0..10.0]", List.of(0d, 10d))
+			Arguments.of("[0.0 .. 5.0]", List.of(0d, 1d, 2d, 3d, 4d, 5d)),
+			Arguments.of("[0.0 .. 0.0]", List.of(0d)),
+			Arguments.of("[0.0 .. 10.0 .. 2.0]", List.of(0d, 2d, 4d, 6d, 8d, 10d)),
+			Arguments.of("[0.0 .. 100.0 .. 10.0]", List.of(0d, 10d, 20d, 30d, 40d, 50d, 60d, 70d, 80d, 90d, 100d)),
+			Arguments.of("[0.0 .. 10.0 .. 10.0]", List.of(0d, 10d)),
+
+			Arguments.of("[5.0 .. 0.0]", List.of(5d, 4d, 3d, 2d, 1d, 0d)),
+			Arguments.of("[10.0 .. 0.0 .. 2.0]", List.of(10d, 8d, 6d, 4d, 2d, 0d)),
+			Arguments.of("[100.0 .. 10.0 .. 10.0]", List.of(100d, 90d, 80d, 70d, 60d, 50d, 40d, 30d, 20d, 10d)),
+			Arguments.of("[10.0 .. 0.0 .. 10.0]", List.of(10d, 0d))
 		);
 
 	}
@@ -59,15 +68,14 @@ public class TestSequenceOperator {
 	}
 
 
-
 	private static Stream<Arguments> produceEqualListsLetters() {
 		return Stream.of(
 			Arguments.of("""
 				["a".."e"]
-				""", List.of("a","b","c","d","e")),
+				""", List.of("a", "b", "c", "d", "e")),
 			Arguments.of("""
 				["a".."e"..2]
-				""", List.of("a","c","e"))
+				""", List.of("a", "c", "e"))
 		);
 
 	}

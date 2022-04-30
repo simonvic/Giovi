@@ -55,7 +55,7 @@ public class Block {
 		}
 
 		try {
-			block.variables.update(new Variable<>(identifier, value));
+			block.variables.update(identifier, value);
 		} catch (VariableNotDefinedException ex) {
 			updateVariableValue(block.parentBlock, identifier, value);
 		}

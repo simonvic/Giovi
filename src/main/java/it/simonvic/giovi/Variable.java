@@ -30,4 +30,5 @@ public class Variable<T> {
 	public String toString() {
 		return String.valueOf(value);
 	}
+
 }

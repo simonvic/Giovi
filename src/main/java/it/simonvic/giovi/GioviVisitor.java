@@ -3,6 +3,7 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
 
@@ -87,7 +88,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 
 	@Override
 	public Object visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
-		currentScopeBlock.updateVariableValue(ctx.identifier().getText(), visit(ctx.expression()));
+		String identifier = ctx.identifier().getText();
+		currentScopeBlock.updateVariableValue(identifier, switch (ctx.bop.getText()) {
+			case ">" -> visit(ctx.expression());
+			case ">+" -> Operation.add(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
+			case ">-" -> Operation.subtract(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
+			case ">*" -> Operation.multiply(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
+			case ">/" -> Operation.divide(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
+			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
+		});
 		return null;
 	}
 
