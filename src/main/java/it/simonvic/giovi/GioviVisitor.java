@@ -229,14 +229,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 
 	@Override
 	public Object visitSequence(GioviParser.SequenceContext ctx) {
-		List<Object> sequence = new ArrayList<>();
-		int start = Integer.parseInt(ctx.start.getText());
-		int end = Integer.parseInt(ctx.end.getText());
-		int step = ctx.step == null ? 1 : Integer.parseInt(ctx.step.getText());
-		for (int i = start; i <= end; i += Math.abs(step)) {
-			sequence.add(i);
-		}
-		return sequence;
+		return Sequence.of(
+			visit(ctx.start),
+			visit(ctx.end),
+			ctx.step == null ? null : visit(ctx.step));
 	}
 
 	@Override
