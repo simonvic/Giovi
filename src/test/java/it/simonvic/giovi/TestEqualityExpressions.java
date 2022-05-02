@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestEqualityExpressions {
 
-	private Object run(String text) {
+	private GioviObject run(String text) {
 		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
@@ -34,7 +35,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Numbers(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@ParameterizedTest
@@ -46,7 +47,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Strings(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@Disabled("Not implemented yet")
@@ -59,7 +60,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_List(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@Disabled("Not implemented yet")
@@ -72,7 +73,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 }

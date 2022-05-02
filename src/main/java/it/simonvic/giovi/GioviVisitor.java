@@ -2,15 +2,21 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.exceptions.TypeNotFound;
-import it.simonvic.giovi.lang.*;
+import it.simonvic.giovi.lang.Block;
+import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.text.ExactTextBlock;
+import it.simonvic.giovi.lang.text.Text;
+import it.simonvic.giovi.lang.type.Natural;
+import it.simonvic.giovi.lang.values.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class GioviVisitor extends GioviParserBaseVisitor<Object> {
+public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	private static final Block globalBlock = new Block(null);
 	private static Block currentScopeBlock = globalBlock;
@@ -20,8 +26,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitIfStatement(GioviParser.IfStatementContext ctx) {
-		if ((boolean) visit(ctx.expression())) {
+	public GioviObject visitIfStatement(GioviParser.IfStatementContext ctx) {
+		if (visit(ctx.expression()).asBool()) {
 			visit(ctx.ifBlock);
 		} else if (ctx.ELSE() != null) {
 			visit(ctx.elseBlock);
@@ -34,37 +40,64 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 	private boolean shouldBreak = false;
 
 	@Override
-	public Object visitForStatement(GioviParser.ForStatementContext ctx) {
-		Object expression = visit(ctx.expression());
-		if (!(expression instanceof List<?> list)) {
-			throw new OperatorNotSupported("for");
-		} else {
-			if (list.size() < 1) return null;
-			String iteratorName = ctx.identifier().getText();
-			currentScopeBlock.declareVariable(iteratorName, null);
-			for (Object o : list) {
-				currentScopeBlock.updateVariableValue(iteratorName, o);
-				visit(ctx.block());
-			}
+	public GioviObject visitForStatement(GioviParser.ForStatementContext ctx) {
+		GioviObject collection = visit(ctx.collection);
+		switch (collection) {
+			case ListValue list -> forList(ctx.identifier(), list, ctx.block());
+			case MapValue map -> forMap(ctx.identifier(), map, ctx.block());
+			default -> throw new OperatorNotSupported("for");
 		}
 		return null;
 	}
 
+	private void forMap(List<GioviParser.IdentifierContext> iterators, MapValue<Value<?>, Value<?>> map, GioviParser.BlockContext block) {
+		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
+		if (map.get().size() == 0) return;
+
+		String keyIteratorName = iterators.get(0).getText();
+		String elementIteratorName = iterators.get(1).getText();
+
+		currentScopeBlock.declare(keyIteratorName, map.get().getKey(0));
+		currentScopeBlock.declare(elementIteratorName, map.get().getElement(0));
+
+		map.get().forEach((keyValue, elementValue) -> {
+			currentScopeBlock.getVariableValue(keyIteratorName).set(keyValue);
+			currentScopeBlock.getVariableValue(elementIteratorName).set(elementValue);
+			visit(block);
+		});
+
+		currentScopeBlock.delete(keyIteratorName);
+		currentScopeBlock.delete(elementIteratorName);
+	}
+
+	private void forList(List<GioviParser.IdentifierContext> iterators, ListValue<Value<?>> list, GioviParser.BlockContext block) {
+		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
+		if (list.get().size() == 0) return;
+
+		String valueIteratorName = iterators.get(0).getText();
+		currentScopeBlock.declare(valueIteratorName, list.get().get(0));
+		list.get().forEach(value -> {
+			currentScopeBlock.getVariableValue(valueIteratorName).set(value);
+			visit(block);
+		});
+		currentScopeBlock.delete(valueIteratorName);
+	}
+
 	@Override
-	public Object visitBreakStatement(GioviParser.BreakStatementContext ctx) {
+	public GioviObject visitBreakStatement(GioviParser.BreakStatementContext ctx) {
 		shouldBreak = true;
 		return null;
 	}
 
 	@Override
-	public Object visitRepeatStatement(GioviParser.RepeatStatementContext ctx) {
+	public GioviObject visitRepeatStatement(GioviParser.RepeatStatementContext ctx) {
 		shouldBreak = false;
 		if (ctx.IF() == null) {
 			while (!shouldBreak) {
 				visit(ctx.block());
 			}
 		} else {
-			while (!shouldBreak && (boolean) visit(ctx.expression())) {
+			while (!shouldBreak && visit(ctx.expression()).asBool()) {
 				visit(ctx.block());
 			}
 
@@ -72,43 +105,54 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 		return null;
 	}
 
-	@Override
-	public Object visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
-		Variable<?> variable = switch (ctx.type().getText()) {
-			case "Text" -> new Variable<>(ctx.identifier().getText(), "");
-			case "Int" -> new Variable<>(ctx.identifier().getText(), 0);
-			case "Bool" -> new Variable<>(ctx.identifier().getText(), false);
-			case "Real" -> new Variable<>(ctx.identifier().getText(), 0.0);
-			default -> throw new TypeNotFound(ctx.type().getText());
-		};
 
-		currentScopeBlock.declareVariable(variable.getIdentifier(), variable.getValue());
-		return variable;
+	@Override
+	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
+		declareVariable(ctx.identifier().getText(), ctx.type().getText(), null);
+		return null;
+	}
+
+
+	@Override
+	public GioviObject visitRedirectionToVarDeclaration(GioviParser.RedirectionToVarDeclarationContext ctx) {
+		declareVariable(
+			ctx.varDeclaration().identifier().getText(),
+			ctx.varDeclaration().type().getText(),
+			visit(ctx.expression()).asValue()
+		);
+		return null;
+	}
+
+
+	private void declareVariable(String identifier, String type, Value<?> value) {
+		currentScopeBlock.declare(identifier, switch (type) {
+			case "Natural" -> value != null ? value : new NaturalValue();
+			case "Int" -> value != null ? value : new IntValue();
+			case "Real" -> value != null ? value : new RealValue();
+			case "Bool" -> value != null ? value : new BoolValue();
+			case "Text" -> value != null ? value : new TextValue();
+			default -> throw new TypeNotFound(type);
+		});
 	}
 
 	@Override
-	public Object visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
+	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
 		String identifier = ctx.identifier().getText();
-		currentScopeBlock.updateVariableValue(identifier, switch (ctx.bop.getText()) {
-			case ">" -> visit(ctx.expression());
-			case ">+" -> Operation.add(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
-			case ">-" -> Operation.subtract(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
-			case ">*" -> Operation.multiply(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
-			case ">/" -> Operation.divide(currentScopeBlock.getVariableValue(identifier), visit(ctx.expression()));
+		currentScopeBlock.setVariableValue(identifier, switch (ctx.bop.getText()) {
+			case ">" -> visit(ctx.expression()).asValue();
+			case ">+" -> currentScopeBlock.getVariableValue(identifier).plus(visit(ctx.expression())).asValue();
+			case ">-" -> currentScopeBlock.getVariableValue(identifier).minus(visit(ctx.expression())).asValue();
+			case ">*" -> currentScopeBlock.getVariableValue(identifier).multiply(visit(ctx.expression())).asValue();
+			case ">/" -> currentScopeBlock.getVariableValue(identifier).divide(visit(ctx.expression())).asValue();
 			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
 		});
 		return null;
 	}
 
-	@Override
-	public Object visitRedirectionToVarDeclaration(GioviParser.RedirectionToVarDeclarationContext ctx) {
-		currentScopeBlock.declareVariable(ctx.varDeclaration().identifier().getText(), visit(ctx.expression()));
-		return null;
-	}
 
 	@Override
-	public Object visitRedirectionToPrimitiveDestination(GioviParser.RedirectionToPrimitiveDestinationContext ctx) {
-		Object content = visit(ctx.expression());
+	public GioviObject visitRedirectionToPrimitiveDestination(GioviParser.RedirectionToPrimitiveDestinationContext ctx) {
+		GioviObject content = visit(ctx.expression());
 		switch (ctx.primitiveDestination().getText()) {
 			case "\\", "\\out" -> System.out.println(content);
 			case "\\error" -> System.err.println(content);
@@ -117,140 +161,125 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitParenthesizedExpression(GioviParser.ParenthesizedExpressionContext ctx) {
+	public GioviObject visitParenthesizedExpression(GioviParser.ParenthesizedExpressionContext ctx) {
 		return visit(ctx.expression());
 	}
 
 	@Override
-	public Object visitPrefixedExpression(GioviParser.PrefixedExpressionContext ctx) {
-		Object value = visit(ctx.expression());
+	public GioviObject visitPrefixedExpression(GioviParser.PrefixedExpressionContext ctx) {
+		GioviObject value = visit(ctx.expression());
 		return switch (ctx.prefix.getText()) {
-			case "+" -> switch (value) {
-				case Integer v -> v;
-				case Double v -> v;
-				default -> throw new OperatorNotSupported("+");
-			};
-			case "-" -> switch (value) {
-				case Integer v -> -v;
-				case Double v -> -v;
-				default -> throw new OperatorNotSupported("-");
-			};
+			case "+" -> value.positive();
+			case "-" -> value.negative();
 			default -> throw new OperatorNotSupported(ctx.prefix.getText());
 		};
 	}
 
 	@Override
-	public Object visitAdditiveExpression(GioviParser.AdditiveExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
+	public GioviObject visitAdditiveExpression(GioviParser.AdditiveExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
 		String operator = ctx.bop.getText();
 		return switch (operator) {
-			case "+" -> Operation.add(left, right);
-			case "-" -> Operation.subtract(left, right);
+			case "+" -> left.plus(right);
+			case "-" -> left.minus(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	@Override
-	public Object visitMultiplicativeExpression(GioviParser.MultiplicativeExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
+	public GioviObject visitMultiplicativeExpression(GioviParser.MultiplicativeExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
 		String operator = ctx.bop.getText();
 		return switch (operator) {
-			case "*" -> Operation.multiply(left, right);
-			case "/" -> Operation.divide(left, right);
-			case "%" -> Operation.modulo(left, right);
+			case "*" -> left.multiply(right);
+			case "/" -> left.divide(right);
+			case "%" -> left.modulo(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	@Override
-	public Object visitPowerExpression(GioviParser.PowerExpressionContext ctx) {
-		return Operation.power(visit(ctx.expression(0)), visit(ctx.expression(1)));
+	public GioviObject visitPowerExpression(GioviParser.PowerExpressionContext ctx) {
+		return visit(ctx.expression(0)).power(visit(ctx.expression(1)));
 	}
 
 	@Override
-	public Object visitRelationalExpression(GioviParser.RelationalExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
+	public GioviObject visitRelationalExpression(GioviParser.RelationalExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
 		String operator = ctx.bop.getText();
 		return switch (operator) {
-			case "<=" -> Operation.lessEqual(left, right);
-			case ">=" -> Operation.greaterEqual(left, right);
-			case ">" -> Operation.greater(left, right);
-			case "<" -> Operation.less(left, right);
+			case "<=" -> left.lessEqual(right);
+			case ">=" -> left.greaterEqual(right);
+			case ">" -> left.greater(right);
+			case "<" -> left.less(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	@Override
-	public Object visitNotExpression(GioviParser.NotExpressionContext ctx) {
-		Object expression = visit(ctx.expression());
-		if (expression instanceof Boolean b) {
-			return !b;
-		}
-		throw new OperatorNotSupported("!");
+	public GioviObject visitNotExpression(GioviParser.NotExpressionContext ctx) {
+		return visit(ctx.expression()).not();
 	}
 
 	@Override
-	public Object visitBoolExpression(GioviParser.BoolExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		if (left instanceof Boolean l && right instanceof Boolean r) {
-			return switch (operator) {
-				case "&" -> l && r;
-				case "|" -> l || r;
-				default -> throw new OperatorNotSupported(operator);
-			};
-		}
-		throw new OperatorNotSupported(operator);
-	}
-
-	@Override
-	public Object visitEqualityExpression(GioviParser.EqualityExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
+	public GioviObject visitBoolExpression(GioviParser.BoolExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
 		String operator = ctx.bop.getText();
 		return switch (operator) {
-			case "=" -> Operation.equal(left, right);
-			case "!=" -> Operation.notEqual(left, right);
+			case "&" -> left.and(right);
+			case "|" -> left.or(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	@Override
-	public Object visitContainmentExpression(GioviParser.ContainmentExpressionContext ctx) {
-		Object left = visit(ctx.expression(0));
-		Object right = visit(ctx.expression(1));
+	public GioviObject visitEqualityExpression(GioviParser.EqualityExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
 		String operator = ctx.bop.getText();
 		return switch (operator) {
-			case "~=" -> Operation.isContained(left, right);
-			case "=~" -> Operation.contains(left, right);
+			case "=" -> left.equal(right);
+			case "!=" -> left.notEqual(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	@Override
-	public Object visitIdentifier(GioviParser.IdentifierContext ctx) {
+	public GioviObject visitContainmentExpression(GioviParser.ContainmentExpressionContext ctx) {
+		GioviObject left = visit(ctx.expression(0));
+		GioviObject right = visit(ctx.expression(1));
+		String operator = ctx.bop.getText();
+		return switch (operator) {
+			case "~=" -> left.isContained(right);
+			case "=~" -> left.contains(right);
+			default -> throw new OperatorNotSupported(operator);
+		};
+	}
+
+	@Override
+	public GioviObject visitIdentifier(GioviParser.IdentifierContext ctx) {
 		return getCurrentScope().getVariableValue(ctx.getText());
 	}
 
 	@Override
-	public Object visitSequence(GioviParser.SequenceContext ctx) {
+	public GioviObject visitSequence(GioviParser.SequenceContext ctx) {
 		return Sequence.of(
-			visit(ctx.start),
-			visit(ctx.end),
-			ctx.step == null ? null : visit(ctx.step));
+			visit(ctx.start).asValue(),
+			visit(ctx.end).asValue(),
+			ctx.step == null ? null : visit(ctx.step).asValue());
 	}
 
 	@Override
-	public Object visitListCreation(GioviParser.ListCreationContext ctx) {
-		List<Object> list = new ArrayList<>();
+	public GioviObject visitListCreation(GioviParser.ListCreationContext ctx) {
+		ListValue<GioviObject> list = new ListValue<>();
 		for (GioviParser.ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
-			Object entry = visit(entryCtx);
-			if (entry instanceof List<?> l) {
-				list.addAll(l);
+			GioviObject entry = visit(entryCtx);
+			if (entry instanceof Sequence<?> seq) {
+				list.addAll(seq.getValues());
 			} else {
 				list.add(entry);
 			}
@@ -259,53 +288,62 @@ public class GioviVisitor extends GioviParserBaseVisitor<Object> {
 	}
 
 	@Override
-	public Object visitIntegerLiteral(GioviParser.IntegerLiteralContext ctx) {
-		return Integer.parseInt(ctx.getText());
+	public GioviObject visitMapCreation(GioviParser.MapCreationContext ctx) {
+		MapValue<GioviObject, GioviObject> map = new MapValue<>();
+		for (GioviParser.MapEntryContext entryCtx : ctx.mapEntries().mapEntry()) {
+			map.get().put(visit(entryCtx.mapKey), visit(entryCtx.mapValue));
+		}
+		return map;
 	}
 
 	@Override
-	public Object visitNaturalLiteral(GioviParser.NaturalLiteralContext ctx) {
-		return Integer.parseInt(ctx.getText());
+	public GioviObject visitIntegerLiteral(GioviParser.IntegerLiteralContext ctx) {
+		return new IntValue(Integer.parseInt(ctx.getText()));
 	}
 
 	@Override
-	public Object visitRealLiteral(GioviParser.RealLiteralContext ctx) {
-		return Double.parseDouble(ctx.getText());
+	public GioviObject visitNaturalLiteral(GioviParser.NaturalLiteralContext ctx) {
+		return new NaturalValue(new Natural(Integer.parseInt(ctx.getText())));
 	}
 
 	@Override
-	public Object visitBoolLiteral(GioviParser.BoolLiteralContext ctx) {
-		return Boolean.parseBoolean(ctx.getText());
+	public GioviObject visitRealLiteral(GioviParser.RealLiteralContext ctx) {
+		return new RealValue(Double.parseDouble(ctx.getText()));
 	}
 
 	@Override
-	public Object visitTextLiteral(GioviParser.TextLiteralContext ctx) {
-		return new Text(ctx.getText()).toString();
+	public GioviObject visitBoolLiteral(GioviParser.BoolLiteralContext ctx) {
+		return new BoolValue(Boolean.parseBoolean(ctx.getText()));
 	}
 
 	@Override
-	public Object visitTextBlockLiteral(GioviParser.TextBlockLiteralContext ctx) {
-		return new TextBlock(ctx.getText()).toString();
+	public GioviObject visitTextLiteral(GioviParser.TextLiteralContext ctx) {
+		return new TextValue((new Text(ctx.getText()).toString()));
 	}
 
 	@Override
-	public Object visitExactTextLiteral(GioviParser.ExactTextLiteralContext ctx) {
-		return new ExactText(ctx.getText()).toString();
+	public GioviObject visitTextBlockLiteral(GioviParser.TextBlockLiteralContext ctx) {
+		return new TextValue(new TextBlock(ctx.getText()).toString());
 	}
 
 	@Override
-	public Object visitExactTextBlockLiteral(GioviParser.ExactTextBlockLiteralContext ctx) {
-		return new ExactTextBlock(ctx.getText()).toString();
+	public GioviObject visitExactTextLiteral(GioviParser.ExactTextLiteralContext ctx) {
+		return new TextValue(new ExactText(ctx.getText()).toString());
 	}
 
 	@Override
-	public Object visitNullLiteral(GioviParser.NullLiteralContext ctx) {
+	public GioviObject visitExactTextBlockLiteral(GioviParser.ExactTextBlockLiteralContext ctx) {
+		return new TextValue(new ExactTextBlock(ctx.getText()).toString());
+	}
+
+	@Override
+	public GioviObject visitNullLiteral(GioviParser.NullLiteralContext ctx) {
 		return null;
 	}
 
-	@Override
-	public Object visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
-		return "_";
-	}
+//	@Override
+//	public GioviObject visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
+//		return "_";
+//	}
 
 }

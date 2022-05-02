@@ -337,18 +337,6 @@ public interface GioviParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrimitiveDestination(GioviParser.PrimitiveDestinationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GioviParser#stdout}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStdout(GioviParser.StdoutContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GioviParser#stderr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStderr(GioviParser.StderrContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link GioviParser#type}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -361,11 +349,11 @@ public interface GioviParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStructType(GioviParser.StructTypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GioviParser#primitiveStructType}.
+	 * Visit a parse tree produced by {@link GioviParser#collectionType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitPrimitiveStructType(GioviParser.PrimitiveStructTypeContext ctx);
+	T visitCollectionType(GioviParser.CollectionTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GioviParser#collectionAccess}.
 	 * @param ctx the parse tree
@@ -438,12 +426,6 @@ public interface GioviParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMapAccessor(GioviParser.MapAccessorContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GioviParser#primitiveType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPrimitiveType(GioviParser.PrimitiveTypeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GioviParser#literal}.
 	 * @param ctx the parse tree

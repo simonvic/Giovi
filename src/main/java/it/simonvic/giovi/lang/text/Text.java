@@ -1,6 +1,7 @@
-package it.simonvic.giovi.lang;
+package it.simonvic.giovi.lang.text;
 
 import it.simonvic.giovi.GioviVisitor;
+import it.simonvic.giovi.lang.Block;
 
 import java.util.regex.Pattern;
 

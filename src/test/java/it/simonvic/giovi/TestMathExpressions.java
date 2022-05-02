@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestMathExpressions {
 
 
-	private Object run(String text) {
+	private GioviObject run(String text) {
 		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		GioviParser parser = new GioviParser(tokens);
@@ -30,7 +31,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testAdditiveExpression(String code, Integer expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asInt());
 	}
 
 	@ParameterizedTest
@@ -42,20 +43,20 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testMultiplicativeExpression(String code, Double expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asDouble());
 	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
-		10 ^ 1, 10
-		10 ^ 2, 100
-		10 ^ -2, 0.01
-		10 ^ {1 + 1}, 100
-		10 ^ -{2 * 2}, 0.0001
+		10.0 ^ 1, 10
+		10.0 ^ 2, 100
+		10.0 ^ -2, 0.01
+		10.0 ^ {1 + 1}, 100
+		10.0 ^ -{2 * 2}, 0.0001
 		"""
 	)
 	public void testPowerExpression(String code, Double expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asDouble());
 	}
 
 	@ParameterizedTest
@@ -69,7 +70,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testModuloExpression(String code, Integer expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asInt());
 	}
 
 	@ParameterizedTest
@@ -79,7 +80,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testParenthesizedExpression(String code, Integer expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asInt());
 	}
 
 }

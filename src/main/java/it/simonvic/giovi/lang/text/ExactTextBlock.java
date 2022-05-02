@@ -1,4 +1,4 @@
-package it.simonvic.giovi.lang;
+package it.simonvic.giovi.lang.text;
 
 public class ExactTextBlock extends ExactText {
 

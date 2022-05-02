@@ -26,56 +26,56 @@ public class TestBlocks {
 
 	@Test
 	public void test_declareVariable() {
-		global.declareVariable("aString", "hello world");
-		assertTrue(global.isVariableDefined("aString"));
+		global.declare("aString", "hello world");
+		assertTrue(global.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void test_getVariableValue() {
-		global.declareVariable("aString", "hello world");
-		assertEquals("hello world", global.getVariableValue("aString"));
+		global.declare("aString", "hello world");
+		assertEquals("hello world", global.getVariableValue("aString").get());
 	}
 
 	@Test
 	public void test_isVariableDeclared() {
-		assertFalse(global.isVariableDefined("aString"));
+		assertFalse(global.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables() {
-		global.declareVariable("aString", "Hello world");
-		assertTrue(block1.isVariableDefined("aString"));
+		global.declare("aString", "Hello world");
+		assertTrue(block1.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables2() {
-		global.declareVariable("aString", "Hello world");
-		assertTrue(block111.isVariableDefined("aString"));
+		global.declare("aString", "Hello world");
+		assertTrue(block111.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nonNestedBlocksShouldSeeParentsVariables() {
-		block1.declareVariable("aString", "Hello world");
-		assertFalse(block2.isVariableDefined("aString"));
+		block1.declare("aString", "Hello world");
+		assertFalse(block2.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlockShouldThrow_VariableAlreadyDefined() {
-		block11.declareVariable("aString", "Hello world");
-		assertThrows(VariableAlreadyDefinedException.class, () -> block111.declareVariable("aString", "hello_world"));
+		block11.declare("aString", "Hello world");
+		assertThrows(VariableAlreadyDefinedException.class, () -> block111.declare("aString", "hello_world"));
 	}
 
 	@Test
 	public void nestedBlockShouldAccessVariablesValue() {
-		global.declareVariable("aString", "Hello world");
-		assertEquals("Hello world", block11.getVariableValue("aString"));
+		global.declare("aString", "Hello world");
+		assertEquals("Hello world", block11.getVariableValue("aString").get());
 	}
 
 	@Test
 	public void nestedBlockShouldBeAbleToChangeVariablesValue() {
-		global.declareVariable("aString", "Hello world");
-		block2.updateVariableValue("aString", "ciao mondo");
-		assertEquals("ciao mondo", global.getVariableValue("aString"));
+		global.declare("aString", "Hello world");
+		block2.setVariableValue("aString", "ciao mondo");
+		assertEquals("ciao mondo", global.getVariableValue("aString").get());
 	}
 
 

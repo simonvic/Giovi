@@ -1,4 +1,4 @@
-package it.simonvic.giovi.lang;
+package it.simonvic.giovi.lang.text;
 
 import it.simonvic.giovi.GioviVisitor;
 

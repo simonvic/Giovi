@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestBoolExpressions {
 
 
-	private Object run(String text) {
+	private GioviObject run(String text) {
 		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
@@ -27,7 +28,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testLiterals(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@ParameterizedTest
@@ -39,7 +40,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testAndOperator(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@ParameterizedTest
@@ -51,7 +52,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testOrOperator(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 	@ParameterizedTest
@@ -63,7 +64,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testNotOperator(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 
@@ -76,7 +77,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testParenthesizedExpression(String code, boolean expected) {
-		assertEquals(expected, run(code));
+		assertEquals(expected, run(code).asBool());
 	}
 
 }

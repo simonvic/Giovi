@@ -1,64 +1,117 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.Variable;
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
 import it.simonvic.giovi.exceptions.VariableNotDefinedException;
+import it.simonvic.giovi.lang.type.Natural;
+import it.simonvic.giovi.lang.values.*;
+
+import java.util.HashMap;
 
 public class Block {
 
 
-	private final Variables variables = new Variables();
+	private final HashMap<String, Value<?>> variables = new HashMap<>();
+
 	private final Block parentBlock;
 
 	public Block(Block parentBlock) {
 		this.parentBlock = parentBlock;
 	}
 
-	public boolean isVariableDefined(String identifier) {
-		return isVariableDefined(this, identifier);
+	public void delete(String identifier) {
+		variables.remove(identifier);
 	}
 
-	public Object getVariableValue(String identifier) {
-		return getVariableValue(this, identifier);
+	public void declare(String identifier, Value<?> value) {
+		if (isDefinedVariable(identifier)) throw new VariableAlreadyDefinedException(identifier);
+		variables.put(identifier, value);
 	}
 
-	public void updateVariableValue(String identifier, Object value) {
-		updateVariableValue(this, identifier, value);
+	public void declare(String identifier, String value) {
+		declare(identifier, new TextValue(value));
 	}
 
-	public void declareVariable(String identifier, Object value) {
-		if (isVariableDefined(this.parentBlock, identifier)) {
-			throw new VariableAlreadyDefinedException(identifier);
+	public void declare(String identifier, Integer value) {
+		declare(identifier, new IntValue(value));
+	}
+
+	public void declare(String identifier, Natural value) {
+		declare(identifier, new NaturalValue(value));
+	}
+
+	public void declare(String identifier, Double value) {
+		declare(identifier, new RealValue(value));
+	}
+
+	public void declare(String identifier, Boolean value) {
+		declare(identifier, new BoolValue(value));
+	}
+
+	public void setVariableValue(String identifier, Value<?> value) {
+		Block.setVariableValue(this, identifier, value);
+	}
+
+	public void setVariableValue(String identifier, int value) {
+		setVariableValue(identifier, new IntValue(value));
+	}
+
+	public void setVariableValue(String identifier, double value) {
+		setVariableValue(identifier, new RealValue(value));
+	}
+
+	public void setVariableValue(String identifier, boolean value) {
+		setVariableValue(identifier, new BoolValue(value));
+	}
+
+	public void setVariableValue(String identifier, String value) {
+		setVariableValue(identifier, new TextValue(value));
+	}
+
+	private static void setVariableValue(Block block, String identifier, Value<?> value) {
+		if (block == null) throw new VariableNotDefinedException(identifier);
+		if (block.isDefinedLocalVariable(identifier)) {
+			Value<?> oldValue = block.variables.get(identifier);
+			switch (oldValue) {
+				case TextValue v -> v.set(value);
+				case RealValue v -> v.set(value);
+				case NaturalValue v -> v.set(value);
+				case IntValue v -> v.set(value);
+				case BoolValue v -> v.set(value);
+				default -> throw new IllegalStateException("Unexpected value: " + oldValue);
+			}
+		} else {
+			Block.setVariableValue(block.parentBlock, identifier, value);
 		}
-		variables.declare(new Variable<>(identifier, value));
 	}
 
-	private static boolean isVariableDefined(Block block, String identifier) {
+	public Value<?> getVariableValue(String identifier) {
+		return Block.getVariableValue(this, identifier);
+	}
+
+	public boolean isDefinedVariable(String identifier) {
+		return Block.isDefinedVariable(this, identifier);
+	}
+
+
+	private Value<?> getLocalVariableValue(String identifier) {
+		return variables.get(identifier);
+	}
+
+	private boolean isDefinedLocalVariable(String identifier) {
+		return variables.containsKey(identifier);
+	}
+
+	private static boolean isDefinedVariable(Block block, String identifier) {
 		if (block == null) return false;
-		return block.variables.isDefined(identifier) || isVariableDefined(block.parentBlock, identifier);
+		return block.isDefinedLocalVariable(identifier) || Block.isDefinedVariable(block.parentBlock, identifier);
 	}
 
-	private static Object getVariableValue(Block block, String identifier) {
-		if (block == null) {
-			throw new VariableNotDefinedException(identifier);
-		}
-		try {
-			return block.variables.getValue(identifier);
-		} catch (VariableNotDefinedException ex) {
-			return getVariableValue(block.parentBlock, identifier);
-		}
-	}
+	private static Value<?> getVariableValue(Block block, String identifier) {
+		if (block == null) throw new VariableNotDefinedException(identifier);
+		return block.isDefinedLocalVariable(identifier)
+			? block.getLocalVariableValue(identifier)
+			: Block.getVariableValue(block.parentBlock, identifier);
 
-	private static void updateVariableValue(Block block, String identifier, Object value) {
-		if (block == null) {
-			throw new VariableNotDefinedException(identifier);
-		}
-
-		try {
-			block.variables.update(identifier, value);
-		} catch (VariableNotDefinedException ex) {
-			updateVariableValue(block.parentBlock, identifier, value);
-		}
 	}
 
 }
