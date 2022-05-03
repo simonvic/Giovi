@@ -2,6 +2,9 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.values.GioviList;
+import it.simonvic.giovi.lang.values.GioviMap;
+import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -11,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,15 +63,69 @@ public class TestRedirection {
 
 	private static Stream<Arguments> produceLists() {
 		return Stream.of(
-			Arguments.of("[1 2 3] > intList List[Int]", GioviCollections.of(1, 2, 3, 4))
+			Arguments.of("[69 420] > list [Int]", GioviCollections.of(69, 420)),
+			Arguments.of("[1 2 3] > list", GioviCollections.of(1, 2, 3)),
+			Arguments.of("[1 2 3] > list", GioviCollections.of(1, 2, 3)),
+			Arguments.of("4 >+ list", GioviCollections.of(1, 2, 3, 4)),
+			Arguments.of("4 >- list", GioviCollections.of(1, 2, 3)),
+			Arguments.of("[4 5 6] >+ list", GioviCollections.of(1, 2, 3, 4, 5, 6)),
+			Arguments.of("[4 5 6] >- list", GioviCollections.of(1, 2, 3))
 		);
 	}
 
-	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@MethodSource("produceLists")
-	public void testList(String code, String expected) {
+	public void testList(String code, GioviList<GioviValue<?>> expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varString").get());
+		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("list"));
+	}
+
+
+	private static Stream<Arguments> produceMaps() {
+		return Stream.of(
+			Arguments.of("""
+				[69 : "lol"] > map [Int : Text]
+				""", GioviCollections.of(Map.of(69, "lol"))
+			),
+			Arguments.of("""
+				[1:"a" 2:"b" 3:"c"] > map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c"))
+			),
+			Arguments.of("""
+				[4:"d"] >+ map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d"))
+			),
+			Arguments.of("""
+				[5:"e" 6:"f"] >+ map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e", 6, "f"))
+			),
+			Arguments.of("""
+				6 >- map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e"))
+			),
+			Arguments.of("""
+				[5 : "non existing element"] >- map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e"))
+			),
+			Arguments.of("""
+				[5 : "e"] >- map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d"))
+			),
+			Arguments.of("""
+				[3:"c" 4:"d"] >- map
+				""", GioviCollections.of(Map.of(1, "a", 2, "b"))
+			),
+			Arguments.of("""
+				[1 2] >- map
+				""", GioviCollections.of(Map.of())
+			)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("produceMaps")
+	public void testMaps(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
+		visitor.visit(parserOf(code).begin());
+		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("map"));
 	}
 }

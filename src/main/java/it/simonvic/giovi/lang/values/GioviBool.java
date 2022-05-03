@@ -26,6 +26,15 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
+	public GioviObject redirection(GioviObject content) {
+		if (content instanceof GioviBool bool) {
+			value = bool.get();
+			return this;
+		}
+		return super.redirection(content);
+	}
+
+	@Override
 	public GioviObject and(GioviObject right) {
 		return switch(right) {
 			case GioviBool v -> new GioviBool(value && v.get());
@@ -39,7 +48,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 		return switch(right) {
 			case GioviBool v -> new GioviBool(value || v.get());
 //			case IntValue v -> new BoolValue(value || v.asBool());
-			default -> super.and(right);
+			default -> super.or(right);
 		};
 	}
 

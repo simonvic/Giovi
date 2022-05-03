@@ -32,12 +32,58 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 
 	@Override
 	public void set(GioviValue<?> value) {
-		switch(value.get()) {
+		switch (value.get()) {
 			case Natural v -> set(v);
 			case Number v -> set(new Natural(v.intValue()));
 			default -> super.set(value);
 		}
 	}
+
+	@Override
+	public GioviObject redirection(GioviObject content) {
+		if (content instanceof GioviNumber number) {
+			value = number.naturalValue().get();
+			return this;
+		}
+		return super.redirection(content);
+	}
+
+	@Override
+	public GioviObject redirectionPlus(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value = value.plus(number.naturalValue().get());
+			return this;
+		}
+		return super.redirectionPlus(right);
+	}
+
+	@Override
+	public GioviObject redirectionMinus(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value = value.minus(number.naturalValue().get());
+			return this;
+		}
+		return super.redirectionMinus(right);
+	}
+
+	@Override
+	public GioviObject redirectionMultiply(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value = value.multiply(number.naturalValue().get());
+			return this;
+		}
+		return super.redirectionMultiply(right);
+	}
+
+	@Override
+	public GioviObject redirectionDivide(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value = value.divide(number.intValue().get());
+			return this;
+		}
+		return super.redirectionDivide(right);
+	}
+
 
 	@Override
 	public GioviObject positive() {

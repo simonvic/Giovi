@@ -4,6 +4,7 @@ import it.simonvic.giovi.lang.GioviObject;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>> extends GioviValue<LinkedHashMap<K, V>> {
@@ -18,9 +19,39 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	}
 
 	@Override
+	public GioviObject redirection(GioviObject right) {
+		switch (right) {
+			case GioviMap<?, ?> v -> value = (LinkedHashMap<K, V>) v.value;
+			default -> super.redirection(right);
+		}
+		return this;
+	}
+
+	@Override
+	public GioviObject redirectionPlus(GioviObject right) {
+		switch (right) {
+			case GioviMap<?, ?> v -> v.get().forEach((key, value) -> this.put((K) key, (V) value));
+//			case GioviValue<?> v -> this.put((K) v, defaultValue);
+			default -> super.redirectionPlus(right);
+		}
+		return this;
+	}
+
+	@Override
+	public GioviObject redirectionMinus(GioviObject right) {
+		switch (right) {
+			case GioviMap<?, ?> v -> v.get().forEach((key, element) -> this.remove((K) key, (V) element));
+			case GioviList<?> v -> v.get().forEach(keyToRemove -> this.remove((K) keyToRemove));
+			case GioviValue<?> v -> remove((K) v);
+			default -> super.redirectionPlus(right);
+		}
+		return this;
+	}
+
+	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
-			case GioviMap<?,?> v -> new GioviBool(this.equals(v));
+			case GioviMap<?, ?> v -> new GioviBool(this.equals(v));
 			default -> super.equal(right);
 		};
 	}
@@ -31,11 +62,11 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 
-		final GioviMap<K,V> other = (GioviMap<K,V>) obj;
+		final GioviMap<K, V> other = (GioviMap<K, V>) obj;
 
 		if (value.size() != other.value.size()) return false;
 
-		for(Map.Entry<K,V> entry : value.entrySet()) {
+		for (Map.Entry<K, V> entry : value.entrySet()) {
 			if (!entry.getValue().equals(other.get(entry.getKey()))) {
 				return false;
 			}
@@ -45,20 +76,20 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 
 	@Override
 	public String toString() {
-		Iterator<Map.Entry<K,V>> i = value.entrySet().iterator();
-		if (! i.hasNext())
+		Iterator<Map.Entry<K, V>> i = value.entrySet().iterator();
+		if (!i.hasNext())
 			return "[]";
 
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
-		for (;;) {
-			Map.Entry<K,V> e = i.next();
+		for (; ; ) {
+			Map.Entry<K, V> e = i.next();
 			K key = e.getKey();
 			V value = e.getValue();
-			sb.append(key   == this ? "(this Map)" : key);
+			sb.append(key == this ? "(this Map)" : key);
 			sb.append(':');
 			sb.append(value == this ? "(this Map)" : value);
-			if (! i.hasNext())
+			if (!i.hasNext())
 				return sb.append(']').toString();
 			sb.append(',').append(' ');
 		}
@@ -82,5 +113,23 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 			}
 		}
 		return null;
+	}
+
+	private void remove(K key, V element) {
+		for (K k : value.keySet()) {
+			if (k.equals(key) && element.equals(value.get(k))) {
+				value.remove(k);
+				return;
+			}
+		}
+	}
+
+	private void remove(K key) {
+		for (K k : value.keySet()) {
+			if (k.equals(key)) {
+				value.remove(k);
+				return;
+			}
+		}
 	}
 }

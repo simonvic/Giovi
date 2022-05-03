@@ -33,15 +33,7 @@ public class Block {
 	private static void setVariableValue(Block block, String identifier, GioviValue<?> value) {
 		if (block == null) throw new VariableNotDefinedException(identifier);
 		if (block.isDefinedLocalVariable(identifier)) {
-			GioviValue<?> oldValue = block.variables.get(identifier);
-			switch (oldValue) {
-				case GioviText v -> v.set(value);
-				case GioviReal v -> v.set(value);
-				case GioviNatural v -> v.set(value);
-				case GioviInt v -> v.set(value);
-				case GioviBool v -> v.set(value);
-				default -> throw new IllegalStateException("Unexpected value: " + oldValue);
-			}
+			block.variables.get(identifier).set(value);
 		} else {
 			Block.setVariableValue(block.parentBlock, identifier, value);
 		}

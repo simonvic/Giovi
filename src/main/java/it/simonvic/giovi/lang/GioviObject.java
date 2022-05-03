@@ -85,19 +85,23 @@ public class GioviObject {
 		throw new OperatorNotSupported("-");
 	}
 
-	public GioviObject plus(GioviObject right) {
+	public GioviObject redirection(GioviObject content) {
+		throw new OperatorNotSupported(">");
+	}
+
+	public GioviObject redirectionPlus(GioviObject right) {
 		throw new OperatorNotSupported("+");
 	}
 
-	public GioviObject minus(GioviObject right) {
+	public GioviObject redirectionMinus(GioviObject right) {
 		throw new OperatorNotSupported("-");
 	}
 
-	public GioviObject multiply(GioviObject right) {
+	public GioviObject redirectionMultiply(GioviObject right) {
 		throw new OperatorNotSupported("*");
 	}
 
-	public GioviObject divide(GioviObject right) {
+	public GioviObject redirectionDivide(GioviObject right) {
 		throw new OperatorNotSupported("/");
 	}
 
@@ -154,4 +158,19 @@ public class GioviObject {
 	}
 
 
+	public GioviObject multiply(GioviObject right) {
+		throw new OperatorNotSupported("*");
+	}
+
+	public GioviObject divide(GioviObject right) {
+		throw new OperatorNotSupported("*");
+	}
+
+	public GioviObject plus(GioviObject right) {
+		throw new OperatorNotSupported("+");
+	}
+
+	public GioviObject minus(GioviObject right) {
+		throw new OperatorNotSupported("-");
+	}
 }

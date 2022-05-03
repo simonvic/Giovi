@@ -108,28 +108,41 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
-		if (ctx.type().collectionType() != null) {
-			declareCollection(ctx.identifier().getText(), ctx.type().collectionType(), null);
-		} else {
-			declareVariable(ctx.identifier().getText(), ctx.type().getText(), null);
+	public GioviObject visitRedirectionToVarDeclaration(GioviParser.RedirectionToVarDeclarationContext ctx) {
+		//@todo improve this. Declare variable with value already set
+		visit(ctx.varDeclaration());
+		switch (ctx.bop.getText()) {
+			case ">" -> currentScopeBlock
+				.getVariableValue(ctx.varDeclaration().identifier().getText())
+				.redirection(visit(ctx.expression()));
+			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
 		}
 		return null;
 	}
 
-	private void declareCollection(String identifier, GioviParser.CollectionTypeContext collectionType, GioviValue<?> value) {
+	@Override
+	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
+		if (ctx.type().collectionType() != null) {
+			declareCollection(ctx.identifier().getText(), ctx.type().collectionType());
+		} else {
+			declareVariable(ctx.identifier().getText(), ctx.type().getText());
+		}
+		return null;
+	}
+
+	private void declareCollection(String identifier, GioviParser.CollectionTypeContext collectionType) {
 		if (collectionType.list() != null) {
-			declareList(identifier, collectionType.list().type().getText(), value);
+			declareList(identifier, collectionType.list().type().getText());
 		} else if (collectionType.map() != null) {
-			declareMap(identifier, collectionType.map().type(), value);
+			declareMap(identifier, collectionType.map().type());
 		}
 	}
 
-	private void declareMap(String identifier, List<GioviParser.TypeContext> type, GioviValue<?> value) {
+	private void declareMap(String identifier, List<GioviParser.TypeContext> type) {
 		currentScopeBlock.declare(identifier, new GioviMap<>());
 	}
 
-	private void declareList(String identifier, String type, GioviValue<?> value) {
+	private void declareList(String identifier, String type) {
 		currentScopeBlock.declare(identifier, switch (type) {
 			case "Natural" -> new GioviList<GioviNatural>();
 			case "Int" -> new GioviList<GioviInt>();
@@ -141,24 +154,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 
-	@Override
-	public GioviObject visitRedirectionToVarDeclaration(GioviParser.RedirectionToVarDeclarationContext ctx) {
-		declareVariable(
-			ctx.varDeclaration().identifier().getText(),
-			ctx.varDeclaration().type().getText(),
-			visit(ctx.expression()).asGioviValue()
-		);
-		return null;
-	}
-
-
-	private void declareVariable(String identifier, String type, GioviValue<?> value) {
+	private void declareVariable(String identifier, String type) {
 		currentScopeBlock.declare(identifier, switch (type) {
-			case "Natural" -> value != null ? value : new GioviNatural();
-			case "Int" -> value != null ? value : new GioviInt();
-			case "Real" -> value != null ? value : new GioviReal();
-			case "Bool" -> value != null ? value : new GioviBool();
-			case "Text" -> value != null ? value : new GioviText();
+			case "Natural" -> new GioviNatural();
+			case "Int" -> new GioviInt();
+			case "Real" -> new GioviReal();
+			case "Bool" -> new GioviBool();
+			case "Text" -> new GioviText();
 			default -> throw new TypeNotFound(type);
 		});
 	}
@@ -166,14 +168,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
 		String identifier = ctx.identifier().getText();
-		currentScopeBlock.setVariableValue(identifier, switch (ctx.bop.getText()) {
-			case ">" -> visit(ctx.expression()).asGioviValue();
-			case ">+" -> currentScopeBlock.getVariableValue(identifier).plus(visit(ctx.expression())).asGioviValue();
-			case ">-" -> currentScopeBlock.getVariableValue(identifier).minus(visit(ctx.expression())).asGioviValue();
-			case ">*" -> currentScopeBlock.getVariableValue(identifier).multiply(visit(ctx.expression())).asGioviValue();
-			case ">/" -> currentScopeBlock.getVariableValue(identifier).divide(visit(ctx.expression())).asGioviValue();
+		switch (ctx.bop.getText()) {
+			case ">" ->
+				currentScopeBlock.getVariableValue(identifier).redirection(visit(ctx.expression())).asGioviValue();
+			case ">+" ->
+				currentScopeBlock.getVariableValue(identifier).redirectionPlus(visit(ctx.expression())).asGioviValue();
+			case ">-" ->
+				currentScopeBlock.getVariableValue(identifier).redirectionMinus(visit(ctx.expression())).asGioviValue();
+			case ">*" ->
+				currentScopeBlock.getVariableValue(identifier).redirectionMultiply(visit(ctx.expression())).asGioviValue();
+			case ">/" ->
+				currentScopeBlock.getVariableValue(identifier).redirectionDivide(visit(ctx.expression())).asGioviValue();
 			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
-		});
+		}
 		return null;
 	}
 
@@ -306,7 +313,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		GioviList<GioviValue<?>> list = new GioviList<>();
 		for (GioviParser.ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
 			GioviObject entry = visit(entryCtx);
-			switch(entry) {
+			switch (entry) {
 				case Sequence<?> seq -> list.addAll(seq.getValues());
 				case GioviValue<?> v -> list.add(v);
 				default -> throw new IncompatibleTypes(entry.getClass(), list.getClass());

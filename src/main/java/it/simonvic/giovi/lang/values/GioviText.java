@@ -21,6 +21,33 @@ public non-sealed class GioviText extends GioviValue<String> {
 	}
 
 	@Override
+	public GioviObject redirection(GioviObject content) {
+		if (content instanceof GioviText text) {
+			value = text.get();
+			return this;
+		}
+		return super.redirection(content);
+	}
+
+	@Override
+	public GioviObject redirectionPlus(GioviObject right) {
+		if (right instanceof GioviText text) {
+			value += text.get();
+			return this;
+		}
+		return super.redirectionPlus(right);
+	}
+
+	@Override
+	public GioviObject redirectionMinus(GioviObject right) {
+		if (right instanceof GioviText text) {
+			value = value.replace(text.get(), "");
+			return this;
+		}
+		return super.redirectionMinus(right);
+	}
+
+	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
 			case GioviText v -> new GioviText(value + v.get());

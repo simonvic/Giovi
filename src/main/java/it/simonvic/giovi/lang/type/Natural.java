@@ -46,4 +46,20 @@ public final class Natural extends Number {
 		final Natural other = (Natural) obj;
 		return this.value.equals(other.value);
 	}
+
+	public Natural plus(Number number) {
+		return new Natural(value + number.intValue());
+	}
+
+	public Natural minus(Number number) {
+		return new Natural(value - number.intValue());
+	}
+
+	public Natural multiply(Number number) {
+		return new Natural(value * number.intValue());
+	}
+
+	public Natural divide(Number number) {
+		return new Natural(value / number.intValue());
+	}
 }

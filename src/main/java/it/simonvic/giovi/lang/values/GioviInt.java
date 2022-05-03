@@ -37,6 +37,52 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 		}
 	}
 
+
+	@Override
+	public GioviObject redirection(GioviObject content) {
+		if (content instanceof GioviNumber number) {
+			value = number.intValue().get();
+			return this;
+		}
+		return super.redirection(content);
+	}
+
+	@Override
+	public GioviObject redirectionPlus(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value += number.intValue().get();
+			return this;
+		}
+		return super.redirectionPlus(right);
+	}
+
+	@Override
+	public GioviObject redirectionMinus(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value -= number.intValue().get();
+			return this;
+		}
+		return super.redirectionMinus(right);
+	}
+
+	@Override
+	public GioviObject redirectionMultiply(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value *= number.intValue().get();
+			return this;
+		}
+		return super.redirectionMultiply(right);
+	}
+
+	@Override
+	public GioviObject redirectionDivide(GioviObject right) {
+		if (right instanceof GioviNumber number) {
+			value /= number.intValue().get();
+			return this;
+		}
+		return super.redirectionDivide(right);
+	}
+
 	@Override
 	public GioviObject positive() {
 		return new GioviInt(value);

@@ -16,20 +16,34 @@ public non-sealed class GioviList<T extends GioviValue<?>> extends GioviValue<Li
 		return new GioviBool(value.contains(right.asGioviValue()));
 	}
 
+
 	@Override
-	public GioviObject plus(GioviObject right) {
-		return switch (right) {
-			case GioviValue<?> v -> {
-				value.add((T) v);
-				yield this;
-			}
-			default -> super.plus(right);
-		};
+	public GioviObject redirection(GioviObject right) {
+		switch (right) {
+			case GioviList<?> v -> value = (List<T>) v.get();
+			default -> super.redirection(right);
+		}
+		return this;
 	}
 
 	@Override
-	public GioviObject minus(GioviObject right) {
-		return super.minus(right);
+	public GioviObject redirectionPlus(GioviObject right) {
+		switch (right) {
+			case GioviList<?> v -> v.get().forEach(gioviValue -> value.add((T) gioviValue));
+			case GioviValue<?> v -> value.add((T) v);
+			default -> super.redirectionPlus(right);
+		}
+		return this;
+	}
+
+	@Override
+	public GioviObject redirectionMinus(GioviObject right) {
+		switch (right) {
+			case GioviList<?> v -> v.get().forEach(gioviValue -> value.remove((T) gioviValue));
+			case GioviValue<?> v -> value.remove((T) v);
+			default -> super.redirectionPlus(right);
+		}
+		return this;
 	}
 
 	@Override
