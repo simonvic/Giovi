@@ -2,18 +2,18 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
 
-public non-sealed class TextValue extends Value<String> {
+public non-sealed class GioviText extends GioviValue<String> {
 
-	public TextValue(String value) {
+	public GioviText(String value) {
 		super(value);
 	}
 
-	public TextValue() {
+	public GioviText() {
 		super("");
 	}
 
 	@Override
-	public void set(Value<?> value) {
+	public void set(GioviValue<?> value) {
 		switch (value.get()) {
 			case String v -> set(v);
 			default -> super.set(value);
@@ -23,7 +23,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new TextValue(value + v.get());
+			case GioviText v -> new GioviText(value + v.get());
 			default -> super.plus(right);
 		};
 	}
@@ -31,7 +31,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject minus(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new TextValue(value.replace(v.get(), ""));
+			case GioviText v -> new GioviText(value.replace(v.get(), ""));
 			default -> super.plus(right);
 		};
 	}
@@ -39,7 +39,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject lessEqual(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.compareTo(v.get()) <= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.get()) <= 0);
 			default -> super.lessEqual(right);
 		};
 	}
@@ -47,7 +47,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject greaterEqual(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.compareTo(v.get()) >= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.get()) >= 0);
 			default -> super.greaterEqual(right);
 		};
 	}
@@ -55,7 +55,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject greater(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.compareTo(v.get()) > 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.get()) > 0);
 			default -> super.greater(right);
 		};
 	}
@@ -63,7 +63,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject less(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.compareTo(v.get()) < 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.get()) < 0);
 			default -> super.less(right);
 		};
 	}
@@ -71,7 +71,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.compareTo(v.get()) == 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.get()) == 0);
 			default -> super.equal(right);
 		};
 	}
@@ -84,7 +84,7 @@ public non-sealed class TextValue extends Value<String> {
 	@Override
 	public GioviObject contains(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new BoolValue(value.contains(v.get()));
+			case GioviText v -> new GioviBool(value.contains(v.get()));
 			default -> super.contains(right);
 		};
 	}

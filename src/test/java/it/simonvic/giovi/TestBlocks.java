@@ -2,7 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
 import it.simonvic.giovi.lang.Block;
-import it.simonvic.giovi.lang.values.Value;
+import it.simonvic.giovi.lang.values.GioviValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,13 +27,13 @@ public class TestBlocks {
 
 	@Test
 	public void test_declareVariable() {
-		global.declare("aString", Value.of("hello world"));
+		global.declare("aString", GioviValue.of("hello world"));
 		assertTrue(global.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void test_getVariableValue() {
-		global.declare("aString", Value.of("hello world"));
+		global.declare("aString", GioviValue.of("hello world"));
 		assertEquals("hello world", global.getVariableValue("aString").get());
 	}
 
@@ -44,38 +44,38 @@ public class TestBlocks {
 
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables() {
-		global.declare("aString", Value.of("Hello world"));
+		global.declare("aString", GioviValue.of("Hello world"));
 		assertTrue(block1.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables2() {
-		global.declare("aString", Value.of("Hello world"));
+		global.declare("aString", GioviValue.of("Hello world"));
 		assertTrue(block111.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nonNestedBlocksShouldSeeParentsVariables() {
-		block1.declare("aString", Value.of("Hello world"));
+		block1.declare("aString", GioviValue.of("Hello world"));
 		assertFalse(block2.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlockShouldThrow_VariableAlreadyDefined() {
-		block11.declare("aString", Value.of("Hello world"));
-		assertThrows(VariableAlreadyDefinedException.class, () -> block111.declare("aString", Value.of("hello_world")));
+		block11.declare("aString", GioviValue.of("Hello world"));
+		assertThrows(VariableAlreadyDefinedException.class, () -> block111.declare("aString", GioviValue.of("hello_world")));
 	}
 
 	@Test
 	public void nestedBlockShouldAccessVariablesValue() {
-		global.declare("aString", Value.of("Hello world"));
+		global.declare("aString", GioviValue.of("Hello world"));
 		assertEquals("Hello world", block11.getVariableValue("aString").get());
 	}
 
 	@Test
 	public void nestedBlockShouldBeAbleToChangeVariablesValue() {
-		global.declare("aString", Value.of("Hello world"));
-		block2.setVariableValue("aString", Value.of("ciao mondo"));
+		global.declare("aString", GioviValue.of("Hello world"));
+		block2.setVariableValue("aString", GioviValue.of("ciao mondo"));
 		assertEquals("ciao mondo", global.getVariableValue("aString").get());
 	}
 

@@ -2,7 +2,6 @@ package it.simonvic.giovi.lang;
 
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
 import it.simonvic.giovi.exceptions.VariableNotDefinedException;
-import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 
 import java.util.HashMap;
@@ -10,7 +9,7 @@ import java.util.HashMap;
 public class Block {
 
 
-	private final HashMap<String, Value<?>> variables = new HashMap<>();
+	private final HashMap<String, GioviValue<?>> variables = new HashMap<>();
 
 	private final Block parentBlock;
 
@@ -22,25 +21,25 @@ public class Block {
 		variables.remove(identifier);
 	}
 
-	public void declare(String identifier, Value<?> value) {
+	public void declare(String identifier, GioviValue<?> value) {
 		if (isDefinedVariable(identifier)) throw new VariableAlreadyDefinedException(identifier);
 		variables.put(identifier, value);
 	}
 
-	public void setVariableValue(String identifier, Value<?> value) {
+	public void setVariableValue(String identifier, GioviValue<?> value) {
 		Block.setVariableValue(this, identifier, value);
 	}
 
-	private static void setVariableValue(Block block, String identifier, Value<?> value) {
+	private static void setVariableValue(Block block, String identifier, GioviValue<?> value) {
 		if (block == null) throw new VariableNotDefinedException(identifier);
 		if (block.isDefinedLocalVariable(identifier)) {
-			Value<?> oldValue = block.variables.get(identifier);
+			GioviValue<?> oldValue = block.variables.get(identifier);
 			switch (oldValue) {
-				case TextValue v -> v.set(value);
-				case RealValue v -> v.set(value);
-				case NaturalValue v -> v.set(value);
-				case IntValue v -> v.set(value);
-				case BoolValue v -> v.set(value);
+				case GioviText v -> v.set(value);
+				case GioviReal v -> v.set(value);
+				case GioviNatural v -> v.set(value);
+				case GioviInt v -> v.set(value);
+				case GioviBool v -> v.set(value);
 				default -> throw new IllegalStateException("Unexpected value: " + oldValue);
 			}
 		} else {
@@ -48,7 +47,7 @@ public class Block {
 		}
 	}
 
-	public Value<?> getVariableValue(String identifier) {
+	public GioviValue<?> getVariableValue(String identifier) {
 		return Block.getVariableValue(this, identifier);
 	}
 
@@ -57,7 +56,7 @@ public class Block {
 	}
 
 
-	private Value<?> getLocalVariableValue(String identifier) {
+	private GioviValue<?> getLocalVariableValue(String identifier) {
 		return variables.get(identifier);
 	}
 
@@ -70,7 +69,7 @@ public class Block {
 		return block.isDefinedLocalVariable(identifier) || Block.isDefinedVariable(block.parentBlock, identifier);
 	}
 
-	private static Value<?> getVariableValue(Block block, String identifier) {
+	private static GioviValue<?> getVariableValue(Block block, String identifier) {
 		if (block == null) throw new VariableNotDefinedException(identifier);
 		return block.isDefinedLocalVariable(identifier)
 			? block.getLocalVariableValue(identifier)

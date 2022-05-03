@@ -5,21 +5,21 @@ import it.simonvic.giovi.lang.GioviObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public non-sealed class ListValue<T extends Value<?>> extends Value<List<T>> {
+public non-sealed class GioviList<T extends GioviValue<?>> extends GioviValue<List<T>> {
 
-	public ListValue() {
+	public GioviList() {
 		super(new ArrayList<>());
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		return new BoolValue(value.contains(right.asValue()));
+		return new GioviBool(value.contains(right.asValue()));
 	}
 
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
-			case Value<?> v -> {
+			case GioviValue<?> v -> {
 				value.add((T) v);
 				yield this;
 			}
@@ -35,7 +35,7 @@ public non-sealed class ListValue<T extends Value<?>> extends Value<List<T>> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
-			case ListValue<?> v -> new BoolValue(value.equals(v.value));
+			case GioviList<?> v -> new GioviBool(value.equals(v.value));
 			default -> super.equal(right);
 		};
 	}
@@ -59,7 +59,7 @@ public non-sealed class ListValue<T extends Value<?>> extends Value<List<T>> {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final ListValue<Value<?>> other = (ListValue<Value<?>>) obj;
+		final GioviList<GioviValue<?>> other = (GioviList<GioviValue<?>>) obj;
 		return this.value.equals(other.value);
 	}
 }

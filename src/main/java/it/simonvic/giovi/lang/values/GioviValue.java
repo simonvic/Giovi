@@ -9,25 +9,25 @@ import it.simonvic.giovi.util.GioviCollections;
 import java.util.List;
 import java.util.Map;
 
-public abstract sealed class Value<T> extends GioviObject permits BoolValue, IntValue, ListValue, MapValue, NaturalValue, RealValue, TextValue {
+public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumber, GioviBool, GioviText, GioviList, GioviMap {
 
 	private Class<?> type;
 	protected T value;
 
-	public Value(T value) {
+	public GioviValue(T value) {
 		this.value = value;
 		this.type = value.getClass();
 	}
 
-	public static <U> Value<?> of(U value) {
-		return switch(value) {
-			case Natural v -> new NaturalValue(v);
-			case Integer v -> new IntValue(v);
-			case Double v -> new RealValue(v);
-			case Boolean v -> new BoolValue(v);
-			case String v -> new TextValue(v);
+	public static <U> GioviValue<?> of(U value) {
+		return switch (value) {
+			case Natural v -> new GioviNatural(v);
+			case Integer v -> new GioviInt(v);
+			case Double v -> new GioviReal(v);
+			case Boolean v -> new GioviBool(v);
+			case String v -> new GioviText(v);
 			case List<?> v -> GioviCollections.of(v);
-			case Map<?,?> v -> GioviCollections.of(v);
+			case Map<?, ?> v -> GioviCollections.of(v);
 			default -> throw new GioviException("Unknown type " + value);
 		};
 	}
@@ -35,10 +35,6 @@ public abstract sealed class Value<T> extends GioviObject permits BoolValue, Int
 
 	public Class<?> getType() {
 		return type;
-	}
-
-	public void setType(Class<?> type) {
-		this.type = type;
 	}
 
 	public T get() {
@@ -49,7 +45,7 @@ public abstract sealed class Value<T> extends GioviObject permits BoolValue, Int
 		this.value = value;
 	}
 
-	public void set(Value<?> value) {
+	public void set(GioviValue<?> value) {
 		throw new IncompatibleTypes(type, value.getType());
 	}
 
@@ -69,7 +65,7 @@ public abstract sealed class Value<T> extends GioviObject permits BoolValue, Int
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final Value<?> other = (Value<?>) obj;
+		final GioviValue<?> other = (GioviValue<?>) obj;
 		return this.value.equals(other.value);
 	}
 }

@@ -6,44 +6,43 @@ import it.simonvic.giovi.lang.values.*;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.TreeMap;
 
 public class GioviObject {
 
-	public Value<?> asValue() {
-		return (Value<?>) this;
+	public GioviValue<?> asValue() {
+		return (GioviValue<?>) this;
 	}
 
-	protected Value<Number> asNumberValue() {
-		return (Value<Number>) this;
+	protected GioviValue<Number> asNumberValue() {
+		return (GioviValue<Number>) this;
 	}
 
-	protected NaturalValue asNaturalValue() {
-		return (NaturalValue) this;
+	protected GioviNatural asNaturalValue() {
+		return (GioviNatural) this;
 	}
 
-	protected IntValue asIntValue() {
-		return (IntValue) this;
+	protected GioviInt asIntValue() {
+		return (GioviInt) this;
 	}
 
-	protected RealValue asRealValue() {
-		return (RealValue) this;
+	protected GioviReal asRealValue() {
+		return (GioviReal) this;
 	}
 
-	protected BoolValue asBoolValue() {
-		return (BoolValue) this;
+	protected GioviBool asBoolValue() {
+		return (GioviBool) this;
 	}
 
-	protected TextValue asTextValue() {
-		return (TextValue) this;
+	protected GioviText asTextValue() {
+		return (GioviText) this;
 	}
 
-	protected ListValue<?> asListValue() {
-		return (ListValue<?>) this;
+	protected GioviList<?> asListValue() {
+		return (GioviList<?>) this;
 	}
 
-	public MapValue<?, ?> asMapValue() {
-		return (MapValue<?, ?>) this;
+	public GioviMap<?, ?> asMapValue() {
+		return (GioviMap<?, ?>) this;
 	}
 
 	protected Number asNumber() {

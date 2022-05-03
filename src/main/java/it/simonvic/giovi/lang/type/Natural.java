@@ -1,7 +1,5 @@
 package it.simonvic.giovi.lang.type;
 
-import it.simonvic.giovi.lang.values.Value;
-
 public final class Natural extends Number {
 
 	private final Integer value;

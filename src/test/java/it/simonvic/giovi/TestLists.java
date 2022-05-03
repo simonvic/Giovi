@@ -3,8 +3,7 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.ListValue;
-import it.simonvic.giovi.lang.values.Value;
+import it.simonvic.giovi.lang.values.GioviList;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -56,13 +55,13 @@ public class TestLists {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualLists")
-	public void testListEquality(String code, ListValue<?> expected) {
+	public void testListEquality(String code, GioviList<?> expected) {
 		assertEquals(expected, run(code));
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceNotEqualLists")
-	public void testListNonEquality(String code, ListValue<?> expected) {
+	public void testListNonEquality(String code, GioviList<?> expected) {
 		assertNotEquals(expected, run(code));
 	}
 

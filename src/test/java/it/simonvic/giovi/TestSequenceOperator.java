@@ -3,10 +3,10 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.IntValue;
-import it.simonvic.giovi.lang.values.ListValue;
-import it.simonvic.giovi.lang.values.RealValue;
-import it.simonvic.giovi.lang.values.TextValue;
+import it.simonvic.giovi.lang.values.GioviInt;
+import it.simonvic.giovi.lang.values.GioviList;
+import it.simonvic.giovi.lang.values.GioviReal;
+import it.simonvic.giovi.lang.values.GioviText;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -47,7 +47,7 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsInteger")
-	public void testSequence_Integer(String code, ListValue<IntValue> expected) {
+	public void testSequence_Integer(String code, GioviList<GioviInt> expected) {
 		assertEquals(expected, run(code));
 	}
 
@@ -69,7 +69,7 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsDouble")
-	public void testSequence_Double(String code, ListValue<RealValue> expected) {
+	public void testSequence_Double(String code, GioviList<GioviReal> expected) {
 		assertEquals(expected, run(code));
 	}
 
@@ -89,7 +89,7 @@ public class TestSequenceOperator {
 	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@MethodSource("produceEqualListsLetters")
-	public void testSequence_Letters(String code, ListValue<TextValue> expected) {
+	public void testSequence_Letters(String code, GioviList<GioviText> expected) {
 		assertEquals(expected, run(code));
 	}
 

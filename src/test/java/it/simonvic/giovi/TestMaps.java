@@ -3,10 +3,10 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.IntValue;
-import it.simonvic.giovi.lang.values.MapValue;
-import it.simonvic.giovi.lang.values.TextValue;
-import it.simonvic.giovi.lang.values.Value;
+import it.simonvic.giovi.lang.values.GioviInt;
+import it.simonvic.giovi.lang.values.GioviMap;
+import it.simonvic.giovi.lang.values.GioviText;
+import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -32,22 +32,22 @@ public class TestMaps {
 
 	@Test
 	public void mapsShouldBeEqual() {
-		MapValue<IntValue, TextValue> map1 = new MapValue<>();
-		map1.put(new IntValue(0), new TextValue("a"));
-		map1.put(new IntValue(1), new TextValue("b"));
-		map1.put(new IntValue(2), new TextValue("c"));
+		GioviMap<GioviInt, GioviText> map1 = new GioviMap<>();
+		map1.put(new GioviInt(0), new GioviText("a"));
+		map1.put(new GioviInt(1), new GioviText("b"));
+		map1.put(new GioviInt(2), new GioviText("c"));
 
-		MapValue<IntValue, TextValue> map2 = new MapValue<>();
-		map2.put(new IntValue(0), new TextValue("a"));
-		map2.put(new IntValue(1), new TextValue("b"));
-		map2.put(new IntValue(2), new TextValue("c"));
+		GioviMap<GioviInt, GioviText> map2 = new GioviMap<>();
+		map2.put(new GioviInt(0), new GioviText("a"));
+		map2.put(new GioviInt(1), new GioviText("b"));
+		map2.put(new GioviInt(2), new GioviText("c"));
 
 		assertEquals(map1, map2);
 	}
 
 	@Test
 	void awafwa(){
-		assertEquals(new TextValue("awf"), new TextValue("awf"));
+		assertEquals(new GioviText("awf"), new GioviText("awf"));
 	}
 
 	private static Stream<Arguments> produceEqualMaps() {
@@ -61,7 +61,7 @@ public class TestMaps {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualMaps")
-	public void testMapsEquality(String code, MapValue<Value<?>, Value<?>> expected) {
+	public void testMapsEquality(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
 		assertEquals(expected, run(code));
 	}
 

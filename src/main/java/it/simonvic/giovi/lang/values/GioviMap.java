@@ -6,21 +6,21 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public non-sealed class MapValue<K extends Value<?>, V extends Value<?>> extends Value<LinkedHashMap<K, V>> {
+public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>> extends GioviValue<LinkedHashMap<K, V>> {
 
-	public MapValue() {
+	public GioviMap() {
 		super(new LinkedHashMap<>());
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		return new BoolValue(value.containsKey(right));
+		return new GioviBool(value.containsKey(right));
 	}
 
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
-			case MapValue<?,?> v -> new BoolValue(this.equals(v));
+			case GioviMap<?,?> v -> new GioviBool(this.equals(v));
 			default -> super.equal(right);
 		};
 	}
@@ -31,7 +31,7 @@ public non-sealed class MapValue<K extends Value<?>, V extends Value<?>> extends
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 
-		final MapValue<K,V> other = (MapValue<K,V>) obj;
+		final GioviMap<K,V> other = (GioviMap<K,V>) obj;
 
 		if (value.size() != other.value.size()) return false;
 
