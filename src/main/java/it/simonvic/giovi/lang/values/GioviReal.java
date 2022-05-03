@@ -1,8 +1,10 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviReal extends GioviNumber<Double> {
+
 	public GioviReal(Double value) {
 		super(value);
 	}
@@ -12,8 +14,23 @@ public non-sealed class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
+	public GioviNatural naturalValue() {
+		return new GioviNatural(new Natural(value.intValue()));
+	}
+
+	@Override
+	public GioviInt intValue() {
+		return new GioviInt(value.intValue());
+	}
+
+	@Override
+	public GioviReal realValue() {
+		return new GioviReal(value);
+	}
+
+	@Override
 	public void set(GioviValue<?> value) {
-		switch(value.get()) {
+		switch (value.get()) {
 			case Double v -> set(v);
 			case Number v -> set(v.doubleValue());
 			default -> super.set(value);

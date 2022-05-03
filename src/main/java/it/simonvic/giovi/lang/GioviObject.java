@@ -9,72 +9,72 @@ import java.util.List;
 
 public class GioviObject {
 
-	public GioviValue<?> asValue() {
+	public GioviValue<?> asGioviValue() {
 		return (GioviValue<?>) this;
 	}
 
-	protected GioviValue<Number> asNumberValue() {
-		return (GioviValue<Number>) this;
+	public GioviNumber<?> asGioviNumber() {
+		return (GioviNumber<?>) this;
 	}
 
-	protected GioviNatural asNaturalValue() {
-		return (GioviNatural) this;
+	public GioviNatural asGioviNatural() {
+		return asGioviNumber().naturalValue();
 	}
 
-	protected GioviInt asIntValue() {
-		return (GioviInt) this;
+	public GioviInt asGioviInt() {
+		return asGioviNumber().intValue();
 	}
 
-	protected GioviReal asRealValue() {
-		return (GioviReal) this;
+	public GioviReal asGioviReal() {
+		return asGioviNumber().realValue();
 	}
 
-	protected GioviBool asBoolValue() {
+	public GioviBool asGioviBool() {
 		return (GioviBool) this;
 	}
 
-	protected GioviText asTextValue() {
+	public GioviText asGioviText() {
 		return (GioviText) this;
 	}
 
-	protected GioviList<?> asListValue() {
+	public GioviList<?> asGioviList() {
 		return (GioviList<?>) this;
 	}
 
-	public GioviMap<?, ?> asMapValue() {
+	public GioviMap<?, ?> asGioviMap() {
 		return (GioviMap<?, ?>) this;
 	}
 
-	protected Number asNumber() {
-		return asNumberValue().get();
+	public Number asNumber() {
+		return asGioviNumber().get();
 	}
 
 	public Natural asNatural() {
-		return asNaturalValue().get();
+		return asGioviNatural().get();
 	}
 
 	public Integer asInt() {
-		return asIntValue().get();
+		return asGioviInt().get();
 	}
 
 	public Double asDouble() {
-		return asRealValue().get();
+		return asGioviReal().get();
 	}
 
 	public Boolean asBool() {
-		return asBoolValue().get();
+		return asGioviBool().get();
 	}
 
 	public String asString() {
-		return asTextValue().get();
+		return asGioviText().get();
 	}
 
 	public List<?> asList() {
-		return asListValue().get();
+		return asGioviList().get();
 	}
 
 	public LinkedHashMap<?, ?> asMap() {
-		return asMapValue().get();
+		return asGioviMap().get();
 	}
 
 	public GioviObject positive() {

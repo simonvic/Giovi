@@ -146,7 +146,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		declareVariable(
 			ctx.varDeclaration().identifier().getText(),
 			ctx.varDeclaration().type().getText(),
-			visit(ctx.expression()).asValue()
+			visit(ctx.expression()).asGioviValue()
 		);
 		return null;
 	}
@@ -167,11 +167,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
 		String identifier = ctx.identifier().getText();
 		currentScopeBlock.setVariableValue(identifier, switch (ctx.bop.getText()) {
-			case ">" -> visit(ctx.expression()).asValue();
-			case ">+" -> currentScopeBlock.getVariableValue(identifier).plus(visit(ctx.expression())).asValue();
-			case ">-" -> currentScopeBlock.getVariableValue(identifier).minus(visit(ctx.expression())).asValue();
-			case ">*" -> currentScopeBlock.getVariableValue(identifier).multiply(visit(ctx.expression())).asValue();
-			case ">/" -> currentScopeBlock.getVariableValue(identifier).divide(visit(ctx.expression())).asValue();
+			case ">" -> visit(ctx.expression()).asGioviValue();
+			case ">+" -> currentScopeBlock.getVariableValue(identifier).plus(visit(ctx.expression())).asGioviValue();
+			case ">-" -> currentScopeBlock.getVariableValue(identifier).minus(visit(ctx.expression())).asGioviValue();
+			case ">*" -> currentScopeBlock.getVariableValue(identifier).multiply(visit(ctx.expression())).asGioviValue();
+			case ">/" -> currentScopeBlock.getVariableValue(identifier).divide(visit(ctx.expression())).asGioviValue();
 			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
 		});
 		return null;
@@ -296,9 +296,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitSequence(GioviParser.SequenceContext ctx) {
 		return Sequence.of(
-			visit(ctx.start).asValue(),
-			visit(ctx.end).asValue(),
-			ctx.step == null ? null : visit(ctx.step).asValue());
+			visit(ctx.start).asGioviValue(),
+			visit(ctx.end).asGioviValue(),
+			ctx.step == null ? null : visit(ctx.step).asGioviValue());
 	}
 
 	@Override
@@ -319,7 +319,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitMapCreation(GioviParser.MapCreationContext ctx) {
 		GioviMap<GioviValue<?>, GioviValue<?>> map = new GioviMap<>();
 		for (GioviParser.MapEntryContext entryCtx : ctx.mapEntries().mapEntry()) {
-			map.put(visit(entryCtx.mapKey).asValue(), visit(entryCtx.mapValue).asValue());
+			map.put(visit(entryCtx.mapKey).asGioviValue(), visit(entryCtx.mapValue).asGioviValue());
 		}
 		return map;
 	}

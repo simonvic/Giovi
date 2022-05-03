@@ -13,7 +13,7 @@ public non-sealed class GioviList<T extends GioviValue<?>> extends GioviValue<Li
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		return new GioviBool(value.contains(right.asValue()));
+		return new GioviBool(value.contains(right.asGioviValue()));
 	}
 
 	@Override
