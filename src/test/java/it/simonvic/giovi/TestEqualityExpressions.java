@@ -6,10 +6,12 @@ import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TestEqualityExpressions {
 
@@ -50,7 +52,6 @@ public class TestEqualityExpressions {
 		assertEquals(expected, run(code).asBool());
 	}
 
-	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@CsvSource(textBlock = """
 		[] = [], true
@@ -63,10 +64,10 @@ public class TestEqualityExpressions {
 		assertEquals(expected, run(code).asBool());
 	}
 
-	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@CsvSource(textBlock = """
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:3], true
+		[0:"a" 1:"b" 2:"c" 3:"d"] = [0:"a" 1:"b" 2:"c" 3:"d"], true
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:69], false
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:3 4:4], false
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2], false

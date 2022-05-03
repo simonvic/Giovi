@@ -1,0 +1,62 @@
+package it.simonvic.giovi;
+
+import it.simonvic.giovi.lang.values.ListValue;
+import it.simonvic.giovi.lang.values.Value;
+
+import java.util.List;
+
+public class GioviLists {
+
+	public static Value<?> of(List<?> v) {
+		return GioviLists.of(v.toArray());
+	}
+
+	public static <T> ListValue<Value<?>> of(T... values) {
+		ListValue<Value<?>> list = new ListValue<>();
+		for(T value : values) {
+			list.add(Value.of(value));
+		}
+		return list;
+	}
+
+//	public static List<NaturalValue> of(int... values) {
+//		List<NaturalValue> list = new ArrayList<>();
+//		for(int v : values) {
+//			list.add(new NaturalValue(new Natural(v)));
+//		}
+//		return list;
+//	}
+
+//	public static List<IntValue> of(int... values) {
+//		List<IntValue> list = new ArrayList<>();
+//		for(int v : values) {
+//			list.add(new IntValue(v));
+//		}
+//		return list;
+//	}
+//
+//	public static List<RealValue> of(double... values) {
+//		List<RealValue> list = new ArrayList<>();
+//		for(double v : values) {
+//			list.add(new RealValue(v));
+//		}
+//		return list;
+//	}
+//
+//	public static List<BoolValue> of(boolean... values) {
+//		List<BoolValue> list = new ArrayList<>();
+//		for(boolean v : values) {
+//			list.add(new BoolValue(v));
+//		}
+//		return list;
+//	}
+//
+//	public static List<TextValue> of(String... values) {
+//		List<TextValue> list = new ArrayList<>();
+//		for(String v : values) {
+//			list.add(new TextValue(v));
+//		}
+//		return list;
+//	}
+
+}

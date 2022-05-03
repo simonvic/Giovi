@@ -4,7 +4,7 @@ import it.simonvic.giovi.lang.GioviObject;
 
 import java.util.Objects;
 
-public class IntValue extends Value<Integer> {
+public non-sealed class IntValue extends Value<Integer> {
 	public IntValue(Integer value) {
 		super(value);
 	}
@@ -140,21 +140,6 @@ public class IntValue extends Value<Integer> {
 			case RealValue v -> new BoolValue(value.doubleValue() == v.get());
 			default -> super.equal(right);
 		};
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final IntValue other = (IntValue) obj;
-		return this.value.equals(other.value);
 	}
 
 	@Override

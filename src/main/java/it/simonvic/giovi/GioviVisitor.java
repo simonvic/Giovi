@@ -9,12 +9,15 @@ import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.Block;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.text.ExactText;
 import it.simonvic.giovi.lang.text.ExactTextBlock;
 import it.simonvic.giovi.lang.text.Text;
+import it.simonvic.giovi.lang.text.TextBlock;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
@@ -57,8 +60,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		String keyIteratorName = iterators.get(0).getText();
 		String elementIteratorName = iterators.get(1).getText();
 
-		currentScopeBlock.declare(keyIteratorName, map.get().getKey(0));
-		currentScopeBlock.declare(elementIteratorName, map.get().getElement(0));
+		Map.Entry<Value<?>, Value<?>> entry = map.get().entrySet().iterator().next();
+		currentScopeBlock.declare(keyIteratorName, entry.getKey());
+		currentScopeBlock.declare(elementIteratorName, entry.getValue());
 
 		map.get().forEach((keyValue, elementValue) -> {
 			currentScopeBlock.getVariableValue(keyIteratorName).set(keyValue);
@@ -289,9 +293,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitMapCreation(GioviParser.MapCreationContext ctx) {
-		MapValue<GioviObject, GioviObject> map = new MapValue<>();
+		MapValue<Value<?>, Value<?>> map = new MapValue<>();
 		for (GioviParser.MapEntryContext entryCtx : ctx.mapEntries().mapEntry()) {
-			map.get().put(visit(entryCtx.mapKey), visit(entryCtx.mapValue));
+			map.put(visit(entryCtx.mapKey).asValue(), visit(entryCtx.mapValue).asValue());
 		}
 		return map;
 	}

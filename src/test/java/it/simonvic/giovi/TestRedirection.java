@@ -58,7 +58,7 @@ public class TestRedirection {
 
 	private static Stream<Arguments> produceLists() {
 		return Stream.of(
-			Arguments.of("[1 2 3] > intList List[Int]", GioviList.of(1, 2, 3, 4))
+			Arguments.of("[1 2 3] > intList List[Int]", GioviLists.of(1, 2, 3, 4))
 		);
 	}
 

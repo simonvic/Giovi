@@ -4,7 +4,9 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 public class GioviObject {
 
@@ -32,8 +34,12 @@ public class GioviObject {
 		return (TextValue) this;
 	}
 
-	protected ListValue<GioviObject> asListValue() {
-		return (ListValue<GioviObject>) this;
+	protected ListValue<?> asListValue() {
+		return (ListValue<?>) this;
+	}
+
+	public MapValue<?,?> asMapValue() {
+		return (MapValue<?,?>) this;
 	}
 
 	public Natural asNatural() {
@@ -56,8 +62,12 @@ public class GioviObject {
 		return asTextValue().get();
 	}
 
-	public List<GioviObject> asList() {
+	public List<?> asList() {
 		return asListValue().get();
+	}
+
+	public LinkedHashMap<?, ?> asMap() {
+		return asMapValue().get();
 	}
 
 	public GioviObject positive() {
@@ -135,4 +145,6 @@ public class GioviObject {
 	public GioviObject contains(GioviObject right) {
 		throw new OperatorNotSupported("=~");
 	}
+
+
 }

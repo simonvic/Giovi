@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.type.Natural;
 
-public class NaturalValue extends Value<Natural> {
+public non-sealed class NaturalValue extends Value<Natural> {
 
 	public NaturalValue(Natural value) {
 		super(value);
@@ -142,18 +142,4 @@ public class NaturalValue extends Value<Natural> {
 		return equal(right).not();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final NaturalValue other = (NaturalValue) obj;
-		return this.value.equals(other.value);
-	}
 }

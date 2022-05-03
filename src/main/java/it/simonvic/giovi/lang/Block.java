@@ -27,44 +27,8 @@ public class Block {
 		variables.put(identifier, value);
 	}
 
-	public void declare(String identifier, String value) {
-		declare(identifier, new TextValue(value));
-	}
-
-	public void declare(String identifier, Integer value) {
-		declare(identifier, new IntValue(value));
-	}
-
-	public void declare(String identifier, Natural value) {
-		declare(identifier, new NaturalValue(value));
-	}
-
-	public void declare(String identifier, Double value) {
-		declare(identifier, new RealValue(value));
-	}
-
-	public void declare(String identifier, Boolean value) {
-		declare(identifier, new BoolValue(value));
-	}
-
 	public void setVariableValue(String identifier, Value<?> value) {
 		Block.setVariableValue(this, identifier, value);
-	}
-
-	public void setVariableValue(String identifier, int value) {
-		setVariableValue(identifier, new IntValue(value));
-	}
-
-	public void setVariableValue(String identifier, double value) {
-		setVariableValue(identifier, new RealValue(value));
-	}
-
-	public void setVariableValue(String identifier, boolean value) {
-		setVariableValue(identifier, new BoolValue(value));
-	}
-
-	public void setVariableValue(String identifier, String value) {
-		setVariableValue(identifier, new TextValue(value));
 	}
 
 	private static void setVariableValue(Block block, String identifier, Value<?> value) {

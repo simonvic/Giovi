@@ -2,7 +2,7 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
 
-public class BoolValue extends Value<Boolean> {
+public non-sealed class BoolValue extends Value<Boolean> {
 	public BoolValue(Boolean value) {
 		super(value);
 	}
@@ -57,18 +57,4 @@ public class BoolValue extends Value<Boolean> {
 		return equal(right).not();
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final BoolValue other = (BoolValue) obj;
-		return this.value.equals(other.value);
-	}
 }

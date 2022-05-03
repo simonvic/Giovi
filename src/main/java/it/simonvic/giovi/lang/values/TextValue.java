@@ -2,7 +2,7 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
 
-public class TextValue extends Value<String> {
+public non-sealed class TextValue extends Value<String> {
 
 	public TextValue(String value) {
 		super(value);
@@ -14,7 +14,7 @@ public class TextValue extends Value<String> {
 
 	@Override
 	public void set(Value<?> value) {
-		switch(value.get()) {
+		switch (value.get()) {
 			case String v -> set(v);
 			default -> super.set(value);
 		}
@@ -31,7 +31,7 @@ public class TextValue extends Value<String> {
 	@Override
 	public GioviObject minus(GioviObject right) {
 		return switch (right) {
-			case TextValue v -> new TextValue(value.replace(v.get(),""));
+			case TextValue v -> new TextValue(value.replace(v.get(), ""));
 			default -> super.plus(right);
 		};
 	}
@@ -87,22 +87,6 @@ public class TextValue extends Value<String> {
 			case TextValue v -> new BoolValue(value.contains(v.get()));
 			default -> super.contains(right);
 		};
-	}
-
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final TextValue other = (TextValue) obj;
-		return this.value.equals(other.value);
 	}
 
 }
