@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
@@ -58,7 +59,7 @@ public class TestRedirection {
 
 	private static Stream<Arguments> produceLists() {
 		return Stream.of(
-			Arguments.of("[1 2 3] > intList List[Int]", GioviLists.of(1, 2, 3, 4))
+			Arguments.of("[1 2 3] > intList List[Int]", GioviCollections.of(1, 2, 3, 4))
 		);
 	}
 

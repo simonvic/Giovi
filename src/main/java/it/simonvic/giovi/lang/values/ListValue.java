@@ -5,19 +5,31 @@ import it.simonvic.giovi.lang.GioviObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public non-sealed class ListValue<T extends GioviObject> extends Value<List<T>> {
-
-	public ListValue(List<T> value) {
-		super(value);
-	}
+public non-sealed class ListValue<T extends Value<?>> extends Value<List<T>> {
 
 	public ListValue() {
-		super(new ArrayList<T>());
+		super(new ArrayList<>());
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		return new BoolValue(value.contains(right));
+		return new BoolValue(value.contains(right.asValue()));
+	}
+
+	@Override
+	public GioviObject plus(GioviObject right) {
+		return switch (right) {
+			case Value<?> v -> {
+				value.add((T) v);
+				yield this;
+			}
+			default -> super.plus(right);
+		};
+	}
+
+	@Override
+	public GioviObject minus(GioviObject right) {
+		return super.minus(right);
 	}
 
 	@Override

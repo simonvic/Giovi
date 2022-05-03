@@ -5,6 +5,7 @@ import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.values.ListValue;
 import it.simonvic.giovi.lang.values.Value;
+import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Test;
@@ -29,27 +30,27 @@ public class TestLists {
 
 	@Test
 	void valueListsShouldBeEqual() {
-		assertEquals(GioviLists.of(1, 2, 3), GioviLists.of(1, 2, 3));
-		assertEquals(GioviLists.of("Simone", "Francesco", "Mario"), GioviLists.of("Simone", "Francesco", "Mario"));
+		assertEquals(GioviCollections.of(1, 2, 3), GioviCollections.of(1, 2, 3));
+		assertEquals(GioviCollections.of("Simone", "Francesco", "Mario"), GioviCollections.of("Simone", "Francesco", "Mario"));
 	}
 
 	private static Stream<Arguments> produceEqualLists() {
 		return Stream.of(
-			Arguments.of("[]", GioviLists.of()),
-			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 3)),
-			Arguments.of("[1 2 3 4]", GioviLists.of(1, 2, 3, 4)),
-			Arguments.of("['Simone' 'Francesco' 'Mario']", GioviLists.of("Simone", "Francesco", "Mario"))
+			Arguments.of("[]", GioviCollections.of()),
+			Arguments.of("[1 2 3]", GioviCollections.of(1, 2, 3)),
+			Arguments.of("[1 2 3 4]", GioviCollections.of(1, 2, 3, 4)),
+			Arguments.of("['Simone' 'Francesco' 'Mario']", GioviCollections.of("Simone", "Francesco", "Mario"))
 		);
 
 	}
 
 	private static Stream<Arguments> produceNotEqualLists() {
 		return Stream.of(
-			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 3, 4)),
-			Arguments.of("[1 2 3 4]", GioviLists.of(1, 2, 3)),
-			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 69)),
-			Arguments.of("['Simone' 'Francesco' 'Ma']", GioviLists.of("Simone", "Francesco", "Mario")),
-			Arguments.of("['Simone' 'Francesco' 'Mario' 'Luigi']", GioviLists.of("Simone", "Francesco", "Mario"))
+			Arguments.of("[1 2 3]", GioviCollections.of(1, 2, 3, 4)),
+			Arguments.of("[1 2 3 4]", GioviCollections.of(1, 2, 3)),
+			Arguments.of("[1 2 3]", GioviCollections.of(1, 2, 69)),
+			Arguments.of("['Simone' 'Francesco' 'Ma']", GioviCollections.of("Simone", "Francesco", "Mario")),
+			Arguments.of("['Simone' 'Francesco' 'Mario' 'Luigi']", GioviCollections.of("Simone", "Francesco", "Mario"))
 		);
 	}
 

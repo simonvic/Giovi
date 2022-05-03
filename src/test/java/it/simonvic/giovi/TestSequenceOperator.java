@@ -3,7 +3,11 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.IntValue;
+import it.simonvic.giovi.lang.values.ListValue;
+import it.simonvic.giovi.lang.values.RealValue;
+import it.simonvic.giovi.lang.values.TextValue;
+import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
@@ -28,16 +32,16 @@ public class TestSequenceOperator {
 
 	private static Stream<Arguments> produceEqualListsInteger() {
 		return Stream.of(
-			Arguments.of("[0..5]", GioviLists.of(0, 1, 2, 3, 4, 5)),
-			Arguments.of("[0..0]", GioviLists.of(0)),
-			Arguments.of("[0..10..2]", GioviLists.of(0, 2, 4, 6, 8, 10)),
-			Arguments.of("[0..100..10]", GioviLists.of(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
-			Arguments.of("[0..10..10]", GioviLists.of(0, 10)),
+			Arguments.of("[0..5]", GioviCollections.of(0, 1, 2, 3, 4, 5)),
+			Arguments.of("[0..0]", GioviCollections.of(0)),
+			Arguments.of("[0..10..2]", GioviCollections.of(0, 2, 4, 6, 8, 10)),
+			Arguments.of("[0..100..10]", GioviCollections.of(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)),
+			Arguments.of("[0..10..10]", GioviCollections.of(0, 10)),
 
-			Arguments.of("[5..0]", GioviLists.of(5, 4, 3, 2, 1, 0)),
-			Arguments.of("[10..0..2]", GioviLists.of(10, 8, 6, 4, 2, 0)),
-			Arguments.of("[100..10..10]", GioviLists.of(100, 90, 80, 70, 60, 50, 40, 30, 20, 10)),
-			Arguments.of("[10..0..10]", GioviLists.of(10, 0))
+			Arguments.of("[5..0]", GioviCollections.of(5, 4, 3, 2, 1, 0)),
+			Arguments.of("[10..0..2]", GioviCollections.of(10, 8, 6, 4, 2, 0)),
+			Arguments.of("[100..10..10]", GioviCollections.of(100, 90, 80, 70, 60, 50, 40, 30, 20, 10)),
+			Arguments.of("[10..0..10]", GioviCollections.of(10, 0))
 		);
 	}
 
@@ -49,16 +53,16 @@ public class TestSequenceOperator {
 
 	private static Stream<Arguments> produceEqualListsDouble() {
 		return Stream.of(
-			Arguments.of("[0.0 .. 5.0]", GioviLists.of(0d, 1d, 2d, 3d, 4d, 5d)),
-			Arguments.of("[0.0 .. 0.0]", GioviLists.of(0d)),
-			Arguments.of("[0.0 .. 10.0 .. 2.0]", GioviLists.of(0d, 2d, 4d, 6d, 8d, 10d)),
-			Arguments.of("[0.0 .. 100.0 .. 10.0]", GioviLists.of(0d, 10d, 20d, 30d, 40d, 50d, 60d, 70d, 80d, 90d, 100d)),
-			Arguments.of("[0.0 .. 10.0 .. 10.0]", GioviLists.of(0d, 10d)),
+			Arguments.of("[0.0 .. 5.0]", GioviCollections.of(0d, 1d, 2d, 3d, 4d, 5d)),
+			Arguments.of("[0.0 .. 0.0]", GioviCollections.of(0d)),
+			Arguments.of("[0.0 .. 10.0 .. 2.0]", GioviCollections.of(0d, 2d, 4d, 6d, 8d, 10d)),
+			Arguments.of("[0.0 .. 100.0 .. 10.0]", GioviCollections.of(0d, 10d, 20d, 30d, 40d, 50d, 60d, 70d, 80d, 90d, 100d)),
+			Arguments.of("[0.0 .. 10.0 .. 10.0]", GioviCollections.of(0d, 10d)),
 
-			Arguments.of("[5.0 .. 0.0]", GioviLists.of(5d, 4d, 3d, 2d, 1d, 0d)),
-			Arguments.of("[10.0 .. 0.0 .. 2.0]", GioviLists.of(10d, 8d, 6d, 4d, 2d, 0d)),
-			Arguments.of("[100.0 .. 10.0 .. 10.0]", GioviLists.of(100d, 90d, 80d, 70d, 60d, 50d, 40d, 30d, 20d, 10d)),
-			Arguments.of("[10.0 .. 0.0 .. 10.0]", GioviLists.of(10d, 0d))
+			Arguments.of("[5.0 .. 0.0]", GioviCollections.of(5d, 4d, 3d, 2d, 1d, 0d)),
+			Arguments.of("[10.0 .. 0.0 .. 2.0]", GioviCollections.of(10d, 8d, 6d, 4d, 2d, 0d)),
+			Arguments.of("[100.0 .. 10.0 .. 10.0]", GioviCollections.of(100d, 90d, 80d, 70d, 60d, 50d, 40d, 30d, 20d, 10d)),
+			Arguments.of("[10.0 .. 0.0 .. 10.0]", GioviCollections.of(10d, 0d))
 		);
 
 	}

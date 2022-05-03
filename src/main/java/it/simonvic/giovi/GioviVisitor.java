@@ -2,10 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.RedirectionException;
-import it.simonvic.giovi.exceptions.TypeNotFound;
+import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.Block;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
@@ -112,8 +109,35 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
-		declareVariable(ctx.identifier().getText(), ctx.type().getText(), null);
+		if (ctx.type().collectionType() != null) {
+			declareCollection(ctx.identifier().getText(), ctx.type().collectionType(), null);
+		} else {
+			declareVariable(ctx.identifier().getText(), ctx.type().getText(), null);
+		}
 		return null;
+	}
+
+	private void declareCollection(String identifier, GioviParser.CollectionTypeContext collectionType, Value<?> value) {
+		if (collectionType.list() != null) {
+			declareList(identifier, collectionType.list().type().getText(), value);
+		} else if (collectionType.map() != null) {
+			declareMap(identifier, collectionType.map().type(), value);
+		}
+	}
+
+	private void declareMap(String identifier, List<GioviParser.TypeContext> type, Value<?> value) {
+		currentScopeBlock.declare(identifier, new MapValue<>());
+	}
+
+	private void declareList(String identifier, String type, Value<?> value) {
+		currentScopeBlock.declare(identifier, switch (type) {
+			case "Natural" -> new ListValue<NaturalValue>();
+			case "Int" -> new ListValue<IntValue>();
+			case "Real" -> new ListValue<RealValue>();
+			case "Bool" -> new ListValue<BoolValue>();
+			case "Text" -> new ListValue<TextValue>();
+			default -> throw new TypeNotFound(type);
+		});
 	}
 
 
@@ -279,13 +303,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitListCreation(GioviParser.ListCreationContext ctx) {
-		ListValue<GioviObject> list = new ListValue<>();
+		ListValue<Value<?>> list = new ListValue<>();
 		for (GioviParser.ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
 			GioviObject entry = visit(entryCtx);
-			if (entry instanceof Sequence<?> seq) {
-				list.addAll(seq.getValues());
-			} else {
-				list.add(entry);
+			switch(entry) {
+				case Sequence<?> seq -> list.addAll(seq.getValues());
+				case Value<?> v -> list.add(v);
+				default -> throw new IncompatibleTypes(entry.getClass(), list.getClass());
 			}
 		}
 		return list;

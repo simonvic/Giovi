@@ -1,11 +1,10 @@
 package it.simonvic.giovi.lang.values;
 
-import it.simonvic.giovi.GioviLists;
-import it.simonvic.giovi.GioviMaps;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.type.Natural;
+import it.simonvic.giovi.util.GioviCollections;
 
 import java.util.List;
 import java.util.Map;
@@ -27,8 +26,8 @@ public abstract sealed class Value<T> extends GioviObject permits BoolValue, Int
 			case Double v -> new RealValue(v);
 			case Boolean v -> new BoolValue(v);
 			case String v -> new TextValue(v);
-			case List<?> v -> GioviLists.of(v);
-			case Map<?,?> v -> GioviMaps.of(v);
+			case List<?> v -> GioviCollections.of(v);
+			case Map<?,?> v -> GioviCollections.of(v);
 			default -> throw new GioviException("Unknown type " + value);
 		};
 	}

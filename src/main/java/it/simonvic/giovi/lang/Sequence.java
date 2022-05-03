@@ -18,9 +18,9 @@ public class Sequence<T extends Value<?>> extends GioviObject {
 	public static Sequence<? extends Value<?>> of(Value<?> start, Value<?> end, Value<?> step) {
 		if (start instanceof RealValue || end instanceof RealValue || step instanceof RealValue) {
 			return Sequence.of(
-				start.asDouble(),
-				end.asDouble(),
-				step == null ? 1d : step.asDouble());
+				start.asNumber().doubleValue(),
+				end.asNumber().doubleValue(),
+				step == null ? 1d : step.asNumber().doubleValue());
 		}
 
 		if (start instanceof IntValue startValue && end instanceof IntValue endValue) {

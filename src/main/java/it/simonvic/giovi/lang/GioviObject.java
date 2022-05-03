@@ -14,6 +14,10 @@ public class GioviObject {
 		return (Value<?>) this;
 	}
 
+	protected Value<Number> asNumberValue() {
+		return (Value<Number>) this;
+	}
+
 	protected NaturalValue asNaturalValue() {
 		return (NaturalValue) this;
 	}
@@ -38,8 +42,12 @@ public class GioviObject {
 		return (ListValue<?>) this;
 	}
 
-	public MapValue<?,?> asMapValue() {
-		return (MapValue<?,?>) this;
+	public MapValue<?, ?> asMapValue() {
+		return (MapValue<?, ?>) this;
+	}
+
+	protected Number asNumber() {
+		return asNumberValue().get();
 	}
 
 	public Natural asNatural() {

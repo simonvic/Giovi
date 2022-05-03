@@ -343,12 +343,6 @@ public interface GioviParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitType(GioviParser.TypeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GioviParser#structType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStructType(GioviParser.StructTypeContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link GioviParser#collectionType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

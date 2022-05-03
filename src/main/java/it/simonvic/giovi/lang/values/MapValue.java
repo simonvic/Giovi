@@ -6,11 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public non-sealed class MapValue<K extends GioviObject, V extends GioviObject> extends Value<LinkedHashMap<K, V>> {
-
-	public MapValue(LinkedHashMap<K, V> value) {
-		super(value);
-	}
+public non-sealed class MapValue<K extends Value<?>, V extends Value<?>> extends Value<LinkedHashMap<K, V>> {
 
 	public MapValue() {
 		super(new LinkedHashMap<>());

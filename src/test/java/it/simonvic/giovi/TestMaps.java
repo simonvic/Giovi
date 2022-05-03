@@ -7,18 +7,18 @@ import it.simonvic.giovi.lang.values.IntValue;
 import it.simonvic.giovi.lang.values.MapValue;
 import it.simonvic.giovi.lang.values.TextValue;
 import it.simonvic.giovi.lang.values.Value;
+import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestMaps {
 
@@ -54,7 +54,7 @@ public class TestMaps {
 		return Stream.of(
 			Arguments.of("""
 				[ 1:"a" 2:"b" 3:"c" ]
-				""", GioviMaps.of(1, "a", 2, "b", 3, "c")
+				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c"))
 			)
 		);
 	}
