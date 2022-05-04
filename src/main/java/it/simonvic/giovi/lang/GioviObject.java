@@ -13,6 +13,10 @@ public class GioviObject {
 		return (GioviValue<?>) this;
 	}
 
+	public GioviCollection asGioviCollection() {
+		return (GioviCollection) this;
+	}
+
 	public GioviNumber<?> asGioviNumber() {
 		return (GioviNumber<?>) this;
 	}

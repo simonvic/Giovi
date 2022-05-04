@@ -327,6 +327,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitCollectionAccess(GioviParser.CollectionAccessContext ctx) {
+		return getCurrentScope()
+			.getVariableValue(ctx.identifier().getText())
+			.asGioviCollection()
+			.access(visit(ctx.collectionAccessor()));
+	}
+
+
+	@Override
+	public GioviObject visitSpecialAccessor(GioviParser.SpecialAccessorContext ctx) {
+		return new Accessor(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitExpressionAccessor(GioviParser.ExpressionAccessorContext ctx) {
+		return visit(ctx.expression());
+	}
+
+	@Override
 	public GioviObject visitIdentifier(GioviParser.IdentifierContext ctx) {
 		return getCurrentScope().getVariableValue(ctx.getText());
 	}

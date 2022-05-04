@@ -1,11 +1,15 @@
 package it.simonvic.giovi.lang.values;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.Sequence;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public non-sealed class GioviList<T extends GioviValue<?>> extends GioviValue<List<T>> {
+public non-sealed class GioviList<T extends GioviValue<?>>
+	extends GioviValue<List<T>>
+	implements GioviCollection {
 
 	public GioviList() {
 		super(new ArrayList<>());
@@ -75,5 +79,22 @@ public non-sealed class GioviList<T extends GioviValue<?>> extends GioviValue<Li
 		}
 		final GioviList<GioviValue<?>> other = (GioviList<GioviValue<?>>) obj;
 		return this.value.equals(other.value);
+	}
+
+	@Override
+	public GioviValue<?> access(GioviObject accessor) {
+		return switch (accessor) {
+			case GioviInt v -> get().get(v.get());
+			case Accessor v -> switch (v.get()) {
+				case "%" -> new GioviInt(get().size());
+				case "@" -> {
+					GioviList<GioviInt> indeces = new GioviList<>();
+					indeces.addAll(Sequence.of(0, get().size() - 1, 1).getValues());
+					yield indeces;
+				}
+				default -> throw new GioviException("Invalid accessor: " + accessor);
+			};
+			default -> throw new GioviException("Invalid accessor:" + accessor);
+		};
 	}
 }

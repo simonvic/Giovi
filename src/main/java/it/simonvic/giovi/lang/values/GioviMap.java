@@ -1,12 +1,16 @@
 package it.simonvic.giovi.lang.values;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.Sequence;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>> extends GioviValue<LinkedHashMap<K, V>> {
+public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>>
+	extends GioviValue<LinkedHashMap<K, V>>
+	implements GioviCollection {
 
 	public GioviMap() {
 		super(new LinkedHashMap<>());
@@ -130,5 +134,27 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 				return;
 			}
 		}
+	}
+
+	@Override
+	public GioviValue<?> access(GioviObject accessor) {
+		return switch (accessor) {
+			case GioviValue<?> v -> get((K) v);
+			case Accessor v -> switch (v.get()) {
+				case "%" -> new GioviInt(get().size());
+				case "@" -> {
+					GioviList<K> indeces = new GioviList<>();
+					indeces.addAll(get().keySet().stream().toList());
+					yield indeces;
+				}
+				case "*" -> {
+					GioviList<V> values = new GioviList<>();
+					values.addAll(get().values().stream().toList());
+					yield values;
+				}
+				default -> throw new GioviException("Invalid accessor: " + accessor);
+			};
+			default -> throw new GioviException("Invalid accessor:" + accessor);
+		};
 	}
 }
