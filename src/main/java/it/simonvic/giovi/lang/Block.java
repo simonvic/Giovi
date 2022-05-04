@@ -17,6 +17,10 @@ public class Block {
 		this.parentBlock = parentBlock;
 	}
 
+	public Block getParentBlock() {
+		return parentBlock;
+	}
+
 	public void delete(String identifier) {
 		variables.remove(identifier);
 	}

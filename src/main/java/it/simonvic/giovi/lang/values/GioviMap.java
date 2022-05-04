@@ -41,7 +41,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
 			case GioviMap<?, ?> v -> v.get().forEach((key, element) -> this.remove((K) key, (V) element));
-			case GioviList<?> v -> v.get().forEach(keyToRemove -> this.remove((K) keyToRemove));
+			case GioviList<?> v -> v.get().forEach(keyToRemove -> this.remove((K) keyToRemove)); //@todo keep this???
 			case GioviValue<?> v -> remove((K) v);
 			default -> super.redirectionPlus(right);
 		}

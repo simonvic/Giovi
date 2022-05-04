@@ -12,6 +12,8 @@ import it.simonvic.giovi.lang.text.Text;
 import it.simonvic.giovi.lang.text.TextBlock;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.OperationEvaluator;
+import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 import java.util.List;
 import java.util.Map;
@@ -28,38 +30,54 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitIfStatement(GioviParser.IfStatementContext ctx) {
 		if (visit(ctx.expression()).asBool()) {
-			visit(ctx.ifBlock);
-		} else if (ctx.ELSE() != null) {
-			visit(ctx.elseBlock);
+			visit(ctx.ifBody);
+		} else if (ctx.elseBody != null) {
+			visit(ctx.elseBody);
 		}
 		return null;
 	}
 
-
-	// lol
-	private boolean shouldBreak = false;
+	@Override
+	public GioviObject visitSwitchStatement(GioviParser.SwitchStatementContext ctx) {
+		SwitchHelperVisitor.evaluate(this, ctx).ifPresent(this::visit);
+		return null;
+	}
 
 	@Override
 	public GioviObject visitForStatement(GioviParser.ForStatementContext ctx) {
 		GioviObject collection = visit(ctx.collection);
 		switch (collection) {
-			case GioviList list -> forList(ctx.identifier(), list, ctx.block());
-			case GioviMap map -> forMap(ctx.identifier(), map, ctx.block());
+			case GioviList<?> list -> forList(ctx.identifier(), list, ctx.block());
+			case GioviMap<?, ?> map -> forMap(ctx.identifier(), map, ctx.block());
 			default -> throw new OperatorNotSupported("for");
 		}
 		return null;
 	}
 
-	private void forMap(List<GioviParser.IdentifierContext> iterators, GioviMap<GioviValue<?>, GioviValue<?>> map, GioviParser.BlockContext block) {
+	private void forList(List<GioviParser.IdentifierContext> iterators, GioviList<?> list, GioviParser.BlockContext block) {
+		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
+		if (list.get().size() == 0) return;
+
+		String valueIteratorName = iterators.get(0).getText();
+		currentScopeBlock.declare(valueIteratorName, list.get().get(0));
+
+		list.get().forEach(value -> {
+			currentScopeBlock.getVariableValue(valueIteratorName).set(value);
+			visit(block);
+		});
+		currentScopeBlock.delete(valueIteratorName);
+	}
+
+	private void forMap(List<GioviParser.IdentifierContext> iterators, GioviMap<?, ?> map, GioviParser.BlockContext block) {
 		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
 		if (map.get().size() == 0) return;
 
 		String keyIteratorName = iterators.get(0).getText();
 		String elementIteratorName = iterators.get(1).getText();
 
-		Map.Entry<GioviValue<?>, GioviValue<?>> entry = map.get().entrySet().iterator().next();
-		currentScopeBlock.declare(keyIteratorName, entry.getKey());
-		currentScopeBlock.declare(elementIteratorName, entry.getValue());
+		Map.Entry<?, ?> entry = map.get().entrySet().iterator().next();
+		currentScopeBlock.declare(keyIteratorName, (GioviValue<?>) entry.getKey());
+		currentScopeBlock.declare(elementIteratorName, (GioviValue<?>) entry.getValue());
 
 		map.get().forEach((keyValue, elementValue) -> {
 			currentScopeBlock.getVariableValue(keyIteratorName).set(keyValue);
@@ -71,37 +89,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		currentScopeBlock.delete(elementIteratorName);
 	}
 
-	private void forList(List<GioviParser.IdentifierContext> iterators, GioviList<GioviValue<?>> list, GioviParser.BlockContext block) {
-		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
-		if (list.get().size() == 0) return;
-
-		String valueIteratorName = iterators.get(0).getText();
-		currentScopeBlock.declare(valueIteratorName, list.get().get(0));
-		list.get().forEach(value -> {
-			currentScopeBlock.getVariableValue(valueIteratorName).set(value);
-			visit(block);
-		});
-		currentScopeBlock.delete(valueIteratorName);
-	}
-
-	@Override
-	public GioviObject visitBreakStatement(GioviParser.BreakStatementContext ctx) {
-		shouldBreak = true;
-		return null;
-	}
-
 	@Override
 	public GioviObject visitRepeatStatement(GioviParser.RepeatStatementContext ctx) {
-		shouldBreak = false;
 		if (ctx.IF() == null) {
-			while (!shouldBreak) {
+			while (true) {
 				visit(ctx.block());
 			}
 		} else {
-			while (!shouldBreak && visit(ctx.expression()).asBool()) {
+			while (visit(ctx.expression()).asBool()) {
 				visit(ctx.block());
 			}
-
 		}
 		return null;
 	}
@@ -202,37 +199,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitPrefixedExpression(GioviParser.PrefixedExpressionContext ctx) {
-		GioviObject value = visit(ctx.expression());
-		return switch (ctx.prefix.getText()) {
-			case "+" -> value.positive();
-			case "-" -> value.negative();
-			default -> throw new OperatorNotSupported(ctx.prefix.getText());
-		};
+		return OperationEvaluator.prefixed(
+			visit(ctx.expression()),
+			ctx.prefix.getText());
 	}
 
 	@Override
 	public GioviObject visitAdditiveExpression(GioviParser.AdditiveExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "+" -> left.plus(right);
-			case "-" -> left.minus(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.additive(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
 	public GioviObject visitMultiplicativeExpression(GioviParser.MultiplicativeExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "*" -> left.multiply(right);
-			case "/" -> left.divide(right);
-			case "%" -> left.modulo(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.multiplicative(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
@@ -242,16 +227,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitRelationalExpression(GioviParser.RelationalExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "<=" -> left.lessEqual(right);
-			case ">=" -> left.greaterEqual(right);
-			case ">" -> left.greater(right);
-			case "<" -> left.less(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.relational(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
@@ -261,38 +240,26 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitBoolExpression(GioviParser.BoolExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "&" -> left.and(right);
-			case "|" -> left.or(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.bool(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
 	public GioviObject visitEqualityExpression(GioviParser.EqualityExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "=" -> left.equal(right);
-			case "!=" -> left.notEqual(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.equality(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
 	public GioviObject visitContainmentExpression(GioviParser.ContainmentExpressionContext ctx) {
-		GioviObject left = visit(ctx.expression(0));
-		GioviObject right = visit(ctx.expression(1));
-		String operator = ctx.bop.getText();
-		return switch (operator) {
-			case "~=" -> left.isContained(right);
-			case "=~" -> left.contains(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
+		return OperationEvaluator.containment(
+			visit(ctx.expression(0)),
+			visit(ctx.expression(1)),
+			ctx.bop.getText());
 	}
 
 	@Override
