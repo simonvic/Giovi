@@ -1,11 +1,9 @@
 package it.simonvic.giovi.lang;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.type.Natural;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviNatural;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,6 @@ import java.util.List;
 public class Sequence<T extends GioviValue<?>> extends GioviObject {
 
 	private final List<T> list = new ArrayList<>();
-	public static final char[] ALPHABET = "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 	public static Sequence<? extends GioviValue<?>> of(GioviValue<?> start, GioviValue<?> end, GioviValue<?> step) {
 		if (start instanceof GioviReal || end instanceof GioviReal || step instanceof GioviReal) {
@@ -28,6 +25,10 @@ public class Sequence<T extends GioviValue<?>> extends GioviObject {
 		}
 
 		if (start instanceof GioviNatural startValue && end instanceof GioviNatural endValue) {
+			return Sequence.of(startValue.get(), endValue.get(), step == null ? 1 : step.asInt());
+		}
+
+		if (start instanceof GioviText startValue && end instanceof GioviText endValue) {
 			return Sequence.of(startValue.get(), endValue.get(), step == null ? 1 : step.asInt());
 		}
 
@@ -76,6 +77,30 @@ public class Sequence<T extends GioviValue<?>> extends GioviObject {
 		} else {
 			for (int i = startInt; i >= endInt; i -= step) {
 				sequence.list.add(new GioviNatural(new Natural(i)));
+			}
+		}
+		return sequence;
+	}
+
+	public static Sequence<GioviText> of(String start, String end, Integer step) {
+		if (start.length() != 1 || end.length() != 1)
+			throw new GioviException("sequence is only applicable to one characters");
+		if (!start.matches("[a-zA-Z]") || !end.matches("[a-zA-Z]"))
+			throw new GioviException("sequence is not applicable to given characters: start=" + start + " end=" + end);
+		Sequence<GioviText> sequence = new Sequence<>();
+		char startChar = start.toCharArray()[0];
+		char endChar = end.toCharArray()[0];
+		if (startChar <= endChar) {
+			for (char c = startChar; c <= endChar; c += step) {
+				if (Character.isAlphabetic(c)) {
+					sequence.list.add(new GioviText(String.valueOf(c)));
+				}
+			}
+		} else {
+			for (char c = startChar; c >= endChar; c -= step) {
+				if (Character.isAlphabetic(c)) {
+					sequence.list.add(new GioviText(String.valueOf(c)));
+				}
 			}
 		}
 		return sequence;
