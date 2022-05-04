@@ -4,7 +4,6 @@ import it.simonvic.giovi.lang.GioviObject;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>> extends GioviValue<LinkedHashMap<K, V>> {
@@ -99,7 +98,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	public void put(K key, V element) {
 		for (K k : value.keySet()) {
 			if (k.equals(key)) {
-				value.put(k, element);
+				value.get(k).set(element);
 				return;
 			}
 		}

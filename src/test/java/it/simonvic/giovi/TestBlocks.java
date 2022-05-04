@@ -1,7 +1,7 @@
 package it.simonvic.giovi;
 
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
-import it.simonvic.giovi.lang.Block;
+import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviValue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,19 +10,19 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestBlocks {
 
-	Block global;
-	Block block1;
-	Block block2;
-	Block block11;
-	Block block111;
+	Scope global;
+	Scope scope1;
+	Scope scope2;
+	Scope scope11;
+	Scope scope111;
 
 	@BeforeEach
 	public void setup() {
-		global = new Block(null);
-		block1 = new Block(global);
-		block2 = new Block(global);
-		block11 = new Block(block1);
-		block111 = new Block(block11);
+		global = new Scope();
+		scope1 = new Scope(global);
+		scope2 = new Scope(global);
+		scope11 = new Scope(scope1);
+		scope111 = new Scope(scope11);
 	}
 
 	@Test
@@ -45,37 +45,37 @@ public class TestBlocks {
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertTrue(block1.isDefinedVariable("aString"));
+		assertTrue(scope1.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlocksShouldSeeParentsVariables2() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertTrue(block111.isDefinedVariable("aString"));
+		assertTrue(scope111.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nonNestedBlocksShouldSeeParentsVariables() {
-		block1.declare("aString", GioviValue.of("Hello world"));
-		assertFalse(block2.isDefinedVariable("aString"));
+		scope1.declare("aString", GioviValue.of("Hello world"));
+		assertFalse(scope2.isDefinedVariable("aString"));
 	}
 
 	@Test
 	public void nestedBlockShouldThrow_VariableAlreadyDefined() {
-		block11.declare("aString", GioviValue.of("Hello world"));
-		assertThrows(VariableAlreadyDefinedException.class, () -> block111.declare("aString", GioviValue.of("hello_world")));
+		scope11.declare("aString", GioviValue.of("Hello world"));
+		assertThrows(VariableAlreadyDefinedException.class, () -> scope111.declare("aString", GioviValue.of("hello_world")));
 	}
 
 	@Test
 	public void nestedBlockShouldAccessVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertEquals("Hello world", block11.getVariableValue("aString").get());
+		assertEquals("Hello world", scope11.getVariableValue("aString").get());
 	}
 
 	@Test
 	public void nestedBlockShouldBeAbleToChangeVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		block2.setVariableValue("aString", GioviValue.of("ciao mondo"));
+		scope2.setVariableValue("aString", GioviValue.of("ciao mondo"));
 		assertEquals("ciao mondo", global.getVariableValue("aString").get());
 	}
 

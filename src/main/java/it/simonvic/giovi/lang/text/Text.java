@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang.text;
 
 import it.simonvic.giovi.GioviVisitor;
-import it.simonvic.giovi.lang.Block;
+import it.simonvic.giovi.lang.Scope;
 
 import java.util.regex.Pattern;
 
@@ -22,21 +22,21 @@ public class Text extends TextBase {
 		this.text = this.text.substring(1, this.text.length() - 1);
 	}
 
-	public void injectVariables(Block block) {
-		this.text = injectVariables(this.text, block);
+	public void injectVariables(Scope scope) {
+		this.text = injectVariables(this.text, scope);
 	}
 
 	//lol...
-	private static String injectVariables(String text, Block block) {
+	private static String injectVariables(String text, Scope scope) {
 		String s = Pattern
 				.compile("\\$[a-zA-Z]\\w*")
 				.matcher(text)
 				.replaceAll(matchResult
-						-> block.getVariableValue(matchResult.group().substring(1)).toString());
+						-> scope.getVariableValue(matchResult.group().substring(1)).toString());
 		return Pattern
 				.compile("\\$\\{([^{\\$]*)}")
 				.matcher(s)
 				.replaceAll(matchResult
-						-> block.getVariableValue(matchResult.group(1)).toString());
+						-> scope.getVariableValue(matchResult.group(1)).toString());
 	}
 }

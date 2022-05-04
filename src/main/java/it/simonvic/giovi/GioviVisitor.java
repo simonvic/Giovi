@@ -3,7 +3,8 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
-import it.simonvic.giovi.lang.Block;
+import it.simonvic.giovi.lang.LoopScope;
+import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
 import it.simonvic.giovi.lang.text.ExactText;
@@ -20,11 +21,31 @@ import java.util.Map;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
-	private static final Block globalBlock = new Block(null);
-	private static Block currentScopeBlock = globalBlock;
+	private static final Scope globalScope = new Scope();
+	private static Scope currentScope = globalScope;
 
-	public static Block getCurrentScope() {
-		return currentScopeBlock;
+	public static Scope getCurrentScope() {
+		return currentScope;
+	}
+
+	public static void setCurrentScope(Scope scope) {
+		currentScope = scope;
+	}
+
+	@Override
+	public GioviObject visitBlock(GioviParser.BlockContext ctx) {
+		for (GioviParser.StatementContext statementContext : ctx.statement()) {
+			if (getCurrentScope().shouldBreak()) {
+				break;
+			}
+
+			if (getCurrentScope().shouldContinue()) {
+				getCurrentScope().onContinued();
+				break;
+			}
+			visit(statementContext);
+		}
+		return null;
 	}
 
 	@Override
@@ -44,6 +65,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitBreakStatement(GioviParser.BreakStatementContext ctx) {
+		getCurrentScope().doBreak();
+		return null;
+	}
+
+	@Override
+	public GioviObject visitContinueStatement(GioviParser.ContinueStatementContext ctx) {
+		getCurrentScope().doContinue();
+		return null;
+	}
+
+	@Override
 	public GioviObject visitForStatement(GioviParser.ForStatementContext ctx) {
 		GioviObject collection = visit(ctx.collection);
 		switch (collection) {
@@ -58,48 +91,79 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
 		if (list.get().size() == 0) return;
 
-		String valueIteratorName = iterators.get(0).getText();
-		currentScopeBlock.declare(valueIteratorName, list.get().get(0));
+		setCurrentScope(new LoopScope(getCurrentScope()));
 
-		list.get().forEach(value -> {
-			currentScopeBlock.getVariableValue(valueIteratorName).set(value);
+		String iteratorName = iterators.get(0).getText();
+		getCurrentScope().declare(iteratorName, list.get().get(0));
+		GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
+
+		for (GioviValue<?> value : list.get()) {
+
+			if (getCurrentScope().shouldBreak()) {
+				break;
+			}
+			if (getCurrentScope().shouldContinue()) {
+				getCurrentScope().onContinued();
+				continue;
+			}
+
+			iterator.set(value);
 			visit(block);
-		});
-		currentScopeBlock.delete(valueIteratorName);
+		}
+
+		setCurrentScope(getCurrentScope().getParentScope());
+//		currentScope.delete(valueIteratorName); //@todo can I trust the GC?
 	}
 
 	private void forMap(List<GioviParser.IdentifierContext> iterators, GioviMap<?, ?> map, GioviParser.BlockContext block) {
 		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
 		if (map.get().size() == 0) return;
 
+		setCurrentScope(new LoopScope(getCurrentScope()));
 		String keyIteratorName = iterators.get(0).getText();
 		String elementIteratorName = iterators.get(1).getText();
 
 		Map.Entry<?, ?> entry = map.get().entrySet().iterator().next();
-		currentScopeBlock.declare(keyIteratorName, (GioviValue<?>) entry.getKey());
-		currentScopeBlock.declare(elementIteratorName, (GioviValue<?>) entry.getValue());
+		getCurrentScope().declare(keyIteratorName, (GioviValue<?>) entry.getKey());
+		getCurrentScope().declare(elementIteratorName, (GioviValue<?>) entry.getValue());
+		GioviValue<?> keyIterator = getCurrentScope().getVariableValue(keyIteratorName);
+		GioviValue<?> elementIterator = getCurrentScope().getVariableValue(elementIteratorName);
 
-		map.get().forEach((keyValue, elementValue) -> {
-			currentScopeBlock.getVariableValue(keyIteratorName).set(keyValue);
-			currentScopeBlock.getVariableValue(elementIteratorName).set(elementValue);
+		for (Map.Entry<?, ?> e : map.get().entrySet()) {
+
+			if (getCurrentScope().shouldBreak()) {
+				break;
+			}
+			if (getCurrentScope().shouldContinue()) {
+				getCurrentScope().onContinued();
+				continue;
+			}
+
+			keyIterator.set((GioviValue<?>) e.getKey());
+			elementIterator.set((GioviValue<?>) e.getValue());
 			visit(block);
-		});
+		}
 
-		currentScopeBlock.delete(keyIteratorName);
-		currentScopeBlock.delete(elementIteratorName);
+		setCurrentScope(getCurrentScope().getParentScope());
+//		currentScope.delete(keyIteratorName);
+//		currentScope.delete(elementIteratorName);
 	}
 
 	@Override
 	public GioviObject visitRepeatStatement(GioviParser.RepeatStatementContext ctx) {
-		if (ctx.IF() == null) {
-			while (true) {
-				visit(ctx.block());
+		setCurrentScope(new LoopScope(getCurrentScope()));
+		boolean infiniteRepeat = ctx.IF() == null;
+		while (infiniteRepeat || visit(ctx.expression()).asBool()) {
+			if (getCurrentScope().shouldBreak()) {
+				break;
 			}
-		} else {
-			while (visit(ctx.expression()).asBool()) {
-				visit(ctx.block());
+			if (getCurrentScope().shouldContinue()) {
+				getCurrentScope().onContinued();
+				continue;
 			}
+			visit(ctx.block());
 		}
+		setCurrentScope(getCurrentScope().getParentScope());
 		return null;
 	}
 
@@ -109,7 +173,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		//@todo improve this. Declare variable with value already set
 		visit(ctx.varDeclaration());
 		switch (ctx.bop.getText()) {
-			case ">" -> currentScopeBlock
+			case ">" -> getCurrentScope()
 				.getVariableValue(ctx.varDeclaration().identifier().getText())
 				.redirection(visit(ctx.expression()));
 			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
@@ -136,11 +200,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private void declareMap(String identifier, List<GioviParser.TypeContext> type) {
-		currentScopeBlock.declare(identifier, new GioviMap<>());
+		getCurrentScope().declare(identifier, new GioviMap<>());
 	}
 
 	private void declareList(String identifier, String type) {
-		currentScopeBlock.declare(identifier, switch (type) {
+		getCurrentScope().declare(identifier, switch (type) {
 			case "Natural" -> new GioviList<GioviNatural>();
 			case "Int" -> new GioviList<GioviInt>();
 			case "Real" -> new GioviList<GioviReal>();
@@ -152,7 +216,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	private void declareVariable(String identifier, String type) {
-		currentScopeBlock.declare(identifier, switch (type) {
+		getCurrentScope().declare(identifier, switch (type) {
 			case "Natural" -> new GioviNatural();
 			case "Int" -> new GioviInt();
 			case "Real" -> new GioviReal();
@@ -167,15 +231,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		String identifier = ctx.identifier().getText();
 		switch (ctx.bop.getText()) {
 			case ">" ->
-				currentScopeBlock.getVariableValue(identifier).redirection(visit(ctx.expression())).asGioviValue();
+				getCurrentScope().getVariableValue(identifier).redirection(visit(ctx.expression())).asGioviValue();
 			case ">+" ->
-				currentScopeBlock.getVariableValue(identifier).redirectionPlus(visit(ctx.expression())).asGioviValue();
+				getCurrentScope().getVariableValue(identifier).redirectionPlus(visit(ctx.expression())).asGioviValue();
 			case ">-" ->
-				currentScopeBlock.getVariableValue(identifier).redirectionMinus(visit(ctx.expression())).asGioviValue();
+				getCurrentScope().getVariableValue(identifier).redirectionMinus(visit(ctx.expression())).asGioviValue();
 			case ">*" ->
-				currentScopeBlock.getVariableValue(identifier).redirectionMultiply(visit(ctx.expression())).asGioviValue();
+				getCurrentScope().getVariableValue(identifier).redirectionMultiply(visit(ctx.expression())).asGioviValue();
 			case ">/" ->
-				currentScopeBlock.getVariableValue(identifier).redirectionDivide(visit(ctx.expression())).asGioviValue();
+				getCurrentScope().getVariableValue(identifier).redirectionDivide(visit(ctx.expression())).asGioviValue();
 			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
 		}
 		return null;
