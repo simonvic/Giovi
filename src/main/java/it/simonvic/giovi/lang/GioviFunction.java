@@ -3,13 +3,14 @@ package it.simonvic.giovi.lang;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.values.GioviValue;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class GioviFunction extends GioviObject {
 
 	private final GioviValue<?> returnValue;
-	private final Map<String, GioviValue<?>> parameters;
+	private final LinkedHashMap<String, GioviValue<?>> parameters;
 	private final GioviParser.BlockContext body;
 
 
@@ -25,7 +26,7 @@ public class GioviFunction extends GioviObject {
 //		this(body, null, parameters);
 //	}
 
-	public GioviFunction(GioviParser.BlockContext body, GioviValue<?> returnValue, Map<String, GioviValue<?>> parameters) {
+	public GioviFunction(GioviParser.BlockContext body, GioviValue<?> returnValue, LinkedHashMap<String, GioviValue<?>> parameters) {
 		this.body = body;
 		this.returnValue = returnValue;
 		this.parameters = parameters;
