@@ -3,10 +3,7 @@ package it.simonvic.giovi;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
-import it.simonvic.giovi.lang.LoopScope;
-import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.text.ExactText;
 import it.simonvic.giovi.lang.text.ExactTextBlock;
 import it.simonvic.giovi.lang.text.Text;
@@ -16,6 +13,8 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +36,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private void enterFunctionScope() {
-//		setCurrentScope(new FunctionScope(getCurrentScope()));
+		setCurrentScope(new FunctionScope(getCurrentScope()));
 	}
 
 	private void enterLoopScope() {
@@ -448,5 +447,54 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		throw new TypeNotFound(ctx.getText());
 	}
 
+	@Override
+	public GioviObject visitFunctionDeclaration(GioviParser.FunctionDeclarationContext ctx) {
+		Map<String, GioviValue<?>> formalParameters = new HashMap<>();
+		if (ctx.formalParameters() != null) {
+			for (GioviParser.FormalParameterDefinitionContext formalParam : ctx.formalParameters().formalParameterDefinition()) {
+				formalParameters.put(formalParam.identifier().getText(), visit(formalParam.type()).asGioviValue());
+			}
+		}
+		getCurrentScope().declare(ctx.identifier().getText(), new GioviFunction(
+			ctx.block(),
+			ctx.type() == null ? null : visit(ctx.type()).asGioviValue(),
+			formalParameters));
+		return null;
+	}
 
+	@Override
+	public GioviObject visitFunctionCall(GioviParser.FunctionCallContext ctx) {
+		GioviFunction func = getCurrentScope().getFunction(ctx.identifier().getText());
+		if (ctx.functionParameterList() != null && ctx.functionParameterList().functionParameter().size() != func.getParameters().size()) {
+			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
+		}
+		enterFunctionScope();
+		Iterator<Map.Entry<String, GioviValue<?>>> iterator = func.getParameters().entrySet().iterator();
+		int i = 0;
+		while (iterator.hasNext()) {
+			Map.Entry<String, GioviValue<?>> entry = iterator.next();
+			String paramIdentifier = entry.getKey();
+			GioviValue<?> gioviValue = entry.getValue();
+			gioviValue.box(visit(ctx.functionParameterList().functionParameter(i)).asGioviValue());
+			getCurrentScope().declare(paramIdentifier, gioviValue);
+			i++;
+		}
+		for (GioviParser.StatementContext statement : func.getBody().statement()) {
+			visit(statement);
+			if (getCurrentScope().shouldReturn()) {
+				GioviValue<?> returnValue = getCurrentScope().getReturnValue();
+				func.getReturnValue().box(returnValue);
+				break;
+			}
+		}
+		exitScope();
+		return func.getReturnValue();
+	}
+
+	@Override
+	public GioviObject visitReturnStatement(GioviParser.ReturnStatementContext ctx) {
+		GioviValue<?> returnValue = visit(ctx.expression()).asGioviValue();
+		getCurrentScope().doReturn(returnValue);
+		return returnValue;
+	}
 }

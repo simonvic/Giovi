@@ -6,10 +6,16 @@ import it.simonvic.giovi.exceptions.VariableNotDefinedException;
 import it.simonvic.giovi.lang.values.*;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Scope {
 
-	private final HashMap<String, GioviValue<?>> variables = new HashMap<>();
+	private final Map<String, GioviValue<?>> variables = new HashMap<>();
+
+	private final Map<String, GioviFunction> functions = new HashMap<>();
+	private GioviValue<?> returnValue;
+	private boolean shouldReturn = false;
+
 	private final Scope parentScope;
 
 	public Scope(Scope parentScope) {
@@ -20,6 +26,9 @@ public class Scope {
 		this.parentScope = null;
 	}
 
+	public Scope getParentScope() {
+		return parentScope;
+	}
 
 	public void onContinued() {
 	}
@@ -30,6 +39,10 @@ public class Scope {
 
 	public boolean shouldBreak() {
 		return false;
+	}
+
+	public boolean shouldReturn() {
+		return shouldReturn;
 	}
 
 	public void doBreak() {
@@ -50,6 +63,15 @@ public class Scope {
 		throw new GioviException("Continue statement in non-loop scope");
 	}
 
+	public void doReturn(GioviValue<?> returnValue) {
+		shouldReturn = true;
+		this.returnValue = returnValue;
+	}
+
+	public GioviValue<?> getReturnValue() {
+		return returnValue;
+	}
+
 	public boolean isInLoop() {
 		if (this instanceof LoopScope l) {
 			return true;
@@ -59,9 +81,13 @@ public class Scope {
 		return false;
 	}
 
-	public void delete(String identifier) {
+	public void deleteVariable(String identifier) {
 		variables.remove(identifier);
 	}
+
+
+	////////////////////////////////////////////////
+	// Variables
 
 	public void declare(String identifier, GioviValue<?> value) {
 		if (isDefinedVariable(identifier)) throw new VariableAlreadyDefinedException(identifier);
@@ -110,7 +136,43 @@ public class Scope {
 
 	}
 
-	public Scope getParentScope() {
-		return parentScope;
+
+	////////////////////////////////////////////////
+	// Functions
+
+	public void declare(String identifier, GioviFunction function) {
+		if (isDefinedFunction(identifier)) throw new VariableAlreadyDefinedException(identifier);
+		functions.put(identifier, function);
 	}
+
+	public GioviFunction getFunction(String identifier) {
+		return Scope.getFunction(this, identifier);
+	}
+
+	public boolean isDefinedFunction(String identifier) {
+		return Scope.isDefinedFunction(this, identifier);
+	}
+
+	private boolean isDefinedLocalFunction(String identifier) {
+		return functions.containsKey(identifier);
+	}
+
+
+	private static boolean isDefinedFunction(Scope scope, String identifier) {
+		if (scope == null) return false;
+		return scope.isDefinedLocalFunction(identifier) || Scope.isDefinedFunction(scope.parentScope, identifier);
+	}
+
+	private GioviFunction getLocalFunction(String identifier) {
+		return functions.get(identifier);
+	}
+
+	private static GioviFunction getFunction(Scope scope, String identifier) {
+		if (scope == null) throw new GioviException("Function not defined: " + identifier);
+		return scope.isDefinedLocalFunction(identifier)
+			? scope.getLocalFunction(identifier)
+			: Scope.getFunction(scope.parentScope, identifier);
+
+	}
+
 }
