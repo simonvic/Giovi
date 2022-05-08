@@ -1,10 +1,13 @@
 package it.simonvic.giovi.lang.type;
 
+import it.simonvic.giovi.exceptions.GioviException;
+
 public final class Natural extends Number {
 
 	private final Integer value;
 
 	public Natural(Integer value) {
+		if (value <= 0) throw new GioviException("Value out of bound");
 		this.value = value;
 	}
 
@@ -61,5 +64,10 @@ public final class Natural extends Number {
 
 	public Natural divide(Number number) {
 		return new Natural(value / number.intValue());
+	}
+
+	@Override
+	public String toString() {
+		return value.toString();
 	}
 }
