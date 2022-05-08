@@ -13,10 +13,7 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
@@ -449,7 +446,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitFunctionDeclaration(GioviParser.FunctionDeclarationContext ctx) {
-		Map<String, GioviValue<?>> formalParameters = new HashMap<>();
+		LinkedHashMap<String, GioviValue<?>> formalParameters = new LinkedHashMap<>();
 		if (ctx.formalParameters() != null) {
 			for (GioviParser.FormalParameterDefinitionContext formalParam : ctx.formalParameters().formalParameterDefinition()) {
 				formalParameters.put(formalParam.identifier().getText(), visit(formalParam.type()).asGioviValue());
@@ -473,10 +470,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		int i = 0;
 		while (iterator.hasNext()) {
 			Map.Entry<String, GioviValue<?>> entry = iterator.next();
-			String paramIdentifier = entry.getKey();
-			GioviValue<?> gioviValue = entry.getValue();
-			gioviValue.box(visit(ctx.functionParameterList().functionParameter(i)).asGioviValue());
-			getCurrentScope().declare(paramIdentifier, gioviValue);
+			String formalParameterIdentifier = entry.getKey();
+			GioviValue<?> formalValue = entry.getValue();
+			GioviParser.FunctionParameterContext functionParam = ctx.functionParameterList().functionParameter(i);
+			formalValue.box(visit(functionParam.expression()).asGioviValue());
+			if (functionParam.identifier() != null) {
+				getCurrentScope().declare(functionParam.identifier().getText(), formalValue);
+			} else {
+				getCurrentScope().declare(formalParameterIdentifier, formalValue);
+			}
 			i++;
 		}
 		for (GioviParser.StatementContext statement : func.getBody().statement()) {
