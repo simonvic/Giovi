@@ -132,7 +132,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			enterLoopScope();
 
 			String iteratorName = iterators.get(0).getText();
-			getCurrentScope().declare(iteratorName, list.unbox().get(0));
+			getCurrentScope().declare(iteratorName, value); //@todo iterator should be by value?
 			GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
 
 			iterator.box(value);
@@ -146,7 +146,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
 		if (map.unbox().size() == 0) return;
 
-		for (Map.Entry<?, ?> entry : map.unbox().entrySet()) {
+		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox().entrySet()) {
 
 			if (getCurrentScope().shouldBreak()) {
 				break;
@@ -158,12 +158,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			}
 
 			enterLoopScope();
+
 			String keyIteratorName = iterators.get(0).getText();
 			String elementIteratorName = iterators.get(1).getText();
-			getCurrentScope().declare(keyIteratorName, (GioviValue<?>) entry.getKey());
-			getCurrentScope().declare(elementIteratorName, (GioviValue<?>) entry.getValue());
-			getCurrentScope().getVariableValue(keyIteratorName).box((GioviValue<?>) entry.getKey());
-			getCurrentScope().getVariableValue(elementIteratorName).box((GioviValue<?>) entry.getValue());
+
+			//@todo iterators should be by value?
+			getCurrentScope().declare(keyIteratorName, entry.getKey());
+			getCurrentScope().declare(elementIteratorName, entry.getValue());
+			getCurrentScope().getVariableValue(keyIteratorName).box(entry.getKey());
+			getCurrentScope().getVariableValue(elementIteratorName).box(entry.getValue());
 			visit(block);
 
 			exitScope();
@@ -206,47 +209,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
-		if (ctx.type().collectionType() != null) {
-			declareCollection(ctx.identifier().getText(), ctx.type().collectionType());
-		} else {
-			declareVariable(ctx.identifier().getText(), ctx.type().getText());
-		}
+		getCurrentScope().declare(ctx.identifier().getText(), visit(ctx.type()).asGioviValue());
 		return null;
-	}
-
-	private void declareCollection(String identifier, GioviParser.CollectionTypeContext collectionType) {
-		if (collectionType.list() != null) {
-			declareList(identifier, collectionType.list().type().getText());
-		} else if (collectionType.map() != null) {
-			declareMap(identifier, collectionType.map().type());
-		}
-	}
-
-	private void declareMap(String identifier, List<GioviParser.TypeContext> type) {
-		getCurrentScope().declare(identifier, new GioviMap<>());
-	}
-
-	private void declareList(String identifier, String type) {
-		getCurrentScope().declare(identifier, switch (type) {
-			case "Natural" -> new GioviList<GioviNatural>();
-			case "Int" -> new GioviList<GioviInt>();
-			case "Real" -> new GioviList<GioviReal>();
-			case "Bool" -> new GioviList<GioviBool>();
-			case "Text" -> new GioviList<GioviText>();
-			default -> throw new TypeNotFound(type);
-		});
-	}
-
-
-	private void declareVariable(String identifier, String type) {
-		getCurrentScope().declare(identifier, switch (type) {
-			case "Natural" -> new GioviNatural();
-			case "Int" -> new GioviInt();
-			case "Real" -> new GioviReal();
-			case "Bool" -> new GioviBool();
-			case "Text" -> new GioviText();
-			default -> throw new TypeNotFound(type);
-		});
 	}
 
 	@Override
@@ -453,5 +417,36 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 //	public GioviObject visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
 //		return "_";
 //	}
+
+
+	@Override
+	public GioviObject visitType(GioviParser.TypeContext ctx) {
+		if (ctx.collectionType() != null) {
+			return visit(ctx.collectionType());
+		}
+
+		return switch (ctx.identifier().getText()) {
+			case "Natural" -> new GioviNatural();
+			case "Int" -> new GioviInt();
+			case "Real" -> new GioviReal();
+			case "Bool" -> new GioviBool();
+			case "Text" -> new GioviText();
+			default -> throw new TypeNotFound(ctx.getText());
+		};
+	}
+
+	@Override
+	public GioviObject visitCollectionType(GioviParser.CollectionTypeContext ctx) {
+		if (ctx.list() != null) {
+			return new GioviList<>();
+		}
+
+		if (ctx.map() != null) {
+			return new GioviMap<>();
+		}
+
+		throw new TypeNotFound(ctx.getText());
+	}
+
 
 }
