@@ -25,7 +25,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 
 	public Optional<ParseTree> evaluate() {
 		for(GioviParser.SwitchLabelContext label : ctx.switchBlock().switchLabel()) {
-			if (visit(label.caseMatch()).asBool()) {
+			if (visit(label.caseMatch()).asBoolean()) {
 				return Optional.of(label.block());
 			}
 		}

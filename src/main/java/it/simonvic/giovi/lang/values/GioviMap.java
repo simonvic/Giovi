@@ -2,7 +2,6 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.Sequence;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -33,7 +32,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
-			case GioviMap<?, ?> v -> v.get().forEach((key, value) -> this.put((K) key, (V) value));
+			case GioviMap<?, ?> v -> v.unbox().forEach((key, value) -> this.put((K) key, (V) value));
 //			case GioviValue<?> v -> this.put((K) v, defaultValue);
 			default -> super.redirectionPlus(right);
 		}
@@ -43,8 +42,8 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
-			case GioviMap<?, ?> v -> v.get().forEach((key, element) -> this.remove((K) key, (V) element));
-			case GioviList<?> v -> v.get().forEach(keyToRemove -> this.remove((K) keyToRemove)); //@todo keep this???
+			case GioviMap<?, ?> v -> v.unbox().forEach((key, element) -> this.remove((K) key, (V) element));
+			case GioviList<?> v -> v.unbox().forEach(keyToRemove -> this.remove((K) keyToRemove)); //@todo keep this???
 			case GioviValue<?> v -> remove((K) v);
 			default -> super.redirectionPlus(right);
 		}
@@ -102,7 +101,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	public void put(K key, V element) {
 		for (K k : value.keySet()) {
 			if (k.equals(key)) {
-				value.get(k).set(element);
+				value.get(k).box(element);
 				return;
 			}
 		}
@@ -141,15 +140,15 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 		return switch (accessor) {
 			case GioviValue<?> v -> get((K) v);
 			case Accessor v -> switch (v.get()) {
-				case "%" -> new GioviInt(get().size());
+				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
 					GioviList<K> indeces = new GioviList<>();
-					indeces.addAll(get().keySet().stream().toList());
+					indeces.addAll(unbox().keySet().stream().toList());
 					yield indeces;
 				}
 				case "*" -> {
 					GioviList<V> values = new GioviList<>();
-					values.addAll(get().values().stream().toList());
+					values.addAll(unbox().values().stream().toList());
 					yield values;
 				}
 				default -> throw new GioviException("Invalid accessor: " + accessor);

@@ -29,7 +29,7 @@ public class TestContainmentExpression {
 		"""
 	)
 	public void testStrings(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -43,6 +43,6 @@ public class TestContainmentExpression {
 		"""
 	)
 	public void testLists(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 }

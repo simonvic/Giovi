@@ -13,17 +13,17 @@ public non-sealed class GioviText extends GioviValue<String> {
 	}
 
 	@Override
-	public void set(GioviValue<?> value) {
-		switch (value.get()) {
-			case String v -> set(v);
-			default -> super.set(value);
+	public void box(GioviValue<?> value) {
+		switch (value.unbox()) {
+			case String v -> box(v);
+			default -> super.box(value);
 		}
 	}
 
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		if (content instanceof GioviText text) {
-			value = text.get();
+			value = text.unbox();
 			return this;
 		}
 		return super.redirection(content);
@@ -32,7 +32,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		if (right instanceof GioviText text) {
-			value += text.get();
+			value += text.unbox();
 			return this;
 		}
 		return super.redirectionPlus(right);
@@ -41,7 +41,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		if (right instanceof GioviText text) {
-			value = value.replace(text.get(), "");
+			value = value.replace(text.unbox(), "");
 			return this;
 		}
 		return super.redirectionMinus(right);
@@ -50,7 +50,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviText(value + v.get());
+			case GioviText v -> new GioviText(value + v.unbox());
 			default -> super.plus(right);
 		};
 	}
@@ -58,7 +58,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject minus(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviText(value.replace(v.get(), ""));
+			case GioviText v -> new GioviText(value.replace(v.unbox(), ""));
 			default -> super.plus(right);
 		};
 	}
@@ -66,7 +66,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject lessEqual(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.compareTo(v.get()) <= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
 			default -> super.lessEqual(right);
 		};
 	}
@@ -74,7 +74,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject greaterEqual(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.compareTo(v.get()) >= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
 			default -> super.greaterEqual(right);
 		};
 	}
@@ -82,7 +82,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject greater(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.compareTo(v.get()) > 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
 			default -> super.greater(right);
 		};
 	}
@@ -90,7 +90,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject less(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.compareTo(v.get()) < 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
 			default -> super.less(right);
 		};
 	}
@@ -98,7 +98,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.compareTo(v.get()) == 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) == 0);
 			default -> super.equal(right);
 		};
 	}
@@ -111,7 +111,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject contains(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> new GioviBool(value.contains(v.get()));
+			case GioviText v -> new GioviBool(value.contains(v.unbox()));
 			default -> super.contains(right);
 		};
 	}

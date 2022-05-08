@@ -5,8 +5,6 @@ import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -37,7 +35,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Numbers(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -49,7 +47,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Strings(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -61,7 +59,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_List(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -74,7 +72,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 }

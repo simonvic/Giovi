@@ -75,7 +75,7 @@ public class Scope {
 	private static void setVariableValue(Scope scope, String identifier, GioviValue<?> value) {
 		if (scope == null) throw new VariableNotDefinedException(identifier);
 		if (scope.isDefinedLocalVariable(identifier)) {
-			scope.variables.get(identifier).set(value);
+			scope.variables.get(identifier).box(value);
 		} else {
 			Scope.setVariableValue(scope.parentScope, identifier, value);
 		}

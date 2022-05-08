@@ -37,15 +37,15 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 		return type;
 	}
 
-	public T get() {
+	public T unbox() {
 		return value;
 	}
 
-	public void set(T value) {
+	public void box(T value) {
 		this.value = value;
 	}
 
-	public void set(GioviValue<?> value) {
+	public void box(GioviValue<?> value) {
 		throw new IncompatibleTypes(type, value.getType());
 	}
 

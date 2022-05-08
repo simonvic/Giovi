@@ -8,7 +8,6 @@ import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -41,7 +40,7 @@ public class TestRedirection {
 	)
 	public void testDouble(String code, Double expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varDouble").get());
+		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varDouble").unbox());
 	}
 
 	@ParameterizedTest
@@ -57,7 +56,7 @@ public class TestRedirection {
 	)
 	public void testString(String code, String expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varString").get());
+		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varString").unbox());
 	}
 
 

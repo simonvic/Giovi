@@ -50,35 +50,35 @@ public class GioviObject {
 	}
 
 	public Number asNumber() {
-		return asGioviNumber().get();
+		return asGioviNumber().unbox();
 	}
 
 	public Natural asNatural() {
-		return asGioviNatural().get();
+		return asGioviNatural().unbox();
 	}
 
-	public Integer asInt() {
-		return asGioviInt().get();
+	public Integer asInteger() {
+		return asGioviInt().unbox();
 	}
 
 	public Double asDouble() {
-		return asGioviReal().get();
+		return asGioviReal().unbox();
 	}
 
-	public Boolean asBool() {
-		return asGioviBool().get();
+	public Boolean asBoolean() {
+		return asGioviBool().unbox();
 	}
 
 	public String asString() {
-		return asGioviText().get();
+		return asGioviText().unbox();
 	}
 
 	public List<?> asList() {
-		return asGioviList().get();
+		return asGioviList().unbox();
 	}
 
 	public LinkedHashMap<?, ?> asMap() {
-		return asGioviMap().get();
+		return asGioviMap().unbox();
 	}
 
 	public GioviObject positive() {

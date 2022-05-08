@@ -34,7 +34,7 @@ public class TestBlocks {
 	@Test
 	public void test_getVariableValue() {
 		global.declare("aString", GioviValue.of("hello world"));
-		assertEquals("hello world", global.getVariableValue("aString").get());
+		assertEquals("hello world", global.getVariableValue("aString").unbox());
 	}
 
 	@Test
@@ -69,14 +69,14 @@ public class TestBlocks {
 	@Test
 	public void nestedBlockShouldAccessVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertEquals("Hello world", scope11.getVariableValue("aString").get());
+		assertEquals("Hello world", scope11.getVariableValue("aString").unbox());
 	}
 
 	@Test
 	public void nestedBlockShouldBeAbleToChangeVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
 		scope2.setVariableValue("aString", GioviValue.of("ciao mondo"));
-		assertEquals("ciao mondo", global.getVariableValue("aString").get());
+		assertEquals("ciao mondo", global.getVariableValue("aString").unbox());
 	}
 
 

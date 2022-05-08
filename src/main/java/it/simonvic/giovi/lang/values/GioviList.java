@@ -24,7 +24,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
-			case GioviList<?> v -> value = (List<T>) v.get();
+			case GioviList<?> v -> value = (List<T>) v.unbox();
 			default -> super.redirection(right);
 		}
 		return this;
@@ -33,7 +33,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
-			case GioviList<?> v -> v.get().forEach(gioviValue -> value.add((T) gioviValue));
+			case GioviList<?> v -> v.unbox().forEach(gioviValue -> value.add((T) gioviValue));
 			case GioviValue<?> v -> value.add((T) v);
 			default -> super.redirectionPlus(right);
 		}
@@ -43,7 +43,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
-			case GioviList<?> v -> v.get().forEach(gioviValue -> value.remove((T) gioviValue));
+			case GioviList<?> v -> v.unbox().forEach(gioviValue -> value.remove((T) gioviValue));
 			case GioviValue<?> v -> value.remove((T) v);
 			default -> super.redirectionPlus(right);
 		}
@@ -84,12 +84,12 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviValue<?> access(GioviObject accessor) {
 		return switch (accessor) {
-			case GioviInt v -> get().get(v.get());
+			case GioviInt v -> unbox().get(v.unbox());
 			case Accessor v -> switch (v.get()) {
-				case "%" -> new GioviInt(get().size());
+				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
 					GioviList<GioviInt> indeces = new GioviList<>();
-					indeces.addAll(Sequence.of(0, get().size() - 1, 1).getValues());
+					indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).getValues());
 					yield indeces;
 				}
 				default -> throw new GioviException("Invalid accessor: " + accessor);

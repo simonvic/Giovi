@@ -21,15 +21,15 @@ public class Sequence<T extends GioviValue<?>> extends GioviObject {
 		}
 
 		if (start instanceof GioviInt startValue && end instanceof GioviInt endValue) {
-			return Sequence.of(startValue.get(), endValue.get(), step == null ? 1 : step.asInt());
+			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
 		}
 
 		if (start instanceof GioviNatural startValue && end instanceof GioviNatural endValue) {
-			return Sequence.of(startValue.get(), endValue.get(), step == null ? 1 : step.asInt());
+			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
 		}
 
 		if (start instanceof GioviText startValue && end instanceof GioviText endValue) {
-			return Sequence.of(startValue.get(), endValue.get(), step == null ? 1 : step.asInt());
+			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
 		}
 
 		throw new OperatorNotSupported("change this");

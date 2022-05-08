@@ -31,7 +31,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testAdditiveExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInt());
+		assertEquals(expected, run(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -70,7 +70,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testModuloExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInt());
+		assertEquals(expected, run(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -80,7 +80,7 @@ public class TestMathExpressions {
 		"""
 	)
 	public void testParenthesizedExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInt());
+		assertEquals(expected, run(code).asInteger());
 	}
 
 }

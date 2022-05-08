@@ -56,25 +56,25 @@ public class TestVariables {
 		@Test
 		public void testDeclarationVariableType_string() {
 			scope.declare("aString", GioviValue.of("hello world"));
-			assertEquals(String.class, scope.getVariableValue("aString").get().getClass());
+			assertEquals(String.class, scope.getVariableValue("aString").unbox().getClass());
 		}
 
 		@Test
 		public void testDeclarationVariableType_bool() {
 			scope.declare("aBoolean", GioviValue.of(true));
-			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").get().getClass());
+			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").unbox().getClass());
 		}
 
 		@Test
 		public void testDeclarationVariableType_real() {
 			scope.declare("aReal", GioviValue.of(0.69));
-			assertEquals(Double.class, scope.getVariableValue("aReal").get().getClass());
+			assertEquals(Double.class, scope.getVariableValue("aReal").unbox().getClass());
 		}
 
 		@Test
 		public void testDeclarationVariableType_int() {
 			scope.declare("anInteger", GioviValue.of(69));
-			assertEquals(Integer.class, scope.getVariableValue("anInteger").get().getClass());
+			assertEquals(Integer.class, scope.getVariableValue("anInteger").unbox().getClass());
 		}
 
 		@Test
@@ -106,13 +106,13 @@ public class TestVariables {
 		GioviInt value = new GioviInt();
 		scope.declare("anInt", value);
 		scope.setVariableValue("anInt", GioviValue.of(69));
-		assertEquals(69, value.get());
+		assertEquals(69, value.unbox());
 	}
 
 	@Test
 	public void testGetValue() {
 		GioviInt value = new GioviInt(69);
 		scope.declare("anInt", value);
-		assertEquals(69, scope.getVariableValue("anInt").get());
+		assertEquals(69, scope.getVariableValue("anInt").unbox());
 	}
 }

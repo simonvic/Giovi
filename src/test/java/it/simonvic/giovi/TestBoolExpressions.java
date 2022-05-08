@@ -28,7 +28,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testLiterals(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -40,7 +40,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testAndOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -52,7 +52,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testOrOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -64,7 +64,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testNotOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 
@@ -77,7 +77,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testParenthesizedExpression(String code, boolean expected) {
-		assertEquals(expected, run(code).asBool());
+		assertEquals(expected, run(code).asBoolean());
 	}
 
 }
