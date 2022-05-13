@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
+			case GioviDefault v -> value = new LinkedHashMap<>(defaultValue);
 			case GioviMap<?, ?> v -> value = (LinkedHashMap<K, V>) v.value;
 			default -> super.redirection(right);
 		}
@@ -44,6 +46,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
+			case GioviDefault v -> defaultValue.forEach(this::put);
 			case GioviMap<?, ?> v -> v.unbox().forEach((key, value) -> this.put((K) key, (V) value));
 //			case GioviValue<?> v -> this.put((K) v, defaultValue);
 			default -> super.redirectionPlus(right);
@@ -54,6 +57,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
+			case GioviDefault v -> defaultValue.forEach(this::remove);
 			case GioviMap<?, ?> v -> v.unbox().forEach((key, element) -> this.remove((K) key, (V) element));
 			case GioviList<?> v -> v.unbox().forEach(keyToRemove -> this.remove((K) keyToRemove)); //@todo keep this???
 			case GioviValue<?> v -> remove((K) v);
@@ -65,6 +69,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviMap<?, ?> v -> new GioviBool(this.equals(v));
 			default -> super.equal(right);
 		};

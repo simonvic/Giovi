@@ -52,16 +52,6 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	}
 
 	@Override
-	public GioviObject redirection(GioviObject content) {
-		if (content instanceof GioviDefault) {
-			value = defaultValue;
-			return this;
-		} else {
-			return super.redirection(content);
-		}
-	}
-
-	@Override
 	public String toString() {
 		return value.toString();
 	}

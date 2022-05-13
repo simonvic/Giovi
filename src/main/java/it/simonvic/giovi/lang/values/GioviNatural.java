@@ -45,47 +45,52 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 
 	@Override
 	public GioviObject redirection(GioviObject content) {
-		if (content instanceof GioviNumber number) {
-			value = number.naturalValue().unbox();
-			return this;
+		switch (content) {
+			case GioviDefault v -> value = new Natural(defaultValue.intValue());
+			case GioviNumber v -> value = v.naturalValue().unbox();
+			default -> super.redirection(content);
 		}
-		return super.redirection(content);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
-		if (right instanceof GioviNumber number) {
-			value = value.plus(number.naturalValue().unbox());
-			return this;
+		switch (right) {
+			case GioviDefault v -> value = value.plus(defaultValue);
+			case GioviNumber v -> value = value.plus(v.naturalValue().unbox());
+			default -> super.redirectionPlus(right);
 		}
-		return super.redirectionPlus(right);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
-		if (right instanceof GioviNumber number) {
-			value = value.minus(number.naturalValue().unbox());
-			return this;
+		switch (right) {
+			case GioviDefault v -> value = value.minus(defaultValue);
+			case GioviNumber v -> value = value.minus(v.naturalValue().unbox());
+			default -> super.redirectionMinus(right);
 		}
-		return super.redirectionMinus(right);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionMultiply(GioviObject right) {
-		if (right instanceof GioviNumber number) {
-			value = value.multiply(number.naturalValue().unbox());
-			return this;
+		switch (right) {
+			case GioviDefault v -> value = value.multiply(defaultValue);
+			case GioviNumber v -> value = value.multiply(v.naturalValue().unbox());
+			default -> super.redirectionMultiply(right);
 		}
-		return super.redirectionMultiply(right);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionDivide(GioviObject right) {
-		if (right instanceof GioviNumber number) {
-			value = value.divide(number.intValue().unbox());
-			return this;
+		switch (right) {
+			case GioviDefault v -> value = value.divide(defaultValue);
+			case GioviNumber v -> value = value.divide(v.naturalValue().unbox());
+			default -> super.redirectionDivide(right);
 		}
-		return super.redirectionDivide(right);
+		return this;
 	}
 
 
@@ -97,6 +102,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviNatural(new Natural(value.intValue() + defaultValue.intValue()));
 			case GioviNatural v -> new GioviNatural(new Natural(value.intValue() + v.unbox().intValue()));
 			case GioviInt v -> new GioviInt(value.intValue() + v.unbox());
 			case GioviReal v -> new GioviReal(value.doubleValue() + v.unbox());
@@ -107,6 +113,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject minus(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviNatural(new Natural(value.intValue() - defaultValue.intValue()));
 			case GioviNatural v -> new GioviNatural(new Natural(value.intValue() - v.unbox().intValue()));
 			case GioviInt v -> new GioviInt(value.intValue() - v.unbox());
 			case GioviReal v -> new GioviReal(value.doubleValue() - v.unbox());
@@ -117,6 +124,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject multiply(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviNatural(new Natural(value.intValue() * defaultValue.intValue()));
 			case GioviNatural v -> new GioviNatural(new Natural(value.intValue() * v.unbox().intValue()));
 			case GioviInt v -> new GioviInt(value.intValue() * v.unbox());
 			case GioviReal v -> new GioviReal(value.doubleValue() * v.unbox());
@@ -127,6 +135,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject divide(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviNatural(new Natural(value.intValue() / defaultValue.intValue()));
 			case GioviNatural v -> new GioviReal(value.doubleValue() / v.unbox().doubleValue());
 			case GioviInt v -> new GioviReal(value.doubleValue() / v.unbox());
 			case GioviReal v -> new GioviReal(value.doubleValue() / v.unbox());
@@ -137,6 +146,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject modulo(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviNatural(new Natural(value.intValue() % defaultValue.intValue()));
 			case GioviNatural v -> new GioviNatural(new Natural(value.intValue() % v.unbox().intValue()));
 			case GioviInt v -> new GioviInt(value.intValue() % v.unbox());
 			case GioviReal v -> new GioviReal(value.doubleValue() % v.unbox());
@@ -147,6 +157,8 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject power(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v ->
+				new GioviNatural(new Natural((int) Math.pow(value.intValue(), defaultValue.intValue())));
 			case GioviNatural v ->
 				new GioviNatural(new Natural((int) Math.pow(value.intValue(), v.unbox().intValue())));
 			case GioviInt v -> new GioviInt((int) Math.pow(value.intValue(), v.unbox()));
@@ -158,6 +170,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject lessEqual(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() <= defaultValue.intValue());
 			case GioviNatural v -> new GioviBool(value.intValue() <= v.unbox().intValue());
 			case GioviInt v -> new GioviBool(value.intValue() <= v.unbox());
 			case GioviReal v -> new GioviBool(value.doubleValue() <= v.unbox());
@@ -168,6 +181,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject greaterEqual(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() >= defaultValue.intValue());
 			case GioviNatural v -> new GioviBool(value.intValue() >= v.unbox().intValue());
 			case GioviInt v -> new GioviBool(value.intValue() >= v.unbox());
 			case GioviReal v -> new GioviBool(value.doubleValue() >= v.unbox());
@@ -178,6 +192,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject greater(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() > defaultValue.intValue());
 			case GioviNatural v -> new GioviBool(value.intValue() > v.unbox().intValue());
 			case GioviInt v -> new GioviBool(value.intValue() > v.unbox());
 			case GioviReal v -> new GioviBool(value.doubleValue() > v.unbox());
@@ -188,6 +203,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject less(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() < defaultValue.intValue());
 			case GioviNatural v -> new GioviBool(value.intValue() < v.unbox().intValue());
 			case GioviInt v -> new GioviBool(value.intValue() < v.unbox());
 			case GioviReal v -> new GioviBool(value.doubleValue() < v.unbox());
@@ -198,6 +214,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() == defaultValue.intValue());
 			case GioviNatural v -> new GioviBool(value.intValue() == v.unbox().intValue());
 			case GioviInt v -> new GioviBool(value.intValue() == v.unbox());
 			case GioviReal v -> new GioviBool(value.doubleValue() == v.unbox());

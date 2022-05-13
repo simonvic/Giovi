@@ -32,16 +32,18 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 
 	@Override
 	public GioviObject redirection(GioviObject content) {
-		if (content instanceof GioviBool bool) {
-			value = bool.unbox();
-			return this;
+		switch (content) {
+			case GioviDefault v -> value = defaultValue;
+			case GioviBool v -> value = v.unbox();
+			default -> super.redirection(content);
 		}
-		return super.redirection(content);
+		return this;
 	}
 
 	@Override
 	public GioviObject and(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value && defaultValue);
 			case GioviBool v -> new GioviBool(value && v.unbox());
 //			case IntValue v -> new BoolValue(value && v.asBool());
 			default -> super.and(right);
@@ -51,6 +53,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	@Override
 	public GioviObject or(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value || defaultValue);
 			case GioviBool v -> new GioviBool(value || v.unbox());
 //			case IntValue v -> new BoolValue(value || v.asBool());
 			default -> super.or(right);
@@ -60,6 +63,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
 //			case IntValue v -> new BoolValue(value == v.asBool());
 			default -> super.equal(right);

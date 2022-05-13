@@ -26,34 +26,38 @@ public non-sealed class GioviText extends GioviValue<String> {
 
 	@Override
 	public GioviObject redirection(GioviObject content) {
-		if (content instanceof GioviText text) {
-			value = text.unbox();
-			return this;
+		switch (content) {
+			case GioviDefault v -> value = defaultValue;
+			case GioviText v -> value = v.unbox();
+			default -> super.redirection(content);
 		}
-		return super.redirection(content);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
-		if (right instanceof GioviText text) {
-			value += text.unbox();
-			return this;
+		switch (right) {
+			case GioviDefault v -> value += defaultValue;
+			case GioviText v -> value += v.unbox();
+			default -> super.redirectionPlus(right);
 		}
-		return super.redirectionPlus(right);
+		return this;
 	}
 
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
-		if (right instanceof GioviText text) {
-			value = value.replace(text.unbox(), "");
-			return this;
+		switch (right) {
+			case GioviDefault v -> value = value.replace(defaultValue, "");
+			case GioviText v -> value = value.replace(v.unbox(), "");
+			default -> super.redirectionMinus(right);
 		}
-		return super.redirectionMinus(right);
+		return this;
 	}
 
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviText(value + defaultValue);
 			case GioviText v -> new GioviText(value + v.unbox());
 			default -> super.plus(right);
 		};
@@ -62,6 +66,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject minus(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviText(value.replace(defaultValue, ""));
 			case GioviText v -> new GioviText(value.replace(v.unbox(), ""));
 			default -> super.plus(right);
 		};
@@ -70,6 +75,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject lessEqual(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) <= 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
 			default -> super.lessEqual(right);
 		};
@@ -78,6 +84,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject greaterEqual(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) >= 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
 			default -> super.greaterEqual(right);
 		};
@@ -86,6 +93,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject greater(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) > 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
 			default -> super.greater(right);
 		};
@@ -94,6 +102,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject less(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) < 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
 			default -> super.less(right);
 		};
@@ -102,6 +111,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) == 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) == 0);
 			default -> super.equal(right);
 		};
@@ -115,6 +125,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject contains(GioviObject right) {
 		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.contains(defaultValue));
 			case GioviText v -> new GioviBool(value.contains(v.unbox()));
 			default -> super.contains(right);
 		};
