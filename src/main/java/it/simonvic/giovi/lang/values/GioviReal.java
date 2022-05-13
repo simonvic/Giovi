@@ -5,12 +5,16 @@ import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviReal extends GioviNumber<Double> {
 
+	public GioviReal(Double value, Double defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviReal(Double value) {
-		super(value);
+		super(value, 0d);
 	}
 
 	public GioviReal() {
-		super(0d);
+		super(0d, 0d);
 	}
 
 	@Override

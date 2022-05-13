@@ -3,17 +3,22 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.lang.GioviObject;
 
 public non-sealed class GioviBool extends GioviValue<Boolean> {
+
+	public GioviBool(Boolean value, Boolean defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviBool(Boolean value) {
-		super(value);
+		super(value, false);
 	}
 
 	public GioviBool() {
-		super(false);
+		super(false, false);
 	}
 
 	@Override
 	public void box(GioviValue<?> value) {
-		switch(value.unbox()) {
+		switch (value.unbox()) {
 			case Boolean v -> box(v);
 //			case Integer v -> set(v > 0);
 			default -> super.box(value);
@@ -36,7 +41,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 
 	@Override
 	public GioviObject and(GioviObject right) {
-		return switch(right) {
+		return switch (right) {
 			case GioviBool v -> new GioviBool(value && v.unbox());
 //			case IntValue v -> new BoolValue(value && v.asBool());
 			default -> super.and(right);
@@ -45,7 +50,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 
 	@Override
 	public GioviObject or(GioviObject right) {
-		return switch(right) {
+		return switch (right) {
 			case GioviBool v -> new GioviBool(value || v.unbox());
 //			case IntValue v -> new BoolValue(value || v.asBool());
 			default -> super.or(right);
@@ -54,7 +59,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 
 	@Override
 	public GioviObject equal(GioviObject right) {
-		return switch(right) {
+		return switch (right) {
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
 //			case IntValue v -> new BoolValue(value == v.asBool());
 			default -> super.equal(right);

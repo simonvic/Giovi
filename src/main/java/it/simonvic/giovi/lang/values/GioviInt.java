@@ -5,12 +5,16 @@ import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviInt extends GioviNumber<Integer> {
 
+	public GioviInt(Integer value, Integer defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviInt(Integer value) {
-		super(value);
+		super(value, 0);
 	}
 
 	public GioviInt() {
-		super(0);
+		super(0, 0);
 	}
 
 	@Override

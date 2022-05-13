@@ -412,11 +412,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return null;
 	}
 
-//	@Override
-//	public GioviObject visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
-//		return "_";
-//	}
-
+	@Override
+	public GioviObject visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
+		return new GioviDefault();
+	}
 
 	@Override
 	public GioviObject visitType(GioviParser.TypeContext ctx) {

@@ -13,9 +13,11 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 	private Class<?> type;
 	protected T value;
+	protected T defaultValue;
 
-	public GioviValue(T value) {
+	public GioviValue(T value, T defaultValue) {
 		this.value = value;
+		this.defaultValue = defaultValue;
 		this.type = value.getClass();
 	}
 
@@ -47,6 +49,16 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 	public void box(GioviValue<?> value) {
 		throw new IncompatibleTypes(type, value.getType());
+	}
+
+	@Override
+	public GioviObject redirection(GioviObject content) {
+		if (content instanceof GioviDefault) {
+			value = defaultValue;
+			return this;
+		} else {
+			return super.redirection(content);
+		}
 	}
 
 	@Override

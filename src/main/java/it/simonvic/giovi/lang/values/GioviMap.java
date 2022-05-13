@@ -5,15 +5,18 @@ import it.simonvic.giovi.lang.GioviObject;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>>
 	extends GioviValue<LinkedHashMap<K, V>>
 	implements GioviCollection {
 
+	public GioviMap(LinkedHashMap<K, V> value, LinkedHashMap<K, V> defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviMap() {
-		super(new LinkedHashMap<>());
+		super(new LinkedHashMap<>(), new LinkedHashMap<>());
 	}
 
 	@Override

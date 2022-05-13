@@ -11,8 +11,12 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	extends GioviValue<List<T>>
 	implements GioviCollection {
 
+	public GioviList(List<T> value, List<T> defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviList() {
-		super(new ArrayList<>());
+		super(new ArrayList<>(), new ArrayList<>());
 	}
 
 	@Override

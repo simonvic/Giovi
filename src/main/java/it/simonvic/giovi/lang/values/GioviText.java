@@ -4,12 +4,16 @@ import it.simonvic.giovi.lang.GioviObject;
 
 public non-sealed class GioviText extends GioviValue<String> {
 
+	public GioviText(String value, String defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviText(String value) {
-		super(value);
+		super(value, "");
 	}
 
 	public GioviText() {
-		super("");
+		super("", "");
 	}
 
 	@Override

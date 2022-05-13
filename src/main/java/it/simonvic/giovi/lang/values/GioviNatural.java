@@ -5,12 +5,16 @@ import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviNatural extends GioviNumber<Natural> {
 
+	public GioviNatural(Natural value, Natural defaultValue) {
+		super(value, defaultValue);
+	}
+
 	public GioviNatural(Natural value) {
-		super(value);
+		super(value, new Natural());
 	}
 
 	public GioviNatural() {
-		super(new Natural());
+		super(new Natural(), new Natural());
 	}
 
 
@@ -143,7 +147,8 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviObject power(GioviObject right) {
 		return switch (right) {
-			case GioviNatural v -> new GioviNatural(new Natural((int) Math.pow(value.intValue(), v.unbox().intValue())));
+			case GioviNatural v ->
+				new GioviNatural(new Natural((int) Math.pow(value.intValue(), v.unbox().intValue())));
 			case GioviInt v -> new GioviInt((int) Math.pow(value.intValue(), v.unbox()));
 			case GioviReal v -> new GioviReal(Math.pow(value.doubleValue(), v.unbox()));
 			default -> super.power(right);
