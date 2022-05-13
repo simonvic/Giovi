@@ -18,7 +18,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public void box(GioviValue<?> value) {
 		switch (value) {
-			case GioviList<?> l -> this.box((List<T>) value.unbox());
+			case GioviList<?> v -> this.box((List<T>) v.unbox());
 			default -> super.box(value);
 		}
 	}

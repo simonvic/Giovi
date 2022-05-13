@@ -5,6 +5,7 @@ import it.simonvic.giovi.lang.GioviObject;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>>
@@ -13,6 +14,14 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 
 	public GioviMap() {
 		super(new LinkedHashMap<>());
+	}
+
+	@Override
+	public void box(GioviValue<?> value) {
+		switch (value) {
+			case GioviMap<?,?> v -> this.box((LinkedHashMap<K, V>) v.unbox());
+			default -> super.box(value);
+		}
 	}
 
 	@Override
