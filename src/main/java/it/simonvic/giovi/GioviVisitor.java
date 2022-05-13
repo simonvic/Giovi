@@ -13,7 +13,10 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
@@ -484,8 +487,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (GioviParser.StatementContext statement : func.getBody().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
-				GioviValue<?> returnValue = getCurrentScope().getReturnValue();
-				func.getReturnValue().box(returnValue);
+				func.getReturnValue().box(getCurrentScope().getReturnValue());
 				break;
 			}
 		}

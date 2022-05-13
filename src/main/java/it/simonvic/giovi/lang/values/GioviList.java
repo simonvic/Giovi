@@ -16,6 +16,14 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	}
 
 	@Override
+	public void box(GioviValue<?> value) {
+		switch (value) {
+			case GioviList<?> l -> this.box((List<T>) value.unbox());
+			default -> super.box(value);
+		}
+	}
+
+	@Override
 	public GioviObject contains(GioviObject right) {
 		return new GioviBool(value.contains(right.asGioviValue()));
 	}
