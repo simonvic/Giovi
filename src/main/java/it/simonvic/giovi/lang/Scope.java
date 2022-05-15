@@ -3,7 +3,8 @@ package it.simonvic.giovi.lang;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
 import it.simonvic.giovi.exceptions.VariableNotDefinedException;
-import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.functions.GioviFunction;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 import java.util.HashMap;
 import java.util.Map;

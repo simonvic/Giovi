@@ -8,6 +8,7 @@ import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRedirection {
 
-	GioviVisitor visitor = new GioviVisitor();
+	static GioviVisitor visitor = new GioviVisitor();
 
 	private GioviParser parserOf(String text) {
 		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
@@ -40,7 +41,7 @@ public class TestRedirection {
 	)
 	public void testDouble(String code, Double expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varDouble").unbox());
+		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varDouble").unbox());
 	}
 
 	@ParameterizedTest
@@ -56,7 +57,7 @@ public class TestRedirection {
 	)
 	public void testString(String code, String expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("varString").unbox());
+		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varString").unbox());
 	}
 
 
@@ -76,7 +77,7 @@ public class TestRedirection {
 	@MethodSource("produceLists")
 	public void testList(String code, GioviList<GioviValue<?>> expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("list"));
+		assertEquals(expected, visitor.getCurrentScope().getVariableValue("list"));
 	}
 
 
@@ -125,6 +126,6 @@ public class TestRedirection {
 	@MethodSource("produceMaps")
 	public void testMaps(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
 		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, GioviVisitor.getCurrentScope().getVariableValue("map"));
+		assertEquals(expected, visitor.getCurrentScope().getVariableValue("map"));
 	}
 }
