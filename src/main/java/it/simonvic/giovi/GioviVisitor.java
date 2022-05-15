@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
@@ -15,6 +16,8 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -396,6 +399,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
 			.injectVariables(getCurrentScope())
+			.injectExpressions(this)
 			.collect();
 	}
 
@@ -404,6 +408,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
 			.injectVariables(getCurrentScope())
+			.injectExpressions(this)
 			.trimIncidentalWhitespaces()
 			.collect();
 	}
@@ -419,6 +424,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitExactTextBlockLiteral(GioviParser.ExactTextBlockLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
+			.trimIncidentalWhitespaces()
 			.collect();
 	}
 
@@ -488,40 +494,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return null;
 	}
 
-//	@Override
-//	public GioviObject visitFunctionCall(GioviParser.FunctionCallContext ctx) {
-//		GioviFunction func = getCurrentScope().getFunction(ctx.identifier().getText());
-//		if (ctx.functionParameterList() != null && ctx.functionParameterList().functionParameter().size() != func.getParameters().size()) {
-//			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
-//		}
-//		enterFunctionScope();
-//		Iterator<Map.Entry<String, GioviValue<?>>> iterator = func.getParameters().entrySet().iterator();
-//		int i = 0;
-//		while (iterator.hasNext()) {
-//			Map.Entry<String, GioviValue<?>> entry = iterator.next();
-//			String formalParameterIdentifier = entry.getKey();
-//			GioviValue<?> formalValue = entry.getValue();
-//			GioviParser.FunctionParameterContext functionParam = ctx.functionParameterList().functionParameter(i);
-//			formalValue.box(visit(functionParam.expression()).asGioviValue());
-//			if (functionParam.identifier() != null) {
-//				getCurrentScope().declare(functionParam.identifier().getText(), formalValue);
-//			} else {
-//				getCurrentScope().declare(formalParameterIdentifier, formalValue);
-//			}
-//			i++;
-//		}
-//		for (GioviParser.StatementContext statement : func.getBody().statement()) {
-//			visit(statement);
-//			if (getCurrentScope().shouldReturn()) {
-//				func.getReturnValue().box(getCurrentScope().getReturnValue());
-//				break;
-//			}
-//		}
-//		exitScope();
-//		return func.getReturnValue();
-//	}
-
-
 	@Override
 	public GioviObject visitFunctionCallUnnamed(GioviParser.FunctionCallUnnamedContext ctx) {
 		GioviFunction func = getCurrentScope().getFunction(ctx.identifier().getText());
@@ -552,7 +524,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			}
 		}
 		exitScope();
-		return func.getReturnValue().get();
+		return func.getReturnValue().orElse(null);
 	}
 
 

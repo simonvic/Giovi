@@ -1,7 +1,12 @@
 package it.simonvic.giovi.util;
 
+import it.simonvic.giovi.GioviVisitor;
+import it.simonvic.giovi.antlr.GioviLexer;
+import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviText;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +42,11 @@ public class TextProcessor {
 		return this;
 	}
 
+	public TextProcessor injectExpressions(GioviVisitor visitor) {
+		this.text = injectExpressions(this.text, visitor);
+		return this;
+	}
+
 	public TextProcessor trimIncidentalWhitespaces() {
 		this.text = trimIncidentalWhiteSpaces(this.text);
 		return this;
@@ -48,16 +58,23 @@ public class TextProcessor {
 	}
 
 	public static String injectVariables(String text, Scope scope) {
-		String s = Pattern
+		return Pattern
 			.compile("\\$[a-zA-Z]\\w*")
 			.matcher(text)
 			.replaceAll(matchResult
 				-> scope.getVariableValue(matchResult.group().substring(1)).toString());
+	}
+
+	public static String injectExpressions(String text, GioviVisitor visitor) {
 		return Pattern
 			.compile("\\$\\{([^{\\$]*)}")
-			.matcher(s)
-			.replaceAll(matchResult
-				-> scope.getVariableValue(matchResult.group(1)).toString());
+			.matcher(text)
+			.replaceAll(matchResult -> {
+				GioviLexer lexer = new GioviLexer(CharStreams.fromString(matchResult.group(1)));
+				CommonTokenStream tokens = new CommonTokenStream(lexer);
+				GioviParser parser = new GioviParser(tokens);
+				return visitor.visit(parser.expression()).toString();
+			});
 	}
 
 	public static String trimIncidentalWhiteSpaces(String text) {
