@@ -3,10 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>>
 	extends GioviValue<LinkedHashMap<K, V>>
@@ -23,8 +20,16 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public void box(GioviValue<?> value) {
 		switch (value) {
-			case GioviMap<?,?> v -> this.box((LinkedHashMap<K, V>) v.unbox());
+			case GioviMap<?, ?> v -> this.box((LinkedHashMap<K, V>) v.unbox());
 			default -> super.box(value);
+		}
+	}
+
+	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		switch (defaultValue.unbox()) {
+			case GioviMap<?, ?> v -> setDefaultValue((LinkedHashMap<K, V>) new LinkedHashMap<>(v.unbox()));
+			default -> super.setDefaultValue(defaultValue);
 		}
 	}
 

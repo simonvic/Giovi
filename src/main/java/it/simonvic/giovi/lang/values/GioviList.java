@@ -28,6 +28,14 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	}
 
 	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		switch (defaultValue.unbox()) {
+			case GioviList<?> v -> setDefaultValue((List<T>) new ArrayList<>(v.unbox()));
+			default -> super.setDefaultValue(defaultValue);
+		}
+	}
+
+	@Override
 	public GioviObject contains(GioviObject right) {
 		return new GioviBool(value.contains(right.asGioviValue()));
 	}

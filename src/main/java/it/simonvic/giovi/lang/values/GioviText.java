@@ -25,6 +25,14 @@ public non-sealed class GioviText extends GioviValue<String> {
 	}
 
 	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		switch(defaultValue.unbox()) {
+			case String v -> setDefaultValue(v);
+			default -> super.setDefaultValue(defaultValue);
+		}
+	}
+
+	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
 			case GioviDefault v -> value = defaultValue;

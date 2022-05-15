@@ -1,8 +1,8 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
+import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.util.GioviCollections;
 
@@ -49,6 +49,19 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 	public void box(GioviValue<?> value) {
 		throw new IncompatibleTypes(type, value.getType());
+	}
+
+
+	public T getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(T defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		throw new IncompatibleTypes(type, defaultValue.getType());
 	}
 
 	@Override

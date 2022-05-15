@@ -42,6 +42,15 @@ public non-sealed class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		switch(defaultValue.unbox()) {
+			case Double v -> setDefaultValue(v);
+			case Number v -> setDefaultValue(v.doubleValue());
+			default -> super.setDefaultValue(defaultValue);
+		}
+	}
+
+	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
 			case GioviDefault v -> value = defaultValue;

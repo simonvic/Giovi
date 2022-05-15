@@ -26,6 +26,15 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		switch (defaultValue.unbox()) {
+			case Boolean v -> setDefaultValue(v);
+//			case Integer v -> setDefaultValue(v > 0);
+			default -> super.setDefaultValue(defaultValue);
+		}
+	}
+
+	@Override
 	public GioviObject not() {
 		return new GioviBool(!value);
 	}
