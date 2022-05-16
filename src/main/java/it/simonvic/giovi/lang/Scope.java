@@ -142,7 +142,7 @@ public class Scope {
 	// Functions
 
 	public void declare(String identifier, GioviFunction function) {
-		if (isDefinedFunction(identifier)) throw new VariableAlreadyDefinedException(identifier);
+		if (isDefinedFunction(identifier)) throw new GioviException("Function already defined: " + identifier);
 		functions.put(identifier, function);
 	}
 

@@ -1,6 +1,5 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
@@ -16,14 +15,8 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
@@ -479,7 +472,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 						throw new GioviException("Expecting default definition for parameter: " + formalParamCtx.identifier().getText());
 					}
 				} else {
-					paramValue.setDefaultValue(visit(formalParamCtx.defaultDefinition().expression()).asGioviValue());
+					GioviObject defaultValue = visit(formalParamCtx.defaultDefinition().expression());
+					if (defaultValue instanceof GioviDefault) {
+						paramValue.boxDefault();
+					} else {
+						paramValue.setDefaultValue(defaultValue.asGioviValue());
+					}
 					expectParamWithDefault = true;
 				}
 				formalParameters.put(
@@ -489,42 +487,111 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 		getCurrentScope().declare(ctx.identifier().getText(), new GioviFunction(
 			ctx.block(),
-			ctx.type() == null ? null : visit(ctx.type()).asGioviValue(),
+			ctx.type() == null ? null : visit(ctx.type()).asGioviValue().getType(),
 			formalParameters));
 		return null;
 	}
 
 	@Override
-	public GioviObject visitFunctionCallUnnamed(GioviParser.FunctionCallUnnamedContext ctx) {
+	public GioviObject visitFunctionCall(GioviParser.FunctionCallContext ctx) {
 		GioviFunction func = getCurrentScope().getFunction(ctx.identifier().getText());
-		int functionCallParamCount = ctx.functionParameterList() == null ? 0 : ctx.functionParameterList().functionParameter().size();
-		int functionParamCount = func.getParameters().size();
-		if (functionCallParamCount != functionParamCount) {
-			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
-		}
 		enterFunctionScope();
-		Iterator<Map.Entry<String, GioviFunctionParameter>> iterator = func.getParameters().entrySet().iterator();
-		int i = 0;
-		while (iterator.hasNext()) {
-			Map.Entry<String, GioviFunctionParameter> entry = iterator.next();
-			String formalParameterIdentifier = entry.getKey();
-			GioviFunctionParameter formalValue = entry.getValue();
-			GioviParser.FunctionParameterContext functionParam = ctx.functionParameterList().functionParameter(i);
-			formalValue.value().box(visit(functionParam.expression()).asGioviValue());
-			getCurrentScope().declare(formalParameterIdentifier, formalValue.value());
-			i++;
-		}
+		setupFunctionParameters(ctx, func);
+		GioviValue<?> returnValue = visitFunction(func);
+		exitScope();
+		return returnValue;
+	}
+
+	private GioviValue<?> visitFunction(GioviFunction func) {
 		for (GioviParser.StatementContext statement : func.getBody().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
-				func.getReturnValue()
-					.orElseThrow(() -> new GioviException("Returning in function with no return value"))
-					.box(getCurrentScope().getReturnValue());
-				break;
+				Class<?> returnType = func
+					.getReturnType()
+					.orElseThrow(() -> new GioviException("Returning in function with no return value"));
+				GioviValue<?> returnValue = getCurrentScope().getReturnValue();
+				if (returnValue.getType() != returnType) {
+					throw new GioviException("Wrong return type");
+				}
+				return returnValue;
 			}
 		}
-		exitScope();
-		return func.getReturnValue().orElse(null);
+		if (func.getReturnType().isPresent()) {
+			throw new GioviException("Missing return statement in function");
+		}
+		return null;
+	}
+
+	private void setupFunctionParameters(GioviParser.FunctionCallContext ctx, GioviFunction func) {
+		int functionCallParamCount = ctx.functionParameterList() == null ? 0 : ctx.functionParameterList().functionParameter().size();
+		if (functionCallParamCount > func.getParameters().size()) {
+			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
+		}
+		if (ctx.functionParameterList() == null || ctx.functionParameterList().functionParameter(0).identifier() == null) {
+			setupFunctionParametersIteratively(ctx, func);
+		} else {
+			setupNamedFunctionParameters(ctx, func);
+		}
+	}
+
+	private void setupFunctionParametersIteratively(GioviParser.FunctionCallContext ctx, GioviFunction func) {
+		List<GioviParser.FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
+			? List.of()
+			: ctx.functionParameterList().functionParameter();
+		int funcCallParamsCount = funcCallParams.size();
+		Iterator<Map.Entry<String, GioviFunctionParameter>> funcIterator = func.getParameters().entrySet().iterator();
+		int i = 0;
+		while (funcIterator.hasNext()) {
+			Map.Entry<String, GioviFunctionParameter> entry = funcIterator.next();
+			String formalParameterIdentifier = entry.getKey();
+			GioviFunctionParameter formalValue = entry.getValue();
+			if (i < funcCallParamsCount) {
+				GioviParser.FunctionParameterContext funcParamCtx = funcCallParams.get(i);
+				if (funcParamCtx.identifier() != null) {
+					throw new GioviException("Unexpected named parameter: " + funcParamCtx.identifier().getText());
+				}
+				formalValue.value().box(visit(funcParamCtx.expression()).asGioviValue());
+			} else if (formalValue.hasDefault()) {
+				formalValue.value().boxDefault();
+			} else {
+				throw new GioviException("Wrong number of parameters");
+			}
+			getCurrentScope().declare(formalParameterIdentifier, formalValue.value());
+			i++;
+		}
+	}
+
+	private void setupNamedFunctionParameters(GioviParser.FunctionCallContext ctx, GioviFunction func) {
+		List<GioviParser.FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
+			? List.of()
+			: ctx.functionParameterList().functionParameter();
+		LinkedHashMap<String, GioviFunctionParameter> funcParams = func.getParameters();
+
+		Map<String, GioviValue<?>> funcCallParamsMap = new HashMap<>();
+		for (GioviParser.FunctionParameterContext funcCallParamCtx : funcCallParams) {
+			String callParamName = funcCallParamCtx.identifier().getText();
+			if (funcCallParamsMap.containsKey(callParamName)) {
+				throw new GioviException("Duplicate parameter name in function call: " + callParamName);
+			}
+			if (!funcParams.containsKey(callParamName)) {
+				throw new GioviException("Unknown parameter name: " + callParamName);
+			}
+			funcCallParamsMap.put(callParamName, visit(funcCallParamCtx.expression()).asGioviValue());
+		}
+
+		funcParams.forEach((formalIdentifier, formalParameter) -> {
+			GioviValue<?> callParamValue = funcCallParamsMap.get(formalIdentifier);
+			if (callParamValue != null) {
+				formalParameter.value().box(callParamValue);
+			} else if (formalParameter.hasDefault()) {
+				System.out.println("found param with default: " + formalIdentifier);
+				System.out.println("\tdefault: " + formalParameter.value().getDefaultValue());
+				formalParameter.value().boxDefault();
+			} else {
+				throw new GioviException("Missing parameter in function call: " + formalIdentifier);
+			}
+			getCurrentScope().declare(formalIdentifier, formalParameter.value());
+		});
 	}
 
 
