@@ -584,8 +584,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			if (callParamValue != null) {
 				formalParameter.value().box(callParamValue);
 			} else if (formalParameter.hasDefault()) {
-				System.out.println("found param with default: " + formalIdentifier);
-				System.out.println("\tdefault: " + formalParameter.value().getDefaultValue());
 				formalParameter.value().boxDefault();
 			} else {
 				throw new GioviException("Missing parameter in function call: " + formalIdentifier);

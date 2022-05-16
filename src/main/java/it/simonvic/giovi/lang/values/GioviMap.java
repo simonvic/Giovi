@@ -28,7 +28,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
 		switch (defaultValue.unbox()) {
-			case GioviMap<?, ?> v -> setDefaultValue((LinkedHashMap<K, V>) new LinkedHashMap<>(v.unbox()));
+			case Map<?, ?> v -> setDefaultValue((LinkedHashMap<K, V>) new LinkedHashMap<>(v));
 			default -> super.setDefaultValue(defaultValue);
 		}
 	}

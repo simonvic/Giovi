@@ -30,7 +30,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
 		switch (defaultValue.unbox()) {
-			case GioviList<?> v -> setDefaultValue((List<T>) new ArrayList<>(v.unbox()));
+			case List<?> v -> setDefaultValue((List<T>) new ArrayList<>(v));
 			default -> super.setDefaultValue(defaultValue);
 		}
 	}
