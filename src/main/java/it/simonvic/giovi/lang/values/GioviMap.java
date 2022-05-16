@@ -18,10 +18,10 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue) {
 			case GioviMap<?, ?> v -> this.box((LinkedHashMap<K, V>) v.unbox());
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 

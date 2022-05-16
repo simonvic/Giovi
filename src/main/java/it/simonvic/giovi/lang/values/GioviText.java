@@ -17,10 +17,10 @@ public non-sealed class GioviText extends GioviValue<String> {
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value.unbox()) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue.unbox()) {
 			case String v -> box(v);
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 

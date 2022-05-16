@@ -17,11 +17,11 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value.unbox()) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue.unbox()) {
 			case Boolean v -> box(v);
 //			case Integer v -> set(v > 0);
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 

@@ -20,10 +20,10 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value) {
-			case GioviList<?> v -> this.box((List<T>) v.unbox());
-			default -> super.box(value);
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue) {
+			case GioviList<?> v -> this.box((List<T>) new ArrayList<>(v.unbox()));
+			default -> super.box(gioviValue);
 		}
 	}
 
@@ -44,7 +44,7 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value = new ArrayList<>(defaultValue);
-			case GioviList<?> v -> value = (List<T>) v.unbox();
+			case GioviList<?> v -> value = (List<T>) new ArrayList<>(v.unbox());
 			default -> super.redirection(right);
 		}
 		return this;

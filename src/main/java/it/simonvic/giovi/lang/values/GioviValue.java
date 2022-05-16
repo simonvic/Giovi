@@ -11,14 +11,12 @@ import java.util.Map;
 
 public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumber, GioviBool, GioviText, GioviList, GioviMap {
 
-	private Class<?> type;
 	protected T value;
 	protected T defaultValue;
 
 	public GioviValue(T value, T defaultValue) {
 		this.value = value;
 		this.defaultValue = defaultValue;
-		this.type = value.getClass();
 	}
 
 	public static <U> GioviValue<?> of(U value) {
@@ -36,7 +34,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 
 	public Class<?> getType() {
-		return type;
+		return value.getClass();
 	}
 
 	public T unbox() {
@@ -47,10 +45,13 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 		this.value = value;
 	}
 
-	public void box(GioviValue<?> value) {
-		throw new IncompatibleTypes(type, value.getType());
+	public void box(GioviValue<?> gioviValue) {
+		throw new IncompatibleTypes(this.getType(), gioviValue.getType());
 	}
 
+	public void boxDefault() {
+		box(defaultValue);
+	}
 
 	public T getDefaultValue() {
 		return defaultValue;
@@ -61,7 +62,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	}
 
 	public void setDefaultValue(GioviValue<?> defaultValue) {
-		throw new IncompatibleTypes(type, defaultValue.getType());
+		throw new IncompatibleTypes(this.getType(), defaultValue.getType());
 	}
 
 	@Override
@@ -83,4 +84,5 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 		final GioviValue<?> other = (GioviValue<?>) obj;
 		return this.value.equals(other.value);
 	}
+
 }

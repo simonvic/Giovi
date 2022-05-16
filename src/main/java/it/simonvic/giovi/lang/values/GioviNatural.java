@@ -35,11 +35,11 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value.unbox()) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue.unbox()) {
 			case Natural v -> box(v);
 			case Number v -> box(new Natural(v.intValue()));
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 

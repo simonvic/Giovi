@@ -33,11 +33,11 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value.unbox()) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue.unbox()) {
 			case Integer v -> box(v);
 			case Number v -> box(v.intValue());
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 

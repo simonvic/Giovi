@@ -33,11 +33,11 @@ public non-sealed class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
-	public void box(GioviValue<?> value) {
-		switch (value.unbox()) {
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue.unbox()) {
 			case Double v -> box(v);
 			case Number v -> box(v.doubleValue());
-			default -> super.box(value);
+			default -> super.box(gioviValue);
 		}
 	}
 
