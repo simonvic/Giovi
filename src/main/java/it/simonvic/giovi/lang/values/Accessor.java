@@ -12,4 +12,9 @@ public class Accessor extends GioviObject {
 	public String get() {
 		return s;
 	}
+
+	@Override
+	public String toString() {
+		return s;
+	}
 }

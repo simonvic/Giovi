@@ -66,7 +66,8 @@ public non-sealed class GioviText extends GioviValue<String> {
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviText(value + defaultValue);
-			case GioviText v -> new GioviText(value + v.unbox());
+//			case GioviText v -> new GioviText(value + v.unbox());
+			case GioviValue<?> v -> new GioviText(value + v);
 			default -> super.plus(right);
 		};
 	}
