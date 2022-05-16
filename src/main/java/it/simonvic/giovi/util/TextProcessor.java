@@ -3,6 +3,7 @@ package it.simonvic.giovi.util;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviText;
 import org.antlr.v4.runtime.CharStreams;
@@ -73,7 +74,10 @@ public class TextProcessor {
 				GioviLexer lexer = new GioviLexer(CharStreams.fromString(matchResult.group(1)));
 				CommonTokenStream tokens = new CommonTokenStream(lexer);
 				GioviParser parser = new GioviParser(tokens);
-				return visitor.visit(parser.expression()).toString();
+				GioviObject expression = visitor.visit(parser.expression());
+				return expression != null
+					? expression.toString()
+					: "";
 			});
 	}
 
