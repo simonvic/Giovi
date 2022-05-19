@@ -24,7 +24,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	public Optional<GioviParser.BlockContext> evaluate() {
-		for(GioviParser.SwitchLabelContext label : ctx.switchBlock().switchLabel()) {
+		for (GioviParser.SwitchLabelContext label : ctx.switchBlock().switchLabel()) {
 			if (visit(label.caseMatch()).asBoolean()) {
 				return Optional.of(label.block());
 			}
@@ -41,16 +41,16 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	public GioviObject visitRelationalCaseMatch(GioviParser.RelationalCaseMatchContext ctx) {
 		return OperationEvaluator.relational(
 			value,
-			gioviVisitor.visit(ctx.expression()),
-			ctx.op.getText());
+			ctx.op.getText(),
+			gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
 	public GioviObject visitEqualityCaseMatch(GioviParser.EqualityCaseMatchContext ctx) {
 		return OperationEvaluator.equality(
 			value,
-			gioviVisitor.visit(ctx.expression()),
-			ctx.op.getText());
+			ctx.op.getText(),
+			gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
@@ -58,23 +58,23 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 
 		return OperationEvaluator.bool(
 			visit(ctx.caseMatch(0)),
-			gioviVisitor.visit(ctx.expression()),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
 	public GioviObject visitContainmentCaseMatch(GioviParser.ContainmentCaseMatchContext ctx) {
 		return OperationEvaluator.containment(
 			value,
-			gioviVisitor.visit(ctx.expression()),
-			ctx.op.getText());
+			ctx.op.getText(),
+			gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
 	public GioviObject visitBooleanCaseMatch(GioviParser.BooleanCaseMatchContext ctx) {
 		return OperationEvaluator.bool(
 			value,
-			gioviVisitor.visit(ctx.expression()),
-			ctx.op.getText());
+			ctx.op.getText(),
+			gioviVisitor.visit(ctx.expression()));
 	}
 }

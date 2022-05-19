@@ -221,18 +221,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
 		OperationEvaluator.redirection(
-			visit(ctx.identifier()),
+			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
-			visit(ctx.expression()));
+			visit(ctx.identifier()));
 		return null;
 	}
 
 	@Override
 	public GioviObject visitRedirectionToCollectionAccess(GioviParser.RedirectionToCollectionAccessContext ctx) {
 		OperationEvaluator.redirection(
-			visit(ctx.collectionAccess()),
+			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
-			visit(ctx.expression()));
+			visit(ctx.collectionAccess()));
 		return null;
 	}
 
@@ -255,24 +255,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitPrefixedExpression(GioviParser.PrefixedExpressionContext ctx) {
 		return OperationEvaluator.prefixed(
-			visit(ctx.expression()),
-			ctx.prefix.getText());
+			ctx.prefix.getText(),
+			visit(ctx.expression()));
 	}
 
 	@Override
 	public GioviObject visitAdditiveExpression(GioviParser.AdditiveExpressionContext ctx) {
 		return OperationEvaluator.additive(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
 	public GioviObject visitMultiplicativeExpression(GioviParser.MultiplicativeExpressionContext ctx) {
 		return OperationEvaluator.multiplicative(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
@@ -284,8 +284,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitRelationalExpression(GioviParser.RelationalExpressionContext ctx) {
 		return OperationEvaluator.relational(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
@@ -297,24 +297,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitBoolExpression(GioviParser.BoolExpressionContext ctx) {
 		return OperationEvaluator.bool(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
 	public GioviObject visitEqualityExpression(GioviParser.EqualityExpressionContext ctx) {
 		return OperationEvaluator.equality(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
 	public GioviObject visitContainmentExpression(GioviParser.ContainmentExpressionContext ctx) {
 		return OperationEvaluator.containment(
 			visit(ctx.expression(0)),
-			visit(ctx.expression(1)),
-			ctx.bop.getText());
+			ctx.bop.getText(),
+			visit(ctx.expression(1)));
 	}
 
 	@Override
