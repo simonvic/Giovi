@@ -214,20 +214,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
-		String identifier = ctx.identifier().getText();
-		switch (ctx.bop.getText()) {
-			case ">" ->
-				getCurrentScope().getVariableValue(identifier).redirection(visit(ctx.expression())).asGioviValue();
-			case ">+" ->
-				getCurrentScope().getVariableValue(identifier).redirectionPlus(visit(ctx.expression())).asGioviValue();
-			case ">-" ->
-				getCurrentScope().getVariableValue(identifier).redirectionMinus(visit(ctx.expression())).asGioviValue();
-			case ">*" ->
-				getCurrentScope().getVariableValue(identifier).redirectionMultiply(visit(ctx.expression())).asGioviValue();
-			case ">/" ->
-				getCurrentScope().getVariableValue(identifier).redirectionDivide(visit(ctx.expression())).asGioviValue();
-			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
-		}
+		OperationEvaluator.redirection(
+			visit(ctx.identifier()),
+			ctx.redirectionOperator().getText(),
+			visit(ctx.expression()));
+		return null;
+	}
+
+	@Override
+	public GioviObject visitRedirectionToCollectionAccess(GioviParser.RedirectionToCollectionAccessContext ctx) {
+		OperationEvaluator.redirection(
+			visit(ctx.collectionAccess()),
+			ctx.redirectionOperator().getText(),
+			visit(ctx.expression()));
 		return null;
 	}
 
@@ -320,16 +319,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			.access(visit(ctx.collectionAccessor()));
 	}
 
-
 	@Override
 	public GioviObject visitSpecialAccessor(GioviParser.SpecialAccessorContext ctx) {
 		return new Accessor(ctx.getText());
 	}
 
 	@Override
-	public GioviObject visitExpressionAccessor(GioviParser.ExpressionAccessorContext ctx) {
+	public GioviObject visitCollectionLiteralAccessor(GioviParser.CollectionLiteralAccessorContext ctx) {
+		return visit(ctx.literal());
+	}
+
+	@Override
+	public GioviObject visitCollectionParenthesizedAccessor(GioviParser.CollectionParenthesizedAccessorContext ctx) {
+		//@todo improve this
+		if (ctx.specialAccessor() != null) return visit(ctx.specialAccessor());
+		if (ctx.literal() != null) return visit(ctx.literal());
 		return visit(ctx.expression());
 	}
+
 
 	@Override
 	public GioviObject visitIdentifier(GioviParser.IdentifierContext ctx) {

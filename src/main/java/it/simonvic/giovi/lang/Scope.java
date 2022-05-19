@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
 import it.simonvic.giovi.exceptions.VariableNotDefinedException;
+import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.values.GioviValue;
 
@@ -11,11 +12,6 @@ import java.util.Map;
 
 public class Scope {
 
-	private final Map<String, GioviValue<?>> variables = new HashMap<>();
-
-	private final Map<String, GioviFunction> functions = new HashMap<>();
-	private GioviValue<?> returnValue;
-	private boolean shouldReturn = false;
 
 	private final Scope parentScope;
 
@@ -31,19 +27,26 @@ public class Scope {
 		return parentScope;
 	}
 
-	public void onContinued() {
-	}
 
 	public boolean shouldContinue() {
 		return false;
 	}
 
-	public boolean shouldBreak() {
-		return false;
+	public void doContinue() {
+		if (this instanceof LoopScope s) {
+			s.doContinue();
+		} else if (parentScope != null) {
+			parentScope.doContinue();
+		}
+		throw new GioviException("Continue statement in non-loop scope");
 	}
 
-	public boolean shouldReturn() {
-		return shouldReturn;
+	public void onContinued() {
+	}
+
+
+	public boolean shouldBreak() {
+		return false;
 	}
 
 	public void doBreak() {
@@ -55,26 +58,33 @@ public class Scope {
 		throw new GioviException("Break statement in non-loop scope");
 	}
 
-	public void doContinue() {
-		if (this instanceof LoopScope l) {
-			l.doContinue();
-		} else if (parentScope != null) {
-			parentScope.doContinue();
-		}
-		throw new GioviException("Continue statement in non-loop scope");
+
+	public boolean shouldReturn() {
+		return false;
 	}
 
 	public void doReturn(GioviValue<?> returnValue) {
-		shouldReturn = true;
-		this.returnValue = returnValue;
+		if (this instanceof FunctionScope s) {
+			s.doReturn(returnValue);
+		} else if (parentScope != null) {
+			parentScope.doReturn(returnValue);
+		} else {
+			throw new GioviException("Return statement in non-function scope");
+		}
 	}
 
 	public GioviValue<?> getReturnValue() {
-		return returnValue;
+		if (this instanceof FunctionScope s) {
+			return s.getReturnValue();
+		} else if (parentScope != null) {
+			return parentScope.getReturnValue();
+		}
+		throw new GioviException("Return not available in non-function scope");
 	}
 
+
 	public boolean isInLoop() {
-		if (this instanceof LoopScope l) {
+		if (this instanceof LoopScope) {
 			return true;
 		} else if (parentScope != null) {
 			return parentScope.isInLoop();
@@ -82,13 +92,24 @@ public class Scope {
 		return false;
 	}
 
-	public void deleteVariable(String identifier) {
-		variables.remove(identifier);
+	public boolean isInFunction() {
+		if (this instanceof FunctionScope) {
+			return true;
+		} else if (parentScope != null) {
+			return parentScope.isInFunction();
+		}
+		return false;
 	}
 
 
 	////////////////////////////////////////////////
 	// Variables
+
+	private final Map<String, GioviValue<?>> variables = new HashMap<>();
+
+	public void deleteVariable(String identifier) {
+		variables.remove(identifier);
+	}
 
 	public void declare(String identifier, GioviValue<?> value) {
 		if (isDefinedVariable(identifier)) throw new VariableAlreadyDefinedException(identifier);
@@ -140,6 +161,8 @@ public class Scope {
 
 	////////////////////////////////////////////////
 	// Functions
+
+	private final Map<String, GioviFunction> functions = new HashMap<>();
 
 	public void declare(String identifier, GioviFunction function) {
 		if (isDefinedFunction(identifier)) throw new GioviException("Function already defined: " + identifier);

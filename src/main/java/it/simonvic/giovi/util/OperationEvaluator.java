@@ -1,6 +1,7 @@
 package it.simonvic.giovi.util;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.GioviObject;
 
 public class OperationEvaluator {
@@ -62,5 +63,16 @@ public class OperationEvaluator {
 			case "=~" -> left.contains(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
+	}
+
+	public static void redirection(GioviObject left, String operator, GioviObject right) {
+		switch (operator) {
+			case ">" -> left.redirection(right);
+			case ">+" -> left.redirectionPlus(right);
+			case ">-" -> left.redirectionMinus(right);
+			case ">*" -> left.redirectionMultiply(right);
+			case ">/" -> left.redirectionDivide(right);
+			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
+		}
 	}
 }
