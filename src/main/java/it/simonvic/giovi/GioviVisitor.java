@@ -132,7 +132,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			if (getCurrentScope().shouldContinue()) {
 				exitScope();
-				getCurrentScope().onContinued();
 				continue;
 			}
 
@@ -168,7 +167,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			if (getCurrentScope().shouldContinue()) {
 				exitScope();
-				getCurrentScope().onContinued();
 				continue;
 			}
 
@@ -192,7 +190,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			if (getCurrentScope().shouldContinue()) {
 				exitScope();
-				getCurrentScope().onContinued();
 				continue;
 			}
 

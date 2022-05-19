@@ -20,11 +20,6 @@ public class LoopScope extends Scope {
 	}
 
 	@Override
-	public void onContinued() {
-		shouldContinue = false;
-	}
-
-	@Override
 	public boolean shouldContinue() {
 		return shouldContinue;
 	}

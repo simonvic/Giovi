@@ -47,10 +47,6 @@ public class Scope {
 		}
 	}
 
-	public void onContinued() {
-	}
-
-
 	public boolean shouldBreak() {
 		if (this instanceof LoopScope s) {
 			return s.shouldBreak();
