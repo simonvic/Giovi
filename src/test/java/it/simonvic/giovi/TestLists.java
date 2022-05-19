@@ -20,9 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class TestLists {
 
 	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
+		GioviParser parser = new GioviParser(tokens);
 		GioviVisitor visitor = new GioviVisitor();
 		return visitor.visit(parser.expression());
 	}
@@ -55,14 +55,15 @@ public class TestLists {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualLists")
-	public void testListEquality(String code, GioviList<?> expected) {
+	void testListEquality(String code, GioviList<?> expected) {
 		assertEquals(expected, run(code));
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceNotEqualLists")
-	public void testListNonEquality(String code, GioviList<?> expected) {
+	void testListNonEquality(String code, GioviList<?> expected) {
 		assertNotEquals(expected, run(code));
 	}
+
 
 }

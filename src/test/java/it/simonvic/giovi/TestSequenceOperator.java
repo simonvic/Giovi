@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestSequenceOperator {
 
 	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
+		GioviParser parser = new GioviParser(tokens);
 		GioviVisitor visitor = new GioviVisitor();
 		return visitor.visit(parser.expression());
 	}
@@ -47,7 +47,7 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsInteger")
-	public void testSequence_Integer(String code, GioviList<GioviInt> expected) {
+	void testSequence_Integer(String code, GioviList<GioviInt> expected) {
 		assertEquals(expected, run(code));
 	}
 
@@ -69,7 +69,7 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsDouble")
-	public void testSequence_Double(String code, GioviList<GioviReal> expected) {
+	void testSequence_Double(String code, GioviList<GioviReal> expected) {
 		assertEquals(expected, run(code));
 	}
 
@@ -89,7 +89,7 @@ public class TestSequenceOperator {
 	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@MethodSource("produceEqualListsLetters")
-	public void testSequence_Letters(String code, GioviList<GioviText> expected) {
+	void testSequence_Letters(String code, GioviList<GioviText> expected) {
 		assertEquals(expected, run(code));
 	}
 

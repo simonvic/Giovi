@@ -30,7 +30,7 @@ public class TestMathExpressions {
 		-10 - -5, -5
 		"""
 	)
-	public void testAdditiveExpression(String code, Integer expected) {
+	void testAdditiveExpression(String code, Integer expected) {
 		assertEquals(expected, run(code).asInteger());
 	}
 
@@ -42,7 +42,7 @@ public class TestMathExpressions {
 		10 / 0.5, 20
 		"""
 	)
-	public void testMultiplicativeExpression(String code, Double expected) {
+	void testMultiplicativeExpression(String code, Double expected) {
 		assertEquals(expected, run(code).asDouble());
 	}
 
@@ -55,7 +55,7 @@ public class TestMathExpressions {
 		10.0 ^ -{2 * 2}, 0.0001
 		"""
 	)
-	public void testPowerExpression(String code, Double expected) {
+	void testPowerExpression(String code, Double expected) {
 		assertEquals(expected, run(code).asDouble());
 	}
 
@@ -69,7 +69,7 @@ public class TestMathExpressions {
 		10 % 7, 3
 		"""
 	)
-	public void testModuloExpression(String code, Integer expected) {
+	void testModuloExpression(String code, Integer expected) {
 		assertEquals(expected, run(code).asInteger());
 	}
 
@@ -79,7 +79,7 @@ public class TestMathExpressions {
 		10 * {2 * {3 + 2}}, 100
 		"""
 	)
-	public void testParenthesizedExpression(String code, Integer expected) {
+	void testParenthesizedExpression(String code, Integer expected) {
 		assertEquals(expected, run(code).asInteger());
 	}
 

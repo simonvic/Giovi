@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestContainmentExpression {
 
 	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
+		GioviParser parser = new GioviParser(tokens);
 		GioviVisitor visitor = new GioviVisitor();
 		return visitor.visit(parser.expression());
 	}
@@ -28,7 +28,7 @@ public class TestContainmentExpression {
 		"zzz" ~= "simone", false
 		"""
 	)
-	public void testStrings(String code, boolean expected) {
+	void testStrings(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 
@@ -42,7 +42,7 @@ public class TestContainmentExpression {
 		4 ~= [0 1 2 3], false
 		"""
 	)
-	public void testLists(String code, boolean expected) {
+	void testLists(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 }

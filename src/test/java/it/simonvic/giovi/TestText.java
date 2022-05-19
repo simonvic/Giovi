@@ -109,6 +109,7 @@ public class TestText {
 			assertEquals("\n\n", actual);
 		}
 
+
 		@Nested
 		class TestIncidentalWhitespaces {
 

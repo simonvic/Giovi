@@ -39,7 +39,7 @@ public class TestRedirection {
 		10 >/ varDouble, 2
 		"""
 	)
-	public void testDouble(String code, Double expected) {
+	void testDouble(String code, Double expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varDouble").unbox());
 	}
@@ -55,7 +55,7 @@ public class TestRedirection {
 		"eo" >- varString, h1
 		"""
 	)
-	public void testString(String code, String expected) {
+	void testString(String code, String expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varString").unbox());
 	}
@@ -75,7 +75,7 @@ public class TestRedirection {
 
 	@ParameterizedTest
 	@MethodSource("produceLists")
-	public void testList(String code, GioviList<GioviValue<?>> expected) {
+	void testList(String code, GioviList<GioviValue<?>> expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("list"));
 	}
@@ -124,7 +124,7 @@ public class TestRedirection {
 
 	@ParameterizedTest
 	@MethodSource("produceMaps")
-	public void testMaps(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
+	void testMaps(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("map"));
 	}

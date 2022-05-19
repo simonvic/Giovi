@@ -23,15 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestMaps {
 
 	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
+		GioviParser parser = new GioviParser(tokens);
 		GioviVisitor visitor = new GioviVisitor();
 		return visitor.visit(parser.expression());
 	}
 
 	@Test
-	public void mapsShouldBeEqual() {
+	void mapsShouldBeEqual() {
 		GioviMap<GioviInt, GioviText> map1 = new GioviMap<>();
 		map1.put(new GioviInt(0), new GioviText("a"));
 		map1.put(new GioviInt(1), new GioviText("b"));
@@ -45,11 +45,6 @@ public class TestMaps {
 		assertEquals(map1, map2);
 	}
 
-	@Test
-	void awafwa(){
-		assertEquals(new GioviText("awf"), new GioviText("awf"));
-	}
-
 	private static Stream<Arguments> produceEqualMaps() {
 		return Stream.of(
 			Arguments.of("""
@@ -61,9 +56,8 @@ public class TestMaps {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualMaps")
-	public void testMapsEquality(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
+	void testMapsEquality(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
 		assertEquals(expected, run(code));
 	}
-
 
 }

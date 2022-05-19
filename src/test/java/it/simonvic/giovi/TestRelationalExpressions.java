@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TestRelationalExpressions {
 
 	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
+		GioviParser parser = new GioviParser(tokens);
 		GioviVisitor visitor = new GioviVisitor();
 		return visitor.visit(parser.expression());
 	}
@@ -29,7 +29,7 @@ public class TestRelationalExpressions {
 		-10 > 10, false
 		"""
 	)
-	public void testGreater(String code, boolean expected) {
+	void testGreater(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 
@@ -42,7 +42,7 @@ public class TestRelationalExpressions {
 		-10 < 10, true
 		"""
 	)
-	public void testLess(String code, boolean expected) {
+	void testLess(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 
@@ -58,7 +58,7 @@ public class TestRelationalExpressions {
 		10 <= -10, false
 		"""
 	)
-	public void testLessEqual(String code, boolean expected) {
+	void testLessEqual(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 
@@ -74,7 +74,7 @@ public class TestRelationalExpressions {
 		10 >= -10, true
 		"""
 	)
-	public void testGreaterEqual(String code, boolean expected) {
+	void testGreaterEqual(String code, boolean expected) {
 		assertEquals(expected, run(code).asBoolean());
 	}
 
