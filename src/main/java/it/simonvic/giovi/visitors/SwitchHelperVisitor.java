@@ -19,11 +19,11 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 		this.value = gioviVisitor.visit(ctx.expression());
 	}
 
-	public static Optional<ParseTree> evaluate(GioviVisitor gioviVisitor, GioviParser.SwitchStatementContext ctx) {
+	public static Optional<GioviParser.BlockContext> evaluate(GioviVisitor gioviVisitor, GioviParser.SwitchStatementContext ctx) {
 		return new SwitchHelperVisitor(gioviVisitor, ctx).evaluate();
 	}
 
-	public Optional<ParseTree> evaluate() {
+	public Optional<GioviParser.BlockContext> evaluate() {
 		for(GioviParser.SwitchLabelContext label : ctx.switchBlock().switchLabel()) {
 			if (visit(label.caseMatch()).asBoolean()) {
 				return Optional.of(label.block());

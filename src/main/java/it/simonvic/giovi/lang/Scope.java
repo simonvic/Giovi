@@ -29,6 +29,11 @@ public class Scope {
 
 
 	public boolean shouldContinue() {
+		if (this instanceof LoopScope s) {
+			return s.shouldContinue();
+		} else if (parentScope != null) {
+			return parentScope.shouldContinue();
+		}
 		return false;
 	}
 
@@ -37,8 +42,9 @@ public class Scope {
 			s.doContinue();
 		} else if (parentScope != null) {
 			parentScope.doContinue();
+		} else {
+			throw new GioviException("Continue statement in non-loop scope");
 		}
-		throw new GioviException("Continue statement in non-loop scope");
 	}
 
 	public void onContinued() {
@@ -46,6 +52,11 @@ public class Scope {
 
 
 	public boolean shouldBreak() {
+		if (this instanceof LoopScope s) {
+			return s.shouldBreak();
+		} else if (parentScope != null) {
+			return parentScope.shouldBreak();
+		}
 		return false;
 	}
 
@@ -54,12 +65,18 @@ public class Scope {
 			l.doBreak();
 		} else if (parentScope != null) {
 			parentScope.doBreak();
+		} else {
+			throw new GioviException("Break statement in non-loop scope");
 		}
-		throw new GioviException("Break statement in non-loop scope");
 	}
 
 
 	public boolean shouldReturn() {
+		if (this instanceof FunctionScope s) {
+			return s.shouldReturn();
+		} else if (parentScope != null) {
+			return parentScope.shouldReturn();
+		}
 		return false;
 	}
 
@@ -78,8 +95,9 @@ public class Scope {
 			return s.getReturnValue();
 		} else if (parentScope != null) {
 			return parentScope.getReturnValue();
+		} else {
+			throw new GioviException("Return not available in non-function scope");
 		}
-		throw new GioviException("Return not available in non-function scope");
 	}
 
 

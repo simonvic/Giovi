@@ -48,22 +48,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitBlock(GioviParser.BlockContext ctx) {
-		for (GioviParser.StatementContext statementContext : ctx.statement()) {
-			if (getCurrentScope().shouldBreak()) {
-				break;
-			}
-
-			if (getCurrentScope().shouldContinue()) {
-				getCurrentScope().onContinued();
-				break;
-			}
-			visit(statementContext);
-		}
-		return null;
-	}
-
-	@Override
 	public GioviObject visitIfStatement(GioviParser.IfStatementContext ctx) {
 		if (visit(ctx.expression()).asBoolean()) {
 			enterScope();
@@ -73,6 +57,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			enterScope();
 			visit(ctx.elseBody);
 			exitScope();
+		}
+		return null;
+	}
+
+	@Override
+	public GioviObject visitBlock(GioviParser.BlockContext ctx) {
+		for (GioviParser.StatementContext statementContext : ctx.statement()) {
+			visit(statementContext);
+			Scope s = getCurrentScope();
+			if (s.shouldBreak() || s.shouldReturn() || s.shouldContinue()) {
+				break;
+			}
 		}
 		return null;
 	}
@@ -119,23 +115,27 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		for (GioviValue<?> value : list.unbox()) {
 
-			if (getCurrentScope().shouldBreak()) {
+			enterLoopScope();
+
+			//@todo update when structs are implemented
+			String iteratorName = iterators.get(0).getText();
+			getCurrentScope().declare(iteratorName, value); //@todo iterator should be by value?
+			GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
+			iterator.box(value);
+
+			visit(block);
+
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
 				break;
 			}
 
 			if (getCurrentScope().shouldContinue()) {
+				exitScope();
 				getCurrentScope().onContinued();
 				continue;
 			}
 
-			enterLoopScope();
-
-			String iteratorName = iterators.get(0).getText();
-			getCurrentScope().declare(iteratorName, value); //@todo iterator should be by value?
-			GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
-
-			iterator.box(value);
-			visit(block);
 			exitScope();
 		}
 
@@ -147,26 +147,30 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox().entrySet()) {
 
-			if (getCurrentScope().shouldBreak()) {
-				break;
-			}
-
-			if (getCurrentScope().shouldContinue()) {
-				getCurrentScope().onContinued();
-				continue;
-			}
-
 			enterLoopScope();
 
+			//@todo update when structs are implemented
 			String keyIteratorName = iterators.get(0).getText();
 			String elementIteratorName = iterators.get(1).getText();
 
 			//@todo iterators should be by value?
 			getCurrentScope().declare(keyIteratorName, entry.getKey());
-			getCurrentScope().declare(elementIteratorName, entry.getValue());
 			getCurrentScope().getVariableValue(keyIteratorName).box(entry.getKey());
+			getCurrentScope().declare(elementIteratorName, entry.getValue());
 			getCurrentScope().getVariableValue(elementIteratorName).box(entry.getValue());
+
 			visit(block);
+
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
+				break;
+			}
+
+			if (getCurrentScope().shouldContinue()) {
+				exitScope();
+				getCurrentScope().onContinued();
+				continue;
+			}
 
 			exitScope();
 		}
@@ -178,15 +182,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		enterLoopScope();
 		boolean infiniteRepeat = ctx.IF() == null;
 		while (infiniteRepeat || visit(ctx.expression()).asBoolean()) {
-			if (getCurrentScope().shouldBreak()) {
+			enterLoopScope();
+			visit(ctx.block());
+
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
 				break;
 			}
+
 			if (getCurrentScope().shouldContinue()) {
+				exitScope();
 				getCurrentScope().onContinued();
 				continue;
 			}
-			enterLoopScope();
-			visit(ctx.block());
+
 			exitScope();
 		}
 		return null;
