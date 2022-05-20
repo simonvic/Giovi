@@ -1,24 +1,12 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviObject;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestContainmentExpression {
-
-	private GioviObject run(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
@@ -29,7 +17,7 @@ public class TestContainmentExpression {
 		"""
 	)
 	void testStrings(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -43,6 +31,6 @@ public class TestContainmentExpression {
 		"""
 	)
 	void testLists(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 }

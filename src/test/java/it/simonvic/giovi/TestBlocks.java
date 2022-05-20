@@ -17,7 +17,7 @@ public class TestBlocks {
 	Scope scope111;
 
 	@BeforeEach
-	public void setup() {
+	void setup() {
 		global = new Scope();
 		scope1 = new Scope(global);
 		scope2 = new Scope(global);
@@ -26,58 +26,57 @@ public class TestBlocks {
 	}
 
 	@Test
-	public void test_declareVariable() {
+	void test_declareVariable() {
 		global.declare("aString", GioviValue.of("hello world"));
 		assertTrue(global.isDefinedVariable("aString"));
 	}
 
 	@Test
-	public void test_getVariableValue() {
+	void test_getVariableValue() {
 		global.declare("aString", GioviValue.of("hello world"));
 		assertEquals("hello world", global.getVariableValue("aString").unbox());
 	}
 
 	@Test
-	public void test_isVariableDeclared() {
+	void test_isVariableDeclared() {
 		assertFalse(global.isDefinedVariable("aString"));
 	}
 
 	@Test
-	public void nestedBlocksShouldSeeParentsVariables() {
+	void nestedBlocksShouldSeeParentsVariables() {
 		global.declare("aString", GioviValue.of("Hello world"));
 		assertTrue(scope1.isDefinedVariable("aString"));
 	}
 
 	@Test
-	public void nestedBlocksShouldSeeParentsVariables2() {
+	void nestedBlocksShouldSeeParentsVariables2() {
 		global.declare("aString", GioviValue.of("Hello world"));
 		assertTrue(scope111.isDefinedVariable("aString"));
 	}
 
 	@Test
-	public void nonNestedBlocksShouldSeeParentsVariables() {
+	void nonNestedBlocksShouldSeeParentsVariables() {
 		scope1.declare("aString", GioviValue.of("Hello world"));
 		assertFalse(scope2.isDefinedVariable("aString"));
 	}
 
 	@Test
-	public void nestedBlockShouldThrow_VariableAlreadyDefined() {
+	void nestedBlockShouldThrow_VariableAlreadyDefined() {
 		scope11.declare("aString", GioviValue.of("Hello world"));
 		assertThrows(VariableAlreadyDefinedException.class, () -> scope111.declare("aString", GioviValue.of("hello_world")));
 	}
 
 	@Test
-	public void nestedBlockShouldAccessVariablesValue() {
+	void nestedBlockShouldAccessVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
 		assertEquals("Hello world", scope11.getVariableValue("aString").unbox());
 	}
 
 	@Test
-	public void nestedBlockShouldBeAbleToChangeVariablesValue() {
+	void nestedBlockShouldBeAbleToChangeVariablesValue() {
 		global.declare("aString", GioviValue.of("Hello world"));
 		scope2.setVariableValue("aString", GioviValue.of("ciao mondo"));
 		assertEquals("ciao mondo", global.getVariableValue("aString").unbox());
 	}
-
 
 }

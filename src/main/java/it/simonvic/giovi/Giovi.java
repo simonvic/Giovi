@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.GioviObject;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -25,6 +26,20 @@ public class Giovi {
 
 		GioviVisitor visitor = new GioviVisitor();
 		visitor.visit(tree);
+	}
+
+	public static GioviParser parserOf(String code) {
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(code));
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		return new GioviParser(tokens);
+	}
+
+	public static GioviObject runExpression(String code) {
+		return new GioviVisitor().visit(parserOf(code).expression());
+	}
+
+	public static GioviObject run(String code) {
+		return new GioviVisitor().visit(parserOf(code).begin());
 	}
 
 }

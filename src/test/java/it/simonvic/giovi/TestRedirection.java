@@ -4,11 +4,9 @@ import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.values.GioviList;
 import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.util.GioviCollections;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -17,17 +15,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static it.simonvic.giovi.Giovi.parserOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestRedirection {
 
 	static GioviVisitor visitor = new GioviVisitor();
-
-	private GioviParser parserOf(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		return new GioviParser(tokens);
-	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
@@ -75,7 +68,7 @@ public class TestRedirection {
 
 	@ParameterizedTest
 	@MethodSource("produceLists")
-	void testList(String code, GioviList<GioviValue<?>> expected) {
+	void testList(String code, GioviList expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("list"));
 	}
@@ -114,17 +107,13 @@ public class TestRedirection {
 			Arguments.of("""
 				[3:"c" 4:"d"] >- map
 				""", GioviCollections.of(Map.of(1, "a", 2, "b"))
-			),
-			Arguments.of("""
-				[1 2] >- map
-				""", GioviCollections.of(Map.of())
 			)
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceMaps")
-	void testMaps(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
+	void testMaps(String code, GioviMap expected) {
 		visitor.visit(parserOf(code).begin());
 		assertEquals(expected, visitor.getCurrentScope().getVariableValue("map"));
 	}

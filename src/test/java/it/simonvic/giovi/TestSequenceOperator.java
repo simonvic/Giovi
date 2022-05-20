@@ -18,17 +18,10 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestSequenceOperator {
-
-	private GioviObject run(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
 
 	private static Stream<Arguments> produceEqualListsInteger() {
 		return Stream.of(
@@ -47,8 +40,8 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsInteger")
-	void testSequence_Integer(String code, GioviList<GioviInt> expected) {
-		assertEquals(expected, run(code));
+	void testSequence_Integer(String code, GioviList expected) {
+		assertEquals(expected, runExpression(code));
 	}
 
 	private static Stream<Arguments> produceEqualListsDouble() {
@@ -69,8 +62,8 @@ public class TestSequenceOperator {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualListsDouble")
-	void testSequence_Double(String code, GioviList<GioviReal> expected) {
-		assertEquals(expected, run(code));
+	void testSequence_Double(String code, GioviList expected) {
+		assertEquals(expected, runExpression(code));
 	}
 
 
@@ -89,8 +82,8 @@ public class TestSequenceOperator {
 	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@MethodSource("produceEqualListsLetters")
-	void testSequence_Letters(String code, GioviList<GioviText> expected) {
-		assertEquals(expected, run(code));
+	void testSequence_Letters(String code, GioviList expected) {
+		assertEquals(expected, runExpression(code));
 	}
 
 }

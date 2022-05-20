@@ -8,18 +8,11 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestMathExpressions {
 
-
-	private GioviObject run(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
@@ -31,7 +24,7 @@ public class TestMathExpressions {
 		"""
 	)
 	void testAdditiveExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInteger());
+		assertEquals(expected, runExpression(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -43,7 +36,7 @@ public class TestMathExpressions {
 		"""
 	)
 	void testMultiplicativeExpression(String code, Double expected) {
-		assertEquals(expected, run(code).asDouble());
+		assertEquals(expected, runExpression(code).asDouble());
 	}
 
 	@ParameterizedTest
@@ -56,7 +49,7 @@ public class TestMathExpressions {
 		"""
 	)
 	void testPowerExpression(String code, Double expected) {
-		assertEquals(expected, run(code).asDouble());
+		assertEquals(expected, runExpression(code).asDouble());
 	}
 
 	@ParameterizedTest
@@ -70,7 +63,7 @@ public class TestMathExpressions {
 		"""
 	)
 	void testModuloExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInteger());
+		assertEquals(expected, runExpression(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -80,7 +73,7 @@ public class TestMathExpressions {
 		"""
 	)
 	void testParenthesizedExpression(String code, Integer expected) {
-		assertEquals(expected, run(code).asInteger());
+		assertEquals(expected, runExpression(code).asInteger());
 	}
 
 }
