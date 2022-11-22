@@ -7,12 +7,12 @@ public final class Natural extends Number {
 	private final Integer value;
 
 	public Natural(Integer value) {
-		if (value <= 0) throw new GioviException("Value out of bound");
+		if (value < 0) throw new GioviException("Value out of bound");
 		this.value = value;
 	}
 
 	public Natural() {
-		this.value = 1;
+		this.value = 0;
 	}
 
 	@Override
