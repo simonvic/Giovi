@@ -37,7 +37,7 @@ public class TestFunctions {
 	void returningInFunctionWithNoReturn_shouldThrowException() {
 		GioviParser parser = setupParser("""
 			someFunction() {
-				69 =>
+				=> 69
 			}
 			someFunction()
 			""");
@@ -48,7 +48,7 @@ public class TestFunctions {
 	void returningWrongType_shouldThrowException() {
 		GioviParser parser = setupParser("""
 			someFunction() => Text {
-				69 =>
+				=> 69
 			}
 			someFunction()
 			""");

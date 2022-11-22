@@ -1,10 +1,9 @@
 package it.simonvic.giovi.visitors;
 
-import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviObject;
-import org.antlr.v4.runtime.tree.ParseTree;
+import it.simonvic.giovi.util.OperationEvaluator;
 
 import java.util.Optional;
 
@@ -19,14 +18,14 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 		this.value = gioviVisitor.visit(ctx.expression());
 	}
 
-	public static Optional<GioviParser.BlockContext> evaluate(GioviVisitor gioviVisitor, GioviParser.SwitchStatementContext ctx) {
+	public static Optional<GioviParser.StatementOrBlockContext> evaluate(GioviVisitor gioviVisitor, GioviParser.SwitchStatementContext ctx) {
 		return new SwitchHelperVisitor(gioviVisitor, ctx).evaluate();
 	}
 
-	public Optional<GioviParser.BlockContext> evaluate() {
+	public Optional<GioviParser.StatementOrBlockContext> evaluate() {
 		for (GioviParser.SwitchLabelContext label : ctx.switchBlock().switchLabel()) {
 			if (visit(label.caseMatch()).asBoolean()) {
-				return Optional.of(label.block());
+				return Optional.of(label.body);
 			}
 		}
 		return Optional.ofNullable(ctx.elseBody);

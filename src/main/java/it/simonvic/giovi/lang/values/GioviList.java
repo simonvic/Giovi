@@ -3,34 +3,102 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.type.GioviType;
+import it.simonvic.giovi.lang.type.GioviTypeList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public non-sealed class GioviList<T extends GioviValue<?>>
-	extends GioviValue<List<T>>
-	implements GioviCollection {
+public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 
-	public GioviList(List<T> value, List<T> defaultValue) {
-		super(value, defaultValue);
+	private final GioviType entryType;
+
+	public GioviList(GioviType entryType) {
+		this(entryType, new ArrayList<>(), new ArrayList<>());
 	}
 
-	public GioviList() {
-		super(new ArrayList<>(), new ArrayList<>());
+	public GioviList(Class<? extends GioviValue<?>> entryType) {
+		this(new GioviType(entryType), new ArrayList<>(), new ArrayList<>());
+	}
+
+	public GioviList(List<GioviValue<?>> entries) {
+		this(null, entries, new ArrayList<>());
+	}
+
+	public GioviList(Class<? extends GioviValue<?>> entryType, List<GioviValue<?>> entries) {
+		this(new GioviType(entryType), entries, new ArrayList<>());
+	}
+
+	public GioviList(Class<? extends GioviValue<?>> gioviType, ArrayList<GioviValue<?>> value, ArrayList<GioviValue<?>> defaultValue) {
+		this(new GioviType(gioviType), value, defaultValue);
+	}
+
+	public GioviList(GioviType entryType, List<GioviValue<?>> value, List<GioviValue<?>> defaultValue) {
+		super(value, defaultValue);
+		this.entryType = entryType != null ? entryType : GioviType.inferGioviType(value);
+		checkCasts(this.value, this.entryType);
+		checkCasts(this.defaultValue, this.entryType);
+	}
+
+	public static void checkCasts(List<GioviValue<?>> entries, GioviType type) {
+		entries.forEach(entry -> entry.castTo(type));
+	}
+
+	public GioviType getEntryType() {
+		return entryType;
+	}
+
+
+	public void add(GioviValue<?> entry) {
+		value.add(entry.castTo(entryType));
+	}
+
+	public void addAll(List<? extends GioviValue<?>> entries) {
+		entries.forEach(this::add);
+	}
+
+	public void remove(GioviValue<?> entry) {
+		value.remove(entry);
+	}
+
+	public void removeAll(List<? extends GioviValue<?>> seq) {
+		value.removeAll(seq);
+	}
+
+	public void clear() {
+		value.clear();
+	}
+
+	public void init(List<GioviValue<?>> entries) {
+		clear();
+		addAll(entries);
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType type) {
+		if (type instanceof GioviTypeList listType) {
+			value.forEach(entry -> entry.castTo(listType.getEntryType()));
+			return new GioviList(value);
+		}
+
+		value.forEach(entry -> entry.castTo(type));
+		return new GioviList(value);
+//		return super.castTo(type);
 	}
 
 	@Override
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue) {
-			case GioviList<?> v -> this.box((List<T>) new ArrayList<>(v.unbox()));
+			case GioviList v -> value = v.unbox();
 			default -> super.box(gioviValue);
 		}
 	}
 
 	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case List<?> v -> setDefaultValue((List<T>) new ArrayList<>(v));
+		switch (defaultValue) {
+			case GioviList v -> setDefaultValue(v.unbox());
 			default -> super.setDefaultValue(defaultValue);
 		}
 	}
@@ -43,8 +111,8 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> value = new ArrayList<>(defaultValue);
-			case GioviList<?> v -> value = (List<T>) new ArrayList<>(v.unbox());
+			case GioviDefault v -> this.init(defaultValue);
+			case GioviList v -> this.init(v.unbox());
 			default -> super.redirection(right);
 		}
 		return this;
@@ -53,9 +121,9 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> value.addAll(defaultValue);
-			case GioviList<?> v -> v.unbox().forEach(gioviValue -> value.add((T) gioviValue));
-			case GioviValue<?> v -> value.add((T) v);
+			case GioviDefault v -> addAll(defaultValue);
+			case GioviList v -> addAll(v.unbox());
+			case GioviValue<?> v -> add(v);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -64,9 +132,9 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> value.removeAll(defaultValue);
-			case GioviList<?> v -> v.unbox().forEach(gioviValue -> value.remove((T) gioviValue));
-			case GioviValue<?> v -> value.remove((T) v);
+			case GioviDefault v -> removeAll(defaultValue);
+			case GioviList v -> removeAll(v.unbox());
+			case GioviValue<?> v -> remove(v);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -76,17 +144,9 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
-			case GioviList<?> v -> new GioviBool(value.equals(v.value));
+			case GioviList v -> new GioviBool(value.equals(v.unbox()));
 			default -> super.equal(right);
 		};
-	}
-
-	public void add(T entry) {
-		value.add(entry);
-	}
-
-	public void addAll(List<? extends T> seq) {
-		value.addAll(seq);
 	}
 
 	@Override
@@ -100,24 +160,28 @@ public non-sealed class GioviList<T extends GioviValue<?>>
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final GioviList<GioviValue<?>> other = (GioviList<GioviValue<?>>) obj;
+		final GioviList other = (GioviList) obj;
 		return this.value.equals(other.value);
 	}
 
 	@Override
-	public GioviValue<?> access(GioviObject accessor) {
-		return switch (accessor) {
-			case GioviInt v -> unbox().get(v.unbox());
-			case Accessor v -> switch (v.get()) {
-				case "%" -> new GioviInt(unbox().size());
-				case "@" -> {
-					GioviList<GioviInt> indeces = new GioviList<>();
-					indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).getValues());
-					yield indeces;
-				}
-				default -> throw new GioviException("Invalid accessor: " + accessor);
-			};
-			default -> throw new GioviException("Invalid accessor:" + accessor);
+	public GioviValue<?> access(GioviValue<?> accessor) {
+		if (accessor instanceof GioviInt index) {
+			return value.get(index.unbox());
+		}
+		throw new GioviException("Invalid accessor: " + accessor);
+	}
+
+	@Override
+	public GioviValue<?> access(Accessor accessor) {
+		return switch (accessor.get()) {
+			case "%" -> new GioviInt(unbox().size());
+			case "@" -> {
+				GioviList indeces = new GioviList(entryType);
+				indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).getValues());
+				yield indeces;
+			}
+			default -> throw new GioviException("Invalid accessor: " + accessor);
 		};
 	}
 }

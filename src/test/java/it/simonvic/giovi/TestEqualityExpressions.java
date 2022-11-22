@@ -52,7 +52,6 @@ public class TestEqualityExpressions {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
-		[] = [], true
 		[0 1 2 3] = [0 1 2 3], true
 		[0 1 2 3] = [0 1 2 3 4], false
 		[0 1 2 3] = [0 1 2], false

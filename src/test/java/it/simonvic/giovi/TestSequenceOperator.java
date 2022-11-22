@@ -71,15 +71,14 @@ public class TestSequenceOperator {
 		return Stream.of(
 			Arguments.of("""
 				["a".."e"]
-				""", List.of("a", "b", "c", "d", "e")),
+				""", GioviCollections.of("a", "b", "c", "d", "e")),
 			Arguments.of("""
 				["a".."e"..2]
-				""", List.of("a", "c", "e"))
+				""", GioviCollections.of("a", "c", "e"))
 		);
 
 	}
 
-	@Disabled("Not implemented yet")
 	@ParameterizedTest
 	@MethodSource("produceEqualListsLetters")
 	void testSequence_Letters(String code, GioviList expected) {

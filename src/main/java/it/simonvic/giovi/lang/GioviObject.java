@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 
@@ -11,6 +12,10 @@ public class GioviObject {
 
 	public GioviValue<?> asGioviValue() {
 		return (GioviValue<?>) this;
+	}
+
+	public GioviType asGioviType() {
+		return (GioviType) this;
 	}
 
 	public GioviCollection asGioviCollection() {
@@ -41,12 +46,12 @@ public class GioviObject {
 		return (GioviText) this;
 	}
 
-	public GioviList<?> asGioviList() {
-		return (GioviList<?>) this;
+	public GioviList asGioviList() {
+		return (GioviList) this;
 	}
 
-	public GioviMap<?, ?> asGioviMap() {
-		return (GioviMap<?, ?>) this;
+	public GioviMap asGioviMap() {
+		return (GioviMap) this;
 	}
 
 	public Number asNumber() {

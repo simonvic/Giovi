@@ -1,47 +1,106 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.GioviList;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviCollections;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static it.simonvic.giovi.Giovi.runExpression;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestLists {
 
-	private GioviObject run(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
-
 	@Test
-	void valueListsShouldBeEqual() {
+	void test_GioviCollections() {
 		assertEquals(GioviCollections.of(1, 2, 3), GioviCollections.of(1, 2, 3));
 		assertEquals(GioviCollections.of("Simone", "Francesco", "Mario"), GioviCollections.of("Simone", "Francesco", "Mario"));
 	}
 
+	@Nested
+	class TestTypeInference {
+
+		@Test
+		void listOfInt_shouldBe_listOfGioviInt() {
+			String code = """
+				[ 1 2 3 4 ]
+				""";
+			assertEquals(GioviInt.class, runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Test
+		void listOfReal_shouldBe_listOfGioviReal() {
+			String code = """
+				[ 1.0 2.0 3.0 4.0 ]
+				""";
+			assertEquals(GioviReal.class, runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Test
+		void listOfText_shouldBe_listOfGioviText() {
+			String code = """
+				[ "A" "B" "C" ]
+				""";
+			assertEquals(GioviText.class, runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Test
+		void listOfBool_shouldBe_listOfGioviBool() {
+			String code = """
+				[ true false true true ]
+				""";
+			assertEquals(GioviBool.class, runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Test
+		void listOfIntAndReal_shouldBe_listOfGioviReal() {
+			String code = """
+				[ 1 2 3.0 4 ]
+				""";
+			assertEquals(GioviReal.class, runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Test
+		void listOfMixedTypes_shouldThrow() {
+			String code = """
+				[ 1 2 3.0 4 "hello" 5 ]
+				""";
+			assertThrows(GioviException.class, () -> runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+		@Disabled("Not implemented yet")
+		@Test
+		void listOfList() {
+			String code = """
+				[ [1 2 3] [1 2 3] ]
+				""";
+			System.out.println(runExpression(code).asGioviList().getEntryType().unbox());
+		}
+
+	}
+
 	private static Stream<Arguments> produceEqualLists() {
 		return Stream.of(
-			Arguments.of("[]", GioviCollections.of()),
 			Arguments.of("[1 2 3]", GioviCollections.of(1, 2, 3)),
 			Arguments.of("[1 2 3 4]", GioviCollections.of(1, 2, 3, 4)),
 			Arguments.of("['Simone' 'Francesco' 'Mario']", GioviCollections.of("Simone", "Francesco", "Mario"))
 		);
 
 	}
+
+	@ParameterizedTest
+	@MethodSource("produceEqualLists")
+	void testListEquality(String code, GioviList expected) {
+		assertEquals(expected, runExpression(code));
+	}
+
 
 	private static Stream<Arguments> produceNotEqualLists() {
 		return Stream.of(
@@ -54,15 +113,9 @@ public class TestLists {
 	}
 
 	@ParameterizedTest
-	@MethodSource("produceEqualLists")
-	void testListEquality(String code, GioviList<?> expected) {
-		assertEquals(expected, run(code));
-	}
-
-	@ParameterizedTest
 	@MethodSource("produceNotEqualLists")
-	void testListNonEquality(String code, GioviList<?> expected) {
-		assertNotEquals(expected, run(code));
+	void testListNonEquality(String code, GioviList expected) {
+		assertNotEquals(expected, runExpression(code));
 	}
 
 

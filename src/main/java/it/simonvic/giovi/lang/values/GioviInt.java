@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviInt extends GioviNumber<Integer> {
@@ -31,6 +32,14 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviReal realValue() {
 		return new GioviReal(value.doubleValue());
 	}
+
+
+//	@Override
+//	public GioviValue<?> castTo(GioviType type) {
+//		Class<? extends GioviValue<?>> typeClass = type.unbox();
+//		if (typeClass == GioviBool.class) return new GioviBool(value > 0);
+//		return super.castTo(type);
+//	}
 
 	@Override
 	public void box(GioviValue<?> gioviValue) {

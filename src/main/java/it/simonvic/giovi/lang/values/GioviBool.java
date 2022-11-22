@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.GioviType;
 
 public non-sealed class GioviBool extends GioviValue<Boolean> {
 
@@ -14,6 +15,24 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 
 	public GioviBool() {
 		super(false, false);
+	}
+
+	@Override
+	public boolean isCompatibleWith(GioviValue<?> value) {
+		return value instanceof GioviBool;
+//			|| value instanceof GioviInt;
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType type) {
+		Class<? extends GioviValue<?>> typeClass = type.unbox();
+		if (typeClass == GioviBool.class) {
+			return new GioviBool(value);
+		}
+//		if (typeClass == GioviInt.class) {
+//			return new GioviInt(value ? 1 : 0);
+//		}
+		return super.castTo(type);
 	}
 
 	@Override

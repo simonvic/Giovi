@@ -2,47 +2,147 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.GioviType;
 
 import java.util.*;
 
-public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?>>
-	extends GioviValue<LinkedHashMap<K, V>>
-	implements GioviCollection {
+public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
-	public GioviMap(LinkedHashMap<K, V> value, LinkedHashMap<K, V> defaultValue) {
-		super(value, defaultValue);
+	private final GioviType keyType;
+	private final GioviType elementType;
+
+	public GioviMap(LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
+		this(null, null, value);
 	}
 
-	public GioviMap() {
-		super(new LinkedHashMap<>(), new LinkedHashMap<>());
+	public GioviMap(GioviType keyType, GioviType elementType, LinkedHashMap<GioviValue<?>, GioviValue<?>> value, LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
+		super(value, defaultValue);
+		this.keyType = keyType != null ? keyType : GioviType.inferGioviType(value.keySet());
+		this.elementType = elementType != null ? elementType : GioviType.inferGioviType(value.values());
+		checkCasts(this.value, this.keyType, this.elementType);
+		checkCasts(this.defaultValue, this.keyType, this.elementType);
+	}
+
+	public GioviMap(GioviType keyType, GioviType elementType, LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
+		this(keyType, elementType, value, new LinkedHashMap<>());
+	}
+
+	public GioviMap(GioviType keyType, GioviType elementType) {
+		this(keyType, elementType, new LinkedHashMap<>(), new LinkedHashMap<>());
+	}
+
+	public GioviMap(Class<? extends GioviValue<?>> keyType, Class<? extends GioviValue<?>> elementType) {
+		this(new GioviType(keyType), new GioviType(elementType));
+	}
+
+	private static void checkCasts(LinkedHashMap<GioviValue<?>, GioviValue<?>> entries, GioviType keyType, GioviType elementType) {
+		entries.forEach((key, element) -> {
+			key.castTo(keyType);
+			element.castTo(elementType);
+		});
+	}
+
+	public GioviType getKeyType() {
+		return keyType;
+	}
+
+	public GioviType getElementType() {
+		return elementType;
+	}
+
+	public void put(GioviValue<?> key, GioviValue<?> element) {
+		key = key.castTo(keyType);
+		element = element.castTo(elementType);
+		for (GioviValue<?> k : value.keySet()) {
+			if (k.equals(key)) {
+				value.get(k).box(element);
+				return;
+			}
+		}
+		value.put(key, element);
+	}
+
+	public void putAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
+		defaultValue.forEach(this::put);
+	}
+
+	public GioviValue<?> get(GioviValue<?> key) {
+		for (GioviValue<?> k : value.keySet()) {
+			if (k.equals(key)) {
+				return value.get(k);
+			}
+		}
+		return null;
+	}
+
+
+	public void remove(GioviValue<?> key, GioviValue<?> element) {
+		key = key.castTo(keyType);
+		element = element.castTo(elementType);
+		for (GioviValue<?> k : value.keySet()) {
+			if (k.equals(key) && element.equals(value.get(k))) {
+				value.remove(k);
+				return;
+			}
+		}
+	}
+
+	public void remove(GioviValue<?> key) {
+		key = key.castTo(keyType);
+		for (GioviValue<?> k : value.keySet()) {
+			if (k.equals(key)) {
+				value.remove(k);
+				return;
+			}
+		}
+	}
+
+	public void removeAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
+		defaultValue.forEach(this::remove);
+	}
+
+	public void clear() {
+		value.clear();
+	}
+
+	public void init(LinkedHashMap<GioviValue<?>, GioviValue<?>> entries) {
+		clear();
+		putAll(entries);
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType type) {
+		Class<? extends GioviValue<?>> typeClass = type.unbox();
+		if (typeClass == GioviMap.class) return new GioviMap(value);
+		return super.castTo(type);
 	}
 
 	@Override
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue) {
-			case GioviMap<?, ?> v -> this.box((LinkedHashMap<K, V>) v.unbox());
+			case GioviMap v -> value = v.unbox();
 			default -> super.box(gioviValue);
 		}
 	}
 
 	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Map<?, ?> v -> setDefaultValue((LinkedHashMap<K, V>) new LinkedHashMap<>(v));
+		switch (defaultValue) {
+			case GioviMap v -> setDefaultValue(v.unbox());
 			default -> super.setDefaultValue(defaultValue);
 		}
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		return new GioviBool(value.containsKey(right));
+		return new GioviBool(value.containsKey(right.asGioviValue()));
 	}
 
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> value = new LinkedHashMap<>(defaultValue);
-			case GioviMap<?, ?> v -> value = (LinkedHashMap<K, V>) v.value;
+			case GioviDefault v -> init(defaultValue);
+			case GioviMap v -> init(v.unbox());
 			default -> super.redirection(right);
 		}
 		return this;
@@ -51,8 +151,8 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> defaultValue.forEach(this::put);
-			case GioviMap<?, ?> v -> v.unbox().forEach((key, value) -> this.put((K) key, (V) value));
+			case GioviDefault v -> putAll(defaultValue);
+			case GioviMap v -> putAll(v.unbox());
 //			case GioviValue<?> v -> this.put((K) v, defaultValue);
 			default -> super.redirectionPlus(right);
 		}
@@ -62,10 +162,9 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	@Override
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> defaultValue.forEach(this::remove);
-			case GioviMap<?, ?> v -> v.unbox().forEach((key, element) -> this.remove((K) key, (V) element));
-			case GioviList<?> v -> v.unbox().forEach(keyToRemove -> this.remove((K) keyToRemove)); //@todo keep this???
-			case GioviValue<?> v -> remove((K) v);
+			case GioviDefault v -> removeAll(defaultValue);
+			case GioviMap v -> removeAll(v.unbox());
+			case GioviValue<?> v -> remove(v);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -75,7 +174,7 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
-			case GioviMap<?, ?> v -> new GioviBool(this.equals(v));
+			case GioviMap v -> new GioviBool(this.equals(v));
 			default -> super.equal(right);
 		};
 	}
@@ -86,11 +185,11 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 
-		final GioviMap<K, V> other = (GioviMap<K, V>) obj;
+		final GioviMap other = (GioviMap) obj;
 
 		if (value.size() != other.value.size()) return false;
 
-		for (Map.Entry<K, V> entry : value.entrySet()) {
+		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
 			if (!entry.getValue().equals(other.get(entry.getKey()))) {
 				return false;
 			}
@@ -100,16 +199,16 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 
 	@Override
 	public String toString() {
-		Iterator<Map.Entry<K, V>> i = value.entrySet().iterator();
+		Iterator<Map.Entry<GioviValue<?>, GioviValue<?>>> i = value.entrySet().iterator();
 		if (!i.hasNext())
 			return "[]";
 
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		for (; ; ) {
-			Map.Entry<K, V> e = i.next();
-			K key = e.getKey();
-			V value = e.getValue();
+			Map.Entry<GioviValue<?>, GioviValue<?>> e = i.next();
+			GioviValue<?> key = e.getKey();
+			GioviValue<?> value = e.getValue();
 			sb.append(key == this ? "(this Map)" : key);
 			sb.append(':');
 			sb.append(value == this ? "(this Map)" : value);
@@ -120,62 +219,18 @@ public non-sealed class GioviMap<K extends GioviValue<?>, V extends GioviValue<?
 	}
 
 
-	public void put(K key, V element) {
-		for (K k : value.keySet()) {
-			if (k.equals(key)) {
-				value.get(k).box(element);
-				return;
-			}
-		}
-		value.put(key, element);
-	}
-
-	public V get(K key) {
-		for (K k : value.keySet()) {
-			if (k.equals(key)) {
-				return value.get(k);
-			}
-		}
-		return null;
-	}
-
-	private void remove(K key, V element) {
-		for (K k : value.keySet()) {
-			if (k.equals(key) && element.equals(value.get(k))) {
-				value.remove(k);
-				return;
-			}
-		}
-	}
-
-	private void remove(K key) {
-		for (K k : value.keySet()) {
-			if (k.equals(key)) {
-				value.remove(k);
-				return;
-			}
-		}
+	@Override
+	public GioviValue<?> access(GioviValue<?> accessor) {
+		return get(accessor);
 	}
 
 	@Override
-	public GioviValue<?> access(GioviObject accessor) {
-		return switch (accessor) {
-			case GioviValue<?> v -> get((K) v);
-			case Accessor v -> switch (v.get()) {
-				case "%" -> new GioviInt(unbox().size());
-				case "@" -> {
-					GioviList<K> indeces = new GioviList<>();
-					indeces.addAll(unbox().keySet().stream().toList());
-					yield indeces;
-				}
-				case "*" -> {
-					GioviList<V> values = new GioviList<>();
-					values.addAll(unbox().values().stream().toList());
-					yield values;
-				}
-				default -> throw new GioviException("Invalid accessor: " + accessor);
-			};
-			default -> throw new GioviException("Invalid accessor:" + accessor);
+	public GioviValue<?> access(Accessor accessor) {
+		return switch (accessor.get()) {
+			case "%" -> new GioviInt(unbox().size());
+			case "@" -> new GioviList(unbox().keySet().stream().toList());
+			case "*" -> new GioviList(unbox().values().stream().toList());
+			default -> throw new GioviException("Invalid accessor: " + accessor);
 		};
 	}
 }

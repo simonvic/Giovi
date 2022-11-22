@@ -3,13 +3,14 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.util.GioviCollections;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumber, GioviBool, GioviText, GioviList, GioviMap {
+public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumber, GioviBool, GioviText, GioviCollection {
 
 	protected T value;
 	protected T defaultValue;
@@ -33,8 +34,12 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	}
 
 
-	public Class<?> getType() {
+	public Class<?> getValueType() {
 		return value.getClass();
+	}
+
+	public boolean isCompatibleWith(GioviValue<?> value) {
+		return false;
 	}
 
 	public T unbox() {
@@ -46,7 +51,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	}
 
 	public void box(GioviValue<?> gioviValue) {
-		throw new IncompatibleTypes(this.getType(), gioviValue.getType());
+		throw new IncompatibleTypes(this.getGioviType(), gioviValue.getGioviType());
 	}
 
 	public void boxDefault() {
@@ -62,7 +67,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	}
 
 	public void setDefaultValue(GioviValue<?> defaultValue) {
-		throw new IncompatibleTypes(this.getType(), defaultValue.getType());
+		throw new IncompatibleTypes(this.getGioviType(), defaultValue.getGioviType());
 	}
 
 	@Override
@@ -85,4 +90,16 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 		return this.value.equals(other.value);
 	}
 
+	public GioviType getGioviType() {
+		return new GioviType((Class<? extends GioviValue<?>>) this.getClass());
+	}
+
+	public GioviValue<?> castTo(Class<? extends GioviValue<?>> type) {
+		return castTo(new GioviType(type));
+	}
+
+	public GioviValue<?> castTo(GioviType type) {
+		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
+	}
+	
 }

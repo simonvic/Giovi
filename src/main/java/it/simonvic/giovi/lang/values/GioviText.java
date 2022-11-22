@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.type.GioviType;
 
 public non-sealed class GioviText extends GioviValue<String> {
 
@@ -14,6 +15,20 @@ public non-sealed class GioviText extends GioviValue<String> {
 
 	public GioviText() {
 		super("", "");
+	}
+
+
+	@Override
+	public boolean isCompatibleWith(GioviValue<?> value) {
+		return value instanceof GioviText;
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType type) {
+		if (type.unbox() == GioviText.class) {
+			return new GioviText(value);
+		}
+		return super.castTo(type);
 	}
 
 	@Override

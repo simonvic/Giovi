@@ -1,15 +1,9 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviText;
-import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviCollections;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -18,26 +12,55 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestMaps {
 
-	private GioviObject run(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
+	@Nested
+	class TestTypeInference {
+
+		@Test
+		void mapOfIntAndText() {
+			String code = """
+				[ 1:"a" 2:"b" 3:"c" ]
+				""";
+			GioviMap map = runExpression(code).asGioviMap();
+			assertEquals(GioviInt.class, map.getKeyType().unbox());
+			assertEquals(GioviText.class, map.getElementType().unbox());
+		}
+
+		@Test
+		void mapOfRealAndBool() {
+			String code = """
+				[ 1:true 2.0:true 3:false ]
+				""";
+			GioviMap map = runExpression(code).asGioviMap();
+			assertEquals(GioviReal.class, map.getKeyType().unbox());
+			assertEquals(GioviBool.class, map.getElementType().unbox());
+		}
+
+		@Test
+		void mapOfIntAndReal() {
+			String code = """
+				[ 1:1 2:0.2 3:3 ]
+				""";
+			GioviMap map = runExpression(code).asGioviMap();
+			assertEquals(GioviInt.class, map.getKeyType().unbox());
+			assertEquals(GioviReal.class, map.getElementType().unbox());
+		}
+		
 	}
 
 	@Test
 	void mapsShouldBeEqual() {
-		GioviMap<GioviInt, GioviText> map1 = new GioviMap<>();
+		GioviMap map1 = new GioviMap(GioviInt.class, GioviText.class);
 		map1.put(new GioviInt(0), new GioviText("a"));
 		map1.put(new GioviInt(1), new GioviText("b"));
 		map1.put(new GioviInt(2), new GioviText("c"));
 
-		GioviMap<GioviInt, GioviText> map2 = new GioviMap<>();
+		GioviMap map2 = new GioviMap(GioviInt.class, GioviText.class);
 		map2.put(new GioviInt(0), new GioviText("a"));
 		map2.put(new GioviInt(1), new GioviText("b"));
 		map2.put(new GioviInt(2), new GioviText("c"));
@@ -56,8 +79,8 @@ public class TestMaps {
 
 	@ParameterizedTest
 	@MethodSource("produceEqualMaps")
-	void testMapsEquality(String code, GioviMap<GioviValue<?>, GioviValue<?>> expected) {
-		assertEquals(expected, run(code));
+	void testMapsEquality(String code, GioviMap expected) {
+		assertEquals(expected, runExpression(code));
 	}
 
 }

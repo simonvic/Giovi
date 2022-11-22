@@ -24,8 +24,8 @@ public class TestGioviValue {
 			Arguments.of(GioviValue.of(4.20), GioviReal.class),
 			Arguments.of(GioviValue.of(true), GioviBool.class),
 			Arguments.of(GioviValue.of("hello"), GioviText.class),
-			Arguments.of(GioviValue.of(List.of()), GioviList.class),
-			Arguments.of(GioviValue.of(Map.of()), GioviMap.class)
+			Arguments.of(GioviValue.of(List.of(69)), GioviList.class),
+			Arguments.of(GioviValue.of(Map.of(0, "a")), GioviMap.class)
 		);
 	}
 
@@ -41,15 +41,15 @@ public class TestGioviValue {
 			Arguments.of(GioviValue.of(4.20), Double.class),
 			Arguments.of(GioviValue.of(true), Boolean.class),
 			Arguments.of(GioviValue.of("hello"), String.class),
-			Arguments.of(GioviValue.of(List.of()), ArrayList.class),
-			Arguments.of(GioviValue.of(Map.of()), LinkedHashMap.class)
+			Arguments.of(GioviValue.of(List.of(69)), ArrayList.class),
+			Arguments.of(GioviValue.of(Map.of(0, "a")), LinkedHashMap.class)
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceValuesWithPrimitiveValueType")
 	void test_Value_of_primitiveValueType(GioviValue<?> value, Class<?> primitiveValueType) {
-		assertEquals(value.getType(), primitiveValueType);
+		assertEquals(value.getValueType(), primitiveValueType);
 	}
 
 
