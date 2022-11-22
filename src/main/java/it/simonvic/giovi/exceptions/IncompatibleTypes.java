@@ -1,7 +1,9 @@
 package it.simonvic.giovi.exceptions;
 
-public class IncompatibleTypes extends RuntimeException {
-	public IncompatibleTypes(Class<?> type, Class<?> newType) {
+import it.simonvic.giovi.lang.type.GioviType;
+
+public class IncompatibleTypes extends GioviException {
+	public IncompatibleTypes(GioviType type, GioviType newType) {
 		super("Incompatible types. Can't assign " + newType + " to " + type);
 	}
 }
