@@ -240,7 +240,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			GioviType elementType = visit(ctx.type().collectionType().mapType().mapValueType).asGioviType();
 			getCurrentScope().declare(ctx.identifier().getText(), new GioviMap(keyType, elementType));
 		} else {
-			getCurrentScope().declare(ctx.identifier().getText(), type.spawn());
+			var value = type.spawn();
+			if (ctx.defaultDefinition() != null) {
+				var defaultValue = visit(ctx.defaultDefinition()).asGioviValue();
+				value.setDefaultValue(defaultValue);
+				value.box(defaultValue);
+			}
+			getCurrentScope().declare(ctx.identifier().getText(), value);
 		}
 		return null;
 	}
