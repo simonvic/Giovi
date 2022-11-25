@@ -54,11 +54,11 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 
 	@Override
 	public GioviObject visitGuardedCaseMatch(GioviParser.GuardedCaseMatchContext ctx) {
-
+		
 		return OperationEvaluator.bool(
 			visit(ctx.caseMatch(0)),
 			ctx.bop.getText(),
-			gioviVisitor.visit(ctx.expression()));
+			visit(ctx.caseMatch(1)));
 	}
 
 	@Override
