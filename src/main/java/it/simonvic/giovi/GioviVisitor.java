@@ -275,8 +275,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitRedirectionToPrimitiveDestination(GioviParser.RedirectionToPrimitiveDestinationContext ctx) {
 		GioviObject content = visit(ctx.expression());
 		switch (ctx.primitiveDestination().getText()) {
-			case "\\", "\\out" -> System.out.println(content);
-			case "\\error" -> System.err.println(content);
+			case "\\out" -> System.out.println(content);
+			case "\\err" -> System.err.println(content);
 		}
 		return null;
 	}
