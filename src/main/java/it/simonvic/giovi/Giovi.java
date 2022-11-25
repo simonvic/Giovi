@@ -46,7 +46,7 @@ public class Giovi {
 		var reader = new BufferedReader(new InputStreamReader(System.in));
 		String line;
 		GioviVisitor visitor = new GioviVisitor();
-		System.out.print(": ");
+		System.out.print("┃ ");
 		while ((line = reader.readLine()) != null) {
 			GioviLexer lexer = new GioviLexer(CharStreams.fromString(line));
 			CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -57,7 +57,7 @@ public class Giovi {
 			} catch (Exception ex) {
 				System.err.println(ex.getMessage());
 			}
-			System.out.print(": ");
+			System.out.print("┃ ");
 		}
 	}
 
