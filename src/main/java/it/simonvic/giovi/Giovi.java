@@ -17,18 +17,18 @@ import java.io.InputStreamReader;
 public class Giovi {
 
 	public static void main(String[] args) throws IOException {
-		CharStream charStream = null;
-		if (args.length != 0) {
-			switch (args[0]) {
-				case "-i", "--interactive" -> {
-					interactiveMode();
-					return;
-				}
-				default -> charStream = CharStreams.fromStream(new FileInputStream(args[0]));
+		CharStream charStream;
+		if (args.length == 0) return;
+		switch (args[0]) {
+			case "-i", "--interactive" -> {
+				interactiveMode();
+				return;
 			}
-
-		} else {
-			charStream = CharStreams.fromStream(Giovi.class.getResourceAsStream("/sample.giovi"));
+			case "-d", "--debug" ->
+				charStream = CharStreams.fromStream(Giovi.class.getResourceAsStream("/sample.giovi"));
+			case "-" -> charStream = CharStreams.fromStream(System.in);
+			case "--" -> charStream = CharStreams.fromString(args[1]);
+			default -> charStream = CharStreams.fromStream(new FileInputStream(args[0]));
 		}
 		GioviLexer lexer = new GioviLexer(charStream);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -59,6 +59,14 @@ public class Giovi {
 			}
 			System.out.print("┃ ");
 		}
+	}
+
+	public static GioviVisitor visit(String code) {
+		var lexer = new GioviLexer(CharStreams.fromString(code));
+		var tokens = new CommonTokenStream(lexer);
+		var visitor = new GioviVisitor();
+		visitor.visit(new GioviParser(tokens).begin());
+		return visitor;
 	}
 
 	public static GioviParser parserOf(String code) {
