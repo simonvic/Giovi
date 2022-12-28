@@ -25,7 +25,8 @@ public class TestGioviType {
 			Arguments.of(new GioviType(GioviText.class), new GioviType(GioviText.class)),
 			Arguments.of(new GioviType(GioviBool.class), new GioviType(GioviBool.class)),
 			Arguments.of(new GioviType(GioviList.class), new GioviType(GioviList.class)),
-			Arguments.of(new GioviType(GioviMap.class), new GioviType(GioviMap.class))
+			Arguments.of(new GioviType(GioviMap.class), new GioviType(GioviMap.class)),
+			Arguments.of(new GioviType(GioviStruct.class), new GioviType(GioviStruct.class))
 		);
 	}
 
@@ -37,7 +38,8 @@ public class TestGioviType {
 			Arguments.of(new GioviType(GioviText.class), new GioviType(GioviBool.class)),
 			Arguments.of(new GioviType(GioviBool.class), new GioviType(GioviList.class)),
 			Arguments.of(new GioviType(GioviList.class), new GioviType(GioviMap.class)),
-			Arguments.of(new GioviType(GioviMap.class), new GioviType(null))
+			Arguments.of(new GioviType(GioviMap.class), new GioviType(GioviStruct.class)),
+			Arguments.of(new GioviType(GioviStruct.class), new GioviType(null))
 		);
 	}
 

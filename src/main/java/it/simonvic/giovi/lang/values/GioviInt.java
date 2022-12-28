@@ -1,7 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 
 public non-sealed class GioviInt extends GioviNumber<Integer> {
@@ -62,7 +61,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault v -> boxDefault();
 			case GioviNumber v -> value = v.intValue().unbox();
 			default -> super.redirection(content);
 		}

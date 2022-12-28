@@ -4,7 +4,8 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.type.GioviType;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
@@ -134,6 +135,11 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 	}
 
 	@Override
+	public void boxDefault() {
+		this.init(defaultValue);
+	}
+
+	@Override
 	public GioviObject contains(GioviObject right) {
 		return new GioviBool(value.containsKey(right.asGioviValue()));
 	}
@@ -141,7 +147,7 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> init(defaultValue);
+			case GioviDefault v -> boxDefault();
 			case GioviMap v -> init(v.unbox());
 			default -> super.redirection(right);
 		}
@@ -199,19 +205,19 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 
 	@Override
 	public String toString() {
-		Iterator<Map.Entry<GioviValue<?>, GioviValue<?>>> i = value.entrySet().iterator();
+		var i = value.entrySet().iterator();
 		if (!i.hasNext())
 			return "[]";
 
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		for (; ; ) {
-			Map.Entry<GioviValue<?>, GioviValue<?>> e = i.next();
-			GioviValue<?> key = e.getKey();
-			GioviValue<?> value = e.getValue();
-			sb.append(key == this ? "(this Map)" : key);
+			var e = i.next();
+			var key = e.getKey();
+			var value = e.getValue();
+			sb.append(key);
 			sb.append(':');
-			sb.append(value == this ? "(this Map)" : value);
+			sb.append(value);
 			if (!i.hasNext())
 				return sb.append(']').toString();
 			sb.append(',').append(' ');

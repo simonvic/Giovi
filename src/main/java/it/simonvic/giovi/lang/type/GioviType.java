@@ -2,10 +2,7 @@ package it.simonvic.giovi.lang.type;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviNatural;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -32,32 +29,41 @@ public class GioviType extends GioviObject {
 			return type.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
 				 NoSuchMethodException e) {
-			throw new GioviException("" + e.getMessage());
+			throw new GioviException(e);
 		}
 	}
 
-	public GioviValue<?> spawn(GioviValue<?> value) {
-		try {
-			GioviValue<?> gioviValue = type.getDeclaredConstructor().newInstance();
-			gioviValue.box(value);
-			return gioviValue;
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-				 NoSuchMethodException e) {
-			throw new GioviException("" + e.getMessage());
-		}
-	}
-
-	public GioviValue<?> spawn(GioviValue<?> value, GioviValue<?> defaultValue) {
-		try {
-			GioviValue<?> gioviValue = type.getDeclaredConstructor().newInstance();
-			gioviValue.box(value);
-			gioviValue.setDefaultValue(value);
-			return gioviValue;
-		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-				 NoSuchMethodException e) {
-			throw new GioviException("" + e.getMessage());
-		}
-	}
+//	public GioviValue<?> spawn(GioviValue<?> value) {
+//		try {
+//			GioviValue<?> gioviValue = type.getDeclaredConstructor().newInstance();
+//			gioviValue.box(value);
+//			return gioviValue;
+//		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+//				 NoSuchMethodException e) {
+//			throw new GioviException(e);
+//		}
+//	}
+//
+//	public GioviValue<?> spawn(GioviValue<?> value, GioviValue<?> defaultValue) {
+//		try {
+//			GioviValue<?> gioviValue = type.getDeclaredConstructor().newInstance();
+//			gioviValue.box(value);
+//			gioviValue.setDefaultValue(value);
+//			return gioviValue;
+//		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+//				 NoSuchMethodException e) {
+//			throw new GioviException(e);
+//		}
+//	}
+//
+//	public GioviValue<?> spawn(String identifier) {
+//		try {
+//			return type.getDeclaredConstructor(String.class).newInstance(identifier);
+//		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+//				 NoSuchMethodException e) {
+//			throw new GioviException(e);
+//		}
+//	}
 
 	@Override
 	public boolean equals(Object obj) {

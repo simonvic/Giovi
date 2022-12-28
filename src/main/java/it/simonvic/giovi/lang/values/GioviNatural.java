@@ -53,9 +53,14 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	}
 
 	@Override
+	public void boxDefault() {
+		value = new Natural(defaultValue.intValue());
+	}
+
+	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
-			case GioviDefault v -> value = new Natural(defaultValue.intValue());
+			case GioviDefault v -> boxDefault();
 			case GioviNumber v -> value = v.naturalValue().unbox();
 			default -> super.redirection(content);
 		}

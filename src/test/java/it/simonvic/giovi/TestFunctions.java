@@ -74,7 +74,7 @@ public class TestFunctions {
 			""");
 		GioviVisitor visitor = new GioviVisitor();
 		visitor.visit(parser.begin());
-		GioviFunction actual = visitor.getCurrentScope().getFunction("sayHelloWorld");
+		GioviFunction actual = visitor.getCurrentScope().getDefinitionFunction("sayHelloWorld");
 		GioviFunction expected = new GioviFunction(null, null, new LinkedHashMap<>());
 		assertEquals(actual.getReturnType(), expected.getReturnType());
 		assertEquals(actual.getParameters(), expected.getParameters());

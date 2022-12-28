@@ -18,12 +18,6 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
-	public boolean isCompatibleWith(GioviValue<?> value) {
-		return value instanceof GioviBool;
-//			|| value instanceof GioviInt;
-	}
-
-	@Override
 	public GioviValue<?> castTo(GioviType type) {
 		Class<? extends GioviValue<?>> typeClass = type.unbox();
 		if (typeClass == GioviBool.class) {
@@ -61,7 +55,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault v -> boxDefault();
 			case GioviBool v -> value = v.unbox();
 			default -> super.redirection(content);
 		}

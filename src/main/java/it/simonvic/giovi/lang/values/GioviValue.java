@@ -6,11 +6,14 @@ import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.util.GioviCollections;
+import it.simonvic.giovi.util.GioviStructs;
 
 import java.util.List;
 import java.util.Map;
 
-public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumber, GioviBool, GioviText, GioviCollection {
+public abstract sealed class GioviValue<T>
+	extends GioviObject
+	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct {
 
 	protected T value;
 	protected T defaultValue;
@@ -22,6 +25,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
+			case null -> null;
 			case Natural v -> new GioviNatural(v);
 			case Integer v -> new GioviInt(v);
 			case Double v -> new GioviReal(v);
@@ -29,6 +33,7 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 			case String v -> new GioviText(v);
 			case List<?> v -> GioviCollections.of(v);
 			case Map<?, ?> v -> GioviCollections.of(v);
+			case Struct v -> GioviStructs.of(v);
 			default -> throw new GioviException("Unknown type " + value);
 		};
 	}
@@ -36,10 +41,6 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 
 	public Class<?> getValueType() {
 		return value.getClass();
-	}
-
-	public boolean isCompatibleWith(GioviValue<?> value) {
-		return false;
 	}
 
 	public T unbox() {
@@ -90,6 +91,8 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 		return this.value.equals(other.value);
 	}
 
+
+
 	public GioviType getGioviType() {
 		return new GioviType((Class<? extends GioviValue<?>>) this.getClass());
 	}
@@ -101,5 +104,5 @@ public abstract sealed class GioviValue<T> extends GioviObject permits GioviNumb
 	public GioviValue<?> castTo(GioviType type) {
 		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
 	}
-	
+
 }

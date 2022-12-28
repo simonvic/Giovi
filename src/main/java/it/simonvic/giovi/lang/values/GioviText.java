@@ -19,11 +19,6 @@ public non-sealed class GioviText extends GioviValue<String> {
 
 
 	@Override
-	public boolean isCompatibleWith(GioviValue<?> value) {
-		return value instanceof GioviText;
-	}
-
-	@Override
 	public GioviValue<?> castTo(GioviType type) {
 		if (type.unbox() == GioviText.class) {
 			return new GioviText(value);
@@ -50,7 +45,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault v -> boxDefault();
 			case GioviText v -> value = v.unbox();
 			default -> super.redirection(content);
 		}

@@ -1,8 +1,8 @@
 package it.simonvic.giovi;
 
+import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
+import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
 import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
-import it.simonvic.giovi.exceptions.VariableNotDefinedException;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviValue;
 import org.junit.jupiter.api.*;
@@ -25,32 +25,32 @@ public class TestVariables {
 		@Test
 		void testDeclaration_string() {
 			scope.declare("aString", GioviValue.of("hello world"));
-			assertTrue(scope.isDefinedVariable("aString"));
+			assertTrue(scope.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void testDeclaration_bool() {
 			scope.declare("aBoolean", GioviValue.of(true));
-			assertTrue(scope.isDefinedVariable("aBoolean"));
+			assertTrue(scope.isDeclaredVariable("aBoolean"));
 		}
 
 		@Test
 		void testDeclaration_real() {
 			scope.declare("aReal", GioviValue.of(0.69));
-			assertTrue(scope.isDefinedVariable("aReal"));
+			assertTrue(scope.isDeclaredVariable("aReal"));
 		}
 
 		@Test
 		void testDeclaration_int() {
 			scope.declare("anInteger", GioviValue.of(69));
-			assertTrue(scope.isDefinedVariable("anInteger"));
+			assertTrue(scope.isDeclaredVariable("anInteger"));
 		}
 
 		@Test
 		@Disabled("Null values not implemented yet")
 		void testDeclaration_null() {
 			scope.declare("aNull", new GioviInt(null));
-			assertTrue(scope.isDefinedVariable("aNull"));
+			assertTrue(scope.isDeclaredVariable("aNull"));
 		}
 
 		@Test
@@ -80,23 +80,23 @@ public class TestVariables {
 		@Test
 		void declare_shouldThrow_VariableAlreadyDefined() {
 			scope.declare("someVar", GioviValue.of(69));
-			assertThrows(VariableAlreadyDefinedException.class, () -> scope.declare("someVar", GioviValue.of(69)));
+			assertThrows(VariableAlreadyDeclaredException.class, () -> scope.declare("someVar", GioviValue.of(69)));
 		}
 
 		@Test
 		void getVariable_shouldThrow_VariableNotDefined() {
-			assertThrows(VariableNotDefinedException.class, () -> scope.getVariableValue("someUndefinedVariable"));
+			assertThrows(VariableNotDeclaredException.class, () -> scope.getVariableValue("someUndefinedVariable"));
 		}
 
 		@Test
 		void update_shouldThrow_VariableNotDefined() {
-			assertThrows(VariableNotDefinedException.class, () -> scope.setVariableValue("someUndefinedVariable", GioviValue.of(69)));
+			assertThrows(VariableNotDeclaredException.class, () -> scope.setVariableValue("someUndefinedVariable", GioviValue.of(69)));
 		}
 
 		@Test
 		void declare_shouldDeclareVariable() {
 			scope.declare("aString", GioviValue.of("hello world"));
-			assertTrue(scope.isDefinedVariable("aString"));
+			assertTrue(scope.isDeclaredVariable("aString"));
 		}
 	}
 

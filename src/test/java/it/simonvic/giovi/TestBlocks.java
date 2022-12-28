@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
+import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviValue;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +28,7 @@ public class TestBlocks {
 	@Test
 	void test_declareVariable() {
 		global.declare("aString", GioviValue.of("hello world"));
-		assertTrue(global.isDefinedVariable("aString"));
+		assertTrue(global.isDeclaredVariable("aString"));
 	}
 
 	@Test
@@ -39,31 +39,31 @@ public class TestBlocks {
 
 	@Test
 	void test_isVariableDeclared() {
-		assertFalse(global.isDefinedVariable("aString"));
+		assertFalse(global.isDeclaredVariable("aString"));
 	}
 
 	@Test
 	void nestedBlocksShouldSeeParentsVariables() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertTrue(scope1.isDefinedVariable("aString"));
+		assertTrue(scope1.isDeclaredVariable("aString"));
 	}
 
 	@Test
 	void nestedBlocksShouldSeeParentsVariables2() {
 		global.declare("aString", GioviValue.of("Hello world"));
-		assertTrue(scope111.isDefinedVariable("aString"));
+		assertTrue(scope111.isDeclaredVariable("aString"));
 	}
 
 	@Test
 	void nonNestedBlocksShouldSeeParentsVariables() {
 		scope1.declare("aString", GioviValue.of("Hello world"));
-		assertFalse(scope2.isDefinedVariable("aString"));
+		assertFalse(scope2.isDeclaredVariable("aString"));
 	}
 
 	@Test
 	void nestedBlockShouldThrow_VariableAlreadyDefined() {
 		scope11.declare("aString", GioviValue.of("Hello world"));
-		assertThrows(VariableAlreadyDefinedException.class, () -> scope111.declare("aString", GioviValue.of("hello_world")));
+		assertThrows(VariableAlreadyDeclaredException.class, () -> scope111.declare("aString", GioviValue.of("hello_world")));
 	}
 
 	@Test

@@ -13,11 +13,6 @@ public abstract sealed class GioviNumber<T extends Number> extends GioviValue<T>
 	public abstract GioviReal realValue();
 
 	@Override
-	public boolean isCompatibleWith(GioviValue<?> value) {
-		return value instanceof GioviNumber;
-	}
-
-	@Override
 	public GioviValue<?> castTo(GioviType type) {
 		Class<? extends GioviValue<?>> typeClass = type.unbox();
 		if (typeClass == GioviNatural.class) return naturalValue();

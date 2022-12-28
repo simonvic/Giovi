@@ -1,10 +1,11 @@
 package it.simonvic.giovi.lang;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.VariableAlreadyDefinedException;
-import it.simonvic.giovi.exceptions.VariableNotDefinedException;
+import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
+import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
+import it.simonvic.giovi.lang.values.GioviStruct;
 import it.simonvic.giovi.lang.values.GioviValue;
 
 import java.util.HashMap;
@@ -98,21 +99,11 @@ public class Scope {
 
 
 	public boolean isInLoop() {
-		if (this instanceof LoopScope) {
-			return true;
-		} else if (parentScope != null) {
-			return parentScope.isInLoop();
-		}
-		return false;
+		return this instanceof LoopScope || (parentScope != null && parentScope.isInLoop());
 	}
 
 	public boolean isInFunction() {
-		if (this instanceof FunctionScope) {
-			return true;
-		} else if (parentScope != null) {
-			return parentScope.isInFunction();
-		}
-		return false;
+		return this instanceof FunctionScope || (parentScope != null && parentScope.isInFunction());
 	}
 
 
@@ -126,7 +117,7 @@ public class Scope {
 	}
 
 	public void declare(String identifier, GioviValue<?> value) {
-		if (isDefinedVariable(identifier)) throw new VariableAlreadyDefinedException(identifier);
+		if (isDeclaredVariable(identifier)) throw new VariableAlreadyDeclaredException(identifier);
 		variables.put(identifier, value);
 	}
 
@@ -135,8 +126,8 @@ public class Scope {
 	}
 
 	private static void setVariableValue(Scope scope, String identifier, GioviValue<?> value) {
-		if (scope == null) throw new VariableNotDefinedException(identifier);
-		if (scope.isDefinedLocalVariable(identifier)) {
+		if (scope == null) throw new VariableNotDeclaredException(identifier);
+		if (scope.isDeclaredLocalVariable(identifier)) {
 			scope.variables.get(identifier).box(value);
 		} else {
 			Scope.setVariableValue(scope.parentScope, identifier, value);
@@ -147,26 +138,26 @@ public class Scope {
 		return Scope.getVariableValue(this, identifier);
 	}
 
-	public boolean isDefinedVariable(String identifier) {
-		return Scope.isDefinedVariable(this, identifier);
+	public boolean isDeclaredVariable(String identifier) {
+		return Scope.isDeclaredVariable(this, identifier);
 	}
 
 	private GioviValue<?> getLocalVariableValue(String identifier) {
 		return variables.get(identifier);
 	}
 
-	private boolean isDefinedLocalVariable(String identifier) {
+	private boolean isDeclaredLocalVariable(String identifier) {
 		return variables.containsKey(identifier);
 	}
 
-	private static boolean isDefinedVariable(Scope scope, String identifier) {
+	private static boolean isDeclaredVariable(Scope scope, String identifier) {
 		if (scope == null) return false;
-		return scope.isDefinedLocalVariable(identifier) || Scope.isDefinedVariable(scope.parentScope, identifier);
+		return scope.isDeclaredLocalVariable(identifier) || Scope.isDeclaredVariable(scope.parentScope, identifier);
 	}
 
 	private static GioviValue<?> getVariableValue(Scope scope, String identifier) {
-		if (scope == null) throw new VariableNotDefinedException(identifier);
-		return scope.isDefinedLocalVariable(identifier)
+		if (scope == null) throw new VariableNotDeclaredException(identifier);
+		return scope.isDeclaredLocalVariable(identifier)
 			? scope.getLocalVariableValue(identifier)
 			: Scope.getVariableValue(scope.parentScope, identifier);
 
@@ -176,15 +167,15 @@ public class Scope {
 	////////////////////////////////////////////////
 	// Functions
 
-	private final Map<String, GioviFunction> functions = new HashMap<>();
+	private final Map<String, GioviFunction> functionDefinitions = new HashMap<>();
 
-	public void declare(String identifier, GioviFunction function) {
+	public void define(String identifier, GioviFunction function) {
 		if (isDefinedFunction(identifier)) throw new GioviException("Function already defined: " + identifier);
-		functions.put(identifier, function);
+		functionDefinitions.put(identifier, function);
 	}
 
-	public GioviFunction getFunction(String identifier) {
-		return Scope.getFunction(this, identifier);
+	public GioviFunction getDefinitionFunction(String identifier) {
+		return Scope.getDefinitionFunction(this, identifier);
 	}
 
 	public boolean isDefinedFunction(String identifier) {
@@ -192,7 +183,7 @@ public class Scope {
 	}
 
 	private boolean isDefinedLocalFunction(String identifier) {
-		return functions.containsKey(identifier);
+		return functionDefinitions.containsKey(identifier);
 	}
 
 
@@ -201,16 +192,55 @@ public class Scope {
 		return scope.isDefinedLocalFunction(identifier) || Scope.isDefinedFunction(scope.parentScope, identifier);
 	}
 
-	private GioviFunction getLocalFunction(String identifier) {
-		return functions.get(identifier);
+	private GioviFunction getDefinitionLocalFunction(String identifier) {
+		return functionDefinitions.get(identifier);
 	}
 
-	private static GioviFunction getFunction(Scope scope, String identifier) {
+	private static GioviFunction getDefinitionFunction(Scope scope, String identifier) {
 		if (scope == null) throw new GioviException("Function not defined: " + identifier);
 		return scope.isDefinedLocalFunction(identifier)
-			? scope.getLocalFunction(identifier)
-			: Scope.getFunction(scope.parentScope, identifier);
+			? scope.getDefinitionLocalFunction(identifier)
+			: Scope.getDefinitionFunction(scope.parentScope, identifier);
 
 	}
 
+	////////////////////////////////////////////////
+	// Structs
+
+	private final Map<String, GioviStruct> structDefinitions = new HashMap<>();
+
+	public void define(String identifier, GioviStruct struct) {
+		if (isDefinedStruct(identifier)) throw new GioviException("Struct already defined: " + identifier);
+		structDefinitions.put(identifier, struct);
+	}
+
+	public GioviStruct getDefinitionStruct(String identifier) {
+		return Scope.getDefinitionStruct(this, identifier);
+	}
+
+	public boolean isDefinedStruct(String identifier) {
+		return Scope.isDefinedStruct(this, identifier);
+	}
+
+	private boolean isDefinedLocalStruct(String identifier) {
+		return structDefinitions.containsKey(identifier);
+	}
+
+
+	private static boolean isDefinedStruct(Scope scope, String identifier) {
+		if (scope == null) return false;
+		return scope.isDefinedLocalStruct(identifier) || Scope.isDefinedStruct(scope.parentScope, identifier);
+	}
+
+	private GioviStruct getDefinitionLocalStruct(String identifier) {
+		return structDefinitions.get(identifier);
+	}
+
+	private static GioviStruct getDefinitionStruct(Scope scope, String identifier) {
+		if (scope == null) throw new GioviException("Struct not defined: " + identifier);
+		return scope.isDefinedLocalStruct(identifier)
+			? scope.getDefinitionLocalStruct(identifier)
+			: Scope.getDefinitionStruct(scope.parentScope, identifier);
+
+	}
 }

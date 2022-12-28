@@ -8,7 +8,6 @@ import it.simonvic.giovi.lang.type.GioviTypeList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 
@@ -104,6 +103,11 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	}
 
 	@Override
+	public void boxDefault() {
+		this.init(defaultValue);
+	}
+
+	@Override
 	public GioviObject contains(GioviObject right) {
 		return new GioviBool(value.contains(right.asGioviValue()));
 	}
@@ -111,7 +115,7 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	@Override
 	public GioviObject redirection(GioviObject right) {
 		switch (right) {
-			case GioviDefault v -> this.init(defaultValue);
+			case GioviDefault v -> boxDefault();
 			case GioviList v -> this.init(v.unbox());
 			default -> super.redirection(right);
 		}

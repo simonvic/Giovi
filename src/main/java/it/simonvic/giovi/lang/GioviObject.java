@@ -18,6 +18,10 @@ public class GioviObject {
 		return (GioviType) this;
 	}
 
+	public GioviStruct asGioviStruct() {
+		return (GioviStruct) this;
+	}
+
 	public GioviCollection asGioviCollection() {
 		return (GioviCollection) this;
 	}

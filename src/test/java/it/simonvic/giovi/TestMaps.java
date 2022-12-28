@@ -1,6 +1,5 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviCollections;
 import org.junit.jupiter.api.Nested;
@@ -14,7 +13,6 @@ import java.util.stream.Stream;
 
 import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestMaps {
 

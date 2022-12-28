@@ -1,8 +1,11 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
-import it.simonvic.giovi.exceptions.*;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.RedirectionException;
+import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.LoopScope;
 import it.simonvic.giovi.lang.Scope;
@@ -16,6 +19,7 @@ import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
+import it.simonvic.giovi.visitors.StructHelperVisitor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 import java.util.*;
@@ -50,7 +54,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitIfStatement(GioviParser.IfStatementContext ctx) {
+	public GioviObject visitIfStatement(IfStatementContext ctx) {
 		if (visit(ctx.expression()).asBoolean()) {
 			enterScope();
 			visit(ctx.ifBody);
@@ -64,8 +68,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitBlock(GioviParser.BlockContext ctx) {
-		for (GioviParser.StatementContext statementContext : ctx.statement()) {
+	public GioviObject visitBlock(BlockContext ctx) {
+		for (StatementContext statementContext : ctx.statement()) {
 			visit(statementContext);
 			Scope s = getCurrentScope();
 			if (s.shouldBreak() || s.shouldReturn() || s.shouldContinue()) {
@@ -76,14 +80,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitStatementOrBlock(GioviParser.StatementOrBlockContext ctx) {
+	public GioviObject visitStatementOrBlock(StatementOrBlockContext ctx) {
 		return ctx.block() != null
 			? visit(ctx.block())
 			: visit(ctx.statement());
 	}
 
 	@Override
-	public GioviObject visitSwitchStatement(GioviParser.SwitchStatementContext ctx) {
+	public GioviObject visitSwitchStatement(SwitchStatementContext ctx) {
 		SwitchHelperVisitor
 			.evaluate(this, ctx)
 			.ifPresent(block -> {
@@ -95,19 +99,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitBreakStatement(GioviParser.BreakStatementContext ctx) {
+	public GioviObject visitBreakStatement(BreakStatementContext ctx) {
 		getCurrentScope().doBreak();
 		return null;
 	}
 
 	@Override
-	public GioviObject visitContinueStatement(GioviParser.ContinueStatementContext ctx) {
+	public GioviObject visitContinueStatement(ContinueStatementContext ctx) {
 		getCurrentScope().doContinue();
 		return null;
 	}
 
 	@Override
-	public GioviObject visitForStatement(GioviParser.ForStatementContext ctx) {
+	public GioviObject visitForStatement(ForStatementContext ctx) {
 		if (ctx.sequenceOrExpression().sequence() != null) {
 			forList(ctx.iterators().identifier(), ctx.sequenceOrExpression().sequence(), ctx.statementOrBlock());
 		} else {
@@ -121,11 +125,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return null;
 	}
 
-	private void forList(List<GioviParser.IdentifierContext> iterators, GioviParser.SequenceContext sequence, GioviParser.StatementOrBlockContext statementOrBlock) {
+	private void forList(List<IdentifierContext> iterators, SequenceContext sequence, StatementOrBlockContext statementOrBlock) {
 		throw new GioviException("For loop over sequence not implemented yet");
 	}
 
-	private void forList(List<GioviParser.IdentifierContext> iterators, GioviList list, GioviParser.StatementOrBlockContext statementOrBlock) {
+	private void forList(List<IdentifierContext> iterators, GioviList list, StatementOrBlockContext statementOrBlock) {
 		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
 		if (list.unbox().size() == 0) return;
 
@@ -157,7 +161,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	}
 
-	private void forMap(List<GioviParser.IdentifierContext> iterators, GioviMap map, GioviParser.StatementOrBlockContext statementOrBlock) {
+	private void forMap(List<IdentifierContext> iterators, GioviMap map, StatementOrBlockContext statementOrBlock) {
 		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
 		if (map.unbox().size() == 0) return;
 
@@ -193,7 +197,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitRepeatStatement(GioviParser.RepeatStatementContext ctx) {
+	public GioviObject visitRepeatStatement(RepeatStatementContext ctx) {
 		enterLoopScope();
 		boolean infiniteRepeat = ctx.IF() == null;
 		while (infiniteRepeat || visit(ctx.expression()).asBoolean()) {
@@ -217,7 +221,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitRedirectionToVarDeclaration(GioviParser.RedirectionToVarDeclarationContext ctx) {
+	public GioviObject visitRedirectionToVarDeclaration(RedirectionToVarDeclarationContext ctx) {
 		//@todo improve this. Declare variable with value already set
 		visit(ctx.varDeclaration());
 		switch (ctx.bop.getText()) {
@@ -230,30 +234,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitVarDeclaration(GioviParser.VarDeclarationContext ctx) {
-		GioviType type = visit(ctx.type()).asGioviType();
-		if (type.unbox() == GioviList.class) {
-			GioviType entryType = visit(ctx.type().collectionType().listType().type()).asGioviType();
-			getCurrentScope().declare(ctx.identifier().getText(), new GioviList(entryType));
-		} else if (type.unbox() == GioviMap.class) {
-			GioviType keyType = visit(ctx.type().collectionType().mapType().mapKeyType).asGioviType();
-			GioviType elementType = visit(ctx.type().collectionType().mapType().mapValueType).asGioviType();
-			getCurrentScope().declare(ctx.identifier().getText(), new GioviMap(keyType, elementType));
-		} else {
-			var value = type.spawn();
-			if (ctx.defaultDefinition() != null) {
-				var defaultValue = visit(ctx.defaultDefinition()).asGioviValue();
-				value.setDefaultValue(defaultValue);
-				value.box(defaultValue);
-			}
-			getCurrentScope().declare(ctx.identifier().getText(), value);
-		}
+	public GioviObject visitVarDeclaration(VarDeclarationContext ctx) {
+		GioviValue<?> variable = spawnType(ctx.type(), Optional.ofNullable(ctx.defaultDefinition()));
+		getCurrentScope().declare(ctx.identifier().getText(), variable);
 		return null;
 	}
 
-
 	@Override
-	public GioviObject visitRedirectionToIdentifier(GioviParser.RedirectionToIdentifierContext ctx) {
+	public GioviObject visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
 		OperationEvaluator.redirection(
 			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
@@ -262,7 +250,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitRedirectionToCollectionAccess(GioviParser.RedirectionToCollectionAccessContext ctx) {
+	public GioviObject visitRedirectionToCollectionAccess(RedirectionToCollectionAccessContext ctx) {
 		OperationEvaluator.redirection(
 			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
@@ -272,7 +260,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitRedirectionToPrimitiveDestination(GioviParser.RedirectionToPrimitiveDestinationContext ctx) {
+	public GioviObject visitRedirectionToPrimitiveDestination(RedirectionToPrimitiveDestinationContext ctx) {
 		GioviObject content = visit(ctx.expression());
 		switch (ctx.primitiveDestination().getText()) {
 			case "\\out" -> System.out.println(content);
@@ -282,19 +270,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitParenthesizedExpression(GioviParser.ParenthesizedExpressionContext ctx) {
+	public GioviObject visitParenthesizedExpression(ParenthesizedExpressionContext ctx) {
 		return visit(ctx.expression());
 	}
 
 	@Override
-	public GioviObject visitPrefixedExpression(GioviParser.PrefixedExpressionContext ctx) {
+	public GioviObject visitPrefixedExpression(PrefixedExpressionContext ctx) {
 		return OperationEvaluator.prefixed(
 			ctx.prefix.getText(),
 			visit(ctx.expression()));
 	}
 
 	@Override
-	public GioviObject visitAdditiveExpression(GioviParser.AdditiveExpressionContext ctx) {
+	public GioviObject visitAdditiveExpression(AdditiveExpressionContext ctx) {
 		return OperationEvaluator.additive(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -302,7 +290,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitMultiplicativeExpression(GioviParser.MultiplicativeExpressionContext ctx) {
+	public GioviObject visitMultiplicativeExpression(MultiplicativeExpressionContext ctx) {
 		return OperationEvaluator.multiplicative(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -310,12 +298,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitPowerExpression(GioviParser.PowerExpressionContext ctx) {
+	public GioviObject visitPowerExpression(PowerExpressionContext ctx) {
 		return visit(ctx.expression(0)).power(visit(ctx.expression(1)));
 	}
 
 	@Override
-	public GioviObject visitRelationalExpression(GioviParser.RelationalExpressionContext ctx) {
+	public GioviObject visitRelationalExpression(RelationalExpressionContext ctx) {
 		return OperationEvaluator.relational(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -323,12 +311,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitNotExpression(GioviParser.NotExpressionContext ctx) {
+	public GioviObject visitNotExpression(NotExpressionContext ctx) {
 		return visit(ctx.expression()).not();
 	}
 
 	@Override
-	public GioviObject visitBoolExpression(GioviParser.BoolExpressionContext ctx) {
+	public GioviObject visitBoolExpression(BoolExpressionContext ctx) {
 		return OperationEvaluator.bool(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -336,7 +324,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitEqualityExpression(GioviParser.EqualityExpressionContext ctx) {
+	public GioviObject visitEqualityExpression(EqualityExpressionContext ctx) {
 		return OperationEvaluator.equality(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -344,7 +332,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitContainmentExpression(GioviParser.ContainmentExpressionContext ctx) {
+	public GioviObject visitContainmentExpression(ContainmentExpressionContext ctx) {
 		return OperationEvaluator.containment(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -352,7 +340,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitCollectionAccess(GioviParser.CollectionAccessContext ctx) {
+	public GioviObject visitCollectionAccess(CollectionAccessContext ctx) {
 		return getCurrentScope()
 			.getVariableValue(ctx.identifier().getText())
 			.asGioviCollection()
@@ -360,17 +348,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitSpecialAccessor(GioviParser.SpecialAccessorContext ctx) {
+	public GioviObject visitSpecialAccessor(SpecialAccessorContext ctx) {
 		return new Accessor(ctx.getText());
 	}
 
 	@Override
-	public GioviObject visitCollectionLiteralAccessor(GioviParser.CollectionLiteralAccessorContext ctx) {
+	public GioviObject visitCollectionLiteralAccessor(CollectionLiteralAccessorContext ctx) {
 		return visit(ctx.literal());
 	}
 
 	@Override
-	public GioviObject visitCollectionParenthesizedAccessor(GioviParser.CollectionParenthesizedAccessorContext ctx) {
+	public GioviObject visitCollectionParenthesizedAccessor(CollectionParenthesizedAccessorContext ctx) {
 		//@todo improve this
 		if (ctx.specialAccessor() != null) return visit(ctx.specialAccessor());
 		if (ctx.literal() != null) return visit(ctx.literal());
@@ -379,12 +367,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitIdentifier(GioviParser.IdentifierContext ctx) {
+	public GioviObject visitIdentifier(IdentifierContext ctx) {
 		return getCurrentScope().getVariableValue(ctx.getText());
 	}
 
 	@Override
-	public GioviObject visitSequence(GioviParser.SequenceContext ctx) {
+	public GioviObject visitSequence(SequenceContext ctx) {
 		return Sequence.of(
 			visit(ctx.start).asGioviValue(),
 			visit(ctx.end).asGioviValue(),
@@ -392,9 +380,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitListCreation(GioviParser.ListCreationContext ctx) {
+	public GioviObject visitListCreation(ListCreationContext ctx) {
 		List<GioviValue<?>> entries = new ArrayList<>();
-		for (GioviParser.ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
+		for (ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
 			GioviObject entry = visit(entryCtx);
 			switch (entry) {
 				case Sequence<?> seq -> entries.addAll(seq.getValues());
@@ -406,36 +394,36 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitMapCreation(GioviParser.MapCreationContext ctx) {
+	public GioviObject visitMapCreation(MapCreationContext ctx) {
 		LinkedHashMap<GioviValue<?>, GioviValue<?>> map = new LinkedHashMap<>();
-		for (GioviParser.MapEntryContext entryCtx : ctx.mapEntries().mapEntry()) {
+		for (MapEntryContext entryCtx : ctx.mapEntries().mapEntry()) {
 			map.put(visit(entryCtx.mapKey).asGioviValue(), visit(entryCtx.mapValue).asGioviValue());
 		}
 		return new GioviMap(map);
 	}
 
 	@Override
-	public GioviObject visitIntegerLiteral(GioviParser.IntegerLiteralContext ctx) {
+	public GioviObject visitIntegerLiteral(IntegerLiteralContext ctx) {
 		return new GioviInt(Integer.parseInt(ctx.getText()));
 	}
 
 	@Override
-	public GioviObject visitNaturalLiteral(GioviParser.NaturalLiteralContext ctx) {
+	public GioviObject visitNaturalLiteral(NaturalLiteralContext ctx) {
 		return new GioviNatural(new Natural(Integer.parseInt(ctx.getText())));
 	}
 
 	@Override
-	public GioviObject visitRealLiteral(GioviParser.RealLiteralContext ctx) {
+	public GioviObject visitRealLiteral(RealLiteralContext ctx) {
 		return new GioviReal(Double.parseDouble(ctx.getText()));
 	}
 
 	@Override
-	public GioviObject visitBoolLiteral(GioviParser.BoolLiteralContext ctx) {
+	public GioviObject visitBoolLiteral(BoolLiteralContext ctx) {
 		return new GioviBool(Boolean.parseBoolean(ctx.getText()));
 	}
 
 	@Override
-	public GioviObject visitTextLiteral(GioviParser.TextLiteralContext ctx) {
+	public GioviObject visitTextLiteral(TextLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
 			.injectVariables(getCurrentScope())
@@ -444,7 +432,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitTextBlockLiteral(GioviParser.TextBlockLiteralContext ctx) {
+	public GioviObject visitTextBlockLiteral(TextBlockLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
 			.injectVariables(getCurrentScope())
@@ -454,14 +442,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitExactTextLiteral(GioviParser.ExactTextLiteralContext ctx) {
+	public GioviObject visitExactTextLiteral(ExactTextLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
 			.collect();
 	}
 
 	@Override
-	public GioviObject visitExactTextBlockLiteral(GioviParser.ExactTextBlockLiteralContext ctx) {
+	public GioviObject visitExactTextBlockLiteral(ExactTextBlockLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
 			.trimIncidentalWhitespaces()
@@ -469,49 +457,55 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitNullLiteral(GioviParser.NullLiteralContext ctx) {
+	public GioviObject visitNullLiteral(NullLiteralContext ctx) {
 		return null;
 	}
 
 	@Override
-	public GioviObject visitDefaultLiteral(GioviParser.DefaultLiteralContext ctx) {
+	public GioviObject visitDefaultLiteral(DefaultLiteralContext ctx) {
 		return new GioviDefault();
 	}
 
 	@Override
-	public GioviObject visitType(GioviParser.TypeContext ctx) {
+	public GioviObject visitType(TypeContext ctx) {
 		if (ctx.collectionType() != null) {
 			return visit(ctx.collectionType());
 		}
 
-
-		return switch (ctx.identifier().getText()) {
+		String typeIdentifier = ctx.identifier().getText();
+		return switch (typeIdentifier) {
 			case "Natural" -> new GioviType(GioviNatural.class);
 			case "Int" -> new GioviType(GioviInt.class);
 			case "Real" -> new GioviType(GioviReal.class);
 			case "Bool" -> new GioviType(GioviBool.class);
 			case "Text" -> new GioviType(GioviText.class);
-			default -> throw new TypeNotFound(ctx.getText());
+			default -> {
+				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
+					yield new GioviType(GioviStruct.class);
+				} else {
+					throw new TypeNotFound(ctx.getText());
+				}
+			}
 		};
 	}
 
 	@Override
-	public GioviObject visitListType(GioviParser.ListTypeContext ctx) {
+	public GioviObject visitListType(ListTypeContext ctx) {
 		return new GioviTypeList(visit(ctx.type()).asGioviType());
 	}
 
 	@Override
-	public GioviObject visitMapType(GioviParser.MapTypeContext ctx) {
+	public GioviObject visitMapType(MapTypeContext ctx) {
 		return new GioviType(GioviMap.class);
 	}
 
 	@Override
-	public GioviObject visitFunctionDeclaration(GioviParser.FunctionDeclarationContext ctx) {
+	public GioviObject visitFunctionDeclaration(FunctionDeclarationContext ctx) {
 		LinkedHashMap<String, GioviFunctionParameter> formalParameters = new LinkedHashMap<>();
 		if (ctx.formalParameters() != null) {
 			boolean expectParamWithDefault = false;
-			for (GioviParser.FormalParameterDefinitionContext formalParamCtx : ctx.formalParameters().formalParameterDefinition()) {
-				GioviValue<?> paramValue = visit(formalParamCtx.type()).asGioviType().spawn();
+			for (FormalParameterDefinitionContext formalParamCtx : ctx.formalParameters().formalParameterDefinition()) {
+				GioviValue<?> paramValue = spawnType(formalParamCtx.type(), Optional.ofNullable(formalParamCtx.defaultDefinition()));
 				if (formalParamCtx.defaultDefinition() == null) {
 					if (expectParamWithDefault) {
 						throw new GioviException("Expecting default definition for parameter: " + formalParamCtx.identifier().getText());
@@ -530,16 +524,40 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 					new GioviFunctionParameter(paramValue, expectParamWithDefault));
 			}
 		}
-		getCurrentScope().declare(ctx.identifier().getText(), new GioviFunction(
+		getCurrentScope().define(ctx.identifier().getText(), new GioviFunction(
 			ctx.block(),
 			ctx.type() == null ? null : visit(ctx.type()).asGioviType().unbox(),
 			formalParameters));
 		return null;
 	}
 
+	private GioviValue<?> spawnType(TypeContext typeCtx, Optional<DefaultDefinitionContext> defaultDefinitionCtx) {
+		GioviValue<?> value;
+		GioviType type = visit(typeCtx).asGioviType();
+		if (type.unbox() == GioviList.class) {
+			GioviType entryType = visit(typeCtx.collectionType().listType().type()).asGioviType();
+			value = new GioviList(entryType);
+		} else if (type.unbox() == GioviMap.class) {
+			GioviType keyType = visit(typeCtx.collectionType().mapType().mapKeyType).asGioviType();
+			GioviType elementType = visit(typeCtx.collectionType().mapType().mapValueType).asGioviType();
+			value = new GioviMap(keyType, elementType);
+		} else if (getCurrentScope().isDefinedStruct(typeCtx.getText())) {
+			value = getCurrentScope().getDefinitionStruct(typeCtx.getText());
+		} else {
+			value = type.spawn();
+		}
+		if (defaultDefinitionCtx.isPresent()) {
+			var defaultValue = visit(defaultDefinitionCtx.get()).asGioviValue();
+			value.setDefaultValue(defaultValue);
+			value.boxDefault();
+		}
+		return value;
+	}
+
+
 	@Override
-	public GioviObject visitFunctionCall(GioviParser.FunctionCallContext ctx) {
-		GioviFunction func = getCurrentScope().getFunction(ctx.identifier().getText());
+	public GioviObject visitFunctionCall(FunctionCallContext ctx) {
+		GioviFunction func = getCurrentScope().getDefinitionFunction(ctx.identifier().getText());
 		enterFunctionScope();
 		setupFunctionParameters(ctx, func);
 		GioviValue<?> returnValue = visitFunction(func);
@@ -548,7 +566,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private GioviValue<?> visitFunction(GioviFunction func) {
-		for (GioviParser.StatementContext statement : func.getBody().statement()) {
+		for (StatementContext statement : func.getBody().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
 				Class<?> returnType = func
@@ -568,7 +586,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return null;
 	}
 
-	private void setupFunctionParameters(GioviParser.FunctionCallContext ctx, GioviFunction func) {
+	private void setupFunctionParameters(FunctionCallContext ctx, GioviFunction func) {
 		int functionCallParamCount = ctx.functionParameterList() == null ? 0 : ctx.functionParameterList().functionParameter().size();
 		if (functionCallParamCount > func.getParameters().size()) {
 			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
@@ -580,8 +598,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 	}
 
-	private void setupFunctionParametersIteratively(GioviParser.FunctionCallContext ctx, GioviFunction func) {
-		List<GioviParser.FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
+	private void setupFunctionParametersIteratively(FunctionCallContext ctx, GioviFunction func) {
+		List<FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
 			? List.of()
 			: ctx.functionParameterList().functionParameter();
 		int funcCallParamsCount = funcCallParams.size();
@@ -592,7 +610,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			String formalParameterIdentifier = entry.getKey();
 			GioviFunctionParameter formalValue = entry.getValue();
 			if (i < funcCallParamsCount) {
-				GioviParser.FunctionParameterContext funcParamCtx = funcCallParams.get(i);
+				FunctionParameterContext funcParamCtx = funcCallParams.get(i);
 				if (funcParamCtx.identifier() != null) {
 					throw new GioviException("Unexpected named parameter: " + funcParamCtx.identifier().getText());
 				}
@@ -607,14 +625,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 	}
 
-	private void setupNamedFunctionParameters(GioviParser.FunctionCallContext ctx, GioviFunction func) {
-		List<GioviParser.FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
+	private void setupNamedFunctionParameters(FunctionCallContext ctx, GioviFunction func) {
+		List<FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
 			? List.of()
 			: ctx.functionParameterList().functionParameter();
 		LinkedHashMap<String, GioviFunctionParameter> funcParams = func.getParameters();
 
 		Map<String, GioviValue<?>> funcCallParamsMap = new HashMap<>();
-		for (GioviParser.FunctionParameterContext funcCallParamCtx : funcCallParams) {
+		for (FunctionParameterContext funcCallParamCtx : funcCallParams) {
 			String callParamName = funcCallParamCtx.identifier().getText();
 			if (funcCallParamsMap.containsKey(callParamName)) {
 				throw new GioviException("Duplicate parameter name in function call: " + callParamName);
@@ -640,9 +658,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitReturnStatement(GioviParser.ReturnStatementContext ctx) {
+	public GioviObject visitReturnStatement(ReturnStatementContext ctx) {
 		GioviValue<?> returnValue = visit(ctx.expression()).asGioviValue();
 		getCurrentScope().doReturn(returnValue);
 		return returnValue;
+	}
+
+
+	@Override
+	public GioviObject visitStructDefinition(StructDefinitionContext ctx) {
+		GioviStruct evaluate = StructHelperVisitor.evaluate(this, ctx);
+		getCurrentScope().define(ctx.structName.getText(), evaluate);
+		return null;
+	}
+
+	@Override
+	public GioviObject visitStructCreation(StructCreationContext ctx) {
+		GioviStruct struct = new GioviStruct(new Struct());
+		return struct;
 	}
 }
