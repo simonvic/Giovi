@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.Structs;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,36 +21,38 @@ public class TestGioviValue {
 
 	static Stream<Arguments> produceValuesWithValueType() {
 		return Stream.of(
-			Arguments.of(GioviValue.of(69), GioviInt.class),
-			Arguments.of(GioviValue.of(4.20), GioviReal.class),
-			Arguments.of(GioviValue.of(true), GioviBool.class),
-			Arguments.of(GioviValue.of("hello"), GioviText.class),
-			Arguments.of(GioviValue.of(List.of(69)), GioviList.class),
-			Arguments.of(GioviValue.of(Map.of(0, "a")), GioviMap.class)
+			Arguments.of(GioviInt.class, GioviValue.of(69)),
+			Arguments.of(GioviReal.class, GioviValue.of(4.20)),
+			Arguments.of(GioviBool.class, GioviValue.of(true)),
+			Arguments.of(GioviText.class, GioviValue.of("hello")),
+			Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
+			Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
+			Arguments.of(GioviNamedStruct.class, GioviValue.of(Structs.of("a", "a")))
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceValuesWithValueType")
-	void test_Value_of_valueType(GioviValue<?> value, Class<?> valueType) {
-		assertEquals(value.getClass(), valueType);
+	void test_Value_of_valueType(Class<?> valueType, GioviValue<?> value) {
+		assertEquals(valueType, value.getClass());
 	}
 
 	static Stream<Arguments> produceValuesWithPrimitiveValueType() {
 		return Stream.of(
-			Arguments.of(GioviValue.of(69), Integer.class),
-			Arguments.of(GioviValue.of(4.20), Double.class),
-			Arguments.of(GioviValue.of(true), Boolean.class),
-			Arguments.of(GioviValue.of("hello"), String.class),
-			Arguments.of(GioviValue.of(List.of(69)), ArrayList.class),
-			Arguments.of(GioviValue.of(Map.of(0, "a")), LinkedHashMap.class)
+			Arguments.of(Integer.class, GioviValue.of(69)),
+			Arguments.of(Double.class, GioviValue.of(4.20)),
+			Arguments.of(Boolean.class, GioviValue.of(true)),
+			Arguments.of(String.class, GioviValue.of("hello")),
+			Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
+			Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
+			Arguments.of(Struct.Named.class, GioviValue.of(Structs.of("a", "a")))
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("produceValuesWithPrimitiveValueType")
-	void test_Value_of_primitiveValueType(GioviValue<?> value, Class<?> primitiveValueType) {
-		assertEquals(value.getValueType(), primitiveValueType);
+	void test_Value_of_primitiveValueType(Class<?> primitiveValueType, GioviValue<?> value) {
+		assertEquals(primitiveValueType, value.getValueType());
 	}
 
 

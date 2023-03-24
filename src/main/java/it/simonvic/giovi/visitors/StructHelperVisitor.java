@@ -18,7 +18,7 @@ public class StructHelperVisitor extends GioviHelperVisitor {
 	}
 
 	public GioviStruct evaluate(StructDefinitionContext ctx) {
-		Struct s = new Struct();
+		var s = new Struct.Named();
 		for (var attributeCtx : ctx.structBodyDefinition().structAttributeDefinition()) {
 			s.put(attributeCtx.identifier().getText(), visit(attributeCtx).asGioviValue());
 		}
@@ -29,7 +29,7 @@ public class StructHelperVisitor extends GioviHelperVisitor {
 //			s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
 //		}
 
-		return new GioviStruct(s);
+		return new GioviNamedStruct(s);
 	}
 
 	@Override

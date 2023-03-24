@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
@@ -185,5 +186,14 @@ public class GioviObject {
 
 	public GioviObject minus(GioviObject right) {
 		throw new OperatorNotSupported("-");
+	}
+
+
+	public GioviObject dot(String identifier) {
+		throw new OperatorNotSupported(". (dot)");
+	}
+
+	public GioviObject dot(GioviFunction function) {
+		throw new OperatorNotSupported(". (dot)");
 	}
 }

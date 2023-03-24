@@ -2,10 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.RedirectionException;
-import it.simonvic.giovi.exceptions.TypeNotFound;
+import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.LoopScope;
 import it.simonvic.giovi.lang.Scope;
@@ -19,7 +16,6 @@ import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
-import it.simonvic.giovi.visitors.StructHelperVisitor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 import java.util.*;
@@ -246,6 +242,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
 			visit(ctx.identifier()));
+		return null;
+	}
+
+	@Override
+	public GioviObject visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
+		OperationEvaluator.redirection(
+			visit(ctx.expression(0)),
+			ctx.redirectionOperator().getText(),
+			visit(ctx.expression(1))
+		);
 		return null;
 	}
 
@@ -667,14 +673,104 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitStructDefinition(StructDefinitionContext ctx) {
-		GioviStruct evaluate = StructHelperVisitor.evaluate(this, ctx);
-		getCurrentScope().define(ctx.structName.getText(), evaluate);
+		var struct = new Struct.Named();
+		if (ctx.parentName != null) {
+			if (getCurrentScope().isDefinedStruct(ctx.parentName.getText())) {
+				var definition = getCurrentScope().getDefinitionStruct(ctx.parentName.getText());
+				struct.putAll((Struct.Named) definition.unbox());
+			} else {
+				throw new TypeNotFound(ctx.parentName.getText());
+			}
+		}
+		for (var attributeCtx : ctx.structBodyDefinition().structAttributeDefinition()) {
+			String identifier = attributeCtx.identifier().getText();
+			var attribute = spawnType(attributeCtx.type(), Optional.ofNullable(attributeCtx.defaultDefinition()));
+			if (attributeCtx.defaultDefinition() != null) {
+				attribute.setDefaultValue(visit(attributeCtx.defaultDefinition()).asGioviValue());
+			}
+			struct.put(identifier, attribute);
+		}
+//		for (var structDefinitionCtx : ctx.structBodyDefinition().structDefinition()) {
+//			s.put(structDefinitionCtx.structName.getText(), visit(structDefinitionCtx).asGioviStruct());
+//		}
+//		for (var functionCtx : ctx.structBodyDefinition().functionDeclaration()) {
+//			s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
+//		}
+
+		getCurrentScope().define(ctx.structName.getText(), new GioviNamedStruct(struct));
 		return null;
 	}
 
 	@Override
-	public GioviObject visitStructCreation(StructCreationContext ctx) {
-		GioviStruct struct = new GioviStruct(new Struct());
-		return struct;
+	public GioviObject visitNamedStructCreation(NamedStructCreationContext ctx) {
+		var struct = new Struct.Named();
+		if (ctx.structType != null) {
+			if (!getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
+				throw new TypeNotFound(ctx.identifier().getText());
+			}
+			var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
+			struct.set(definition.unbox());
+			for (var attributeCtx : ctx.namedStructAttribute()) {
+				String attributeName = attributeCtx.identifier().getText();
+				if (!struct.contains(attributeName)) {
+					throw new IncompatibleStructs("Struct '" + ctx.structType.getText() + "' doesn't have an attribute '" + attributeName + "'");
+				}
+				struct.get(attributeName).box(visit(attributeCtx.expression()).asGioviValue());
+			}
+		} else {
+			for (var attributeCtx : ctx.namedStructAttribute()) {
+				struct.put(attributeCtx.identifier().getText(), visit(attributeCtx.expression()).asGioviValue());
+			}
+		}
+		return new GioviNamedStruct(struct);
+	}
+
+	@Override
+	public GioviObject visitUnnamedStructCreation(UnnamedStructCreationContext ctx) {
+		var struct = new Struct.Unnamed();
+		if (ctx.structType != null) {
+			if (!getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
+				throw new TypeNotFound(ctx.identifier().getText());
+			}
+			var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
+			struct.set(definition.unbox());
+			for (var attributeCtx : ctx.unnamedStructAttribute()) {
+				// TODO check that fields are valid?
+				struct.put(visit(attributeCtx.expression()).asGioviValue());
+			}
+		} else {
+			for (var attributeCtx : ctx.unnamedStructAttribute()) {
+				struct.put(visit(attributeCtx.expression()).asGioviValue());
+			}
+		}
+		return new GioviUnnamedStruct(struct);
+	}
+
+	//	@Override
+//	public GioviObject visitStructCreation(StructCreationContext ctx) {
+//		GioviStruct struct = new GioviStruct();
+//		if (ctx.identifier() != null) {
+//			if (getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
+//				var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
+//				struct.unbox().putAll(definition.unbox());
+//			} else {
+//				throw new TypeNotFound(ctx.identifier().getText());
+//			}
+//		}
+//		for (var attributeCtx : ctx.structAttribute()) {
+//			String identifier = attributeCtx.identifier() != null
+//				? attributeCtx.identifier().getText()
+//				: "" + struct.getLastIndex();
+//			struct.put(identifier, visit(attributeCtx.expression()).asGioviValue());
+//		}
+//		return struct;
+//	}
+
+	@Override
+	public GioviObject visitDotExpression(DotExpressionContext ctx) {
+		var lhs = visit(ctx.expression());
+		return ctx.identifier() != null
+			? lhs.dot(ctx.identifier().getText())
+			: lhs.dot(getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}
 }
