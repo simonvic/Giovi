@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.9.0</version>
+			<version>5.9.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>5.9.0</version>
+			<version>5.9.2</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<release>19</release>
 					<compilerArgs>
@@ -85,7 +85,6 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.3.0</version>
 				<configuration>
-					<compilerArgs>--enable-preview</compilerArgs>
 					<archive>
 						<manifest>
 							<mainClass>it.simonvic.giovi.Giovi</mainClass>
