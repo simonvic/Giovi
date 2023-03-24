@@ -1,5 +1,8 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.List;
+import java.util.Map;
+
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.GioviObject;
@@ -9,12 +12,9 @@ import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviStructs;
 
-import java.util.List;
-import java.util.Map;
-
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviNumber<?>, GioviBool, GioviText, GioviCollection<?>, GioviStruct {
+	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct {
 
 	protected T value;
 	protected T defaultValue;
