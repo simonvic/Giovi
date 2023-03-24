@@ -2,7 +2,7 @@ package it.simonvic.giovi;
 
 import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.util.GioviCollections;
+import it.simonvic.giovi.util.GioviLists;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -148,7 +148,7 @@ public class TestDefaults {
 
 		@Test
 		void testList() {
-			var expected = GioviCollections.of("a", "b", "c");
+			var expected = GioviLists.of("a", "b", "c");
 			var actual = visit("""
 				x [Text] _ ['a' 'b' 'c']
 				['z'] > x

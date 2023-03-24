@@ -1,18 +1,22 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.util.GioviCollections;
+import static it.simonvic.giovi.Giovi.runExpression;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static it.simonvic.giovi.Giovi.runExpression;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import it.simonvic.giovi.lang.values.GioviBool;
+import it.simonvic.giovi.lang.values.GioviInt;
+import it.simonvic.giovi.lang.values.GioviMap;
+import it.simonvic.giovi.lang.values.GioviReal;
+import it.simonvic.giovi.lang.values.GioviText;
+import it.simonvic.giovi.util.GioviMaps;
 
 public class TestMaps {
 
@@ -48,7 +52,7 @@ public class TestMaps {
 			assertEquals(GioviInt.class, map.getKeyType().unbox());
 			assertEquals(GioviReal.class, map.getElementType().unbox());
 		}
-		
+
 	}
 
 	@Test
@@ -70,7 +74,7 @@ public class TestMaps {
 		return Stream.of(
 			Arguments.of("""
 				[ 1:"a" 2:"b" 3:"c" ]
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c"))
+				""", GioviMaps.of(1, "a", 2, "b", 3, "c")
 			)
 		);
 	}
