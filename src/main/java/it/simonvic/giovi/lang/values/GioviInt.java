@@ -62,7 +62,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
-			case GioviNumber v -> value = v.intValue().unbox();
+			case GioviNumber<?> v -> value = v.intValue().unbox();
 			default -> super.redirection(content);
 		}
 		return this;
@@ -72,7 +72,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value += defaultValue;
-			case GioviNumber v -> value += v.intValue().unbox();
+			case GioviNumber<?> v -> value += v.intValue().unbox();
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -82,7 +82,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value -= defaultValue;
-			case GioviNumber v -> value -= v.intValue().unbox();
+			case GioviNumber<?> v -> value -= v.intValue().unbox();
 			default -> super.redirectionMinus(right);
 		}
 		return this;
@@ -92,7 +92,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviObject redirectionMultiply(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value *= defaultValue;
-			case GioviNumber v -> value *= v.intValue().unbox();
+			case GioviNumber<?> v -> value *= v.intValue().unbox();
 			default -> super.redirectionMultiply(right);
 		}
 		return this;
@@ -102,7 +102,7 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviObject redirectionDivide(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value /= defaultValue;
-			case GioviNumber v -> value /= v.intValue().unbox();
+			case GioviNumber<?> v -> value /= v.intValue().unbox();
 			default -> super.redirectionDivide(right);
 		}
 		return this;

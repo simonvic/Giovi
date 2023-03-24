@@ -13,7 +13,7 @@ import java.util.Map;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct {
+	permits GioviNumber<?>, GioviBool, GioviText, GioviCollection<?>, GioviStruct {
 
 	protected T value;
 	protected T defaultValue;

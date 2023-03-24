@@ -22,8 +22,8 @@ public class GioviObject {
 		return (GioviStruct) this;
 	}
 
-	public GioviCollection asGioviCollection() {
-		return (GioviCollection) this;
+	public GioviCollection<?> asGioviCollection() {
+		return (GioviCollection<?>) this;
 	}
 
 	public GioviNumber<?> asGioviNumber() {

@@ -61,7 +61,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
-			case GioviNumber v -> value = v.naturalValue().unbox();
+			case GioviNumber<?> v -> value = v.naturalValue().unbox();
 			default -> super.redirection(content);
 		}
 		return this;
@@ -71,7 +71,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	public GioviObject redirectionPlus(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value = value.plus(defaultValue);
-			case GioviNumber v -> value = value.plus(v.naturalValue().unbox());
+			case GioviNumber<?> v -> value = value.plus(v.naturalValue().unbox());
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -81,7 +81,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	public GioviObject redirectionMinus(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value = value.minus(defaultValue);
-			case GioviNumber v -> value = value.minus(v.naturalValue().unbox());
+			case GioviNumber<?> v -> value = value.minus(v.naturalValue().unbox());
 			default -> super.redirectionMinus(right);
 		}
 		return this;
@@ -91,7 +91,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	public GioviObject redirectionMultiply(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value = value.multiply(defaultValue);
-			case GioviNumber v -> value = value.multiply(v.naturalValue().unbox());
+			case GioviNumber<?> v -> value = value.multiply(v.naturalValue().unbox());
 			default -> super.redirectionMultiply(right);
 		}
 		return this;
@@ -101,7 +101,7 @@ public non-sealed class GioviNatural extends GioviNumber<Natural> {
 	public GioviObject redirectionDivide(GioviObject right) {
 		switch (right) {
 			case GioviDefault v -> value = value.divide(defaultValue);
-			case GioviNumber v -> value = value.divide(v.naturalValue().unbox());
+			case GioviNumber<?> v -> value = value.divide(v.naturalValue().unbox());
 			default -> super.redirectionDivide(right);
 		}
 		return this;
