@@ -1,116 +1,352 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.lang.values.GioviList;
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.util.GioviCollections;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.Map;
-import java.util.stream.Stream;
-
-import static it.simonvic.giovi.Giovi.parserOf;
+import static it.simonvic.giovi.Giovi.visit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import it.simonvic.giovi.exceptions.IncompatibleStructs;
+import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviMaps;
+import it.simonvic.giovi.util.GioviStructs;
 
 public class TestRedirection {
 
-	static GioviVisitor visitor = new GioviVisitor();
 
-	@ParameterizedTest
-	@CsvSource(textBlock = """
-		1.0 > varDouble Real, 1
-		1 >+  varDouble, 2
-		2 >+  varDouble, 4
-		2 >-  varDouble, 2
-		10 >* varDouble, 20
-		10 >/ varDouble, 2
-		"""
-	)
-	void testDouble(String code, Double expected) {
-		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varDouble").unbox());
+	@Nested
+	class TestReal {
+
+		@Test
+		void redirToDeclaration_shouldInitialize() {
+			assertEquals(1d, visit("""
+				1.0 > x Real
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redir_shouldChangeValue() {
+			assertEquals(69d, visit("""
+				x Real
+				69 > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirPlus_shouldIncrement() {
+			assertEquals(4d, visit("""
+				2 > x Real
+				2 >+ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirMinus_shouldDecrement() {
+			assertEquals(7d, visit("""
+				10 > x Real
+				3 >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirStar_shouldMultiply() {
+			assertEquals(10d, visit("""
+				2 > x Real
+				5 >* x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirDiv_shouldDivide() {
+			assertEquals(5d, visit("""
+				10 > x Real
+				2 >/ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
 	}
 
-	@ParameterizedTest
-	@CsvSource(textBlock = """
-		"hello" > varString Text, hello
-		"1" >+ varString, hello1
-		"2" >+ varString, hello12
-		"2" >+ varString, hello122
-		"2" >- varString, hello1
-		"l" >- varString, heo1
-		"eo" >- varString, h1
-		"""
-	)
-	void testString(String code, String expected) {
-		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, visitor.getCurrentScope().getVariableValue("varString").unbox());
+	@Nested
+	class TestText {
+		@Test
+		void redir_shouldChangeValue() {
+			assertEquals("foo", visit("""
+				x Text
+				"foo" > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirPlus_shouldAppend() {
+			assertEquals("foobar", visit("""
+				"foo" > x Text
+				"bar" >+ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirMinus_shouldRemove() {
+			assertEquals("bar", visit("""
+				"foobar" > x Text
+				"foo" >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
+
+		@Test
+		void redirMinus_shouldRemoveAllOccurences() {
+			assertEquals("bar", visit("""
+				"foobarfoo" > x Text
+				"foo" >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unbox());
+		}
 	}
 
+	@Nested
+	class TestList {
 
-	private static Stream<Arguments> produceLists() {
-		return Stream.of(
-			Arguments.of("[69 420] > list [Int]", GioviCollections.of(69, 420)),
-			Arguments.of("[1 2 3] > list", GioviCollections.of(1, 2, 3)),
-			Arguments.of("[1 2 3] > list", GioviCollections.of(1, 2, 3)),
-			Arguments.of("4 >+ list", GioviCollections.of(1, 2, 3, 4)),
-			Arguments.of("4 >- list", GioviCollections.of(1, 2, 3)),
-			Arguments.of("[4 5 6] >+ list", GioviCollections.of(1, 2, 3, 4, 5, 6)),
-			Arguments.of("[4 5 6] >- list", GioviCollections.of(1, 2, 3))
-		);
+		@Test
+		void redir_shouldChangeValue() {
+			assertEquals(GioviLists.of(1, 2, 3), visit("""
+				x [Int]
+				[1 2 3] > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirPlus_shouldInsert() {
+			assertEquals(GioviLists.of(1, 2, 3), visit("""
+				[1 2] > x [Int]
+				3 >+ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirPlus_shouldRemove() {
+			assertEquals(GioviLists.of(1, 2, 3), visit("""
+				[1 2 3 4] > x [Int]
+				4 >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_shouldRemoveFirstOccurence() {
+			assertEquals(GioviLists.of(1, 2, 3, 4), visit("""
+				[1 2 4 3 4] > x [Int]
+				4 >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_otherList_shouldInsertAll() {
+			assertEquals(GioviLists.of(1, 2, 3, 4, 5, 6), visit("""
+				[1 2 3] > x [Int]
+				[4 5 6] >+ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_otherList_shouldRemoveAll() {
+			assertEquals(GioviLists.of(1, 2, 3), visit("""
+				[1 2 3 4 5 6] > x [Int]
+				[4 5 6] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_otherList_shouldRemoveAllOccurences() {
+			assertEquals(GioviLists.of(1, 2, 3), visit("""
+				[4 5 1 6 5 2 3 4 5 6] > x [Int]
+				[4 5 6] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Disabled("Not implemented yet")
+		@Test
+		void indexedRedirection() {
+
+		}
+
 	}
 
-	@ParameterizedTest
-	@MethodSource("produceLists")
-	void testList(String code, GioviList expected) {
-		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, visitor.getCurrentScope().getVariableValue("list"));
+	@Nested
+	class TestMap {
+
+		@Test
+		void redir_shouldChangeValue() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[69:"foo"] > x [Int:Text]
+				[1:"a" 2:"b" 3:"c"] > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirPlus_shouldPut() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"foo"] > x [Int:Text]
+				[3:"c"] >+ x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_shouldRemoveKeyValue() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"c" 4:"foo"] > x [Int:Text]
+				[4:"foo"] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_wrongValue_shouldNotRemoveEntry() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"c"] > x [Int:Text]
+				[2:"foo"] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_value_shouldRemoveKey() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"c" 4:"foo"] > x [Int:Text]
+				4 >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redirMinus_map_shouldRemoveAllEntries() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"c" 4:"foo" 5:"bar"] > x [Int:Text]
+				[4:"foo" 5:"bar"] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Disabled("meh")
+		@Test
+		void redirMinus_keyList_shouldRemoveAllKeys() {
+			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
+				[1:"a" 2:"b" 3:"c" 4:"foo" 5:"bar"] > x [Int:Text]
+				[4 5] >- x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
 	}
 
+	@Nested
+	class TestStruct {
 
-	private static Stream<Arguments> produceMaps() {
-		return Stream.of(
-			Arguments.of("""
-				[69 : "lol"] > map [Int : Text]
-				""", GioviCollections.of(Map.of(69, "lol"))
-			),
-			Arguments.of("""
-				[1:"a" 2:"b" 3:"c"] > map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c"))
-			),
-			Arguments.of("""
-				[4:"d"] >+ map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d"))
-			),
-			Arguments.of("""
-				[5:"e" 6:"f"] >+ map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e", 6, "f"))
-			),
-			Arguments.of("""
-				6 >- map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e"))
-			),
-			Arguments.of("""
-				[5 : "non existing element"] >- map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d", 5, "e"))
-			),
-			Arguments.of("""
-				[5 : "e"] >- map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d"))
-			),
-			Arguments.of("""
-				[3:"c" 4:"d"] >- map
-				""", GioviCollections.of(Map.of(1, "a", 2, "b"))
-			)
-		);
+		@Test
+		void redir_shouldChangeFields() {
+			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
+				Color (r Int; g Int; b Int;)
+				x Color
+				(255 69 42) > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redir_namedAttributes_shouldChangeFields() {
+			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
+				Color (r Int; g Int; b Int;)
+				x Color
+				(b:42 r:255 g:69) > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redir_wrongNamedAttributes_shouldThrow() {
+			assertThrows(IncompatibleStructs.class, () -> visit("""
+				Color (r Int; g Int; b Int;)
+				x Color
+				(red:255 b:42 g:69) > x
+				"""));
+		}
+
+		@Disabled("Should it?")
+		@Test
+		void redir_wrongExplicitStruct_shouldFail() {
+			assertEquals(GioviStructs.of("r", 0, "g", 0, "b", 0), visit("""
+				Foo (r Int; g Int; b Int;)
+				Color (r Int; g Int; b Int;)
+				x Color
+				Foo.(r:255 b:42 g:69) > x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
+
+		@Test
+		void redir_toField_shouldChangeValue() {
+			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
+				Color (r Int; g Int; b Int;)
+				x Color
+				255 > x.r
+				69 > x.g
+				42 > x.b
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
+		}
 	}
 
-	@ParameterizedTest
-	@MethodSource("produceMaps")
-	void testMaps(String code, GioviMap expected) {
-		visitor.visit(parserOf(code).begin());
-		assertEquals(expected, visitor.getCurrentScope().getVariableValue("map"));
-	}
 }
