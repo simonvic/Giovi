@@ -1,10 +1,14 @@
 package it.simonvic.giovi.util;
 
-import it.simonvic.giovi.lang.values.*;
-
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.GioviNamedStruct;
+import it.simonvic.giovi.lang.values.GioviStruct;
+import it.simonvic.giovi.lang.values.GioviUnnamedStruct;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public class GioviStructs {
 

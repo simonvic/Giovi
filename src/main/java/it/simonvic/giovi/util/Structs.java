@@ -1,9 +1,9 @@
 package it.simonvic.giovi.util;
 
-import it.simonvic.giovi.lang.values.GioviValue;
-import it.simonvic.giovi.lang.values.Struct;
-
 import java.util.List;
+
+import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public class Structs {
 	public static Struct.Named of() {

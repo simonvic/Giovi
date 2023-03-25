@@ -1,13 +1,13 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.lang.functions.GioviFunction;
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.type.Natural;
-import it.simonvic.giovi.lang.values.*;
-
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.lang.functions.GioviFunction;
+import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.type.GioviType;
+import it.simonvic.giovi.lang.values.*;
 
 public class GioviObject {
 

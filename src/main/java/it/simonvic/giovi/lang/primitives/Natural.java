@@ -1,4 +1,4 @@
-package it.simonvic.giovi.lang.type;
+package it.simonvic.giovi.lang.primitives;
 
 import it.simonvic.giovi.exceptions.GioviException;
 

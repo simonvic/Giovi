@@ -1,6 +1,4 @@
-package it.simonvic.giovi.lang.values;
-
-import it.simonvic.giovi.lang.GioviObject;
+package it.simonvic.giovi.lang;
 
 public class Accessor extends GioviObject {
 	private final String s;

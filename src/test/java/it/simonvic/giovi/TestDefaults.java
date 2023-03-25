@@ -1,17 +1,25 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.util.GioviLists;
+import static it.simonvic.giovi.Giovi.visit;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import it.simonvic.giovi.lang.type.Natural;
 
-import java.util.*;
-
-import static it.simonvic.giovi.Giovi.visit;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.type.GioviType;
+import it.simonvic.giovi.lang.values.GioviBool;
+import it.simonvic.giovi.lang.values.GioviInt;
+import it.simonvic.giovi.lang.values.GioviMap;
+import it.simonvic.giovi.lang.values.GioviNatural;
+import it.simonvic.giovi.lang.values.GioviReal;
+import it.simonvic.giovi.lang.values.GioviText;
+import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.util.GioviLists;
 
 public class TestDefaults {
 

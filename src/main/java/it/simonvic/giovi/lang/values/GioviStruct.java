@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.StructException;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
+import it.simonvic.giovi.lang.primitives.Struct;
 
 public abstract sealed class GioviStruct extends GioviValue<Struct>
 	permits GioviNamedStruct, GioviUnnamedStruct {

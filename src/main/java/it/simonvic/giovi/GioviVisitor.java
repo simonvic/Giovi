@@ -1,24 +1,22 @@
 package it.simonvic.giovi;
 
+import java.util.*;
+
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
-import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.LoopScope;
-import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.functions.GioviFunctionParameter;
+import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.type.GioviTypeList;
-import it.simonvic.giovi.lang.type.Natural;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
-
-import java.util.*;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 

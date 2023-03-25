@@ -1,11 +1,12 @@
-package it.simonvic.giovi.lang.values;
-
-import it.simonvic.giovi.exceptions.IncompatibleStructs;
+package it.simonvic.giovi.lang.primitives;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+
+import it.simonvic.giovi.exceptions.IncompatibleStructs;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public abstract sealed class Struct {
 

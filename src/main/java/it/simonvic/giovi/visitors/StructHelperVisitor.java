@@ -1,8 +1,10 @@
 package it.simonvic.giovi.visitors;
 
 import it.simonvic.giovi.GioviVisitor;
-import it.simonvic.giovi.antlr.GioviParser.*;
+import it.simonvic.giovi.antlr.GioviParser.StructAttributeDefinitionContext;
+import it.simonvic.giovi.antlr.GioviParser.StructDefinitionContext;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.lang.values.*;
 

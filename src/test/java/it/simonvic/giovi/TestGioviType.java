@@ -1,18 +1,26 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.type.Natural;
-import it.simonvic.giovi.lang.values.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.type.GioviType;
+import it.simonvic.giovi.lang.values.GioviBool;
+import it.simonvic.giovi.lang.values.GioviInt;
+import it.simonvic.giovi.lang.values.GioviList;
+import it.simonvic.giovi.lang.values.GioviMap;
+import it.simonvic.giovi.lang.values.GioviNatural;
+import it.simonvic.giovi.lang.values.GioviReal;
+import it.simonvic.giovi.lang.values.GioviStruct;
+import it.simonvic.giovi.lang.values.GioviText;
 
 public class TestGioviType {
 

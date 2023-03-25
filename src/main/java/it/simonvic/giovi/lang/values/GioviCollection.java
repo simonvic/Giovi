@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 
 public abstract sealed class GioviCollection<T> extends GioviValue<T> permits GioviList, GioviMap {

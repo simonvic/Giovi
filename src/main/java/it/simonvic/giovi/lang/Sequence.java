@@ -1,12 +1,12 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.lang.type.Natural;
-import it.simonvic.giovi.lang.values.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.values.*;
 
 public class Sequence<T extends GioviValue<?>> extends GioviObject {
 
