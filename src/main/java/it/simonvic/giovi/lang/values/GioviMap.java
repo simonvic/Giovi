@@ -6,50 +6,51 @@ import java.util.Map;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.type.GioviType;
 
-public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
+public non-sealed class GioviMap
+	extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
-	private final GioviType keyType;
-	private final GioviType elementType;
+	private final GioviType<?> keyType;
+	private final GioviType<?> elementType;
 
 	public GioviMap(LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
 		this(null, null, value);
 	}
 
-	public GioviMap(GioviType keyType, GioviType elementType, LinkedHashMap<GioviValue<?>, GioviValue<?>> value, LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
+	public GioviMap(
+		GioviType<?> keyType,
+		GioviType<?> elementType,
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
+
 		super(value, defaultValue);
 		this.keyType = keyType != null ? keyType : GioviType.inferGioviType(value.keySet());
-		this.elementType = elementType != null ? elementType : GioviType.inferGioviType(value.values());
+		this.elementType = elementType != null
+			? elementType
+			: GioviType.inferGioviType(value.values());
 		checkCasts(this.value, this.keyType, this.elementType);
 		checkCasts(this.defaultValue, this.keyType, this.elementType);
 	}
 
-	public GioviMap(GioviType keyType, GioviType elementType, LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
+	public GioviMap(
+		GioviType<?> keyType,
+		GioviType<?> elementType,
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
 		this(keyType, elementType, value, new LinkedHashMap<>());
 	}
 
-	public GioviMap(GioviType keyType, GioviType elementType) {
+	public GioviMap(GioviType<?> keyType, GioviType<?> elementType) {
 		this(keyType, elementType, new LinkedHashMap<>(), new LinkedHashMap<>());
 	}
 
-	public GioviMap(Class<? extends GioviValue<?>> keyType, Class<? extends GioviValue<?>> elementType) {
-		this(new GioviType(keyType), new GioviType(elementType));
-	}
-
-	private static void checkCasts(LinkedHashMap<GioviValue<?>, GioviValue<?>> entries, GioviType keyType, GioviType elementType) {
+	private static void checkCasts(
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> entries,
+		GioviType<?> keyType,
+		GioviType<?> elementType) {
 		entries.forEach((key, element) -> {
 			key.castTo(keyType);
 			element.castTo(elementType);
 		});
-	}
-
-	public GioviType getKeyType() {
-		return keyType;
-	}
-
-	public GioviType getElementType() {
-		return elementType;
 	}
 
 	public void put(GioviValue<?> key, GioviValue<?> element) {
@@ -112,10 +113,26 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 		putAll(entries);
 	}
 
+	public GioviType<?> getKeyType() {
+		return keyType;
+	}
+
+	public GioviType<?> getElementType() {
+		return elementType;
+	}
+
 	@Override
-	public GioviValue<?> castTo(GioviType type) {
-		Class<? extends GioviValue<?>> typeClass = type.unbox();
-		if (typeClass == GioviMap.class) return new GioviMap(value);
+	public GioviType<?> getGioviType() {
+		return new GioviTypeMap(keyType, elementType);
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType<?> type) {
+		if (type instanceof GioviTypeMap t) {
+			var map = new GioviMap(t.getKeyType(), t.getElementType());
+			this.value.forEach(map::put);
+			return map;
+		}
 		return super.castTo(type);
 	}
 
@@ -160,7 +177,7 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 		switch (right) {
 			case GioviDefault v -> putAll(defaultValue);
 			case GioviMap v -> putAll(v.unbox());
-//			case GioviValue<?> v -> this.put((K) v, defaultValue);
+			//			case GioviValue<?> v -> this.put((K) v, defaultValue);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -188,13 +205,17 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
 
 		final GioviMap other = (GioviMap) obj;
 
-		if (value.size() != other.value.size()) return false;
+		if (value.size() != other.value.size())
+			return false;
 
 		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
 			if (!entry.getValue().equals(other.get(entry.getKey()))) {
@@ -212,7 +233,7 @@ public non-sealed class GioviMap extends GioviCollection<LinkedHashMap<GioviValu
 
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
-		for (; ; ) {
+		for (;;) {
 			var e = i.next();
 			var key = e.getKey();
 			var value = e.getValue();

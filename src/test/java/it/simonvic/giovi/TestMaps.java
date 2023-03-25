@@ -11,11 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import it.simonvic.giovi.lang.values.GioviBool;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviText;
+import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviMaps;
 
 public class TestMaps {
@@ -57,12 +53,16 @@ public class TestMaps {
 
 	@Test
 	void mapsShouldBeEqual() {
-		GioviMap map1 = new GioviMap(GioviInt.class, GioviText.class);
+		GioviMap map1 = new GioviMap(
+			new GioviTypePrimitive(GioviInt.class),
+			new GioviTypePrimitive(GioviText.class));
 		map1.put(new GioviInt(0), new GioviText("a"));
 		map1.put(new GioviInt(1), new GioviText("b"));
 		map1.put(new GioviInt(2), new GioviText("c"));
 
-		GioviMap map2 = new GioviMap(GioviInt.class, GioviText.class);
+		GioviMap map2 = new GioviMap(
+			new GioviTypePrimitive(GioviInt.class),
+			new GioviTypePrimitive(GioviText.class));
 		map2.put(new GioviInt(0), new GioviText("a"));
 		map2.put(new GioviInt(1), new GioviText("b"));
 		map2.put(new GioviInt(2), new GioviText("c"));

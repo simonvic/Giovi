@@ -14,4 +14,5 @@ public non-sealed class GioviUnnamedStruct extends GioviStruct {
 	public GioviUnnamedStruct() {
 		super(new Struct.Unnamed(), new Struct.Unnamed());
 	}
+
 }

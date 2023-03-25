@@ -98,7 +98,7 @@ public class TestFunctions {
 		assertDoesNotThrow(() -> new GioviVisitor().visit(parser.begin()));
 	}
 
-	@Disabled("Not implemented yet")
+	@Disabled("Function overload not implemented yet")
 	@Nested
 	class TestOverload {
 

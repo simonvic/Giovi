@@ -18,6 +18,11 @@ public non-sealed class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
+	public GioviType<?> getGioviType() {
+		return new GioviTypePrimitive(GioviReal.class);
+	}
+
+	@Override
 	public GioviNatural naturalValue() {
 		return new GioviNatural(new Natural(value.intValue()));
 	}
@@ -236,4 +241,7 @@ public non-sealed class GioviReal extends GioviNumber<Double> {
 		return equal(right).not();
 	}
 
+	public static GioviReal valueOf(String s) throws NumberFormatException {
+		return new GioviReal(Double.valueOf(s)); 
+	}
 }

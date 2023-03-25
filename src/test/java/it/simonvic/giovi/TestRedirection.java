@@ -205,10 +205,14 @@ public class TestRedirection {
 				.getVariableValue("x"));
 		}
 
-		@Disabled("Not implemented yet")
 		@Test
 		void indexedRedirection() {
-
+			assertEquals(GioviLists.of(1, 69, 3), visit("""
+				[1 2 3] > x [Int]
+				69 > x@1
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"));
 		}
 
 	}
@@ -276,16 +280,6 @@ public class TestRedirection {
 				.getVariableValue("x"));
 		}
 
-		@Disabled("meh")
-		@Test
-		void redirMinus_keyList_shouldRemoveAllKeys() {
-			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"c" 4:"foo" 5:"bar"] > x [Int:Text]
-				[4 5] >- x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
 	}
 
 	@Nested
@@ -322,7 +316,7 @@ public class TestRedirection {
 				"""));
 		}
 
-		@Disabled("Should it?")
+		@Disabled("Should wrong explicit struct fail?")
 		@Test
 		void redir_wrongExplicitStruct_shouldFail() {
 			assertEquals(GioviStructs.of("r", 0, "g", 0, "b", 0), visit("""

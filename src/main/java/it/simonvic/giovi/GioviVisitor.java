@@ -11,8 +11,6 @@ import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.functions.GioviFunctionParameter;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.type.GioviTypeList;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
@@ -107,25 +105,32 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitForStatement(ForStatementContext ctx) {
 		if (ctx.sequenceOrExpression().sequence() != null) {
-			forList(ctx.iterators().identifier(), ctx.sequenceOrExpression().sequence(), ctx.statementOrBlock());
+			forList(ctx.iterators().identifier(), ctx.sequenceOrExpression().sequence(),
+				ctx.statementOrBlock());
 		} else {
 			GioviObject collection = visit(ctx.sequenceOrExpression().expression());
 			switch (collection) {
-				case GioviList list -> forList(ctx.iterators().identifier(), list, ctx.statementOrBlock());
-				case GioviMap map -> forMap(ctx.iterators().identifier(), map, ctx.statementOrBlock());
+				case GioviList list -> forList(ctx.iterators().identifier(), list,
+					ctx.statementOrBlock());
+				case GioviMap map -> forMap(ctx.iterators().identifier(), map,
+					ctx.statementOrBlock());
 				default -> throw new OperatorNotSupported("for");
 			}
 		}
 		return null;
 	}
 
-	private void forList(List<IdentifierContext> iterators, SequenceContext sequence, StatementOrBlockContext statementOrBlock) {
+	private void forList(List<IdentifierContext> iterators, SequenceContext sequence,
+		StatementOrBlockContext statementOrBlock) {
 		throw new GioviException("For loop over sequence not implemented yet");
 	}
 
-	private void forList(List<IdentifierContext> iterators, GioviList list, StatementOrBlockContext statementOrBlock) {
-		if (iterators.size() != 1) throw new GioviException("Wrong number of iterators");
-		if (list.unbox().size() == 0) return;
+	private void forList(List<IdentifierContext> iterators, GioviList list,
+		StatementOrBlockContext statementOrBlock) {
+		if (iterators.size() != 1)
+			throw new GioviException("Wrong number of iterators");
+		if (list.unbox().size() == 0)
+			return;
 
 
 		for (GioviValue<?> value : list.unbox()) {
@@ -155,11 +160,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	}
 
-	private void forMap(List<IdentifierContext> iterators, GioviMap map, StatementOrBlockContext statementOrBlock) {
-		if (iterators.size() != 2) throw new GioviException("Wrong number of iterators");
-		if (map.unbox().size() == 0) return;
+	private void forMap(List<IdentifierContext> iterators, GioviMap map,
+		StatementOrBlockContext statementOrBlock) {
+		if (iterators.size() != 2)
+			throw new GioviException("Wrong number of iterators");
+		if (map.unbox().size() == 0)
+			return;
 
-		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox().entrySet()) {
+		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox()
+			.entrySet()) {
 
 			enterLoopScope();
 
@@ -222,14 +231,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			case ">" -> getCurrentScope()
 				.getVariableValue(ctx.varDeclaration().identifier().getText())
 				.redirection(visit(ctx.expression()));
-			default -> throw new RedirectionException("Unknown redirection operator: " + ctx.bop.getText());
+			default -> throw new RedirectionException(
+				"Unknown redirection operator: " + ctx.bop.getText());
 		}
 		return null;
 	}
 
 	@Override
 	public GioviObject visitVarDeclaration(VarDeclarationContext ctx) {
-		GioviValue<?> variable = spawnType(ctx.type(), Optional.ofNullable(ctx.defaultDefinition()));
+		GioviValue<?> variable = spawnType(ctx.type(),
+			Optional.ofNullable(ctx.defaultDefinition()));
 		getCurrentScope().declare(ctx.identifier().getText(), variable);
 		return null;
 	}
@@ -248,13 +259,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		OperationEvaluator.redirection(
 			visit(ctx.expression(0)),
 			ctx.redirectionOperator().getText(),
-			visit(ctx.expression(1))
-		);
+			visit(ctx.expression(1)));
 		return null;
 	}
 
 	@Override
-	public GioviObject visitRedirectionToCollectionAccess(RedirectionToCollectionAccessContext ctx) {
+	public GioviObject visitRedirectionToCollectionAccess(
+		RedirectionToCollectionAccessContext ctx) {
 		OperationEvaluator.redirection(
 			visit(ctx.expression()),
 			ctx.redirectionOperator().getText(),
@@ -264,7 +275,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
-	public GioviObject visitRedirectionToPrimitiveDestination(RedirectionToPrimitiveDestinationContext ctx) {
+	public GioviObject visitRedirectionToPrimitiveDestination(
+		RedirectionToPrimitiveDestinationContext ctx) {
 		GioviObject content = visit(ctx.expression());
 		switch (ctx.primitiveDestination().getText()) {
 			case "\\out" -> System.out.println(content);
@@ -362,10 +374,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitCollectionParenthesizedAccessor(CollectionParenthesizedAccessorContext ctx) {
+	public GioviObject visitCollectionParenthesizedAccessor(
+		CollectionParenthesizedAccessorContext ctx) {
 		//@todo improve this
-		if (ctx.specialAccessor() != null) return visit(ctx.specialAccessor());
-		if (ctx.literal() != null) return visit(ctx.literal());
+		if (ctx.specialAccessor() != null)
+			return visit(ctx.specialAccessor());
+		if (ctx.literal() != null)
+			return visit(ctx.literal());
 		return visit(ctx.expression());
 	}
 
@@ -391,7 +406,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			switch (entry) {
 				case Sequence<?> seq -> entries.addAll(seq.getValues());
 				case GioviValue<?> v -> entries.add(v);
-				default -> throw new GioviException("Incompatible type for list creation: " + entry.getClass());
+				default -> throw new GioviException(
+					"Incompatible type for list creation: " + entry.getClass());
 			}
 		}
 		return new GioviList(entries);
@@ -478,14 +494,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		String typeIdentifier = ctx.identifier().getText();
 		return switch (typeIdentifier) {
-			case "Natural" -> new GioviType(GioviNatural.class);
-			case "Int" -> new GioviType(GioviInt.class);
-			case "Real" -> new GioviType(GioviReal.class);
-			case "Bool" -> new GioviType(GioviBool.class);
-			case "Text" -> new GioviType(GioviText.class);
+			case "Natural" -> new GioviTypePrimitive(GioviNatural.class);
+			case "Int" -> new GioviTypePrimitive(GioviInt.class);
+			case "Real" -> new GioviTypePrimitive(GioviReal.class);
+			case "Bool" -> new GioviTypePrimitive(GioviBool.class);
+			case "Text" -> new GioviTypePrimitive(GioviText.class);
 			default -> {
 				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
-					yield new GioviType(GioviStruct.class);
+					yield new GioviTypeStruct(ctx.identifier().getText());
 				} else {
 					throw new TypeNotFound(ctx.getText());
 				}
@@ -500,7 +516,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitMapType(MapTypeContext ctx) {
-		return new GioviType(GioviMap.class);
+		return new GioviTypeMap(
+			visit(ctx.mapKeyType).asGioviType(),
+			visit(ctx.mapValueType).asGioviType());
 	}
 
 	@Override
@@ -508,14 +526,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		LinkedHashMap<String, GioviFunctionParameter> formalParameters = new LinkedHashMap<>();
 		if (ctx.formalParameters() != null) {
 			boolean expectParamWithDefault = false;
-			for (FormalParameterDefinitionContext formalParamCtx : ctx.formalParameters().formalParameterDefinition()) {
-				GioviValue<?> paramValue = spawnType(formalParamCtx.type(), Optional.ofNullable(formalParamCtx.defaultDefinition()));
+			for (FormalParameterDefinitionContext formalParamCtx : ctx.formalParameters()
+				.formalParameterDefinition()) {
+				GioviValue<?> paramValue = spawnType(formalParamCtx.type(),
+					Optional.ofNullable(formalParamCtx.defaultDefinition()));
 				if (formalParamCtx.defaultDefinition() == null) {
 					if (expectParamWithDefault) {
-						throw new GioviException("Expecting default definition for parameter: " + formalParamCtx.identifier().getText());
+						throw new GioviException("Expecting default definition for parameter: "
+							+ formalParamCtx.identifier().getText());
 					}
 				} else {
-					GioviObject defaultValue = visit(formalParamCtx.defaultDefinition().expression());
+					GioviObject defaultValue = visit(
+						formalParamCtx.defaultDefinition().expression());
 					if (defaultValue instanceof GioviDefault) {
 						paramValue.boxDefault();
 					} else {
@@ -530,26 +552,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 		getCurrentScope().define(ctx.identifier().getText(), new GioviFunction(
 			ctx.block(),
-			ctx.type() == null ? null : visit(ctx.type()).asGioviType().unbox(),
+			ctx.type() == null ? null : visit(ctx.type()).asGioviType(),
 			formalParameters));
 		return null;
 	}
 
-	private GioviValue<?> spawnType(TypeContext typeCtx, Optional<DefaultDefinitionContext> defaultDefinitionCtx) {
-		GioviValue<?> value;
-		GioviType type = visit(typeCtx).asGioviType();
-		if (type.unbox() == GioviList.class) {
-			GioviType entryType = visit(typeCtx.collectionType().listType().type()).asGioviType();
-			value = new GioviList(entryType);
-		} else if (type.unbox() == GioviMap.class) {
-			GioviType keyType = visit(typeCtx.collectionType().mapType().mapKeyType).asGioviType();
-			GioviType elementType = visit(typeCtx.collectionType().mapType().mapValueType).asGioviType();
-			value = new GioviMap(keyType, elementType);
-		} else if (getCurrentScope().isDefinedStruct(typeCtx.getText())) {
-			value = getCurrentScope().getDefinitionStruct(typeCtx.getText());
-		} else {
-			value = type.spawn();
-		}
+	private GioviValue<?> spawnType(
+		TypeContext typeCtx,
+		Optional<DefaultDefinitionContext> defaultDefinitionCtx) {
+
+		var type = visit(typeCtx).asGioviType();
+		var value = switch (type) {
+			case GioviTypeList t -> new GioviList(t.getEntryType());
+			case GioviTypeMap t -> new GioviMap(t.getKeyType(), t.getElementType());
+			case GioviTypePrimitive t -> t.spawn();
+			case GioviTypeStruct t -> getCurrentScope()
+				.getDefinitionStruct(typeCtx.identifier().getText());
+		};
+
 		if (defaultDefinitionCtx.isPresent()) {
 			var defaultValue = visit(defaultDefinitionCtx.get()).asGioviValue();
 			value.setDefaultValue(defaultValue);
@@ -573,13 +593,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (StatementContext statement : func.getBody().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
-				Class<?> returnType = func
+				GioviType<?> returnType = func
 					.getReturnType()
-					.orElseThrow(() -> new GioviException("Returning in function with no return value"));
+					.orElseThrow(
+						() -> new GioviException("Returning in function with no return value"));
 				GioviValue<?> returnValue = getCurrentScope().getReturnValue();
-				Class<?> returnedType = returnValue.getClass();
-				if (returnedType != returnType) {
-					throw new GioviException("Wrong return type, expecting " + returnType + " but got " + returnedType);
+				var returnedType = returnValue.getGioviType();
+				if (!returnedType.equals(returnType)) {
+					throw new GioviException(
+						"Wrong return type, expecting " + returnType + " but got " + returnedType);
 				}
 				return returnValue;
 			}
@@ -591,11 +613,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private void setupFunctionParameters(FunctionCallContext ctx, GioviFunction func) {
-		int functionCallParamCount = ctx.functionParameterList() == null ? 0 : ctx.functionParameterList().functionParameter().size();
+		int functionCallParamCount = ctx.functionParameterList() == null ? 0
+			: ctx.functionParameterList().functionParameter().size();
 		if (functionCallParamCount > func.getParameters().size()) {
-			throw new GioviException("Wrong number of parameters for function: " + ctx.identifier().getText());
+			throw new GioviException(
+				"Wrong number of parameters for function: " + ctx.identifier().getText());
 		}
-		if (ctx.functionParameterList() == null || ctx.functionParameterList().functionParameter(0).identifier() == null) {
+		if (ctx.functionParameterList() == null
+			|| ctx.functionParameterList().functionParameter(0).identifier() == null) {
 			setupFunctionParametersIteratively(ctx, func);
 		} else {
 			setupNamedFunctionParameters(ctx, func);
@@ -607,7 +632,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			? List.of()
 			: ctx.functionParameterList().functionParameter();
 		int funcCallParamsCount = funcCallParams.size();
-		Iterator<Map.Entry<String, GioviFunctionParameter>> funcIterator = func.getParameters().entrySet().iterator();
+		Iterator<Map.Entry<String, GioviFunctionParameter>> funcIterator = func.getParameters()
+			.entrySet().iterator();
 		int i = 0;
 		while (funcIterator.hasNext()) {
 			Map.Entry<String, GioviFunctionParameter> entry = funcIterator.next();
@@ -616,7 +642,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			if (i < funcCallParamsCount) {
 				FunctionParameterContext funcParamCtx = funcCallParams.get(i);
 				if (funcParamCtx.identifier() != null) {
-					throw new GioviException("Unexpected named parameter: " + funcParamCtx.identifier().getText());
+					throw new GioviException(
+						"Unexpected named parameter: " + funcParamCtx.identifier().getText());
 				}
 				formalValue.value().box(visit(funcParamCtx.expression()).asGioviValue());
 			} else if (formalValue.hasDefault()) {
@@ -639,12 +666,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (FunctionParameterContext funcCallParamCtx : funcCallParams) {
 			String callParamName = funcCallParamCtx.identifier().getText();
 			if (funcCallParamsMap.containsKey(callParamName)) {
-				throw new GioviException("Duplicate parameter name in function call: " + callParamName);
+				throw new GioviException(
+					"Duplicate parameter name in function call: " + callParamName);
 			}
 			if (!funcParams.containsKey(callParamName)) {
 				throw new GioviException("Unknown parameter name: " + callParamName);
 			}
-			funcCallParamsMap.put(callParamName, visit(funcCallParamCtx.expression()).asGioviValue());
+			funcCallParamsMap.put(callParamName,
+				visit(funcCallParamCtx.expression()).asGioviValue());
 		}
 
 		funcParams.forEach((formalIdentifier, formalParameter) -> {
@@ -682,18 +711,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 		for (var attributeCtx : ctx.structBodyDefinition().structAttributeDefinition()) {
 			String identifier = attributeCtx.identifier().getText();
-			var attribute = spawnType(attributeCtx.type(), Optional.ofNullable(attributeCtx.defaultDefinition()));
+			var attribute = spawnType(attributeCtx.type(),
+				Optional.ofNullable(attributeCtx.defaultDefinition()));
 			if (attributeCtx.defaultDefinition() != null) {
 				attribute.setDefaultValue(visit(attributeCtx.defaultDefinition()).asGioviValue());
 			}
 			struct.put(identifier, attribute);
 		}
-//		for (var structDefinitionCtx : ctx.structBodyDefinition().structDefinition()) {
-//			s.put(structDefinitionCtx.structName.getText(), visit(structDefinitionCtx).asGioviStruct());
-//		}
-//		for (var functionCtx : ctx.structBodyDefinition().functionDeclaration()) {
-//			s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
-//		}
+		// for (var structDefinitionCtx : ctx.structBodyDefinition().structDefinition()) {
+		// 	s.put(structDefinitionCtx.structName.getText(),
+		// 		visit(structDefinitionCtx).asGioviStruct());
+		// }
+		// for (var functionCtx : ctx.structBodyDefinition().functionDeclaration()) {
+		// 	s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
+		// }
 
 		getCurrentScope().define(ctx.structName.getText(), new GioviNamedStruct(struct));
 		return null;
@@ -711,13 +742,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			for (var attributeCtx : ctx.namedStructAttribute()) {
 				String attributeName = attributeCtx.identifier().getText();
 				if (!struct.contains(attributeName)) {
-					throw new IncompatibleStructs("Struct '" + ctx.structType.getText() + "' doesn't have an attribute '" + attributeName + "'");
+					throw new IncompatibleStructs("Struct '" + ctx.structType.getText()
+						+ "' doesn't have an attribute '" + attributeName + "'");
 				}
 				struct.get(attributeName).box(visit(attributeCtx.expression()).asGioviValue());
 			}
 		} else {
 			for (var attributeCtx : ctx.namedStructAttribute()) {
-				struct.put(attributeCtx.identifier().getText(), visit(attributeCtx.expression()).asGioviValue());
+				struct.put(attributeCtx.identifier().getText(),
+					visit(attributeCtx.expression()).asGioviValue());
 			}
 		}
 		return new GioviNamedStruct(struct);
@@ -745,30 +778,31 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	//	@Override
-//	public GioviObject visitStructCreation(StructCreationContext ctx) {
-//		GioviStruct struct = new GioviStruct();
-//		if (ctx.identifier() != null) {
-//			if (getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
-//				var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
-//				struct.unbox().putAll(definition.unbox());
-//			} else {
-//				throw new TypeNotFound(ctx.identifier().getText());
-//			}
-//		}
-//		for (var attributeCtx : ctx.structAttribute()) {
-//			String identifier = attributeCtx.identifier() != null
-//				? attributeCtx.identifier().getText()
-//				: "" + struct.getLastIndex();
-//			struct.put(identifier, visit(attributeCtx.expression()).asGioviValue());
-//		}
-//		return struct;
-//	}
+	//	public GioviObject visitStructCreation(StructCreationContext ctx) {
+	//		GioviStruct struct = new GioviStruct();
+	//		if (ctx.identifier() != null) {
+	//			if (getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
+	//				var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
+	//				struct.unbox().putAll(definition.unbox());
+	//			} else {
+	//				throw new TypeNotFound(ctx.identifier().getText());
+	//			}
+	//		}
+	//		for (var attributeCtx : ctx.structAttribute()) {
+	//			String identifier = attributeCtx.identifier() != null
+	//				? attributeCtx.identifier().getText()
+	//				: "" + struct.getLastIndex();
+	//			struct.put(identifier, visit(attributeCtx.expression()).asGioviValue());
+	//		}
+	//		return struct;
+	//	}
 
 	@Override
 	public GioviObject visitDotExpression(DotExpressionContext ctx) {
 		var lhs = visit(ctx.expression());
 		return ctx.identifier() != null
 			? lhs.dot(ctx.identifier().getText())
-			: lhs.dot(getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
+			: lhs.dot(
+				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}
 }

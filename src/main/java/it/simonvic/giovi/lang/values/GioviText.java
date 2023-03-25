@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.type.GioviType;
 
 public non-sealed class GioviText extends GioviValue<String> {
 
@@ -17,11 +17,24 @@ public non-sealed class GioviText extends GioviValue<String> {
 		super("", "");
 	}
 
+	@Override
+	public GioviType<?> getGioviType() {
+		return new GioviTypePrimitive(GioviText.class);
+	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType type) {
-		if (type.unbox() == GioviText.class) {
-			return new GioviText(value);
+	public GioviValue<?> castTo(GioviType<?> type) {
+		if (type instanceof GioviTypePrimitive t) {
+			var typeClass = t.unbox();
+			if (typeClass == GioviText.class) return new GioviText(this.value);
+			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
+			try {
+				if (typeClass == GioviInt.class) return GioviInt.valueOf(this.value);
+				if (typeClass == GioviReal.class) return GioviReal.valueOf(this.value);
+				if (typeClass == GioviNatural.class) return GioviNatural.valueOf(this.value);
+			} catch (NumberFormatException ex) {
+				throw new GioviException(ex);
+			}
 		}
 		return super.castTo(type);
 	}
@@ -36,7 +49,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 
 	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch(defaultValue.unbox()) {
+		switch (defaultValue.unbox()) {
 			case String v -> setDefaultValue(v);
 			default -> super.setDefaultValue(defaultValue);
 		}
@@ -76,7 +89,7 @@ public non-sealed class GioviText extends GioviValue<String> {
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviText(value + defaultValue);
-//			case GioviText v -> new GioviText(value + v.unbox());
+			//			case GioviText v -> new GioviText(value + v.unbox());
 			case GioviValue<?> v -> new GioviText(value + v);
 			default -> super.plus(right);
 		};

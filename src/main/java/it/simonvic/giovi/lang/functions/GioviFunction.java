@@ -1,14 +1,15 @@
 package it.simonvic.giovi.lang.functions;
 
-import it.simonvic.giovi.antlr.GioviParser.BlockContext;
-import it.simonvic.giovi.lang.GioviObject;
-
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
+import it.simonvic.giovi.antlr.GioviParser.BlockContext;
+import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.values.GioviType;
+
 public class GioviFunction extends GioviObject {
 
-	private final Class<?> returnType;
+	private final GioviType<?> returnType;
 	private final LinkedHashMap<String, GioviFunctionParameter> parameters;
 	private final BlockContext body;
 
@@ -17,7 +18,7 @@ public class GioviFunction extends GioviObject {
 		this(body, null, null);
 	}
 
-	public GioviFunction(BlockContext body, Class<?> returnType) {
+	public GioviFunction(BlockContext body, GioviType<?> returnType) {
 		this(body, returnType, null);
 	}
 
@@ -25,13 +26,13 @@ public class GioviFunction extends GioviObject {
 		this(body, null, parameters);
 	}
 
-	public GioviFunction(BlockContext body, Class<?> returnType, LinkedHashMap<String, GioviFunctionParameter> parameters) {
+	public GioviFunction(BlockContext body, GioviType<?> returnType, LinkedHashMap<String, GioviFunctionParameter> parameters) {
 		this.body = body;
 		this.returnType = returnType;
 		this.parameters = parameters;
 	}
 
-	public Optional<Class<?>> getReturnType() {
+	public Optional<GioviType<?>> getReturnType() {
 		return Optional.ofNullable(returnType);
 	}
 

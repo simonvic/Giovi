@@ -1,26 +1,27 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.util.GioviLists;
-import org.junit.jupiter.api.Disabled;
+import static it.simonvic.giovi.Giovi.runExpression;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.stream.Stream;
-
-import static it.simonvic.giovi.Giovi.runExpression;
-import static org.junit.jupiter.api.Assertions.*;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.GioviLists;
 
 public class TestLists {
 
 	@Test
 	void test_GioviListsOf() {
 		assertEquals(GioviLists.of(1, 2, 3), GioviLists.of(1, 2, 3));
-		assertEquals(GioviLists.of("Simone", "Francesco", "Mario"), GioviLists.of("Simone", "Francesco", "Mario"));
+		assertEquals(GioviLists.of("Simone", "Francesco", "Mario"),
+			GioviLists.of("Simone", "Francesco", "Mario"));
 	}
 
 	@Nested
@@ -71,16 +72,35 @@ public class TestLists {
 			String code = """
 				[ 1 2 3.0 4 "hello" 5 ]
 				""";
-			assertThrows(GioviException.class, () -> runExpression(code).asGioviList().getEntryType().unbox());
+			assertThrows(GioviException.class,
+				() -> runExpression(code).asGioviList().getEntryType().unbox());
 		}
 
-		@Disabled("Not implemented yet")
 		@Test
 		void listOfList() {
 			String code = """
 				[ [1 2 3] [1 2 3] ]
 				""";
-			System.out.println(runExpression(code).asGioviList().getEntryType().unbox());
+			var expected = new GioviTypeList(new GioviTypePrimitive(GioviInt.class));
+			assertEquals(expected, runExpression(code).asGioviList().getEntryType());
+		}
+
+		@Test
+		void listOfList_shouldInferCorrectType() {
+			String code = """
+				[ [1 2 3] [1 2.0 3] ]
+				""";
+			var expected = new GioviTypeList(new GioviTypeList(new GioviTypePrimitive(GioviReal.class)));
+			var entryType = runExpression(code).asGioviList().getEntryType();
+			assertEquals(expected, entryType);
+		}
+
+		@Test
+		void listOfList_mixedTypes_shouldThrow() {
+			String code = """
+				[ [1 2 3] ["hello" "world"] ]
+				""";
+			assertThrows(GioviException.class, () -> runExpression(code));
 		}
 
 	}
@@ -89,13 +109,12 @@ public class TestLists {
 		return Stream.of(
 			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 3)),
 			Arguments.of("[1 2 3 4]", GioviLists.of(1, 2, 3, 4)),
-			Arguments.of("['Simone' 'Francesco' 'Mario']", GioviLists.of("Simone", "Francesco", "Mario"))
-		);
+			Arguments.of("['Simone' 'Francesco' 'Mario']",
+				GioviLists.of("Simone", "Francesco", "Mario")));
 
 	}
 
-	@ParameterizedTest
-	@MethodSource("produceEqualLists")
+	@ParameterizedTest @MethodSource("produceEqualLists")
 	void testListEquality(String code, GioviList expected) {
 		assertEquals(expected, runExpression(code));
 	}
@@ -106,13 +125,13 @@ public class TestLists {
 			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 3, 4)),
 			Arguments.of("[1 2 3 4]", GioviLists.of(1, 2, 3)),
 			Arguments.of("[1 2 3]", GioviLists.of(1, 2, 69)),
-			Arguments.of("['Simone' 'Francesco' 'Ma']", GioviLists.of("Simone", "Francesco", "Mario")),
-			Arguments.of("['Simone' 'Francesco' 'Mario' 'Luigi']", GioviLists.of("Simone", "Francesco", "Mario"))
-		);
+			Arguments.of("['Simone' 'Francesco' 'Ma']",
+				GioviLists.of("Simone", "Francesco", "Mario")),
+			Arguments.of("['Simone' 'Francesco' 'Mario' 'Luigi']",
+				GioviLists.of("Simone", "Francesco", "Mario")));
 	}
 
-	@ParameterizedTest
-	@MethodSource("produceNotEqualLists")
+	@ParameterizedTest @MethodSource("produceNotEqualLists")
 	void testListNonEquality(String code, GioviList expected) {
 		assertNotEquals(expected, runExpression(code));
 	}

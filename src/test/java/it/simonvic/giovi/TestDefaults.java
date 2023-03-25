@@ -6,19 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.lang.primitives.Natural;
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.values.GioviBool;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviNatural;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviText;
-import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviLists;
 
 public class TestDefaults {
@@ -71,8 +63,7 @@ public class TestDefaults {
 			var expected = List.of(
 				GioviValue.of("a"),
 				GioviValue.of("b"),
-				GioviValue.of("c")
-			);
+				GioviValue.of("c"));
 			var actual = visit("x [Text] _ ['a' 'b' 'c']")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -80,10 +71,8 @@ public class TestDefaults {
 			assertEquals(expected, actual);
 		}
 
-		@Disabled("needs to manually implement the equals")
 		@Test
 		void testMaps() {
-			// the maps are different because GioviValues references are different
 			var expected = new LinkedHashMap<GioviInt, GioviText>();
 			expected.put(new GioviInt(0), new GioviText("a"));
 			expected.put(new GioviInt(1), new GioviText("b"));
@@ -169,7 +158,9 @@ public class TestDefaults {
 
 		@Test
 		void testMaps() {
-			var expected = new GioviMap(new GioviType(GioviInt.class), new GioviType(GioviText.class));
+			var expected = new GioviMap(
+				new GioviTypePrimitive(GioviInt.class),
+				new GioviTypePrimitive(GioviText.class));
 			expected.put(new GioviInt(0), new GioviText("a"));
 			expected.put(new GioviInt(1), new GioviText("b"));
 			expected.put(new GioviInt(2), new GioviText("c"));

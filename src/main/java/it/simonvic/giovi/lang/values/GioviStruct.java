@@ -13,6 +13,11 @@ public abstract sealed class GioviStruct extends GioviValue<Struct>
 	}
 
 	@Override
+	public GioviType<?> getGioviType() {
+		return new GioviTypePrimitive(GioviStruct.class);
+	}
+
+	@Override
 	public void box(GioviValue<?> gioviValue) {
 		if (gioviValue instanceof GioviStruct struct) {
 			value.set(struct.unbox());

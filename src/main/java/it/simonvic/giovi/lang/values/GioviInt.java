@@ -18,6 +18,11 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	}
 
 	@Override
+	public GioviType<?> getGioviType() {
+		return new GioviTypePrimitive(GioviInt.class);
+	}
+
+	@Override
 	public GioviNatural naturalValue() {
 		return new GioviNatural(new Natural(value));
 	}
@@ -31,14 +36,6 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	public GioviReal realValue() {
 		return new GioviReal(value.doubleValue());
 	}
-
-
-//	@Override
-//	public GioviValue<?> castTo(GioviType type) {
-//		Class<? extends GioviValue<?>> typeClass = type.unbox();
-//		if (typeClass == GioviBool.class) return new GioviBool(value > 0);
-//		return super.castTo(type);
-//	}
 
 	@Override
 	public void box(GioviValue<?> gioviValue) {
@@ -242,5 +239,9 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	@Override
 	public GioviObject notEqual(GioviObject right) {
 		return equal(right).not();
+	}
+
+	public static GioviInt valueOf(String s) throws NumberFormatException {
+		return new GioviInt(Integer.valueOf(s));
 	}
 }

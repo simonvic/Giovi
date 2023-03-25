@@ -1,7 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.type.GioviType;
 
 public non-sealed class GioviBool extends GioviValue<Boolean> {
 
@@ -18,14 +17,20 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType type) {
-		Class<? extends GioviValue<?>> typeClass = type.unbox();
-		if (typeClass == GioviBool.class) {
-			return new GioviBool(value);
+	public GioviType<?> getGioviType() {
+		return new GioviTypePrimitive(GioviBool.class);
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType<?> type) {
+		if (type instanceof GioviTypePrimitive t) {
+			if (t.unbox() == GioviBool.class) {
+				return new GioviBool(this.value);
+			}
+			// if (t.unbox() == GioviInt.class) {
+			// 	return new GioviInt(value ? 1 : 0);
+			// }
 		}
-//		if (typeClass == GioviInt.class) {
-//			return new GioviInt(value ? 1 : 0);
-//		}
 		return super.castTo(type);
 	}
 
@@ -33,7 +38,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue.unbox()) {
 			case Boolean v -> box(v);
-//			case Integer v -> set(v > 0);
+			// case Integer v -> set(v > 0);
 			default -> super.box(gioviValue);
 		}
 	}
@@ -42,7 +47,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	public void setDefaultValue(GioviValue<?> defaultValue) {
 		switch (defaultValue.unbox()) {
 			case Boolean v -> setDefaultValue(v);
-//			case Integer v -> setDefaultValue(v > 0);
+			// case Integer v -> setDefaultValue(v > 0);
 			default -> super.setDefaultValue(defaultValue);
 		}
 	}
@@ -67,7 +72,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value && defaultValue);
 			case GioviBool v -> new GioviBool(value && v.unbox());
-//			case IntValue v -> new BoolValue(value && v.asBool());
+			// case IntValue v -> new BoolValue(value && v.asBool());
 			default -> super.and(right);
 		};
 	}
@@ -77,7 +82,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value || defaultValue);
 			case GioviBool v -> new GioviBool(value || v.unbox());
-//			case IntValue v -> new BoolValue(value || v.asBool());
+			// case IntValue v -> new BoolValue(value || v.asBool());
 			default -> super.or(right);
 		};
 	}
@@ -87,7 +92,7 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
-//			case IntValue v -> new BoolValue(value == v.asBool());
+			// case IntValue v -> new BoolValue(value == v.asBool());
 			default -> super.equal(right);
 		};
 	}
@@ -95,6 +100,10 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	@Override
 	public GioviObject notEqual(GioviObject right) {
 		return equal(right).not();
+	}
+
+	public static GioviBool valueOf(String s) {
+		return new GioviBool(Boolean.valueOf(s));
 	}
 
 }

@@ -1,16 +1,16 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.Giovi.run;
 import static it.simonvic.giovi.Giovi.runExpression;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Disabled;
+import java.util.List;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviStructs;
-
-import java.util.List;
 
 public class TestGioviStruct {
 
@@ -86,14 +86,19 @@ public class TestGioviStruct {
 				"""));
 		}
 
-		@Disabled("Not implemented yet")
 		@Test
-		void typedStruct() {
-			/*
-			assertEquals(new GioviType("Color"), runExpression("""
-				Color.(255 69 42)
-				""").asGioviStruct().getGioviType());
-			 */
+		void typedStruct_undefinedType_shouldThrow() {
+			assertThrows(GioviException.class, () -> runExpression("""
+			Foo.(69 420 "lol")
+			"""));
+		}
+
+		@Test
+		void typedStruct_definedType_shouldNotThrow() {
+			assertDoesNotThrow(() -> run("""
+			Color (r Int; g Int; b Int)
+			Color.(69 42 255)
+			"""));
 		}
 
 

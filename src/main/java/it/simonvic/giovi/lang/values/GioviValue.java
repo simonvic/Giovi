@@ -2,20 +2,20 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
-import it.simonvic.giovi.lang.type.GioviType;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviStructs;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct {
+	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct, GioviType {
 
 	protected T value;
 	protected T defaultValue;
@@ -39,7 +39,6 @@ public abstract sealed class GioviValue<T>
 			default -> throw new GioviException("Unknown type " + value);
 		};
 	}
-
 
 	public Class<?> getValueType() {
 		return value.getClass();
@@ -79,32 +78,25 @@ public abstract sealed class GioviValue<T>
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o)
 			return true;
-		}
-		if (obj == null) {
+		if (o == null || getClass() != o.getClass())
 			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final GioviValue<?> other = (GioviValue<?>) obj;
-		return this.value.equals(other.value);
+		GioviValue<?> that = (GioviValue<?>) o;
+		return Objects.equals(value, that.value);
 	}
 
-
-
-	public GioviType getGioviType() {
-		return new GioviType((Class<? extends GioviValue<?>>) this.getClass());
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
 	}
 
-	public GioviValue<?> castTo(Class<? extends GioviValue<?>> type) {
-		return castTo(new GioviType(type));
-	}
+	public abstract GioviType<?> getGioviType();
 
-	public GioviValue<?> castTo(GioviType type) {
+	public GioviValue<?> castTo(GioviType<?> type) {
 		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
 	}
+
 
 }

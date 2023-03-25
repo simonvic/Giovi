@@ -7,7 +7,8 @@ public final class Natural extends Number {
 	private final Integer value;
 
 	public Natural(Integer value) {
-		if (value < 0) throw new GioviException("Value out of bound");
+		if (value < 0)
+			throw new GioviException("Value out of bound");
 		this.value = value;
 	}
 
@@ -69,5 +70,9 @@ public final class Natural extends Number {
 	@Override
 	public String toString() {
 		return value.toString();
+	}
+
+	public static Natural valueOf(String s) throws NumberFormatException {
+		return new Natural(Integer.valueOf(s));
 	}
 }

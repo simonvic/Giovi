@@ -7,48 +7,34 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
-import it.simonvic.giovi.lang.type.GioviType;
-import it.simonvic.giovi.lang.type.GioviTypeList;
 
 public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 
-	private final GioviType entryType;
+	private final GioviType<?> entryType;
 
-	public GioviList(GioviType entryType) {
+	public GioviList(GioviType<?> entryType) {
 		this(entryType, new ArrayList<>(), new ArrayList<>());
-	}
-
-	public GioviList(Class<? extends GioviValue<?>> entryType) {
-		this(new GioviType(entryType), new ArrayList<>(), new ArrayList<>());
 	}
 
 	public GioviList(List<GioviValue<?>> entries) {
 		this(null, entries, new ArrayList<>());
 	}
 
-	public GioviList(Class<? extends GioviValue<?>> entryType, List<GioviValue<?>> entries) {
-		this(new GioviType(entryType), entries, new ArrayList<>());
-	}
+	public GioviList(
+		GioviType<?> entryType,
+		List<GioviValue<?>> value,
+		List<GioviValue<?>> defaultValue) {
 
-	public GioviList(Class<? extends GioviValue<?>> gioviType, ArrayList<GioviValue<?>> value, ArrayList<GioviValue<?>> defaultValue) {
-		this(new GioviType(gioviType), value, defaultValue);
-	}
-
-	public GioviList(GioviType entryType, List<GioviValue<?>> value, List<GioviValue<?>> defaultValue) {
 		super(value, defaultValue);
 		this.entryType = entryType != null ? entryType : GioviType.inferGioviType(value);
 		checkCasts(this.value, this.entryType);
 		checkCasts(this.defaultValue, this.entryType);
 	}
 
-	public static void checkCasts(List<GioviValue<?>> entries, GioviType type) {
+
+	public static void checkCasts(List<GioviValue<?>> entries, GioviType<?> type) {
 		entries.forEach(entry -> entry.castTo(type));
 	}
-
-	public GioviType getEntryType() {
-		return entryType;
-	}
-
 
 	public void add(GioviValue<?> entry) {
 		value.add(entry.castTo(entryType));
@@ -75,16 +61,23 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 		addAll(entries);
 	}
 
+	public GioviType<?> getEntryType() {
+		return entryType;
+	}
+
 	@Override
-	public GioviValue<?> castTo(GioviType type) {
-		if (type instanceof GioviTypeList listType) {
-			value.forEach(entry -> entry.castTo(listType.getEntryType()));
+	public GioviType<?> getGioviType() {
+		return new GioviTypeList(entryType);
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType<?> type) {
+		if (type instanceof GioviTypeList t) {
+			var list = new GioviList(t.getEntryType());
+			this.value.forEach(list::add);
 			return new GioviList(value);
 		}
-
-		value.forEach(entry -> entry.castTo(type));
-		return new GioviList(value);
-//		return super.castTo(type);
+		return super.castTo(type);
 	}
 
 	@Override
