@@ -58,10 +58,14 @@
 					<arguments>
 						<argument>-no-listener</argument>
 						<argument>-visitor</argument>
+						<argument>-package</argument>
+						<argument>it.simonvic.giovi.antlr</argument>
 					</arguments>
+					<outputDirectory>${project.basedir}/src/main/java/it/simonvic/giovi/antlr</outputDirectory>
 				</configuration>
 				<executions>
 					<execution>
+						<id>antlr</id>
 						<goals>
 							<goal>antlr4</goal>
 						</goals>
