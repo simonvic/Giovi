@@ -72,8 +72,7 @@ public class TestLists {
 			String code = """
 				[ 1 2 3.0 4 "hello" 5 ]
 				""";
-			assertThrows(GioviException.class,
-				() -> runExpression(code).asGioviList().getEntryType().unbox());
+			assertThrows(GioviException.class, () -> runExpression(code));
 		}
 
 		@Test

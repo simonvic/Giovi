@@ -56,21 +56,26 @@ public abstract sealed class Struct {
 			switch (struct) {
 				case Named s -> {
 					if (s.attributes.size() != this.attributes.size()) {
-						throw new IncompatibleStructs("Incompatible structs. %s has %s attributes, while %s requires %s".formatted(s, s.attributes.size(), this, this.attributes.size()));
+						throw new IncompatibleStructs(
+							"Incompatible structs. %s has %s attributes, while %s requires %s"
+								.formatted(s, s.attributes.size(), this, this.attributes.size()));
 					}
 					s.attributes.forEach((s1, gioviValue) -> {
 						if (!this.contains(s1)) {
-							throw new IncompatibleStructs("Incompatible structs. Struct " + this + " doesn't contain an attribute " + s1);
+							throw new IncompatibleStructs("Incompatible structs. Struct " + this
+								+ " doesn't contain an attribute " + s1);
 						}
 						attributes.put(s1, GioviValue.of(gioviValue.unbox()));
 					});
 				}
 				case Unnamed s -> {
 					if (s.attributes.size() != this.attributes.size()) {
-						throw new IncompatibleStructs("Incompatible structs. Can't assign " + s + " to " + this + " because of wrong attributes numbers");
+						throw new IncompatibleStructs("Incompatible structs. Can't assign " + s
+							+ " to " + this + " because of wrong attributes numbers");
 					}
 					var unnamedIterator = s.attributes.iterator();
-					this.attributes.forEach((s1, gioviValue) -> gioviValue.box(GioviValue.of(unnamedIterator.next().unbox())));
+					this.attributes.forEach((s1, gioviValue) -> gioviValue
+						.box(GioviValue.of(unnamedIterator.next().unbox())));
 				}
 			}
 		}
@@ -83,7 +88,7 @@ public abstract sealed class Struct {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append('(');
-			for (; ; ) {
+			for (;;) {
 				var e = i.next();
 				var key = e.getKey();
 				var value = e.getValue();
@@ -131,8 +136,10 @@ public abstract sealed class Struct {
 		@Override
 		public void set(Struct struct) {
 			switch (struct) {
-				case Named s -> s.attributes.forEach((s1, gioviValue) -> put(GioviValue.of(gioviValue.unbox())));
-				case Unnamed s -> s.attributes.forEach(gioviValue -> this.put(GioviValue.of(gioviValue.unbox())));
+				case Named s -> s.attributes
+					.forEach((s1, gioviValue) -> put(GioviValue.of(gioviValue.unbox())));
+				case Unnamed s -> s.attributes
+					.forEach(gioviValue -> this.put(GioviValue.of(gioviValue.unbox())));
 			}
 		}
 
