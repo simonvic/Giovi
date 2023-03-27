@@ -187,7 +187,7 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 			case "%" -> new GioviInt(unbox().size());
 			case "@" -> {
 				GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
-				indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).getValues());
+				indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).expandAsGioviValues());
 				yield indeces;
 			}
 			default -> throw new GioviException("Invalid accessor: " + accessor);

@@ -2,112 +2,180 @@ package it.simonvic.giovi.lang;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
 
-public class Sequence<T extends GioviValue<?>> extends GioviObject {
+public class Sequence<T> extends GioviObject {
 
-	private final List<T> list = new ArrayList<>();
+	@FunctionalInterface
+	public interface IterationStrategy<V> {
+		void iterate(Sequence<V> sequence, Consumer<V> callback);
+	}
 
-	public static Sequence<? extends GioviValue<?>> of(GioviValue<?> start, GioviValue<?> end, GioviValue<?> step) {
+	private final T start;
+	private final T end;
+	private final Number step;
+	private final IterationStrategy<T> iterationStrategy;
+	private List<T> expansion;
+
+	public Sequence(T start, T end, Number step, IterationStrategy<T> iterationStrategy) {
+		this.start = start;
+		this.end = end;
+		this.step = step;
+		this.iterationStrategy = iterationStrategy;
+	}
+
+	public T getStart() {
+		return start;
+	}
+
+	public T getEnd() {
+		return end;
+	}
+
+	public Number getStep() {
+		return step;
+	}
+
+	public void iterate(Consumer<T> callback) {
+		iterationStrategy.iterate(this, callback);
+	}
+
+	public List<T> expand() {
+		if (expansion == null) {
+			expansion = new ArrayList<>();
+			iterate(expansion::add);
+		}
+		return expansion;
+	}
+
+	// TODO move in util class?
+	public List<? extends GioviValue<?>> expandAsGioviValues() {
+		return expand().stream().map(GioviValue::of).toList();
+	}
+
+	public static Sequence<?> of(GioviObject start, GioviObject end, GioviObject step) {
+		if (step != null && !(step instanceof GioviNumber<?>)) {
+			throw new GioviException("A step must be a valid number but got " + step);
+		}
+
+		Number stepNumber = step == null ? null : step.asNumber();
 		if (start instanceof GioviReal || end instanceof GioviReal || step instanceof GioviReal) {
 			return Sequence.of(
 				start.asNumber().doubleValue(),
 				end.asNumber().doubleValue(),
-				step == null ? 1d : step.asNumber().doubleValue());
+				stepNumber == null ? 1d : stepNumber.doubleValue());
 		}
 
-		if (start instanceof GioviInt startValue && end instanceof GioviInt endValue) {
-			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
+		int stepInt = step == null ? 1 : stepNumber.intValue();
+		if (start instanceof GioviInt s && end instanceof GioviInt e) {
+			return Sequence.of(s.unbox(), e.unbox(), stepInt);
 		}
 
-		if (start instanceof GioviNatural startValue && end instanceof GioviNatural endValue) {
-			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
+		if (start instanceof GioviNatural s && end instanceof GioviNatural e) {
+			return Sequence.of(s.unbox(), e.unbox(), stepInt);
 		}
 
-		if (start instanceof GioviText startValue && end instanceof GioviText endValue) {
-			return Sequence.of(startValue.unbox(), endValue.unbox(), step == null ? 1 : step.asInteger());
+		if (start instanceof GioviText s && end instanceof GioviText e) {
+			return Sequence.of(s.unbox(), e.unbox(), stepInt);
 		}
 
-		throw new OperatorNotSupported("change this");
+		throw new GioviException("Invalid sequence: %s .. %s .. %s".formatted(start, end, step));
 	}
 
-	public static Sequence<GioviReal> of(Double start, Double end, Double step) {
-		Sequence<GioviReal> sequence = new Sequence<>();
+	public static Sequence<Integer> of(int start, int end, int step) {
+		return new Sequence<Integer>(start, end, step, Sequence::iterateInt);
+	}
+
+	public static Sequence<Double> of(double start, double end, double step) {
+		return new Sequence<Double>(start, end, step, Sequence::iterateReal);
+	}
+
+	public static Sequence<Natural> of(Natural start, Natural end, int step) {
+		return new Sequence<Natural>(start, end, step, Sequence::iterateNatural);
+	}
+
+	public static Sequence<String> of(String start, String end, int step) {
+		return new Sequence<String>(start, end, step, Sequence::iterateText);
+	}
+
+	public static void iterateReal(Sequence<Double> sequence, Consumer<Double> callback) {
+		double start = sequence.getStart();
+		double end = sequence.getEnd();
+		double step = sequence.getStep().doubleValue();
 		if (start <= end) {
-			for (Double i = start; i <= end; i += step) {
-				sequence.list.add(new GioviReal(i));
+			for (double i = start; i <= end; i += step) {
+				callback.accept(i);
 			}
 		} else {
-			for (Double i = start; i >= end; i -= step) {
-				sequence.list.add(new GioviReal(i));
+			for (double i = start; i >= end; i -= step) {
+				callback.accept(i);
 			}
 		}
-		return sequence;
 	}
 
-
-	public static Sequence<GioviInt> of(Integer start, Integer end, Integer step) {
-		Sequence<GioviInt> sequence = new Sequence<>();
-
+	public static void iterateInt(Sequence<Integer> sequence, Consumer<Integer> callback) {
+		int start = sequence.getStart();
+		int end = sequence.getEnd();
+		int step = sequence.getStep().intValue();
 		if (start <= end) {
-			for (Integer i = start; i <= end; i += step) {
-				sequence.list.add(new GioviInt(i));
+			for (int i = start; i <= end; i += step) {
+				callback.accept(i);
 			}
 		} else {
-			for (Integer i = start; i >= end; i -= step) {
-				sequence.list.add(new GioviInt(i));
+			for (int i = start; i >= end; i -= step) {
+				callback.accept(i);
 			}
 		}
-		return sequence;
 	}
 
-
-	public static Sequence<GioviNatural> of(Natural start, Natural end, Integer step) {
-		Sequence<GioviNatural> sequence = new Sequence<>();
-		int startInt = start.intValue();
-		int endInt = end.intValue();
-		if (startInt <= endInt) {
-			for (int i = startInt; i <= endInt; i += step) {
-				sequence.list.add(new GioviNatural(new Natural(i)));
+	public static void iterateNatural(Sequence<Natural> sequence, Consumer<Natural> callback) {
+		int start = sequence.getStart().intValue();
+		int end = sequence.getEnd().intValue();
+		int step = sequence.getStep().intValue();
+		if (start <= end) {
+			for (int i = start; i <= end; i += step) {
+				callback.accept(new Natural(i));
 			}
 		} else {
-			for (int i = startInt; i >= endInt; i -= step) {
-				sequence.list.add(new GioviNatural(new Natural(i)));
+			for (int i = start; i >= end; i -= step) {
+				callback.accept(new Natural(i));
 			}
 		}
-		return sequence;
 	}
 
-	public static Sequence<GioviText> of(String start, String end, Integer step) {
-		if (start.length() != 1 || end.length() != 1)
+	public static void iterateText(Sequence<String> sequence, Consumer<String> callback) {
+		String start = sequence.getStart();
+		String end = sequence.getEnd();
+		int step = sequence.getStep().intValue();
+		if (start.length() != 1 || end.length() != 1) {
 			throw new GioviException("sequence is only applicable to one characters");
-		if (!start.matches("[a-zA-Z]") || !end.matches("[a-zA-Z]"))
-			throw new GioviException("sequence is not applicable to given characters: start=" + start + " end=" + end);
-		Sequence<GioviText> sequence = new Sequence<>();
+		}
+		if (!start.matches("[a-zA-Z]") || !end.matches("[a-zA-Z]")) {
+			throw new GioviException(
+				"sequence is not applicable to given characters: start=" + start + " end=" + end);
+		}
+
 		char startChar = start.toCharArray()[0];
 		char endChar = end.toCharArray()[0];
 		if (startChar <= endChar) {
 			for (char c = startChar; c <= endChar; c += step) {
 				if (Character.isAlphabetic(c)) {
-					sequence.list.add(new GioviText(String.valueOf(c)));
+					callback.accept(String.valueOf(c));
 				}
 			}
 		} else {
 			for (char c = startChar; c >= endChar; c -= step) {
 				if (Character.isAlphabetic(c)) {
-					sequence.list.add(new GioviText(String.valueOf(c)));
+					callback.accept(String.valueOf(c));
 				}
 			}
 		}
-		return sequence;
 	}
 
 
-	public List<T> getValues() {
-		return list;
-	}
+
 }

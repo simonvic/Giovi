@@ -104,29 +104,47 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitForStatement(ForStatementContext ctx) {
-		if (ctx.sequenceOrExpression().sequence() != null) {
-			forList(ctx.iterators().identifier(), ctx.sequenceOrExpression().sequence(),
-				ctx.statementOrBlock());
-		} else {
-			GioviObject collection = visit(ctx.sequenceOrExpression().expression());
-			switch (collection) {
-				case GioviList list -> forList(ctx.iterators().identifier(), list,
-					ctx.statementOrBlock());
-				case GioviMap map -> forMap(ctx.iterators().identifier(), map,
-					ctx.statementOrBlock());
-				default -> throw new OperatorNotSupported("for");
-			}
+		var iterators = ctx.iterators().identifier();
+		var iterated = visit(ctx.sequenceOrExpression());
+		var statementOrBlock = ctx.statementOrBlock();
+		switch (iterated) {
+			case Sequence<?> sequence -> forLoop(iterators, sequence, statementOrBlock);
+			case GioviList list -> forLoop(iterators, list, statementOrBlock);
+			case GioviMap map -> forLoop(iterators, map, statementOrBlock);
+			default -> throw new OperatorNotSupported("for");
 		}
 		return null;
 	}
 
-	private void forList(List<IdentifierContext> iterators, SequenceContext sequence,
+	private void forLoop(
+		List<IdentifierContext> iterators,
+		Sequence<?> sequence,
 		StatementOrBlockContext statementOrBlock) {
-		throw new GioviException("For loop over sequence not implemented yet");
+
+		// workaround
+		List<GioviValue<?>> entries = new ArrayList<>();
+		entries.addAll(sequence.expandAsGioviValues());
+		forLoop(iterators, new GioviList(entries), statementOrBlock);
+
+		// TODO what about continue and breaks?
+		// if (iterators.size() != 1) {
+		// 	throw new GioviException("Wrong number of iterators");
+		// }
+		// String iteratorName = iterators.get(0).getText();
+		// sequence.iterate(value -> {
+		// 	enterLoopScope();
+		// 	getCurrentScope().declare(iteratorName, value);
+		// 	visit(statementOrBlock);
+		// 	exitScope();
+		// });
 	}
 
-	private void forList(List<IdentifierContext> iterators, GioviList list,
+
+	private void forLoop(
+		List<IdentifierContext> iterators,
+		GioviList list,
 		StatementOrBlockContext statementOrBlock) {
+
 		if (iterators.size() != 1)
 			throw new GioviException("Wrong number of iterators");
 		if (list.unbox().size() == 0)
@@ -137,9 +155,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			enterLoopScope();
 
-			//@TODO update when structs are implemented
+			// TODO update when structs are implemented
 			String iteratorName = iterators.get(0).getText();
-			getCurrentScope().declare(iteratorName, value); //@todo iterator should be by value?
+			getCurrentScope().declare(iteratorName, value); // TODO iterator should be by value?
 			GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
 			iterator.box(value);
 
@@ -160,8 +178,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	}
 
-	private void forMap(List<IdentifierContext> iterators, GioviMap map,
+	private void forLoop(
+		List<IdentifierContext> iterators,
+		GioviMap map,
 		StatementOrBlockContext statementOrBlock) {
+
 		if (iterators.size() != 2)
 			throw new GioviException("Wrong number of iterators");
 		if (map.unbox().size() == 0)
@@ -172,11 +193,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			enterLoopScope();
 
-			//@todo update when structs are implemented
+			// TODO update when structs are implemented
 			String keyIteratorName = iterators.get(0).getText();
 			String elementIteratorName = iterators.get(1).getText();
 
-			//@todo iterators should be by value?
+			// TODO iterators should be by value?
 			getCurrentScope().declare(keyIteratorName, entry.getKey());
 			getCurrentScope().getVariableValue(keyIteratorName).box(entry.getKey());
 			getCurrentScope().declare(elementIteratorName, entry.getValue());
@@ -225,7 +246,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitRedirectionToVarDeclaration(RedirectionToVarDeclarationContext ctx) {
-		//@todo improve this. Declare variable with value already set
+		// TODO improve this. Declare variable with value already set
 		visit(ctx.varDeclaration());
 		switch (ctx.bop.getText()) {
 			case ">" -> getCurrentScope()
@@ -376,7 +397,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitCollectionParenthesizedAccessor(
 		CollectionParenthesizedAccessorContext ctx) {
-		//@todo improve this
+
+		// TODO improve this
 		if (ctx.specialAccessor() != null)
 			return visit(ctx.specialAccessor());
 		if (ctx.literal() != null)
@@ -391,11 +413,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitSequenceOrExpression(SequenceOrExpressionContext ctx) {
+		return ctx.sequence() != null
+			? visit(ctx.sequence())
+			: visit(ctx.expression());
+	}
+
+	@Override
 	public GioviObject visitSequence(SequenceContext ctx) {
 		return Sequence.of(
-			visit(ctx.start).asGioviValue(),
-			visit(ctx.end).asGioviValue(),
-			ctx.step == null ? null : visit(ctx.step).asGioviValue());
+			visit(ctx.start),
+			visit(ctx.end),
+			ctx.step == null ? null : visit(ctx.step));
 	}
 
 	@Override
@@ -404,7 +433,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
 			GioviObject entry = visit(entryCtx);
 			switch (entry) {
-				case Sequence<?> seq -> entries.addAll(seq.getValues());
+				case Sequence<?> seq -> entries.addAll(seq.expandAsGioviValues());
 				case GioviValue<?> v -> entries.add(v);
 				default -> throw new GioviException(
 					"Incompatible type for list creation: " + entry.getClass());
