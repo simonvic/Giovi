@@ -12,4 +12,12 @@ public non-sealed class GioviStructNamed extends GioviStruct {
 		super(value, Struct.copyOf(value));
 	}
 
+	@Override
+	public GioviStructNamed copy() {
+		return new GioviStructNamed(
+			(Struct.Named) this.value.copy(),
+			(Struct.Named) this.defaultValue.copy());
+	}
+
+
 }

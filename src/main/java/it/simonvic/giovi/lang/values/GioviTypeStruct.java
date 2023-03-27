@@ -16,6 +16,11 @@ public final class GioviTypeStruct extends GioviType<String> {
 	}
 
 	@Override
+	public GioviTypeStruct copy() {
+		return new GioviTypeStruct(this.value, this.defaultValue);
+	}
+
+	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> {

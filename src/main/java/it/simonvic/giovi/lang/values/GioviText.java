@@ -23,6 +23,11 @@ public non-sealed class GioviText extends GioviValue<String> {
 	}
 
 	@Override
+	public GioviText copy() {
+		return new GioviText(this.value, this.defaultValue);
+	}
+
+	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypePrimitive t) {
 			var typeClass = t.unbox();

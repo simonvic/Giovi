@@ -71,6 +71,17 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	}
 
 	@Override
+	public GioviList copy() {
+		var v = new ArrayList<GioviValue<?>>();
+		this.value.forEach(value -> v.add(value.copy()));
+
+		var d = new ArrayList<GioviValue<?>>();
+		this.defaultValue.forEach(value -> v.add(value.copy()));
+
+		return new GioviList(this.entryType, v, d);
+	}
+
+	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypeList t) {
 			var list = new GioviList(t.getEntryType());

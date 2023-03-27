@@ -22,6 +22,11 @@ public non-sealed class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
+	public GioviBool copy() {
+		return new GioviBool(this.value, this.defaultValue);
+	}
+
+	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypePrimitive t) {
 			if (t.unbox() == GioviBool.class) {

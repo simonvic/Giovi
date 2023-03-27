@@ -15,4 +15,11 @@ public non-sealed class GioviStructUnnamed extends GioviStruct {
 		super(new Struct.Unnamed(), new Struct.Unnamed());
 	}
 
+	@Override
+	public GioviStructUnnamed copy() {
+		return new GioviStructUnnamed(
+			(Struct.Unnamed) this.value.copy(),
+			(Struct.Unnamed) this.defaultValue.copy());
+	}
+
 }

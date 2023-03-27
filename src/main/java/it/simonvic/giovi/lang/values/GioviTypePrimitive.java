@@ -24,6 +24,11 @@ public sealed class GioviTypePrimitive
 	}
 
 	@Override
+	public GioviTypePrimitive copy() {
+		return new GioviTypePrimitive(this.value, this.defaultValue);
+	}
+
+	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> false;

@@ -127,6 +127,16 @@ public non-sealed class GioviMap
 	}
 
 	@Override
+	public GioviMap copy() {
+		var v = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
+		this.value.forEach((key, element) -> v.put(key.copy(), element.copy()));
+
+		var d = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
+		this.defaultValue.forEach((key, element) -> v.put(key.copy(), element.copy()));
+		return new GioviMap(this.keyType, this.elementType, v, d);
+	}
+
+	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypeMap t) {
 			var map = new GioviMap(t.getKeyType(), t.getElementType());

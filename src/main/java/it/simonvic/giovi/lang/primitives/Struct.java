@@ -12,12 +12,14 @@ public abstract sealed class Struct {
 
 	public static Struct copyOf(Struct other) {
 		return switch (other) {
-			case Named s -> new Named(s);
-			case Unnamed s -> new Unnamed(s);
+			case Named s -> s.copy();
+			case Unnamed s -> s.copy();
 		};
 	}
 
 	public abstract void set(Struct struct);
+
+	public abstract Struct copy();
 
 	public static final class Named extends Struct {
 		private final LinkedHashMap<String, GioviValue<?>> attributes;
@@ -26,13 +28,15 @@ public abstract sealed class Struct {
 			this.attributes = new LinkedHashMap<>();
 		}
 
-		public Named(Named struct) {
-			this.attributes = new LinkedHashMap<>();
-			putAll(struct);
-		}
-
 		public Named(LinkedHashMap<String, GioviValue<?>> attributes) {
 			this.attributes = attributes;
+		}
+
+		@Override
+		public Struct copy() {
+			var a = new LinkedHashMap<String, GioviValue<?>>();
+			this.attributes.forEach((identifier, value) -> a.put(identifier, value.copy()));
+			return new Named(a);
 		}
 
 		public void put(String identifier, GioviValue<?> value) {
@@ -131,6 +135,13 @@ public abstract sealed class Struct {
 
 		public Unnamed(List<GioviValue<?>> attributes) {
 			this.attributes = attributes;
+		}
+
+		@Override
+		public Struct copy() {
+			var a = new ArrayList<GioviValue<?>>();
+			this.attributes.forEach(value -> a.add(value.copy()));
+			return new Unnamed(a);
 		}
 
 		@Override

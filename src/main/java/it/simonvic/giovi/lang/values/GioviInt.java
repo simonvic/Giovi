@@ -23,6 +23,11 @@ public non-sealed class GioviInt extends GioviNumber<Integer> {
 	}
 
 	@Override
+	public GioviInt copy() {
+		return new GioviInt(this.value, this.defaultValue);
+	}
+
+	@Override
 	public GioviNatural naturalValue() {
 		return new GioviNatural(new Natural(value));
 	}
