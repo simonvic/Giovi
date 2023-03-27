@@ -155,15 +155,15 @@ public abstract sealed class Struct {
 
 		@Override
 		public String toString() {
-			if (attributes.isEmpty()) return "()";
+			var i = attributes.iterator();
+			if (!i.hasNext()) return "()";
 
 			StringBuilder sb = new StringBuilder();
 			sb.append('(');
-			for (var attribute : attributes) {
-				sb.append(attribute);
-				sb.append(" ");
+			while (i.hasNext()) {
+				sb.append(i.next());
+				sb.append(i.hasNext() ? ", " : ")");
 			}
-			sb.append(')');
 			return sb.toString();
 		}
 	}
