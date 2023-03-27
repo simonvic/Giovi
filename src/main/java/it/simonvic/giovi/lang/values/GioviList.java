@@ -175,7 +175,7 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 		return switch (accessor.get()) {
 			case "%" -> new GioviInt(unbox().size());
 			case "@" -> {
-				GioviList indeces = new GioviList(entryType);
+				GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
 				indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).getValues());
 				yield indeces;
 			}
