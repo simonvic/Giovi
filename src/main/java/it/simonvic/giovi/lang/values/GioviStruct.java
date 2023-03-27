@@ -6,7 +6,7 @@ import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
 
 public abstract sealed class GioviStruct extends GioviValue<Struct>
-	permits GioviNamedStruct, GioviUnnamedStruct {
+	permits GioviStructNamed, GioviStructUnnamed {
 
 	public GioviStruct(Struct value, Struct defaultValue) {
 		super(value, defaultValue);

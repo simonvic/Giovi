@@ -726,7 +726,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		// 	s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
 		// }
 
-		getCurrentScope().define(ctx.structName.getText(), new GioviNamedStruct(struct));
+		getCurrentScope().define(ctx.structName.getText(), new GioviStructNamed(struct));
 		return null;
 	}
 
@@ -753,7 +753,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 					visit(attributeCtx.expression()).asGioviValue());
 			}
 		}
-		return new GioviNamedStruct(struct);
+		return new GioviStructNamed(struct);
 	}
 
 	@Override
@@ -774,7 +774,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 				struct.put(visit(attributeCtx.expression()).asGioviValue());
 			}
 		}
-		return new GioviUnnamedStruct(struct);
+		return new GioviStructUnnamed(struct);
 	}
 
 	//	@Override

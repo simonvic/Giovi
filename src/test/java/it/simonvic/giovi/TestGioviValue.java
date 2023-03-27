@@ -20,7 +20,7 @@ import it.simonvic.giovi.lang.values.GioviBool;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviList;
 import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviNamedStruct;
+import it.simonvic.giovi.lang.values.GioviStructNamed;
 import it.simonvic.giovi.lang.values.GioviNatural;
 import it.simonvic.giovi.lang.values.GioviReal;
 import it.simonvic.giovi.lang.values.GioviText;
@@ -37,7 +37,7 @@ public class TestGioviValue {
 			Arguments.of(GioviText.class, GioviValue.of("hello")),
 			Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 			Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-			Arguments.of(GioviNamedStruct.class, GioviValue.of(Structs.of("a", "a")))
+			Arguments.of(GioviStructNamed.class, GioviValue.of(Structs.of("a", "a")))
 		);
 	}
 
