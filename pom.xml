@@ -10,8 +10,8 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<maven.compiler.source>19</maven.compiler.source>
-		<maven.compiler.target>19</maven.compiler.target>
+		<maven.compiler.source>20</maven.compiler.source>
+		<maven.compiler.target>20</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -37,14 +37,14 @@
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4</artifactId>
-			<version>4.11.1</version>
+			<version>4.13.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-maven-plugin -->
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-maven-plugin</artifactId>
-			<version>4.11.1</version>
+			<version>4.13.0</version>
 		</dependency>
 	</dependencies>
 
@@ -53,7 +53,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.11.1</version>
+				<version>4.13.0</version>
 				<configuration>
 					<arguments>
 						<argument>-no-listener</argument>
@@ -77,7 +77,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
-					<release>19</release>
+					<release>20</release>
 					<compilerArgs>
 						<arg>--enable-preview</arg>
 					</compilerArgs>
