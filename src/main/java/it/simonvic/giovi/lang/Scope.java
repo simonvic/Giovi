@@ -1,5 +1,8 @@
 package it.simonvic.giovi.lang;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
 import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
@@ -7,9 +10,6 @@ import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.values.GioviStruct;
 import it.simonvic.giovi.lang.values.GioviValue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Scope {
 
@@ -152,7 +152,8 @@ public class Scope {
 
 	private static boolean isDeclaredVariable(Scope scope, String identifier) {
 		if (scope == null) return false;
-		return scope.isDeclaredLocalVariable(identifier) || Scope.isDeclaredVariable(scope.parentScope, identifier);
+		return scope.isDeclaredLocalVariable(identifier)
+			|| Scope.isDeclaredVariable(scope.parentScope, identifier);
 	}
 
 	private static GioviValue<?> getVariableValue(Scope scope, String identifier) {
@@ -170,7 +171,9 @@ public class Scope {
 	private final Map<String, GioviFunction> functionDefinitions = new HashMap<>();
 
 	public void define(String identifier, GioviFunction function) {
-		if (isDefinedFunction(identifier)) throw new GioviException("Function already defined: " + identifier);
+		if (isDefinedFunction(identifier)) {
+			throw new GioviException("Function already defined: " + identifier);
+		}
 		functionDefinitions.put(identifier, function);
 	}
 
@@ -189,7 +192,8 @@ public class Scope {
 
 	private static boolean isDefinedFunction(Scope scope, String identifier) {
 		if (scope == null) return false;
-		return scope.isDefinedLocalFunction(identifier) || Scope.isDefinedFunction(scope.parentScope, identifier);
+		return scope.isDefinedLocalFunction(identifier)
+			|| Scope.isDefinedFunction(scope.parentScope, identifier);
 	}
 
 	private GioviFunction getDefinitionLocalFunction(String identifier) {
@@ -210,7 +214,9 @@ public class Scope {
 	private final Map<String, GioviStruct> structDefinitions = new HashMap<>();
 
 	public void define(String identifier, GioviStruct struct) {
-		if (isDefinedStruct(identifier)) throw new GioviException("Struct already defined: " + identifier);
+		if (isDefinedStruct(identifier)) {
+			throw new GioviException("Struct already defined: " + identifier);
+		}
 		structDefinitions.put(identifier, struct);
 	}
 
@@ -229,7 +235,8 @@ public class Scope {
 
 	private static boolean isDefinedStruct(Scope scope, String identifier) {
 		if (scope == null) return false;
-		return scope.isDefinedLocalStruct(identifier) || Scope.isDefinedStruct(scope.parentScope, identifier);
+		return scope.isDefinedLocalStruct(identifier)
+			|| Scope.isDefinedStruct(scope.parentScope, identifier);
 	}
 
 	private GioviStruct getDefinitionLocalStruct(String identifier) {
