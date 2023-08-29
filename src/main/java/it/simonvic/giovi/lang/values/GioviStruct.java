@@ -5,7 +5,6 @@ import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
 
-// TODO: rename "attributes" to "fields"
 // TODO: create "anon struct" and "typed struct"
 public abstract sealed class GioviStruct extends GioviValue<Struct>
 	permits GioviStructNamed, GioviStructUnnamed {

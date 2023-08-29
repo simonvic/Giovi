@@ -30,7 +30,7 @@ public class TestGioviStruct {
 	}
 
 	@Test
-	void structsWithDifferentAttributes_shouldNotBeEquals() {
+	void structsWithDifferentFields_shouldNotBeEquals() {
 		assertNotEquals(
 			GioviStructs.of(
 				"foo", 69,
@@ -40,7 +40,7 @@ public class TestGioviStruct {
 	}
 
 	@Test
-	void structsWithDifferentAttributesType_shouldNotBeEquals() {
+	void structsWithDifferentFieldsType_shouldNotBeEquals() {
 		assertNotEquals(
 			GioviStructs.of(
 				"foo", 69,
@@ -71,7 +71,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void testSimpleStructDefaultAttributes() {
+		void testSimpleStructDefaultFields() {
 			var visitor = visit("""
 				Foo (
 					foo Int
@@ -88,7 +88,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void testAttributesDefaultOverride() {
+		void testFieldsDefaultOverride() {
 			var visitor = visit("""
 				Foo (
 					foo Int _ 69
@@ -161,7 +161,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void testInheritedAttributesDefaultOverride() {
+		void testInheritedFieldsDefaultOverride() {
 			var visitor = visit("""
 				RGB (
 					r Int
@@ -185,7 +185,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenOverridingInheritedAttributesDefault_shouldNotChangeDefaultsInInheritedClass() {
+		void whenOverridingInheritedFieldsDefault_shouldNotChangeDefaultsInInheritedClass() {
 			var visitor = visit("""
 				RGB (
 					r Int
@@ -212,7 +212,7 @@ public class TestGioviStruct {
 	class Creation {
 
 		@Test
-		void anonStructWithUnnamedAttributes() {
+		void anonStructWithUnnamedFields() {
 			assertEquals(
 				GioviStructs.of(List.of(
 					69, true, "foo")),
@@ -222,7 +222,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void anonStructWithNamedAttributes() {
+		void anonStructWithNamedFields() {
 			assertEquals(
 				GioviStructs.of(
 					"foo", 69,
@@ -261,7 +261,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void typedStructWithUnnamedAttributes() {
+		void typedStructWithUnnamedFields() {
 			var visitor = visit("""
 				RGB (
 					r Int
@@ -280,7 +280,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void typedStructWithNamedAttributes() {
+		void typedStructWithNamedFields() {
 			var visitor = visit("""
 				RGB (
 					r Int
@@ -322,7 +322,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingTypedStructWithWrongAttributesCount_shouldThrow() {
+		void whenCreatingTypedStructWithWrongFieldsCount_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> run("""
 				RGB (
 					r Int
@@ -334,7 +334,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingTypedStructWithWrongAttributesName_shouldThrow() {
+		void whenCreatingTypedStructWithWrongFieldsName_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> run("""
 				RGB (
 					r Int
@@ -346,7 +346,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingTypedStructWithSubsetOfAttributes_shouldNotThrow() {
+		void whenCreatingTypedStructWithSubsetOfFields_shouldNotThrow() {
 			assertDoesNotThrow(() -> run("""
 				RGB (
 					r Int
@@ -358,7 +358,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingTypedStructWithSubsetOfAttributes_shouldOnlyInitTheSubset() {
+		void whenCreatingTypedStructWithSubsetOfFields_shouldOnlyInitTheSubset() {
 			var visitor = visit("""
 				RGB (
 					r Int

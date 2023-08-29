@@ -297,7 +297,7 @@ public class TestRedirection {
 		}
 
 		@Test
-		void redir_namedAttributes_shouldChangeFields() {
+		void redir_namedFields_shouldChangeFields() {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
 				Color (r Int; g Int; b Int;)
 				x Color
@@ -308,7 +308,7 @@ public class TestRedirection {
 		}
 
 		@Test
-		void redir_wrongNamedAttributes_shouldThrow() {
+		void redir_wrongNamedFields_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> visit("""
 				Color (r Int; g Int; b Int;)
 				x Color

@@ -398,10 +398,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		CollectionParenthesizedAccessorContext ctx) {
 
 		// TODO improve this
-		if (ctx.specialAccessor() != null)
+		if (ctx.specialAccessor() != null) {
 			return visit(ctx.specialAccessor());
-		if (ctx.literal() != null)
+		}
+		if (ctx.literal() != null) {
 			return visit(ctx.literal());
+		}
 		return visit(ctx.expression());
 	}
 
@@ -737,14 +739,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 				throw new TypeNotFound(ctx.parentName.getText());
 			}
 		}
-		for (var attributeCtx : ctx.structBodyDefinition().structAttributeDefinition()) {
-			String identifier = attributeCtx.identifier().getText();
-			var attribute = spawnType(attributeCtx.type(),
-				Optional.ofNullable(attributeCtx.defaultDefinition()));
-			if (attributeCtx.defaultDefinition() != null) {
-				attribute.setDefaultValue(visit(attributeCtx.defaultDefinition()).asGioviValue());
+		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
+			String identifier = fieldCtx.identifier().getText();
+			var field = spawnType(fieldCtx.type(),
+				Optional.ofNullable(fieldCtx.defaultDefinition()));
+			if (fieldCtx.defaultDefinition() != null) {
+				field.setDefaultValue(visit(fieldCtx.defaultDefinition()).asGioviValue());
 			}
-			struct.put(identifier, attribute);
+			struct.put(identifier, field);
 		}
 		// for (var structDefinitionCtx : ctx.structBodyDefinition().structDefinition()) {
 		// 	s.put(structDefinitionCtx.structName.getText(),
@@ -762,10 +764,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitNamedStructCreation(NamedStructCreationContext ctx) {
 		if (ctx.structType == null) {
 			var struct = new Struct.Named();
-			for (var attributeCtx : ctx.namedStructAttribute()) {
+			for (var fieldCtx : ctx.namedStructField()) {
 				struct.put(
-					attributeCtx.identifier().getText(),
-					visit(attributeCtx.expression()).asGioviValue());
+					fieldCtx.identifier().getText(),
+					visit(fieldCtx.expression()).asGioviValue());
 			}
 			return new GioviStructNamed(struct);
 		}
@@ -776,13 +778,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 		var gioviStruct = getCurrentScope().getDefinitionStruct(structType).copy();
 		var struct = (Struct.Named) gioviStruct.unbox();
-		for (var attributeCtx : ctx.namedStructAttribute()) {
-			String attributeName = attributeCtx.identifier().getText();
-			if (!struct.contains(attributeName)) {
+		for (var fieldCtx : ctx.namedStructField()) {
+			String fieldName = fieldCtx.identifier().getText();
+			if (!struct.contains(fieldName)) {
 				throw new IncompatibleStructs(
-					"Struct " + structType + " doesn't have an attribute " + attributeName);
+					"Struct " + structType + " doesn't have a field " + fieldName);
 			}
-			struct.get(attributeName).box(visit(attributeCtx.expression()).asGioviValue());
+			struct.get(fieldName).box(visit(fieldCtx.expression()).asGioviValue());
 		}
 		return gioviStruct;
 	}
@@ -791,8 +793,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitUnnamedStructCreation(UnnamedStructCreationContext ctx) {
 		if (ctx.structType == null) {
 			var struct = new Struct.Unnamed();
-			for (var attributeCtx : ctx.unnamedStructAttribute()) {
-				struct.put(visit(attributeCtx.expression()).asGioviValue());
+			for (var fieldCtx : ctx.unnamedStructField()) {
+				struct.put(visit(fieldCtx.expression()).asGioviValue());
 			}
 			return new GioviStructUnnamed(struct);
 		}
@@ -803,15 +805,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 		var gioviStruct = getCurrentScope().getDefinitionStruct(structType).copy();
 		var struct = (Struct.Named) gioviStruct.unbox();
-		int attributesCount = ctx.unnamedStructAttribute().size();
-		if (attributesCount != struct.getAttributesCount()) {
+		int fieldsCount = ctx.unnamedStructField().size();
+		if (fieldsCount != struct.getFieldsCount()) {
 			throw new IncompatibleStructs(
-				"Struct " + structType + " needs " + struct.getAttributesCount() + " but "
-					+ attributesCount + " were provided");
+				"Struct " + structType + " needs " + struct.getFieldsCount() + " but "
+					+ fieldsCount + " were provided");
 		}
-		for (int i = 0; i < attributesCount; i++) {
-			struct.getAttribute(i)
-				.box(visit(ctx.unnamedStructAttribute(i).expression()).asGioviValue());
+		for (int i = 0; i < fieldsCount; i++) {
+			struct.getField(i).box(visit(ctx.unnamedStructField(i).expression()).asGioviValue());
 		}
 		return gioviStruct;
 	}

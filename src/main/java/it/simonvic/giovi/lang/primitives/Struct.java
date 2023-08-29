@@ -12,76 +12,76 @@ public abstract sealed class Struct {
 
 	public abstract void from(Struct struct);
 
-	public abstract GioviValue<?> getAttribute(int index);
+	public abstract GioviValue<?> getField(int index);
 
-	public abstract int getAttributesCount();
+	public abstract int getFieldsCount();
 
 	public abstract Struct copy();
 
 	public static final class Named extends Struct {
-		private final LinkedHashMap<String, GioviValue<?>> attributes;
+		private final LinkedHashMap<String, GioviValue<?>> fields;
 
 		public Named() {
-			this.attributes = new LinkedHashMap<>();
+			this.fields = new LinkedHashMap<>();
 		}
 
-		public Named(LinkedHashMap<String, GioviValue<?>> attributes) {
-			this.attributes = attributes;
+		public Named(LinkedHashMap<String, GioviValue<?>> fields) {
+			this.fields = fields;
 		}
 
 		@Override
-		public GioviValue<?> getAttribute(int index) {
+		public GioviValue<?> getField(int index) {
 			// TODO lol
-			return attributes.get(attributes.keySet().toArray()[index]);
+			return fields.get(fields.keySet().toArray()[index]);
 		}
 
 		@Override
-		public int getAttributesCount() {
-			return attributes.size();
+		public int getFieldsCount() {
+			return fields.size();
 		}
 
 		@Override
 		public Struct copy() {
 			var a = new LinkedHashMap<String, GioviValue<?>>();
-			this.attributes.forEach((identifier, value) -> a.put(identifier, value.copy()));
+			this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 			return new Named(a);
 		}
 
 		public void put(String identifier, GioviValue<?> value) {
-			attributes.put(identifier, value);
+			fields.put(identifier, value);
 		}
 
 		public void putAll(Named struct) {
-			struct.attributes.forEach(this::put);
+			struct.fields.forEach(this::put);
 		}
 
 		public GioviValue<?> get(String identifier) {
-			return attributes.get(identifier);
+			return fields.get(identifier);
 		}
 
-		public boolean contains(String attribute) {
-			return attributes.containsKey(attribute);
+		public boolean contains(String field) {
+			return fields.containsKey(field);
 		}
 
 		@Override
 		public void from(Struct struct) {
 			switch (struct) {
 				case Named s -> {
-					s.attributes.forEach((s1, gioviValue) -> {
+					s.fields.forEach((s1, gioviValue) -> {
 						if (!this.contains(s1)) {
 							throw new IncompatibleStructs("Incompatible structs. Struct " + this
-								+ " doesn't contain an attribute " + s1);
+								+ " doesn't contain a field " + s1);
 						}
-						attributes.get(s1).box(gioviValue.copy());
+						fields.get(s1).box(gioviValue.copy());
 					});
 				}
 				case Unnamed s -> {
-					if (s.attributes.size() != this.attributes.size()) {
+					if (s.fields.size() != this.fields.size()) {
 						throw new IncompatibleStructs("Incompatible structs. Can't assign " + s
-							+ " to " + this + " because of wrong attributes numbers");
+							+ " to " + this + " because of wrong fields numbers");
 					}
-					var unnamedIterator = s.attributes.iterator();
-					this.attributes.forEach((s1, gioviValue) -> gioviValue
+					var unnamedIterator = s.fields.iterator();
+					this.fields.forEach((s1, gioviValue) -> gioviValue
 						.box(GioviValue.of(unnamedIterator.next().unbox())));
 				}
 			}
@@ -89,7 +89,7 @@ public abstract sealed class Struct {
 
 		@Override
 		public String toString() {
-			var i = attributes.entrySet().iterator();
+			var i = fields.entrySet().iterator();
 			if (!i.hasNext())
 				return "()";
 
@@ -113,47 +113,47 @@ public abstract sealed class Struct {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			Named that = (Named) o;
-			return attributes.equals(that.attributes);
+			return fields.equals(that.fields);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(super.hashCode(), attributes);
+			return Objects.hash(super.hashCode(), fields);
 		}
 
 	}
 
 	public static final class Unnamed extends Struct {
 
-		private final List<GioviValue<?>> attributes;
+		private final List<GioviValue<?>> fields;
 
 		public Unnamed() {
-			attributes = new ArrayList<>();
+			fields = new ArrayList<>();
 		}
 
 		public Unnamed(Struct struct) {
-			attributes = new ArrayList<>();
+			fields = new ArrayList<>();
 			from(struct);
 		}
 
-		public Unnamed(List<GioviValue<?>> attributes) {
-			this.attributes = attributes;
+		public Unnamed(List<GioviValue<?>> fields) {
+			this.fields = fields;
 		}
 
 		@Override
-		public GioviValue<?> getAttribute(int index) {
-			return attributes.get(index);
+		public GioviValue<?> getField(int index) {
+			return fields.get(index);
 		}
 
 		@Override
-		public int getAttributesCount() {
-			return attributes.size();
+		public int getFieldsCount() {
+			return fields.size();
 		}
 
 		@Override
 		public Struct copy() {
 			var a = new ArrayList<GioviValue<?>>();
-			this.attributes.forEach(value -> a.add(value.copy()));
+			this.fields.forEach(value -> a.add(value.copy()));
 			return new Unnamed(a);
 		}
 
@@ -161,15 +161,15 @@ public abstract sealed class Struct {
 		public void from(Struct struct) {
 			switch (struct) {
 				case Named s -> {
-					attributes.clear();
-					s.attributes.values().forEach(gioviValue -> this.put(gioviValue.copy()));
+					fields.clear();
+					s.fields.values().forEach(gioviValue -> this.put(gioviValue.copy()));
 				}
-				case Unnamed s -> s.attributes.forEach(gioviValue -> this.put(gioviValue.copy()));
+				case Unnamed s -> s.fields.forEach(gioviValue -> this.put(gioviValue.copy()));
 			}
 		}
 
 		public void put(GioviValue<?> value) {
-			attributes.add(value);
+			fields.add(value);
 		}
 
 
@@ -178,17 +178,17 @@ public abstract sealed class Struct {
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 			Unnamed unnamed = (Unnamed) o;
-			return attributes.equals(unnamed.attributes);
+			return fields.equals(unnamed.fields);
 		}
 
 		@Override
 		public int hashCode() {
-			return Objects.hash(attributes);
+			return Objects.hash(fields);
 		}
 
 		@Override
 		public String toString() {
-			var i = attributes.iterator();
+			var i = fields.iterator();
 			if (!i.hasNext()) return "()";
 
 			StringBuilder sb = new StringBuilder();
