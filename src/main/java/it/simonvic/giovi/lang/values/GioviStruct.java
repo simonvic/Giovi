@@ -5,6 +5,8 @@ import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
 
+// TODO: rename "attributes" to "fields"
+// TODO: create "anon struct" and "typed struct"
 public abstract sealed class GioviStruct extends GioviValue<Struct>
 	permits GioviStructNamed, GioviStructUnnamed {
 
@@ -20,7 +22,7 @@ public abstract sealed class GioviStruct extends GioviValue<Struct>
 	@Override
 	public void box(GioviValue<?> gioviValue) {
 		if (gioviValue instanceof GioviStruct struct) {
-			value.set(struct.unbox());
+			value.from(struct.unbox());
 		} else {
 			super.box(gioviValue);
 		}
@@ -28,7 +30,7 @@ public abstract sealed class GioviStruct extends GioviValue<Struct>
 
 	@Override
 	public void setDefaultValue(Struct struct) {
-		this.defaultValue.set(struct);
+		this.defaultValue.from(struct);
 	}
 
 	@Override
@@ -41,7 +43,7 @@ public abstract sealed class GioviStruct extends GioviValue<Struct>
 
 	@Override
 	public void boxDefault() {
-		value = Struct.copyOf(defaultValue);
+		value = defaultValue.copy();
 	}
 
 	@Override

@@ -9,7 +9,7 @@ public non-sealed class GioviStructNamed extends GioviStruct {
 	}
 
 	public GioviStructNamed(Struct.Named value) {
-		super(value, Struct.copyOf(value));
+		super(value, value.copy());
 	}
 
 	@Override

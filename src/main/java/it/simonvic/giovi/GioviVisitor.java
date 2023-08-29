@@ -150,7 +150,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (list.unbox().size() == 0)
 			return;
 
-
 		for (GioviValue<?> value : list.unbox()) {
 
 			enterLoopScope();
@@ -761,70 +760,61 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitNamedStructCreation(NamedStructCreationContext ctx) {
-		var struct = new Struct.Named();
-		if (ctx.structType != null) {
-			if (!getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
-				throw new TypeNotFound(ctx.identifier().getText());
-			}
-			var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
-			struct.set(definition.unbox());
+		if (ctx.structType == null) {
+			var struct = new Struct.Named();
 			for (var attributeCtx : ctx.namedStructAttribute()) {
-				String attributeName = attributeCtx.identifier().getText();
-				if (!struct.contains(attributeName)) {
-					throw new IncompatibleStructs("Struct '" + ctx.structType.getText()
-						+ "' doesn't have an attribute '" + attributeName + "'");
-				}
-				struct.get(attributeName).box(visit(attributeCtx.expression()).asGioviValue());
-			}
-		} else {
-			for (var attributeCtx : ctx.namedStructAttribute()) {
-				struct.put(attributeCtx.identifier().getText(),
+				struct.put(
+					attributeCtx.identifier().getText(),
 					visit(attributeCtx.expression()).asGioviValue());
 			}
+			return new GioviStructNamed(struct);
 		}
-		return new GioviStructNamed(struct);
+
+		String structType = ctx.structType.getText();
+		if (!getCurrentScope().isDefinedStruct(structType)) {
+			throw new TypeNotFound(structType);
+		}
+		var gioviStruct = getCurrentScope().getDefinitionStruct(structType).copy();
+		var struct = (Struct.Named) gioviStruct.unbox();
+		for (var attributeCtx : ctx.namedStructAttribute()) {
+			String attributeName = attributeCtx.identifier().getText();
+			if (!struct.contains(attributeName)) {
+				throw new IncompatibleStructs(
+					"Struct " + structType + " doesn't have an attribute " + attributeName);
+			}
+			struct.get(attributeName).box(visit(attributeCtx.expression()).asGioviValue());
+		}
+		return gioviStruct;
 	}
 
 	@Override
 	public GioviObject visitUnnamedStructCreation(UnnamedStructCreationContext ctx) {
-		var struct = new Struct.Unnamed();
-		if (ctx.structType != null) {
-			if (!getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
-				throw new TypeNotFound(ctx.identifier().getText());
-			}
-			var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
-			struct.set(definition.unbox());
-			for (var attributeCtx : ctx.unnamedStructAttribute()) {
-				// TODO check that fields are valid?
-				struct.put(visit(attributeCtx.expression()).asGioviValue());
-			}
-		} else {
+		if (ctx.structType == null) {
+			var struct = new Struct.Unnamed();
 			for (var attributeCtx : ctx.unnamedStructAttribute()) {
 				struct.put(visit(attributeCtx.expression()).asGioviValue());
 			}
+			return new GioviStructUnnamed(struct);
 		}
-		return new GioviStructUnnamed(struct);
-	}
 
-	//	@Override
-	//	public GioviObject visitStructCreation(StructCreationContext ctx) {
-	//		GioviStruct struct = new GioviStruct();
-	//		if (ctx.identifier() != null) {
-	//			if (getCurrentScope().isDefinedStruct(ctx.identifier().getText())) {
-	//				var definition = getCurrentScope().getDefinitionStruct(ctx.identifier().getText());
-	//				struct.unbox().putAll(definition.unbox());
-	//			} else {
-	//				throw new TypeNotFound(ctx.identifier().getText());
-	//			}
-	//		}
-	//		for (var attributeCtx : ctx.structAttribute()) {
-	//			String identifier = attributeCtx.identifier() != null
-	//				? attributeCtx.identifier().getText()
-	//				: "" + struct.getLastIndex();
-	//			struct.put(identifier, visit(attributeCtx.expression()).asGioviValue());
-	//		}
-	//		return struct;
-	//	}
+		String structType = ctx.structType.getText();
+		if (!getCurrentScope().isDefinedStruct(structType)) {
+			throw new TypeNotFound(structType);
+		}
+		var gioviStruct = getCurrentScope().getDefinitionStruct(structType).copy();
+		var struct = (Struct.Named) gioviStruct.unbox();
+		int attributesCount = ctx.unnamedStructAttribute().size();
+		if (attributesCount != struct.getAttributesCount()) {
+			throw new IncompatibleStructs(
+				"Struct " + structType + " needs " + struct.getAttributesCount() + " but "
+					+ attributesCount + " were provided");
+		}
+		for (int i = 0; i < attributesCount; i++) {
+			struct.getAttribute(i)
+				.box(visit(ctx.unnamedStructAttribute(i).expression()).asGioviValue());
+		}
+		return gioviStruct;
+	}
 
 	@Override
 	public GioviObject visitDotExpression(DotExpressionContext ctx) {

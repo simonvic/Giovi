@@ -10,14 +10,11 @@ import it.simonvic.giovi.lang.values.GioviValue;
 
 public abstract sealed class Struct {
 
-	public static Struct copyOf(Struct other) {
-		return switch (other) {
-			case Named s -> s.copy();
-			case Unnamed s -> s.copy();
-		};
-	}
+	public abstract void from(Struct struct);
 
-	public abstract void set(Struct struct);
+	public abstract GioviValue<?> getAttribute(int index);
+
+	public abstract int getAttributesCount();
 
 	public abstract Struct copy();
 
@@ -30,6 +27,17 @@ public abstract sealed class Struct {
 
 		public Named(LinkedHashMap<String, GioviValue<?>> attributes) {
 			this.attributes = attributes;
+		}
+
+		@Override
+		public GioviValue<?> getAttribute(int index) {
+			// TODO lol
+			return attributes.get(attributes.keySet().toArray()[index]);
+		}
+
+		@Override
+		public int getAttributesCount() {
+			return attributes.size();
 		}
 
 		@Override
@@ -56,20 +64,15 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public void set(Struct struct) {
+		public void from(Struct struct) {
 			switch (struct) {
 				case Named s -> {
-					if (s.attributes.size() != this.attributes.size()) {
-						throw new IncompatibleStructs(
-							"Incompatible structs. %s has %s attributes, while %s requires %s"
-								.formatted(s, s.attributes.size(), this, this.attributes.size()));
-					}
 					s.attributes.forEach((s1, gioviValue) -> {
 						if (!this.contains(s1)) {
 							throw new IncompatibleStructs("Incompatible structs. Struct " + this
 								+ " doesn't contain an attribute " + s1);
 						}
-						attributes.put(s1, GioviValue.of(gioviValue.unbox()));
+						attributes.get(s1).box(gioviValue.copy());
 					});
 				}
 				case Unnamed s -> {
@@ -130,11 +133,21 @@ public abstract sealed class Struct {
 
 		public Unnamed(Struct struct) {
 			attributes = new ArrayList<>();
-			set(struct);
+			from(struct);
 		}
 
 		public Unnamed(List<GioviValue<?>> attributes) {
 			this.attributes = attributes;
+		}
+
+		@Override
+		public GioviValue<?> getAttribute(int index) {
+			return attributes.get(index);
+		}
+
+		@Override
+		public int getAttributesCount() {
+			return attributes.size();
 		}
 
 		@Override
@@ -145,18 +158,20 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public void set(Struct struct) {
+		public void from(Struct struct) {
 			switch (struct) {
-				case Named s -> s.attributes
-					.forEach((s1, gioviValue) -> put(GioviValue.of(gioviValue.unbox())));
-				case Unnamed s -> s.attributes
-					.forEach(gioviValue -> this.put(GioviValue.of(gioviValue.unbox())));
+				case Named s -> {
+					attributes.clear();
+					s.attributes.values().forEach(gioviValue -> this.put(gioviValue.copy()));
+				}
+				case Unnamed s -> s.attributes.forEach(gioviValue -> this.put(gioviValue.copy()));
 			}
 		}
 
 		public void put(GioviValue<?> value) {
 			attributes.add(value);
 		}
+
 
 		@Override
 		public boolean equals(Object o) {
@@ -184,6 +199,7 @@ public abstract sealed class Struct {
 			}
 			return sb.toString();
 		}
+
 	}
 
 }

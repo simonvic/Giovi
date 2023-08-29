@@ -8,7 +8,7 @@ public non-sealed class GioviStructUnnamed extends GioviStruct {
 	}
 
 	public GioviStructUnnamed(Struct.Unnamed value) {
-		super(value, Struct.copyOf(value));
+		super(value, value.copy());
 	}
 
 	public GioviStructUnnamed() {
