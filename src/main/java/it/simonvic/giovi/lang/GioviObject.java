@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
 
@@ -46,14 +45,13 @@ public class GioviObject {
 	public GioviObject isContained(GioviObject right) { return right.contains(this); }
 
 	//                                                                                       access
-	public GioviObject dot(String identifier) { throw new OperatorNotSupported(". (dot)"); }
-	public GioviObject dot(GioviFunction function) { throw new OperatorNotSupported(". (dot)"); }
+	public GioviObject access(GioviObject right) { throw new OperatorNotSupported("@"); }
+	public GioviObject dot(GioviObject right) { throw new OperatorNotSupported(". (dot)"); }
 
 	//                                                                                        CASTS
 	public GioviValue<?> asGioviValue() { return (GioviValue<?>) this; }
 	public GioviType<?> asGioviType() { return (GioviType<?>) this; }
 	public GioviStruct asGioviStruct() { return (GioviStruct) this; }
-	public GioviCollection<?> asGioviCollection() { return (GioviCollection<?>) this; }
 	public GioviList asGioviList() { return (GioviList) this; }
 	public GioviMap asGioviMap() { return (GioviMap) this; }
 	public GioviNumber<?> asGioviNumber() { return (GioviNumber<?>) this; }

@@ -8,7 +8,7 @@ import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
 
-public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
+public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
 	private final GioviType<?> entryType;
 
@@ -176,23 +176,22 @@ public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 
 	//                                                                                       access
 	@Override
-	public GioviValue<?> access(GioviValue<?> accessor) {
-		if (accessor instanceof GioviInt index) {
-			return value.get(index.unbox());
-		}
-		throw new GioviException("Invalid accessor: " + accessor);
-	}
-
-	@Override
-	public GioviValue<?> access(Accessor accessor) {
-		return switch (accessor.get()) {
-			case "%" -> new GioviInt(unbox().size());
-			case "@" -> {
-				GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
-				indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).expandAsGioviValues());
-				yield indeces;
-			}
-			default -> throw new GioviException("Invalid accessor: " + accessor);
+	public GioviObject access(GioviObject right) {
+		return switch (right) {
+			case GioviValue<?> gioviValue -> switch (gioviValue) {
+				case GioviInt index -> value.get(index.unbox());
+				default -> throw new GioviException("Invalid accessor: " + right);
+			};
+			case Accessor accessor -> switch (accessor.get()) {
+				case "%" -> new GioviInt(unbox().size());
+				case "@" -> {
+					GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
+					indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).expandAsGioviValues());
+					yield indeces;
+				}
+				default -> throw new GioviException("Invalid accessor: " + accessor);
+			};
+			default -> throw new GioviException("Invalid accessor: " + right);
 		};
 	}
 

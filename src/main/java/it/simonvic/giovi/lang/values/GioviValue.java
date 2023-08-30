@@ -14,7 +14,7 @@ import it.simonvic.giovi.util.GioviMaps;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct, GioviType {
+	permits GioviNumber, GioviBool, GioviText, GioviList, GioviMap, GioviStruct, GioviType {
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {

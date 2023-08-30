@@ -7,8 +7,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 
-public final class GioviMap
-	extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
+public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
 	private final GioviType<?> keyType;
 	private final GioviType<?> elementType;
@@ -262,17 +261,16 @@ public final class GioviMap
 	//                                                                                       access
 
 	@Override
-	public GioviValue<?> access(GioviValue<?> accessor) {
-		return get(accessor);
-	}
-
-	@Override
-	public GioviValue<?> access(Accessor accessor) {
-		return switch (accessor.get()) {
-			case "%" -> new GioviInt(unbox().size());
-			case "@" -> new GioviList(unbox().keySet().stream().toList());
-			case "*" -> new GioviList(unbox().values().stream().toList());
-			default -> throw new GioviException("Invalid accessor: " + accessor);
+	public GioviObject access(GioviObject right) {
+		return switch (right) {
+			case GioviValue<?> gioviValue -> get(gioviValue);
+			case Accessor accessor -> switch (accessor.get()) {
+				case "%" -> new GioviInt(unbox().size());
+				case "@" -> new GioviList(unbox().keySet().stream().toList());
+				case "*" -> new GioviList(unbox().values().stream().toList());
+				default -> throw new GioviException("Invalid accessor: " + accessor);
+			};
+			default -> throw new GioviException("Invalid accessor: " + right);
 		};
 	}
 }

@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleStructs;
 import it.simonvic.giovi.lang.values.GioviValue;
 
@@ -13,6 +14,8 @@ public abstract sealed class Struct {
 	public abstract void from(Struct struct);
 
 	public abstract GioviValue<?> getField(int index);
+
+	public abstract GioviValue<?> getField(String identifier);
 
 	public abstract int getFieldsCount();
 
@@ -68,6 +71,11 @@ public abstract sealed class Struct {
 		public GioviValue<?> getField(int index) {
 			// TODO lol
 			return fields.get(fields.keySet().toArray()[index]);
+		}
+
+		@Override
+		public GioviValue<?> getField(String identifier) {
+			return fields.get(identifier);
 		}
 
 		@Override
@@ -174,6 +182,11 @@ public abstract sealed class Struct {
 		}
 
 		@Override
+		public GioviValue<?> getField(String identifier) {
+			throw new GioviException("Can't get field " + identifier);
+		}
+
+		@Override
 		public int getFieldsCount() {
 			return fields.size();
 		}
@@ -202,5 +215,6 @@ public abstract sealed class Struct {
 
 
 	}
+
 
 }

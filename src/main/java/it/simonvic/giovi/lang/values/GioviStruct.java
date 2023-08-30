@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.StructException;
+import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
@@ -96,19 +96,13 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	//                                                                                       access
 	@Override
-	public GioviObject dot(String identifier) {
-		GioviValue<?> field = null;
-		switch (value) {
-			case Struct.Named s -> field = s.get(identifier);
-			case Struct.Unnamed s -> super.dot(identifier);
-		}
-		if (field == null) throw new StructException(this, identifier);
-		return field;
-	}
-
-	@Override
-	public GioviObject dot(GioviFunction function) {
-		return super.dot(function);
+	public GioviObject dot(GioviObject right) {
+		return switch (right) {
+			case Accessor r -> value.getField(r.get());
+			case GioviInt r -> value.getField(r.unbox()); // TODO: should it?
+			case GioviFunction r -> super.dot(r); // TODO: implement
+			default -> super.dot(right);
+		};
 	}
 
 }

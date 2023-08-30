@@ -377,7 +377,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitCollectionAccess(CollectionAccessContext ctx) {
 		return getCurrentScope()
 			.getVariableValue(ctx.identifier().getText())
-			.asGioviCollection()
 			.access(visit(ctx.collectionAccessor()));
 	}
 
@@ -819,7 +818,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitDotExpression(DotExpressionContext ctx) {
 		var lhs = visit(ctx.expression());
 		return ctx.identifier() != null
-			? lhs.dot(ctx.identifier().getText())
+			? lhs.dot(new Accessor(ctx.identifier().getText()))
 			: lhs.dot(
 				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}
