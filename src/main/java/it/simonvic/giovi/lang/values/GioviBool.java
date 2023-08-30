@@ -4,6 +4,10 @@ import it.simonvic.giovi.lang.GioviObject;
 
 public final class GioviBool extends GioviValue<Boolean> {
 
+	public static GioviBool valueOf(String s) {
+		return new GioviBool(Boolean.valueOf(s));
+	}
+
 	public GioviBool(Boolean value, Boolean defaultValue) {
 		super(value, defaultValue);
 	}
@@ -57,11 +61,8 @@ public final class GioviBool extends GioviValue<Boolean> {
 		}
 	}
 
-	@Override
-	public GioviObject not() {
-		return new GioviBool(!value);
-	}
-
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
@@ -70,6 +71,13 @@ public final class GioviBool extends GioviValue<Boolean> {
 			default -> super.redirection(content);
 		}
 		return this;
+	}
+
+	//                                                                                   arithmetic
+	//                                                                                      boolean
+	@Override
+	public GioviObject not() {
+		return new GioviBool(!value);
 	}
 
 	@Override
@@ -92,6 +100,8 @@ public final class GioviBool extends GioviValue<Boolean> {
 		};
 	}
 
+	//                                                                                   relational
+
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
@@ -107,8 +117,7 @@ public final class GioviBool extends GioviValue<Boolean> {
 		return equal(right).not();
 	}
 
-	public static GioviBool valueOf(String s) {
-		return new GioviBool(Boolean.valueOf(s));
-	}
+	//                                                                                       access
+
 
 }

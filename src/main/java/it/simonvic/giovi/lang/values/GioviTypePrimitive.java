@@ -19,6 +19,11 @@ public sealed class GioviTypePrimitive
 	}
 
 	@Override
+	public String toString() {
+		return value.getSimpleName().replaceAll("Giovi", "giovi.");
+	}
+
+	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypePrimitive(GioviTypePrimitive.class);
 	}
@@ -58,14 +63,6 @@ public sealed class GioviTypePrimitive
 			throw new GioviException(e);
 		}
 	}
-
-	@Override
-	public String toString() {
-		return value.getSimpleName().replaceAll("Giovi", "giovi.");
-	}
-
-	
-
 
 }
 

@@ -109,16 +109,28 @@ public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviObject contains(GioviObject right) {
-		return new GioviBool(value.contains(right.asGioviValue()));
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final GioviList other = (GioviList) obj;
+		return this.value.equals(other.value);
 	}
 
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
-	public GioviObject redirection(GioviObject right) {
-		switch (right) {
+	public GioviObject redirection(GioviObject content) {
+		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviList v -> this.init(v.unbox());
-			default -> super.redirection(right);
+			default -> super.redirection(content);
 		}
 		return this;
 	}
@@ -145,6 +157,9 @@ public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 		return this;
 	}
 
+	//                                                                                   arithmetic
+	//                                                                                      boolean
+	//                                                                                   relational
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
@@ -155,20 +170,11 @@ public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final GioviList other = (GioviList) obj;
-		return this.value.equals(other.value);
+	public GioviObject contains(GioviObject right) {
+		return new GioviBool(value.contains(right.asGioviValue()));
 	}
 
+	//                                                                                       access
 	@Override
 	public GioviValue<?> access(GioviValue<?> accessor) {
 		if (accessor instanceof GioviInt index) {
@@ -189,4 +195,5 @@ public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 			default -> throw new GioviException("Invalid accessor: " + accessor);
 		};
 	}
+
 }

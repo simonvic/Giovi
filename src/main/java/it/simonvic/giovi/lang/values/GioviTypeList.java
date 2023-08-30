@@ -14,6 +14,11 @@ public final class GioviTypeList extends GioviTypePrimitive {
 	}
 
 	@Override
+	public String toString() {
+		return "[" + entryType.toString() + "]";
+	}
+
+	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> false;
@@ -21,11 +26,6 @@ public final class GioviTypeList extends GioviTypePrimitive {
 			case GioviTypeList t -> getEntryType().canUpcast(t.getEntryType());
 			case GioviTypePrimitive t -> false;
 		};
-	}
-
-	@Override
-	public String toString() {
-		return "[" + entryType.toString() + "]";
 	}
 
 

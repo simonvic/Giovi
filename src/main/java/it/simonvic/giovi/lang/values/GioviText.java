@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.GioviObject;
 
 public final class GioviText extends GioviValue<String> {
@@ -60,6 +61,8 @@ public final class GioviText extends GioviValue<String> {
 		}
 	}
 
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
@@ -90,6 +93,7 @@ public final class GioviText extends GioviValue<String> {
 		return this;
 	}
 
+	//                                                                                   arithmetic
 	@Override
 	public GioviObject plus(GioviObject right) {
 		return switch (right) {
@@ -109,42 +113,14 @@ public final class GioviText extends GioviValue<String> {
 		};
 	}
 
+	// TODO: split string ?
 	@Override
-	public GioviObject lessEqual(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) <= 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
-			default -> super.lessEqual(right);
-		};
+	public GioviObject divide(GioviObject right) {
+		throw new OperatorNotSupported("/");
 	}
 
-	@Override
-	public GioviObject greaterEqual(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) >= 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
-			default -> super.greaterEqual(right);
-		};
-	}
-
-	@Override
-	public GioviObject greater(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) > 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
-			default -> super.greater(right);
-		};
-	}
-
-	@Override
-	public GioviObject less(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) < 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
-			default -> super.less(right);
-		};
-	}
-
+	//                                                                                      boolean
+	//                                                                                   relational
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
@@ -160,6 +136,42 @@ public final class GioviText extends GioviValue<String> {
 	}
 
 	@Override
+	public GioviObject less(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) < 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
+			default -> super.less(right);
+		};
+	}
+
+	@Override
+	public GioviObject lessEqual(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) <= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
+			default -> super.lessEqual(right);
+		};
+	}
+
+	@Override
+	public GioviObject greater(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) > 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
+			default -> super.greater(right);
+		};
+	}
+
+	@Override
+	public GioviObject greaterEqual(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) >= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
+			default -> super.greaterEqual(right);
+		};
+	}
+
+	@Override
 	public GioviObject contains(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.contains(defaultValue));
@@ -168,4 +180,6 @@ public final class GioviText extends GioviValue<String> {
 		};
 	}
 
+	//                                                                                       access
+	// TODO: access char
 }

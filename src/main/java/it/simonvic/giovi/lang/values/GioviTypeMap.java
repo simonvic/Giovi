@@ -12,13 +12,17 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 		this.elementType = elementType;
 	}
 
-
 	public GioviType<?> getKeyType() {
 		return keyType;
 	}
 
 	public GioviType<?> getElementType() {
 		return elementType;
+	}
+
+	@Override
+	public String toString() {
+		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
 	}
 
 	@Override
@@ -30,11 +34,6 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 				&& getElementType().canUpcast(t.getElementType());
 			case GioviTypePrimitive t -> false;
 		};
-	}
-
-	@Override
-	public String toString() {
-		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
 	}
 
 }

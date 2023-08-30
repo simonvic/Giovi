@@ -16,15 +16,7 @@ public abstract sealed class GioviValue<T>
 	extends GioviObject
 	permits GioviNumber, GioviBool, GioviText, GioviCollection, GioviStruct, GioviType {
 
-	protected T value;
-	protected T defaultValue;
-
-	public GioviValue(T value, T defaultValue) {
-		this.value = value;
-		this.defaultValue = defaultValue;
-	}
-
-    public static <U> GioviValue<?> of(U value) {
+	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
 			case null -> null;
 			case Natural v -> new GioviNatural(v);
@@ -37,6 +29,14 @@ public abstract sealed class GioviValue<T>
 			case Struct v -> new GioviStruct(v);
 			default -> throw new GioviException("Unknown type " + value);
 		};
+	}
+
+	protected T value;
+	protected T defaultValue;
+
+	public GioviValue(T value, T defaultValue) {
+		this.value = value;
+		this.defaultValue = defaultValue;
 	}
 
 	public Class<?> getValueType() {
@@ -71,6 +71,14 @@ public abstract sealed class GioviValue<T>
 		throw new IncompatibleTypes(this.getGioviType(), defaultValue.getGioviType());
 	}
 
+	public abstract GioviType<?> getGioviType();
+
+	public abstract GioviValue<T> copy();
+
+	public GioviValue<?> castTo(GioviType<?> type) {
+		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
+	}
+
 	@Override
 	public String toString() {
 		return value.toString();
@@ -90,13 +98,5 @@ public abstract sealed class GioviValue<T>
 	public int hashCode() {
 		return Objects.hash(value);
 	}
-
-	public abstract GioviType<?> getGioviType();
-	public abstract GioviValue<T> copy();
-
-	public GioviValue<?> castTo(GioviType<?> type) {
-		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
-	}
-
 
 }

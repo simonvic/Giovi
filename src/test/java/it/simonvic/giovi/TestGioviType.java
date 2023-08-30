@@ -75,12 +75,14 @@ public class TestGioviType {
 					new GioviTypePrimitive(GioviText.class))));
 	}
 
-	@ParameterizedTest @MethodSource("produceEqualTypes")
+	@ParameterizedTest
+	@MethodSource("produceEqualTypes")
 	void testEquality(GioviType<?> type1, GioviType<?> type2) {
 		assertEquals(type1, type2);
 	}
 
-	@ParameterizedTest @MethodSource("produceNotEqualTypes")
+	@ParameterizedTest
+	@MethodSource("produceNotEqualTypes")
 	void testNotEquality(GioviType<?> type1, GioviType<?> type2) {
 		assertNotEquals(type1, type2);
 	}

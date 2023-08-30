@@ -119,6 +119,49 @@ public final class GioviMap
 	}
 
 	@Override
+	public String toString() {
+		var i = value.entrySet().iterator();
+		if (!i.hasNext())
+			return "[]";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		for (;;) {
+			var e = i.next();
+			var key = e.getKey();
+			var value = e.getValue();
+			sb.append(key);
+			sb.append(':');
+			sb.append(value);
+			if (!i.hasNext())
+				return sb.append(']').toString();
+			sb.append(',').append(' ');
+		}
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+
+		final GioviMap other = (GioviMap) obj;
+
+		if (value.size() != other.value.size())
+			return false;
+
+		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
+			if (!entry.getValue().equals(other.get(entry.getKey()))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypeMap(keyType, elementType);
 	}
@@ -164,17 +207,14 @@ public final class GioviMap
 		this.init(defaultValue);
 	}
 
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
-	public GioviObject contains(GioviObject right) {
-		return new GioviBool(value.containsKey(right.asGioviValue()));
-	}
-
-	@Override
-	public GioviObject redirection(GioviObject right) {
-		switch (right) {
+	public GioviObject redirection(GioviObject content) {
+		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviMap v -> init(v.unbox());
-			default -> super.redirection(right);
+			default -> super.redirection(content);
 		}
 		return this;
 	}
@@ -201,6 +241,10 @@ public final class GioviMap
 		return this;
 	}
 
+	//                                                                                   arithmetic
+	//                                                                                      boolean
+
+	//                                                                                   relational
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
@@ -211,48 +255,11 @@ public final class GioviMap
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-
-		final GioviMap other = (GioviMap) obj;
-
-		if (value.size() != other.value.size())
-			return false;
-
-		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
-			if (!entry.getValue().equals(other.get(entry.getKey()))) {
-				return false;
-			}
-		}
-		return true;
+	public GioviObject contains(GioviObject right) {
+		return new GioviBool(value.containsKey(right.asGioviValue()));
 	}
 
-	@Override
-	public String toString() {
-		var i = value.entrySet().iterator();
-		if (!i.hasNext())
-			return "[]";
-
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
-		for (;;) {
-			var e = i.next();
-			var key = e.getKey();
-			var value = e.getValue();
-			sb.append(key);
-			sb.append(':');
-			sb.append(value);
-			if (!i.hasNext())
-				return sb.append(']').toString();
-			sb.append(',').append(' ');
-		}
-	}
-
+	//                                                                                       access
 
 	@Override
 	public GioviValue<?> access(GioviValue<?> accessor) {

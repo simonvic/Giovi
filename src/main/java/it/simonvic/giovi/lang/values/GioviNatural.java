@@ -5,6 +5,10 @@ import it.simonvic.giovi.lang.primitives.Natural;
 
 public final class GioviNatural extends GioviNumber<Natural> {
 
+	public static GioviNatural valueOf(String s) throws NumberFormatException {
+		return new GioviNatural(Natural.valueOf(s));
+	}
+
 	public GioviNatural(Natural value, Natural defaultValue) {
 		super(value, defaultValue);
 	}
@@ -67,6 +71,8 @@ public final class GioviNatural extends GioviNumber<Natural> {
 		value = new Natural(defaultValue.intValue());
 	}
 
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
@@ -117,7 +123,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 		return this;
 	}
 
-
+	//                                                                                   arithmetic
 	@Override
 	public GioviObject positive() {
 		return new GioviNatural(value);
@@ -200,50 +206,10 @@ public final class GioviNatural extends GioviNumber<Natural> {
 		};
 	}
 
-	@Override
-	public GioviObject lessEqual(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.intValue() <= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() <= v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() <= v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() <= v.unbox());
-			default -> super.lessEqual(right);
-		};
-	}
 
-	@Override
-	public GioviObject greaterEqual(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.intValue() >= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() >= v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() >= v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() >= v.unbox());
-			default -> super.greaterEqual(right);
-		};
-	}
+	//                                                                                      boolean
 
-	@Override
-	public GioviObject greater(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.intValue() > defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() > v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() > v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() > v.unbox());
-			default -> super.greater(right);
-		};
-	}
-
-	@Override
-	public GioviObject less(GioviObject right) {
-		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.intValue() < defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() < v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() < v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() < v.unbox());
-			default -> super.less(right);
-		};
-	}
-
+	//                                                                                   relational
 	@Override
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
@@ -260,8 +226,52 @@ public final class GioviNatural extends GioviNumber<Natural> {
 		return equal(right).not();
 	}
 
-	public static GioviNatural valueOf(String s) throws NumberFormatException {
-		return new GioviNatural(Natural.valueOf(s));
+
+	@Override
+	public GioviObject less(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() < defaultValue.intValue());
+			case GioviNatural v -> new GioviBool(value.intValue() < v.unbox().intValue());
+			case GioviInt v -> new GioviBool(value.intValue() < v.unbox());
+			case GioviReal v -> new GioviBool(value.doubleValue() < v.unbox());
+			default -> super.less(right);
+		};
 	}
+
+	@Override
+	public GioviObject lessEqual(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() <= defaultValue.intValue());
+			case GioviNatural v -> new GioviBool(value.intValue() <= v.unbox().intValue());
+			case GioviInt v -> new GioviBool(value.intValue() <= v.unbox());
+			case GioviReal v -> new GioviBool(value.doubleValue() <= v.unbox());
+			default -> super.lessEqual(right);
+		};
+	}
+
+	@Override
+	public GioviObject greater(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() > defaultValue.intValue());
+			case GioviNatural v -> new GioviBool(value.intValue() > v.unbox().intValue());
+			case GioviInt v -> new GioviBool(value.intValue() > v.unbox());
+			case GioviReal v -> new GioviBool(value.doubleValue() > v.unbox());
+			default -> super.greater(right);
+		};
+	}
+
+	@Override
+	public GioviObject greaterEqual(GioviObject right) {
+		return switch (right) {
+			case GioviDefault v -> new GioviBool(value.intValue() >= defaultValue.intValue());
+			case GioviNatural v -> new GioviBool(value.intValue() >= v.unbox().intValue());
+			case GioviInt v -> new GioviBool(value.intValue() >= v.unbox());
+			case GioviReal v -> new GioviBool(value.doubleValue() >= v.unbox());
+			default -> super.greaterEqual(right);
+		};
+	}
+
+	//                                                                                       access
+
 
 }

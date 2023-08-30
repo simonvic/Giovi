@@ -11,6 +11,11 @@ public final class GioviTypeStruct extends GioviType<String> {
 	}
 
 	@Override
+	public String toString() {
+		return "giovi." + value;
+	}
+
+	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypePrimitive(GioviTypeStruct.class);
 	}
@@ -32,12 +37,4 @@ public final class GioviTypeStruct extends GioviType<String> {
 		};
 	}
 
-	@Override
-	public String toString() {
-		return "giovi." + value;
-	}
-
-	
-
-	
 }

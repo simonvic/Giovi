@@ -1,5 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.StructException;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
@@ -25,6 +26,12 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public GioviStruct(String type, Struct value, Struct defaultValue) {
 		super(value, defaultValue);
 		this.type = type;
+	}
+
+
+	@Override
+	public String toString() {
+		return type + super.toString();
 	}
 
 	@Override
@@ -64,6 +71,8 @@ public final class GioviStruct extends GioviValue<Struct> {
 		value = defaultValue.copy();
 	}
 
+	//                                                                                OPERATORATION
+	//                                                                                  redirection
 	@Override
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
@@ -74,6 +83,18 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return this;
 	}
 
+	//                                                                                   arithmetic
+	//                                                                                      boolean
+	//                                                                                   relational
+	public GioviObject equal(GioviObject right) {
+		throw new OperatorNotSupported("=");
+	}
+
+	public GioviObject notEqual(GioviObject right) {
+		throw new OperatorNotSupported("!=");
+	}
+
+	//                                                                                       access
 	@Override
 	public GioviObject dot(String identifier) {
 		GioviValue<?> field = null;
@@ -90,8 +111,4 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return super.dot(function);
 	}
 
-	@Override
-	public String toString() {
-		return type + super.toString();
-	}
 }

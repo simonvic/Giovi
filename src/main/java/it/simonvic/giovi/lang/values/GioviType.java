@@ -8,13 +8,6 @@ public abstract sealed class GioviType<T>
 	extends GioviValue<T>
 	permits GioviTypePrimitive, GioviTypeStruct {
 
-	public GioviType(T value, T defaultValue) {
-		super(value, defaultValue);
-	}
-
-
-	public abstract boolean canUpcast(GioviType<?> to);
-
 	public static GioviType<?> inferGioviType(Collection<GioviValue<?>> entries) {
 		GioviType<?> inferred = null;
 		GioviType<?> next;
@@ -29,4 +22,10 @@ public abstract sealed class GioviType<T>
 		}
 		return inferred;
 	}
+
+	public GioviType(T value, T defaultValue) {
+		super(value, defaultValue);
+	}
+
+	public abstract boolean canUpcast(GioviType<?> to);
 }
