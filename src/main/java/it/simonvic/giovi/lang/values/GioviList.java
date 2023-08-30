@@ -17,7 +17,7 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 	}
 
 	public GioviList(List<GioviValue<?>> entries) {
-		this(null, entries, new ArrayList<>());
+		this(GioviType.inferGioviType(entries), entries, new ArrayList<>());
 	}
 
 	public GioviList(
@@ -26,15 +26,11 @@ public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
 		List<GioviValue<?>> defaultValue) {
 
 		super(value, defaultValue);
-		this.entryType = entryType != null ? entryType : GioviType.inferGioviType(value);
-		checkCasts(this.value, this.entryType);
-		checkCasts(this.defaultValue, this.entryType);
+		this.entryType = entryType;
+		this.value.forEach(entry -> entry.castTo(this.entryType));
+		this.defaultValue.forEach(entry -> entry.castTo(this.entryType));
 	}
 
-
-	public static void checkCasts(List<GioviValue<?>> entries, GioviType<?> type) {
-		entries.forEach(entry -> entry.castTo(type));
-	}
 
 	public void add(GioviValue<?> entry) {
 		value.add(entry.castTo(entryType));

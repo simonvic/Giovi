@@ -14,22 +14,10 @@ public non-sealed class GioviMap
 	private final GioviType<?> elementType;
 
 	public GioviMap(LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
-		this(null, null, value);
-	}
-
-	public GioviMap(
-		GioviType<?> keyType,
-		GioviType<?> elementType,
-		LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
-		LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
-
-		super(value, defaultValue);
-		this.keyType = keyType != null ? keyType : GioviType.inferGioviType(value.keySet());
-		this.elementType = elementType != null
-			? elementType
-			: GioviType.inferGioviType(value.values());
-		checkCasts(this.value, this.keyType, this.elementType);
-		checkCasts(this.defaultValue, this.keyType, this.elementType);
+		this(
+			GioviType.inferGioviType(value.keySet()),
+			GioviType.inferGioviType(value.values()),
+			value);
 	}
 
 	public GioviMap(
@@ -43,13 +31,22 @@ public non-sealed class GioviMap
 		this(keyType, elementType, new LinkedHashMap<>(), new LinkedHashMap<>());
 	}
 
-	private static void checkCasts(
-		LinkedHashMap<GioviValue<?>, GioviValue<?>> entries,
+	public GioviMap(
 		GioviType<?> keyType,
-		GioviType<?> elementType) {
-		entries.forEach((key, element) -> {
-			key.castTo(keyType);
-			element.castTo(elementType);
+		GioviType<?> elementType,
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
+
+		super(value, defaultValue);
+		this.keyType = keyType;
+		this.elementType = elementType;
+		this.value.forEach((k, e) -> {
+			k.castTo(this.keyType);
+			e.castTo(this.elementType);
+		});
+		this.defaultValue.forEach((k, e) -> {
+			k.castTo(this.keyType);
+			e.castTo(this.elementType);
 		});
 	}
 
