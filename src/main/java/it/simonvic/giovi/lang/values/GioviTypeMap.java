@@ -32,4 +32,9 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 		};
 	}
 
+	@Override
+	public String toString() {
+		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
+	}
+
 }

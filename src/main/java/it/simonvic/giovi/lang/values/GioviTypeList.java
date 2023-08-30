@@ -22,7 +22,11 @@ public final class GioviTypeList extends GioviTypePrimitive {
 			case GioviTypePrimitive t -> false;
 		};
 	}
-	
+
+	@Override
+	public String toString() {
+		return "[" + entryType.toString() + "]";
+	}
 
 
 }

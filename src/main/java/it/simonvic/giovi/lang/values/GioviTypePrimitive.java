@@ -59,6 +59,13 @@ public sealed class GioviTypePrimitive
 		}
 	}
 
+	@Override
+	public String toString() {
+		return value.getSimpleName().replaceAll("Giovi", "giovi.");
+	}
+
+	
+
 
 }
 

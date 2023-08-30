@@ -32,6 +32,11 @@ public final class GioviTypeStruct extends GioviType<String> {
 		};
 	}
 
+	@Override
+	public String toString() {
+		return "giovi." + value;
+	}
+
 	
 
 	
