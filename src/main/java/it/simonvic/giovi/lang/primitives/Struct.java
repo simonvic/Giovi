@@ -30,6 +30,41 @@ public abstract sealed class Struct {
 		}
 
 		@Override
+		public String toString() {
+			var i = fields.entrySet().iterator();
+			if (!i.hasNext())
+				return "()";
+
+			StringBuilder sb = new StringBuilder();
+			sb.append('(');
+			for (;;) {
+				var e = i.next();
+				var key = e.getKey();
+				var value = e.getValue();
+				sb.append(key);
+				sb.append(':');
+				sb.append(value);
+				if (!i.hasNext())
+					return sb.append(')').toString();
+				sb.append(',').append(' ');
+			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null) return false;
+			if (getClass() != o.getClass()) return false;
+			Named that = (Named) o;
+			return fields.equals(that.fields);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(fields);
+		}
+
+		@Override
 		public GioviValue<?> getField(int index) {
 			// TODO lol
 			return fields.get(fields.keySet().toArray()[index]);
@@ -45,22 +80,6 @@ public abstract sealed class Struct {
 			var a = new LinkedHashMap<String, GioviValue<?>>();
 			this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 			return new Named(a);
-		}
-
-		public void put(String identifier, GioviValue<?> value) {
-			fields.put(identifier, value);
-		}
-
-		public void putAll(Named struct) {
-			struct.fields.forEach(this::put);
-		}
-
-		public GioviValue<?> get(String identifier) {
-			return fields.get(identifier);
-		}
-
-		public boolean contains(String field) {
-			return fields.containsKey(field);
 		}
 
 		@Override
@@ -87,38 +106,20 @@ public abstract sealed class Struct {
 			}
 		}
 
-		@Override
-		public String toString() {
-			var i = fields.entrySet().iterator();
-			if (!i.hasNext())
-				return "()";
-
-			StringBuilder sb = new StringBuilder();
-			sb.append('(');
-			for (;;) {
-				var e = i.next();
-				var key = e.getKey();
-				var value = e.getValue();
-				sb.append(key);
-				sb.append(':');
-				sb.append(value);
-				if (!i.hasNext())
-					return sb.append(')').toString();
-				sb.append(',').append(' ');
-			}
+		public void put(String identifier, GioviValue<?> value) {
+			fields.put(identifier, value);
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Named that = (Named) o;
-			return fields.equals(that.fields);
+		public void putAll(Named struct) {
+			struct.fields.forEach(this::put);
 		}
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(super.hashCode(), fields);
+		public GioviValue<?> get(String identifier) {
+			return fields.get(identifier);
+		}
+
+		public boolean contains(String field) {
+			return fields.containsKey(field);
 		}
 
 	}
@@ -138,6 +139,33 @@ public abstract sealed class Struct {
 
 		public Unnamed(List<GioviValue<?>> fields) {
 			this.fields = fields;
+		}
+
+		@Override
+		public String toString() {
+			var i = fields.iterator();
+			if (!i.hasNext()) return "()";
+
+			StringBuilder sb = new StringBuilder();
+			sb.append('(');
+			while (i.hasNext()) {
+				sb.append(i.next());
+				sb.append(i.hasNext() ? ", " : ")");
+			}
+			return sb.toString();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+			Unnamed unnamed = (Unnamed) o;
+			return fields.equals(unnamed.fields);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(fields);
 		}
 
 		@Override
@@ -172,33 +200,6 @@ public abstract sealed class Struct {
 			fields.add(value);
 		}
 
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Unnamed unnamed = (Unnamed) o;
-			return fields.equals(unnamed.fields);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(fields);
-		}
-
-		@Override
-		public String toString() {
-			var i = fields.iterator();
-			if (!i.hasNext()) return "()";
-
-			StringBuilder sb = new StringBuilder();
-			sb.append('(');
-			while (i.hasNext()) {
-				sb.append(i.next());
-				sb.append(i.hasNext() ? ", " : ")");
-			}
-			return sb.toString();
-		}
 
 	}
 

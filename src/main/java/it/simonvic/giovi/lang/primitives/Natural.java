@@ -1,5 +1,7 @@
 package it.simonvic.giovi.lang.primitives;
 
+import java.util.Objects;
+
 import it.simonvic.giovi.exceptions.GioviException;
 
 public final class Natural extends Number {
@@ -14,6 +16,20 @@ public final class Natural extends Number {
 
 	public Natural() {
 		this.value = 0;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		final Natural other = (Natural) obj;
+		return this.value.equals(other.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(value);
 	}
 
 	@Override
@@ -34,21 +50,6 @@ public final class Natural extends Number {
 	@Override
 	public double doubleValue() {
 		return value.doubleValue();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final Natural other = (Natural) obj;
-		return this.value.equals(other.value);
 	}
 
 	public Natural plus(Number number) {
