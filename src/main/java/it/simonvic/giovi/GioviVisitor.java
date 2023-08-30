@@ -3,14 +3,15 @@ package it.simonvic.giovi;
 import java.util.*;
 
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
+import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.functions.GioviFunctionParameter;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.primitives.Struct.Named;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
@@ -246,21 +247,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToVarDeclaration(RedirectionToVarDeclarationContext ctx) {
 		// TODO improve this. Declare variable with value already set
-		visit(ctx.varDeclaration());
-		switch (ctx.bop.getText()) {
-			case ">" -> getCurrentScope()
-				.getVariableValue(ctx.varDeclaration().identifier().getText())
-				.redirection(visit(ctx.expression()));
-			default -> throw new RedirectionException(
-				"Unknown redirection operator: " + ctx.bop.getText());
+		String bop = ctx.bop.getText();
+		var variable = visit(ctx.varDeclaration());
+		switch (bop) {
+			case ">" -> variable.redirection(visit(ctx.expression()));
+			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
 		}
 		return null;
 	}
 
 	@Override
 	public GioviObject visitVarDeclaration(VarDeclarationContext ctx) {
-		GioviValue<?> variable = spawnType(ctx.type(),
-			Optional.ofNullable(ctx.defaultDefinition()));
+		var variable = spawnType(ctx.type(), Optional.ofNullable(ctx.defaultDefinition()));
 		getCurrentScope().declare(ctx.identifier().getText(), variable);
 		return null;
 	}
@@ -531,7 +529,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			case "Text" -> new GioviTypePrimitive(GioviText.class);
 			default -> {
 				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
-					yield new GioviTypeStruct(ctx.identifier().getText());
+					yield new GioviTypeStruct(typeIdentifier);
 				} else {
 					throw new TypeNotFound(ctx.getText());
 				}

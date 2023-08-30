@@ -93,8 +93,8 @@ public class TestGioviType {
 
 			@Test
 			void toNatural() {
-				GioviNatural expected = new GioviNatural(new Natural(69));
-				GioviNatural actual = new GioviNatural(new Natural(69))
+				var expected = new GioviNatural(new Natural(69));
+				var actual = new GioviNatural(new Natural(69))
 					.castTo(new GioviTypePrimitive(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
@@ -102,8 +102,8 @@ public class TestGioviType {
 
 			@Test
 			void toInt() {
-				GioviInt expected = new GioviInt(69);
-				GioviInt actual = new GioviNatural(new Natural(69))
+				var expected = new GioviInt(69);
+				var actual = new GioviNatural(new Natural(69))
 					.castTo(new GioviTypePrimitive(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
@@ -111,8 +111,8 @@ public class TestGioviType {
 
 			@Test
 			void toReal() {
-				GioviReal expected = new GioviReal(69d);
-				GioviReal actual = new GioviNatural(new Natural(69))
+				var expected = new GioviReal(69d);
+				var actual = new GioviNatural(new Natural(69))
 					.castTo(new GioviTypePrimitive(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
@@ -124,8 +124,8 @@ public class TestGioviType {
 
 			@Test
 			void toNatural() {
-				GioviNatural expected = new GioviNatural(new Natural(69));
-				GioviNatural actual = new GioviInt(69)
+				var expected = new GioviNatural(new Natural(69));
+				var actual = new GioviInt(69)
 					.castTo(new GioviTypePrimitive(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
@@ -133,8 +133,8 @@ public class TestGioviType {
 
 			@Test
 			void toInt() {
-				GioviInt expected = new GioviInt(69);
-				GioviInt actual = new GioviInt(69)
+				var expected = new GioviInt(69);
+				var actual = new GioviInt(69)
 					.castTo(new GioviTypePrimitive(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
@@ -142,8 +142,8 @@ public class TestGioviType {
 
 			@Test
 			void toReal() {
-				GioviReal expected = new GioviReal(69d);
-				GioviReal actual = new GioviInt(69)
+				var expected = new GioviReal(69d);
+				var actual = new GioviInt(69)
 					.castTo(new GioviTypePrimitive(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
@@ -155,8 +155,8 @@ public class TestGioviType {
 
 			@Test
 			void toNatural() {
-				GioviNatural expected = new GioviNatural(new Natural(69));
-				GioviNatural actual = new GioviReal(69d)
+				var expected = new GioviNatural(new Natural(69));
+				var actual = new GioviReal(69d)
 					.castTo(new GioviTypePrimitive(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
@@ -164,8 +164,8 @@ public class TestGioviType {
 
 			@Test
 			void toInt() {
-				GioviInt expected = new GioviInt(69);
-				GioviInt actual = new GioviReal(69d)
+				var expected = new GioviInt(69);
+				var actual = new GioviReal(69d)
 					.castTo(new GioviTypePrimitive(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
@@ -173,8 +173,8 @@ public class TestGioviType {
 
 			@Test
 			void toReal() {
-				GioviReal expected = new GioviReal(69d);
-				GioviReal actual = new GioviReal(69d)
+				var expected = new GioviReal(69d);
+				var actual = new GioviReal(69d)
 					.castTo(new GioviTypePrimitive(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
@@ -186,8 +186,8 @@ public class TestGioviType {
 
 			@Test
 			void toText() {
-				GioviText expected = new GioviText("hello world");
-				GioviText actual = new GioviText("hello world")
+				var expected = new GioviText("hello world");
+				var actual = new GioviText("hello world")
 					.castTo(new GioviTypePrimitive(GioviText.class))
 					.asGioviText();
 				assertEquals(expected, actual);
@@ -200,8 +200,8 @@ public class TestGioviType {
 
 			@Test
 			void toBool() {
-				GioviBool expected = new GioviBool(true);
-				GioviBool actual = new GioviBool(true)
+				var expected = new GioviBool(true);
+				var actual = new GioviBool(true)
 					.castTo(new GioviTypePrimitive(GioviBool.class))
 					.asGioviBool();
 				assertEquals(expected, actual);
