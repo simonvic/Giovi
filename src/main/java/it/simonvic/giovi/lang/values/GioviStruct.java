@@ -5,17 +5,36 @@ import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
 
-// TODO: create "anon struct" and "typed struct"
-public abstract sealed class GioviStruct extends GioviValue<Struct>
-	permits GioviStructNamed, GioviStructUnnamed {
+public final class GioviStruct extends GioviValue<Struct> {
+
+	protected String type;
+
+	public GioviStruct(Struct value) {
+		this("", value);
+	}
 
 	public GioviStruct(Struct value, Struct defaultValue) {
+		this("", value, defaultValue);
+	}
+
+	public GioviStruct(String type, Struct value) {
+		super(value, value.copy());
+		this.type = type;
+	}
+
+	public GioviStruct(String type, Struct value, Struct defaultValue) {
 		super(value, defaultValue);
+		this.type = type;
 	}
 
 	@Override
 	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviStruct.class);
+		return new GioviTypeStruct(this.type);
+	}
+
+	@Override
+	public GioviValue<Struct> copy() {
+		return new GioviStruct(type, value.copy(), defaultValue.copy());
 	}
 
 	@Override
@@ -69,5 +88,10 @@ public abstract sealed class GioviStruct extends GioviValue<Struct>
 	@Override
 	public GioviObject dot(GioviFunction function) {
 		return super.dot(function);
+	}
+
+	@Override
+	public String toString() {
+		return type + super.toString();
 	}
 }

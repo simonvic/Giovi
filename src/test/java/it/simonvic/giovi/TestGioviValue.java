@@ -16,15 +16,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
-import it.simonvic.giovi.lang.values.GioviBool;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviList;
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviStructNamed;
-import it.simonvic.giovi.lang.values.GioviNatural;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviText;
-import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.Structs;
 
 public class TestGioviValue {
@@ -37,7 +29,7 @@ public class TestGioviValue {
 			Arguments.of(GioviText.class, GioviValue.of("hello")),
 			Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 			Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-			Arguments.of(GioviStructNamed.class, GioviValue.of(Structs.of("a", "a")))
+			Arguments.of(GioviStruct.class, GioviValue.of(Structs.of("a", "a")))
 		);
 	}
 

@@ -11,7 +11,6 @@ import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.GioviStructs;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
@@ -25,7 +24,7 @@ public abstract sealed class GioviValue<T>
 		this.defaultValue = defaultValue;
 	}
 
-	public static <U> GioviValue<?> of(U value) {
+    public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
 			case null -> null;
 			case Natural v -> new GioviNatural(v);
@@ -35,7 +34,7 @@ public abstract sealed class GioviValue<T>
 			case String v -> new GioviText(v);
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
-			case Struct v -> GioviStructs.of(v);
+			case Struct v -> new GioviStruct(v);
 			default -> throw new GioviException("Unknown type " + value);
 		};
 	}
