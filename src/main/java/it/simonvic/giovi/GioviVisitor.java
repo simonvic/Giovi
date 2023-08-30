@@ -766,6 +766,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	private GioviStruct createTypedStruct(StructFieldsContext ctx, String structType) {
 		var struct = (Struct.Named) getDefinitionStruct(structType).unbox().copy();
+		if (ctx == null) {
+			return new GioviStruct(structType, struct);
+		}
 		if (ctx.namedStructField().size() != 0) {
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
 				String fieldName = namedStructFieldCtx.identifier().getText();
@@ -792,6 +795,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private GioviStruct createAnonStruct(StructFieldsContext ctx) {
+		if (ctx == null) {
+			return new GioviStruct(new Struct.Unnamed());
+		}
 		if (ctx.namedStructField().size() != 0) {
 			var struct = new Struct.Named();
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
