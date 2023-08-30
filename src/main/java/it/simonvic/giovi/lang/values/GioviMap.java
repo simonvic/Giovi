@@ -7,7 +7,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 
-public non-sealed class GioviMap
+public final class GioviMap
 	extends GioviCollection<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
 	private final GioviType<?> keyType;

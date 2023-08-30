@@ -8,7 +8,7 @@ import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Sequence;
 
-public non-sealed class GioviList extends GioviCollection<List<GioviValue<?>>> {
+public final class GioviList extends GioviCollection<List<GioviValue<?>>> {
 
 	private final GioviType<?> entryType;
 

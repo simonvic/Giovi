@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.primitives.Natural;
 
-public non-sealed class GioviInt extends GioviNumber<Integer> {
+public final class GioviInt extends GioviNumber<Integer> {
 
 	public GioviInt(Integer value, Integer defaultValue) {
 		super(value, defaultValue);

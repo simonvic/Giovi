@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviObject;
 
-public non-sealed class GioviText extends GioviValue<String> {
+public final class GioviText extends GioviValue<String> {
 
 	public GioviText(String value, String defaultValue) {
 		super(value, defaultValue);

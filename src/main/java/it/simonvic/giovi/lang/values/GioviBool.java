@@ -2,7 +2,7 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
 
-public non-sealed class GioviBool extends GioviValue<Boolean> {
+public final class GioviBool extends GioviValue<Boolean> {
 
 	public GioviBool(Boolean value, Boolean defaultValue) {
 		super(value, defaultValue);
