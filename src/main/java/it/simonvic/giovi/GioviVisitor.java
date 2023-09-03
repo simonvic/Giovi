@@ -244,12 +244,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 
 	@Override
+	public GioviObject visitRedirectionContent(RedirectionContentContext ctx) {
+		return ctx.expression() != null
+			? visit(ctx.expression())
+			: visit(ctx.primitiveContent());
+	}
+
+	@Override
 	public GioviObject visitRedirectionToVarDeclaration(RedirectionToVarDeclarationContext ctx) {
 		// TODO improve this. Declare variable with value already set
 		String bop = ctx.bop.getText();
 		var variable = visit(ctx.varDeclaration());
 		switch (bop) {
-			case ">" -> variable.redirection(visit(ctx.expression()));
+			case ">" -> variable.redirection(visit(ctx.redirectionContent()));
 			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
 		}
 		return null;
@@ -265,7 +272,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
 		OperationEvaluator.redirection(
-			visit(ctx.expression()),
+			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
 			visit(ctx.identifier()));
 		return null;
@@ -274,30 +281,74 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
 		OperationEvaluator.redirection(
-			visit(ctx.expression(0)),
+			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
-			visit(ctx.expression(1)));
+			visit(ctx.expression()));
 		return null;
 	}
 
 	@Override
-	public GioviObject visitRedirectionToCollectionAccess(
-		RedirectionToCollectionAccessContext ctx) {
-		OperationEvaluator.redirection(
-			visit(ctx.expression()),
-			ctx.redirectionOperator().getText(),
-			visit(ctx.collectionAccess()));
+	public GioviObject visitRedirectionToVarDeclarationRTL(
+		RedirectionToVarDeclarationRTLContext ctx) {
+		// TODO improve this. Declare variable with value already set
+		String bop = ctx.bop.getText();
+		var variable = visit(ctx.varDeclaration());
+		switch (bop) {
+			case "<" -> variable.redirection(visit(ctx.redirectionContent()));
+			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
+		}
 		return null;
 	}
 
+	@Override
+	public GioviObject visitRedirectionToIdentifierRTL(RedirectionToIdentifierRTLContext ctx) {
+		OperationEvaluator.redirection(
+			visit(ctx.redirectionContent()),
+			ctx.redirectionOperatorRTL().getText(),
+			visit(ctx.identifier()));
+		return null;
+	}
+
+	@Override
+	public GioviObject visitRedirectionToExpressionRTL(RedirectionToExpressionRTLContext ctx) {
+		OperationEvaluator.redirection(
+			visit(ctx.redirectionContent()),
+			ctx.redirectionOperatorRTL().getText(),
+			visit(ctx.expression()));
+		return null;
+	}
+
+	@Override
+	public GioviObject visitPrimitiveContent(PrimitiveContentContext ctx) {
+		String identifier = ctx.identifier().getText();
+		return switch (identifier) {
+			case "out" -> new GioviText(new Scanner(System.in).nextLine());
+			default -> throw new GioviException("Unkown primitive content " + identifier);
+		};
+	}
 
 	@Override
 	public GioviObject visitRedirectionToPrimitiveDestination(
 		RedirectionToPrimitiveDestinationContext ctx) {
-		GioviObject content = visit(ctx.expression());
+		GioviObject content = visit(ctx.redirectionContent());
 		switch (ctx.primitiveDestination().getText()) {
 			case "\\out" -> System.out.println(content);
 			case "\\err" -> System.err.println(content);
+			default -> throw new GioviException(
+				"Unkown primitive destination " + ctx.primitiveDestination().getText());
+		}
+		return null;
+	}
+
+	@Override
+	public GioviObject visitRedirectionToPrimitiveDestinationRTL(
+		RedirectionToPrimitiveDestinationRTLContext ctx) {
+		GioviObject content = visit(ctx.redirectionContent());
+		switch (ctx.primitiveDestination().getText()) {
+			case "\\out" -> System.out.println(content);
+			case "\\err" -> System.err.println(content);
+			default -> throw new GioviException(
+				"Unkown primitive destination " + ctx.primitiveDestination().getText());
 		}
 		return null;
 	}
