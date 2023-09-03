@@ -106,10 +106,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitForStatement(ForStatementContext ctx) {
 		var iterators = ctx.iterators().identifier();
-		var iterated = visit(ctx.sequenceOrExpression());
+		var iterated = visit(ctx.rangeOrExpression());
 		var statementOrBlock = ctx.statementOrBlock();
 		switch (iterated) {
-			case Sequence<?> sequence -> forLoop(iterators, sequence, statementOrBlock);
+			case Range<?> range -> forLoop(iterators, range, statementOrBlock);
 			case GioviList list -> forLoop(iterators, list, statementOrBlock);
 			case GioviMap map -> forLoop(iterators, map, statementOrBlock);
 			default -> throw new OperatorNotSupported("for");
@@ -119,12 +119,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	private void forLoop(
 		List<IdentifierContext> iterators,
-		Sequence<?> sequence,
+		Range<?> range,
 		StatementOrBlockContext statementOrBlock) {
 
 		// workaround
-		List<GioviValue<?>> entries = new ArrayList<>();
-		entries.addAll(sequence.expandAsGioviValues());
+		List<GioviValue<?>> entries = new ArrayList<>(range.expandAsGioviValues());
 		forLoop(iterators, new GioviList(entries), statementOrBlock);
 
 		// TODO what about continue and breaks?
@@ -132,7 +131,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		// 	throw new GioviException("Wrong number of iterators");
 		// }
 		// String iteratorName = iterators.get(0).getText();
-		// sequence.iterate(value -> {
+		// range.iterate(value -> {
 		// 	enterLoopScope();
 		// 	getCurrentScope().declare(iteratorName, value);
 		// 	visit(statementOrBlock);
@@ -411,15 +410,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitSequenceOrExpression(SequenceOrExpressionContext ctx) {
-		return ctx.sequence() != null
-			? visit(ctx.sequence())
+	public GioviObject visitRangeOrExpression(RangeOrExpressionContext ctx) {
+		return ctx.range() != null
+			? visit(ctx.range())
 			: visit(ctx.expression());
 	}
 
 	@Override
-	public GioviObject visitSequence(SequenceContext ctx) {
-		return Sequence.of(
+	public GioviObject visitRange(RangeContext ctx) {
+		return Range.of(
 			visit(ctx.start),
 			visit(ctx.end),
 			ctx.step == null ? null : visit(ctx.step));
@@ -431,7 +430,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (ListEntryContext entryCtx : ctx.listEntries().listEntry()) {
 			GioviObject entry = visit(entryCtx);
 			switch (entry) {
-				case Sequence<?> seq -> entries.addAll(seq.expandAsGioviValues());
+				case Range<?> range -> entries.addAll(range.expandAsGioviValues());
 				case GioviValue<?> v -> entries.add(v);
 				default -> throw new GioviException(
 					"Incompatible type for list creation: " + entry.getClass());

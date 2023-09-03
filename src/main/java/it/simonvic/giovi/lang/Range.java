@@ -8,11 +8,11 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
 
-public class Sequence<T> extends GioviObject {
+public class Range<T> extends GioviObject {
 
 	@FunctionalInterface
 	public interface IterationStrategy<V> {
-		void iterate(Sequence<V> sequence, Consumer<V> callback);
+		void iterate(Range<V> sequence, Consumer<V> callback);
 	}
 
 	private final T start;
@@ -21,7 +21,7 @@ public class Sequence<T> extends GioviObject {
 	private final IterationStrategy<T> iterationStrategy;
 	private List<T> expansion;
 
-	public Sequence(T start, T end, Number step, IterationStrategy<T> iterationStrategy) {
+	public Range(T start, T end, Number step, IterationStrategy<T> iterationStrategy) {
 		this.start = start;
 		this.end = end;
 		this.step = step;
@@ -57,14 +57,14 @@ public class Sequence<T> extends GioviObject {
 		return expand().stream().map(GioviValue::of).toList();
 	}
 
-	public static Sequence<?> of(GioviObject start, GioviObject end, GioviObject step) {
+	public static Range<?> of(GioviObject start, GioviObject end, GioviObject step) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
 		}
 
 		Number stepNumber = step == null ? null : step.asNumber();
 		if (start instanceof GioviReal || end instanceof GioviReal || step instanceof GioviReal) {
-			return Sequence.of(
+			return Range.of(
 				start.asNumber().doubleValue(),
 				end.asNumber().doubleValue(),
 				stepNumber == null ? 1d : stepNumber.doubleValue());
@@ -72,37 +72,37 @@ public class Sequence<T> extends GioviObject {
 
 		int stepInt = step == null ? 1 : stepNumber.intValue();
 		if (start instanceof GioviInt s && end instanceof GioviInt e) {
-			return Sequence.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.unbox(), e.unbox(), stepInt);
 		}
 
 		if (start instanceof GioviNatural s && end instanceof GioviNatural e) {
-			return Sequence.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.unbox(), e.unbox(), stepInt);
 		}
 
 		if (start instanceof GioviText s && end instanceof GioviText e) {
-			return Sequence.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.unbox(), e.unbox(), stepInt);
 		}
 
 		throw new GioviException("Invalid sequence: %s .. %s .. %s".formatted(start, end, step));
 	}
 
-	public static Sequence<Integer> of(int start, int end, int step) {
-		return new Sequence<Integer>(start, end, step, Sequence::iterateInt);
+	public static Range<Integer> of(int start, int end, int step) {
+		return new Range<Integer>(start, end, step, Range::iterateInt);
 	}
 
-	public static Sequence<Double> of(double start, double end, double step) {
-		return new Sequence<Double>(start, end, step, Sequence::iterateReal);
+	public static Range<Double> of(double start, double end, double step) {
+		return new Range<Double>(start, end, step, Range::iterateReal);
 	}
 
-	public static Sequence<Natural> of(Natural start, Natural end, int step) {
-		return new Sequence<Natural>(start, end, step, Sequence::iterateNatural);
+	public static Range<Natural> of(Natural start, Natural end, int step) {
+		return new Range<Natural>(start, end, step, Range::iterateNatural);
 	}
 
-	public static Sequence<String> of(String start, String end, int step) {
-		return new Sequence<String>(start, end, step, Sequence::iterateText);
+	public static Range<String> of(String start, String end, int step) {
+		return new Range<String>(start, end, step, Range::iterateText);
 	}
 
-	public static void iterateReal(Sequence<Double> sequence, Consumer<Double> callback) {
+	public static void iterateReal(Range<Double> sequence, Consumer<Double> callback) {
 		double start = sequence.getStart();
 		double end = sequence.getEnd();
 		double step = sequence.getStep().doubleValue();
@@ -117,7 +117,7 @@ public class Sequence<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateInt(Sequence<Integer> sequence, Consumer<Integer> callback) {
+	public static void iterateInt(Range<Integer> sequence, Consumer<Integer> callback) {
 		int start = sequence.getStart();
 		int end = sequence.getEnd();
 		int step = sequence.getStep().intValue();
@@ -132,7 +132,7 @@ public class Sequence<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateNatural(Sequence<Natural> sequence, Consumer<Natural> callback) {
+	public static void iterateNatural(Range<Natural> sequence, Consumer<Natural> callback) {
 		int start = sequence.getStart().intValue();
 		int end = sequence.getEnd().intValue();
 		int step = sequence.getStep().intValue();
@@ -147,7 +147,7 @@ public class Sequence<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateText(Sequence<String> sequence, Consumer<String> callback) {
+	public static void iterateText(Range<String> sequence, Consumer<String> callback) {
 		String start = sequence.getStart();
 		String end = sequence.getEnd();
 		int step = sequence.getStep().intValue();

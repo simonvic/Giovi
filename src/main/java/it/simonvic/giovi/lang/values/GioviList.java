@@ -6,7 +6,7 @@ import java.util.List;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Accessor;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.Sequence;
+import it.simonvic.giovi.lang.Range;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
@@ -186,7 +186,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
 					GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
-					indeces.addAll(Sequence.of(0, unbox().size() - 1, 1).expandAsGioviValues());
+					indeces.addAll(Range.of(0, unbox().size() - 1, 1).expandAsGioviValues());
 					yield indeces;
 				}
 				default -> throw new GioviException("Invalid accessor: " + accessor);
