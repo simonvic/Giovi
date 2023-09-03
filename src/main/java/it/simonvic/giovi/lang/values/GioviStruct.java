@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.lang.Accessor;
+import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
@@ -98,7 +98,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviObject dot(GioviObject right) {
 		return switch (right) {
-			case Accessor r -> value.getField(r.get());
+			case AccessKey r -> value.getField(r.get());
 			case GioviInt r -> value.getField(r.unbox()); // TODO: should it?
 			case GioviFunction r -> super.dot(r); // TODO: implement
 			default -> super.dot(right);

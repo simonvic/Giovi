@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.Accessor;
+import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
@@ -264,13 +264,13 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviObject access(GioviObject right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(gioviValue);
-			case Accessor accessor -> switch (accessor.get()) {
+			case AccessKey accessKey -> switch (accessKey.get()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> new GioviList(unbox().keySet().stream().toList());
 				case "*" -> new GioviList(unbox().values().stream().toList());
-				default -> throw new GioviException("Invalid accessor: " + accessor);
+				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
-			default -> throw new GioviException("Invalid accessor: " + right);
+			default -> throw new GioviException("Invalid access key: " + right);
 		};
 	}
 }

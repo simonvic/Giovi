@@ -331,6 +331,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitAccessExpression(AccessExpressionContext ctx) {
+		return visit(ctx.expression()).access(visit(ctx.accessKey()));
+	}
+
+	@Override
 	public GioviObject visitPowerExpression(PowerExpressionContext ctx) {
 		return visit(ctx.expression(0)).power(visit(ctx.expression(1)));
 	}
@@ -373,36 +378,31 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitCollectionAccess(CollectionAccessContext ctx) {
+	public GioviObject visitAccess(AccessContext ctx) {
 		return getCurrentScope()
 			.getVariableValue(ctx.identifier().getText())
-			.access(visit(ctx.collectionAccessor()));
+			.access(visit(ctx.accessKey()));
 	}
 
 	@Override
-	public GioviObject visitSpecialAccessor(SpecialAccessorContext ctx) {
-		return new Accessor(ctx.getText());
+	public GioviObject visitSpecialAccessKey(SpecialAccessKeyContext ctx) {
+		return new AccessKey(ctx.key.getText());
 	}
 
 	@Override
-	public GioviObject visitCollectionLiteralAccessor(CollectionLiteralAccessorContext ctx) {
+	public GioviObject visitLiteralAccessKey(LiteralAccessKeyContext ctx) {
 		return visit(ctx.literal());
 	}
 
 	@Override
-	public GioviObject visitCollectionParenthesizedAccessor(
-		CollectionParenthesizedAccessorContext ctx) {
-
-		// TODO improve this
-		if (ctx.specialAccessor() != null) {
-			return visit(ctx.specialAccessor());
-		}
-		if (ctx.literal() != null) {
-			return visit(ctx.literal());
-		}
+	public GioviObject visitParenthesizedAccessKey(ParenthesizedAccessKeyContext ctx) {
 		return visit(ctx.expression());
 	}
 
+	@Override
+	public GioviObject visitRangeAccessKey(RangeAccessKeyContext ctx) {
+		return visit(ctx.range());
+	}
 
 	@Override
 	public GioviObject visitIdentifier(IdentifierContext ctx) {
@@ -817,7 +817,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitDotExpression(DotExpressionContext ctx) {
 		var lhs = visit(ctx.expression());
 		return ctx.identifier() != null
-			? lhs.dot(new Accessor(ctx.identifier().getText()))
+			? lhs.dot(new AccessKey(ctx.identifier().getText()))
 			: lhs.dot(
 				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}

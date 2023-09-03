@@ -1,9 +1,9 @@
 package it.simonvic.giovi.lang;
 
-public class Accessor extends GioviObject {
+public class AccessKey extends GioviObject {
 	private final String s;
 
-	public Accessor(String s) {
+	public AccessKey(String s) {
 		this.s = s;
 	}
 

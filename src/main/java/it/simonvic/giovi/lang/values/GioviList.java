@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.Accessor;
+import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
 
@@ -180,18 +180,18 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt index -> value.get(index.unbox());
-				default -> throw new GioviException("Invalid accessor: " + right);
+				default -> throw new GioviException("Invalid access key: " + right);
 			};
-			case Accessor accessor -> switch (accessor.get()) {
+			case AccessKey accessKey -> switch (accessKey.get()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
 					GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
 					indeces.addAll(Range.of(0, unbox().size() - 1, 1).expandAsGioviValues());
 					yield indeces;
 				}
-				default -> throw new GioviException("Invalid accessor: " + accessor);
+				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
-			default -> throw new GioviException("Invalid accessor: " + right);
+			default -> throw new GioviException("Invalid access key: " + right);
 		};
 	}
 
