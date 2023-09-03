@@ -1,25 +1,12 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviObject;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static it.simonvic.giovi.Giovi.runExpression;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class TestBoolExpressions {
-
-
-	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
@@ -28,7 +15,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testLiterals(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -40,7 +27,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testAndOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -52,7 +39,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testOrOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -64,7 +51,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testNotOperator(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 
@@ -77,7 +64,7 @@ public class TestBoolExpressions {
 		"""
 	)
 	public void testParenthesizedExpression(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 }

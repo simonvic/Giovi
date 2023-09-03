@@ -25,17 +25,16 @@ public class Giovi {
 				interactiveMode();
 				return;
 			}
-			case "-d", "--debug" ->
-				charStream = CharStreams.fromStream(Giovi.class.getResourceAsStream("/sample.giovi"));
+			case "-d", "--debug" -> charStream = CharStreams
+				.fromStream(Giovi.class.getResourceAsStream("/sample.giovi"));
 			case "-" -> charStream = CharStreams.fromStream(System.in);
 			case "--" -> charStream = CharStreams.fromString(args[1]);
 			default -> charStream = CharStreams.fromStream(new FileInputStream(args[0]));
 		}
-		GioviLexer lexer = new GioviLexer(charStream);
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		GioviParser parser = new GioviParser(tokens);
-		ParseTree tree = parser.begin();
-		GioviVisitor visitor = new GioviVisitor();
+		var lexer = new GioviLexer(charStream);
+		var parser = new GioviParser(new CommonTokenStream(lexer));
+		var tree = parser.begin();
+		var visitor = new GioviVisitor();
 		try {
 			visitor.visit(tree);
 		} catch (GioviException ex) {
@@ -46,7 +45,7 @@ public class Giovi {
 	private static void interactiveMode() throws IOException {
 		var reader = new BufferedReader(new InputStreamReader(System.in));
 		String line;
-		GioviVisitor visitor = new GioviVisitor();
+		var visitor = new GioviVisitor();
 		System.out.print("┃ ");
 		while ((line = reader.readLine()) != null) {
 			GioviLexer lexer = new GioviLexer(CharStreams.fromString(line));
@@ -61,7 +60,6 @@ public class Giovi {
 			System.out.print("┃ ");
 		}
 	}
-
 
 
 	public static GioviParser parserOf(String code) {
