@@ -31,7 +31,7 @@ public class TestText {
 		@Test
 		void singleLineAndEmpty_shouldBeEmptyString() {
 			String actual = runExpression("""
-				"{"}
+				"{}"
 				""").asGioviText().unbox();
 			assertEquals("", actual);
 		}
@@ -39,7 +39,7 @@ public class TestText {
 		@Test
 		void singleLineNotEmpty_shouldBeOneLineString() {
 			String actual = runExpression("""
-				"{hello world"}
+				"{hello world}"
 				""").asGioviText().unbox();
 			assertEquals("hello world", actual);
 		}
@@ -49,7 +49,7 @@ public class TestText {
 			String actual = runExpression("""
 				"{
 				hello world
-				"}
+				}"
 				""").asGioviText().unbox();
 			assertEquals("hello world\n", actual);
 		}
@@ -60,7 +60,7 @@ public class TestText {
 				"{
 				hello
 				world
-				"}
+				}"
 				""").asGioviText().unbox();
 			assertEquals("hello\nworld\n", actual);
 		}
@@ -70,7 +70,7 @@ public class TestText {
 			String actual = runExpression("""
 				"{hello
 				world
-				"}
+				}"
 				""").asGioviText().unbox();
 			assertEquals("hello\nworld\n", actual);
 		}
@@ -80,7 +80,7 @@ public class TestText {
 			String actual = runExpression("""
 				"{
 				hello
-				world"}
+				world}"
 				""").asGioviText().unbox();
 			assertEquals("hello\nworld", actual);
 		}
@@ -92,7 +92,7 @@ public class TestText {
 				"{
 							
 
-				"}
+				}"
 				""").asGioviText().unbox();
 			assertEquals("\n\n", actual);
 		}
@@ -106,7 +106,7 @@ public class TestText {
 				String actual = runExpression("""
 					"{	hello
 					world
-					"}
+					}"
 					""").asGioviText().unbox();
 				assertEquals("\thello\nworld\n", actual);
 			}
@@ -117,7 +117,7 @@ public class TestText {
 					"{
 						hello
 						world
-						"}
+						}"
 					""").asGioviText().unbox();
 				assertEquals("hello\nworld\n", actual);
 			}
@@ -129,7 +129,7 @@ public class TestText {
 								hello
 							world
 									!!!
-							"}
+							}"
 					""").asGioviText().unbox();
 				assertEquals("\thello\nworld\n\t\t!!!\n", actual);
 			}
@@ -141,7 +141,7 @@ public class TestText {
 								hello
 								world
 								!!!
-							"}
+							}"
 					""").asGioviText().unbox();
 				assertEquals("\thello\n\tworld\n\t!!!\n", actual);
 			}
@@ -153,7 +153,7 @@ public class TestText {
 					        hello
 					    world
 					            !!!
-					    "}
+					    }"
 					""").asGioviText().unbox();
 				assertEquals("    hello\nworld\n        !!!\n", actual);
 			}
@@ -165,7 +165,7 @@ public class TestText {
 					        hello
 					        world
 					        !!!
-					    "}
+					    }"
 					""").asGioviText().unbox();
 				assertEquals("    hello\n    world\n    !!!\n", actual);
 			}
@@ -177,7 +177,7 @@ public class TestText {
 							    hello
 							    world
 							    !!!
-							    "}
+							    }"
 					""").asGioviText().unbox();
 				assertEquals("    hello\n    world\n    !!!\n    ", actual);
 			}
@@ -189,7 +189,7 @@ public class TestText {
 								hello
 							  world
 							    !!!
-							  "}
+							  }"
 					""").asGioviText().unbox();
 				assertEquals("\thello\n  world\n    !!!\n  ", actual);
 			}
@@ -201,7 +201,7 @@ public class TestText {
 					    	hello
 					    	world
 					    	!!!
-					    	"}
+					    	}"
 					""").asGioviText().unbox();
 				assertEquals("\thello\n\tworld\n\t!!!\n\t", actual);
 			}
