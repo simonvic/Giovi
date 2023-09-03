@@ -290,7 +290,7 @@ public class TestRedirection {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
 				Color (r Int; g Int; b Int;)
 				x Color
-				(255 69 42) > x
+				.(255 69 42) > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -301,7 +301,7 @@ public class TestRedirection {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
 				Color (r Int; g Int; b Int;)
 				x Color
-				(b:42 r:255 g:69) > x
+				.(b:42 r:255 g:69) > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -312,7 +312,7 @@ public class TestRedirection {
 			assertThrows(IncompatibleStructs.class, () -> visit("""
 				Color (r Int; g Int; b Int;)
 				x Color
-				(red:255 b:42 g:69) > x
+				.(red:255 b:42 g:69) > x
 				"""));
 		}
 

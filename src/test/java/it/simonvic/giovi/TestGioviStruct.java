@@ -217,7 +217,7 @@ public class TestGioviStruct {
 				GioviStructs.of(List.of(
 					69, true, "foo")),
 				runExpression("""
-					(69 true "foo")
+					.(69 true "foo")
 					"""));
 		}
 
@@ -229,7 +229,7 @@ public class TestGioviStruct {
 					"bar", true,
 					"foobar", "hello"),
 				runExpression("""
-					(
+					.(
 						foo: 69
 						bar: true
 						foobar: "hello"
