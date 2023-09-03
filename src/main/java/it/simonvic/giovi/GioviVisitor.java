@@ -3,8 +3,8 @@ package it.simonvic.giovi;
 import java.util.*;
 
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
+import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
@@ -65,7 +65,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		for (StatementContext statementContext : ctx.statement()) {
 			visit(statementContext);
 			Scope s = getCurrentScope();
-			if (s.shouldBreak() || s.shouldReturn() || s.shouldContinue()) {
+			if (s.shouldBreak() || s.shouldReturn() || s.shouldSkip()) {
 				break;
 			}
 		}
@@ -98,8 +98,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitContinueStatement(ContinueStatementContext ctx) {
-		getCurrentScope().doContinue();
+	public GioviObject visitSkipStatement(SkipStatementContext ctx) {
+		getCurrentScope().doSkip();
 		return null;
 	}
 
@@ -126,7 +126,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		List<GioviValue<?>> entries = new ArrayList<>(range.expandAsGioviValues());
 		forLoop(iterators, new GioviList(entries), statementOrBlock);
 
-		// TODO what about continue and breaks?
+		// TODO what about skip and breaks?
 		// if (iterators.size() != 1) {
 		// 	throw new GioviException("Wrong number of iterators");
 		// }
@@ -167,7 +167,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 				break;
 			}
 
-			if (getCurrentScope().shouldContinue()) {
+			if (getCurrentScope().shouldSkip()) {
 				exitScope();
 				continue;
 			}
@@ -209,7 +209,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 				break;
 			}
 
-			if (getCurrentScope().shouldContinue()) {
+			if (getCurrentScope().shouldSkip()) {
 				exitScope();
 				continue;
 			}
@@ -232,7 +232,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 				break;
 			}
 
-			if (getCurrentScope().shouldContinue()) {
+			if (getCurrentScope().shouldSkip()) {
 				exitScope();
 				continue;
 			}

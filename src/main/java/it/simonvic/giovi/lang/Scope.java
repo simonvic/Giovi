@@ -29,22 +29,22 @@ public class Scope {
 	}
 
 
-	public boolean shouldContinue() {
+	public boolean shouldSkip() {
 		if (this instanceof LoopScope s) {
-			return s.shouldContinue();
+			return s.shouldSkip();
 		} else if (parentScope != null) {
-			return parentScope.shouldContinue();
+			return parentScope.shouldSkip();
 		}
 		return false;
 	}
 
-	public void doContinue() {
+	public void doSkip() {
 		if (this instanceof LoopScope s) {
-			s.doContinue();
+			s.doSkip();
 		} else if (parentScope != null) {
-			parentScope.doContinue();
+			parentScope.doSkip();
 		} else {
-			throw new GioviException("Continue statement in non-loop scope");
+			throw new GioviException("Skip statement in non-loop scope");
 		}
 	}
 

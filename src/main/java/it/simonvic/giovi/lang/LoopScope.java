@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang;
 public class LoopScope extends Scope {
 
 	private boolean shouldBreak = false;
-	private boolean shouldContinue = false;
+	private boolean shouldSkip = false;
 
 	public LoopScope(Scope currentScope) {
 		super(currentScope);
@@ -15,13 +15,13 @@ public class LoopScope extends Scope {
 	}
 
 	@Override
-	public void doContinue() {
-		shouldContinue = true;
+	public void doSkip() {
+		shouldSkip = true;
 	}
 
 	@Override
-	public boolean shouldContinue() {
-		return shouldContinue;
+	public boolean shouldSkip() {
+		return shouldSkip;
 	}
 
 	@Override
