@@ -20,7 +20,7 @@ public class TestDefaults {
 
 		@Test
 		void testNatural() {
-			assertEquals(new Natural(69), visit("x Natural _ 69")
+			assertEquals(new Natural(69), visit("x Natural default 69")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue());
@@ -28,7 +28,7 @@ public class TestDefaults {
 
 		@Test
 		void testInt() {
-			assertEquals(69, visit("x Int _ 69")
+			assertEquals(69, visit("x Int default 69")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue());
@@ -36,7 +36,7 @@ public class TestDefaults {
 
 		@Test
 		void testReal() {
-			assertEquals(6.9, visit("x Real _ 6.9")
+			assertEquals(6.9, visit("x Real default 6.9")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue());
@@ -44,7 +44,7 @@ public class TestDefaults {
 
 		@Test
 		void testBool() {
-			assertEquals(true, visit("x Bool _ true")
+			assertEquals(true, visit("x Bool default true")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue());
@@ -52,7 +52,7 @@ public class TestDefaults {
 
 		@Test
 		void testText() {
-			assertEquals("hello", visit("x Text _ 'hello'")
+			assertEquals("hello", visit("x Text default 'hello'")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue());
@@ -64,7 +64,7 @@ public class TestDefaults {
 				GioviValue.of("a"),
 				GioviValue.of("b"),
 				GioviValue.of("c"));
-			var actual = visit("x [Text] _ ['a' 'b' 'c']")
+			var actual = visit("x [Text] default ['a' 'b' 'c']")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue();
@@ -77,7 +77,7 @@ public class TestDefaults {
 			expected.put(new GioviInt(0), new GioviText("a"));
 			expected.put(new GioviInt(1), new GioviText("b"));
 			expected.put(new GioviInt(2), new GioviText("c"));
-			var actual = visit("x [Int:Text] _ [0:'a' 1:'b' 2:'c']")
+			var actual = visit("x [Int:Text] default [0:'a' 1:'b' 2:'c']")
 				.getCurrentScope()
 				.getVariableValue("x")
 				.getDefaultValue();
@@ -91,9 +91,9 @@ public class TestDefaults {
 		@Test
 		void testNatural() {
 			assertEquals(new GioviNatural(new Natural(69)), visit("""
-				x Natural _ 69
+				x Natural default 69
 				420 > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -102,9 +102,9 @@ public class TestDefaults {
 		@Test
 		void testInt() {
 			assertEquals(new GioviInt(69), visit("""
-				x Int _ 69
+				x Int default 69
 				420 > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -113,9 +113,9 @@ public class TestDefaults {
 		@Test
 		void testReal() {
 			assertEquals(new GioviReal(6.9), visit("""
-				x Real _ 6.9
+				x Real default 6.9
 				4.20 > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -124,9 +124,9 @@ public class TestDefaults {
 		@Test
 		void testBool() {
 			assertEquals(new GioviBool(true), visit("""
-				x Bool _ true
+				x Bool default true
 				false > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -135,9 +135,9 @@ public class TestDefaults {
 		@Test
 		void testText() {
 			assertEquals(new GioviText("foo"), visit("""
-				x Text _ "foo"
+				x Text default "foo"
 				"bar" > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -147,9 +147,9 @@ public class TestDefaults {
 		void testList() {
 			var expected = GioviLists.of("a", "b", "c");
 			var actual = visit("""
-				x [Text] _ ['a' 'b' 'c']
+				x [Text] default ['a' 'b' 'c']
 				['z'] > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x");
@@ -165,9 +165,9 @@ public class TestDefaults {
 			expected.put(new GioviInt(1), new GioviText("b"));
 			expected.put(new GioviInt(2), new GioviText("c"));
 			var actual = visit("""
-				x [Int:Text] _ [0:'a' 1:'b' 2:'c']
+				x [Int:Text] default [0:'a' 1:'b' 2:'c']
 				[69:'z'] > x
-				_ > x
+				default > x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x");

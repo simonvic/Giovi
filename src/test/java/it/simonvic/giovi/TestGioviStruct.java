@@ -91,9 +91,9 @@ public class TestGioviStruct {
 		void testFieldsDefaultOverride() {
 			var visitor = visit("""
 				Foo (
-					foo Int _ 69
-					bar Bool _ true
-					foobar Text _ "foobar"
+					foo Int default 69
+					bar Bool default true
+					foobar Text default "foobar"
 				)
 				""");
 			assertEquals(
@@ -169,10 +169,10 @@ public class TestGioviStruct {
 					b Int
 				)
 				RGB : SomeColor (
-					r Int _ 255
-					g Int _ 255
-					b Int _ 255
-					a Int _ 255
+					r Int default 255
+					g Int default 255
+					b Int default 255
+					a Int default 255
 				)
 				""");
 			assertEquals(
@@ -193,10 +193,10 @@ public class TestGioviStruct {
 					b Int
 				)
 				RGB : SomeColor (
-					r Int _ 255
-					g Int _ 255
-					b Int _ 255
-					a Int _ 255
+					r Int default 255
+					g Int default 255
+					b Int default 255
+					a Int default 255
 				)
 				""");
 			assertEquals(

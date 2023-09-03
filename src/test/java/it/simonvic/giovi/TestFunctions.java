@@ -83,7 +83,7 @@ public class TestFunctions {
 	@Test
 	void nonDefaultParameterAfterDefaultParameter_shouldThrowException() {
 		GioviParser parser = setupParser("""
-			fun(x Int _ 69, y Int) {
+			fun(x Int default 69, y Int) {
 			}
 			""");
 		assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
@@ -92,7 +92,7 @@ public class TestFunctions {
 	@Test
 	void correctDefaultParameters_shouldNotThrowException() {
 		GioviParser parser = setupParser("""
-			fun(x Int, y Int _ 69, z Int _ 420) {
+			fun(x Int, y Int default 69, z Int default 420) {
 			}
 			""");
 		assertDoesNotThrow(() -> new GioviVisitor().visit(parser.begin()));
