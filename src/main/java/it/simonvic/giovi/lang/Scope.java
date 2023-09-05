@@ -166,6 +166,49 @@ public class Scope {
 
 
 	////////////////////////////////////////////////
+	// Constants
+
+	private final Map<String, GioviValue<?>> constants = new HashMap<>();
+
+	public void deleteConstants(String identifier) {
+		constants.remove(identifier);
+	}
+
+	public void declareConstant(String identifier, GioviValue<?> value) {
+		if (isDeclaredConstant(identifier)) throw new VariableAlreadyDeclaredException(identifier);
+		constants.put(identifier, value);
+	}
+
+	public GioviValue<?> getConstantValue(String identifier) {
+		return Scope.getConstantValue(this, identifier);
+	}
+
+	public boolean isDeclaredConstant(String identifier) {
+		return Scope.isDeclaredConstant(this, identifier);
+	}
+
+	private GioviValue<?> getLocalConstantValue(String identifier) {
+		return constants.get(identifier);
+	}
+
+	private boolean isDeclaredLocalConstant(String identifier) {
+		return constants.containsKey(identifier);
+	}
+
+	private static boolean isDeclaredConstant(Scope scope, String identifier) {
+		if (scope == null) return false;
+		return scope.isDeclaredLocalConstant(identifier)
+			|| Scope.isDeclaredConstant(scope.parentScope, identifier);
+	}
+
+	private static GioviValue<?> getConstantValue(Scope scope, String identifier) {
+		if (scope == null) throw new VariableNotDeclaredException(identifier);
+		return scope.isDeclaredLocalConstant(identifier)
+			? scope.getLocalConstantValue(identifier)
+			: Scope.getConstantValue(scope.parentScope, identifier);
+	}
+
+	////////////////////////////////////////////////
 	// Functions
 
 	private final Map<String, GioviFunction> functionDefinitions = new HashMap<>();
