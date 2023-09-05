@@ -77,7 +77,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public GioviObject redirection(GioviObject content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
-			case GioviStruct v -> box(v);
+			case GioviStruct v -> box(v.copy());
 			default -> super.redirection(content);
 		}
 		return this;
