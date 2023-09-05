@@ -525,6 +525,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			.trimDelimiters(1)
 			.injectVariables(getCurrentScope())
 			.injectExpressions(this)
+			.unescapeUnicode()
 			.collect();
 	}
 
@@ -535,6 +536,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			.injectVariables(getCurrentScope())
 			.injectExpressions(this)
 			.trimIncidentalWhitespaces()
+			.unescapeUnicode()
 			.collect();
 	}
 
@@ -542,6 +544,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	public GioviObject visitExactTextLiteral(ExactTextLiteralContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
+			.unescapeUnicode()
 			.collect();
 	}
 
@@ -550,6 +553,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
 			.trimIncidentalWhitespaces()
+			.unescapeUnicode()
 			.collect();
 	}
 

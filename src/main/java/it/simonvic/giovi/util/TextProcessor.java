@@ -50,6 +50,11 @@ public class TextProcessor {
 		return this;
 	}
 
+	public TextProcessor unescapeUnicode() {
+		this.text = unescapeUnicode(this.text);
+		return this;
+	}
+
 
 	public static String trimDelimiters(String text, int delimitersCount) {
 		return text.substring(delimitersCount, text.length() - delimitersCount);
@@ -142,4 +147,22 @@ public class TextProcessor {
 		return lines[1].charAt(0) == ' ' ? ' ' : '\t';
 	}
 
+	public static String unescapeUnicode(String text) {
+		StringBuilder sb = new StringBuilder();
+		int oldIndex = 0;
+		for (int i = 0; i + 2 < text.length(); i++) {
+			if (text.substring(i, i + 2).equals("\\u")) {
+				sb.append(text.substring(oldIndex, i));
+				int codePoint = Integer.parseInt(text.substring(i + 2, i + 6), 16);
+				sb.append(Character.toChars(codePoint));
+
+				i += 5;
+				oldIndex = i + 1;
+			}
+		}
+
+		sb.append(text.substring(oldIndex, text.length()));
+
+		return sb.toString();
+	}
 }
