@@ -9,7 +9,6 @@ import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.functions.GioviFunctionParameter;
-import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.primitives.Struct.Named;
 import it.simonvic.giovi.lang.values.*;
@@ -270,12 +269,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitConstantDeclaration(ConstantDeclarationContext ctx) {
+		var constant = visit(ctx.expression()).asGioviValue();
+		getCurrentScope().declareConstant(ctx.constantIdentifier().getText(), constant);
+		return constant;
+	}
+
+	@Override
 	public GioviObject visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
 		OperationEvaluator.redirection(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
 			visit(ctx.identifier()));
 		return null;
+	}
+
+	@Override
+	public GioviObject visitRedirectionToConstantIdentifier(
+		RedirectionToConstantIdentifierContext ctx) {
+		throw new GioviException("Can't redirect to a constant");
 	}
 
 	@Override
@@ -431,7 +443,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitAccess(AccessContext ctx) {
 		return getCurrentScope()
-			.getVariableValue(ctx.identifier().getText())
+			.getVariableValue(ctx.anyIdentifier().getText())
 			.access(visit(ctx.accessKey()));
 	}
 
@@ -458,6 +470,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitIdentifier(IdentifierContext ctx) {
 		return getCurrentScope().getVariableValue(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitConstantIdentifier(ConstantIdentifierContext ctx) {
+		return getCurrentScope().getConstantValue(ctx.getText());
 	}
 
 	@Override
@@ -573,7 +590,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			return visit(ctx.collectionType());
 		}
 
-		String typeIdentifier = ctx.identifier().getText();
+		String typeIdentifier = ctx.typeIdentifier().getText();
 		return switch (typeIdentifier) {
 			case "Natural" -> new GioviTypePrimitive(GioviNatural.class);
 			case "Int" -> new GioviTypePrimitive(GioviInt.class);
@@ -648,7 +665,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			case GioviTypeMap t -> new GioviMap(t.getKeyType(), t.getElementType());
 			case GioviTypePrimitive t -> t.spawn();
 			case GioviTypeStruct t -> getCurrentScope()
-				.getDefinitionStruct(typeCtx.identifier().getText());
+				.getDefinitionStruct(typeCtx.typeIdentifier().getText());
 		};
 
 		if (defaultDefinitionCtx.isPresent()) {
@@ -871,8 +888,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitDotExpression(DotExpressionContext ctx) {
 		var lhs = visit(ctx.expression());
-		return ctx.identifier() != null
-			? lhs.dot(new AccessKey(ctx.identifier().getText()))
+		return ctx.anyIdentifier() != null
+			? lhs.dot(new AccessKey(ctx.anyIdentifier().getText()))
 			: lhs.dot(
 				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}
