@@ -69,7 +69,7 @@ public abstract sealed class Struct {
 
 		@Override
 		public GioviValue<?> getField(int index) {
-			// TODO lol
+			// TODO: lol
 			return fields.get(fields.keySet().toArray()[index]);
 		}
 

@@ -23,6 +23,8 @@ public sealed class GioviTypePrimitive
 		return value.getSimpleName().replaceAll("Giovi", "giovi.");
 	}
 
+	// TODO: equals to avoid casting in composite types
+
 	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypePrimitive(GioviTypePrimitive.class);

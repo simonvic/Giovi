@@ -6,6 +6,10 @@ import it.simonvic.giovi.exceptions.GioviException;
 
 public final class Natural extends Number {
 
+	public static Natural valueOf(String s) throws NumberFormatException {
+		return new Natural(Integer.valueOf(s));
+	}
+
 	private final Integer value;
 
 	public Natural(Integer value) {
@@ -73,7 +77,4 @@ public final class Natural extends Number {
 		return value.toString();
 	}
 
-	public static Natural valueOf(String s) throws NumberFormatException {
-		return new Natural(Integer.valueOf(s));
-	}
 }

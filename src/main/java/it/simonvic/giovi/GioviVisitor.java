@@ -126,7 +126,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		List<GioviValue<?>> entries = new ArrayList<>(range.expandAsGioviValues());
 		forLoop(iterators, new GioviList(entries), statementOrBlock);
 
-		// TODO what about skip and breaks?
+		// TODO: what about skip and breaks?
 		// if (iterators.size() != 1) {
 		// 	throw new GioviException("Wrong number of iterators");
 		// }
@@ -142,23 +142,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	private void forLoop(
 		List<IdentifierContext> iterators,
-		GioviList list,
+		GioviList gioviList,
 		StatementOrBlockContext statementOrBlock) {
 
 		if (iterators.size() != 1)
 			throw new GioviException("Wrong number of iterators");
-		if (list.unbox().size() == 0)
+		if (gioviList.unbox().size() == 0)
 			return;
 
-		for (GioviValue<?> value : list.unbox()) {
+		for (var gioviValue : gioviList.unbox()) {
 
 			enterLoopScope();
 
-			// TODO update when structs are implemented
+			// TODO: update when structs are implemented
 			String iteratorName = iterators.get(0).getText();
-			getCurrentScope().declare(iteratorName, value); // TODO iterator should be by value?
-			GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
-			iterator.box(value);
+			getCurrentScope().declare(iteratorName, gioviValue); // TODO: iterator should be by value?
+			// GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
+			// iterator.box(gioviValue);
 
 			visit(statementOrBlock);
 
@@ -192,11 +192,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 			enterLoopScope();
 
-			// TODO update when structs are implemented
+			// TODO: update when structs are implemented
 			String keyIteratorName = iterators.get(0).getText();
 			String elementIteratorName = iterators.get(1).getText();
 
-			// TODO iterators should be by value?
+			// TODO: iterators should be by value?
 			getCurrentScope().declare(keyIteratorName, entry.getKey());
 			getCurrentScope().getVariableValue(keyIteratorName).box(entry.getKey());
 			getCurrentScope().declare(elementIteratorName, entry.getValue());
@@ -252,7 +252,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitRedirectionToVarDeclaration(RedirectionToVarDeclarationContext ctx) {
-		// TODO improve this. Declare variable with value already set
+		// TODO: improve this. Declare variable with value already set
 		String bop = ctx.bop.getText();
 		var variable = visit(ctx.varDeclaration());
 		switch (bop) {
@@ -290,7 +290,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		// TODO improve this. Declare variable with value already set
+		// TODO: improve this. Declare variable with value already set
 		String bop = ctx.bop.getText();
 		var variable = visit(ctx.varDeclaration());
 		switch (bop) {
@@ -501,22 +501,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitIntegerLiteral(IntegerLiteralContext ctx) {
-		return new GioviInt(Integer.parseInt(ctx.getText()));
+		return GioviInt.valueOf(ctx.getText());
 	}
 
 	@Override
 	public GioviObject visitNaturalLiteral(NaturalLiteralContext ctx) {
-		return new GioviNatural(new Natural(Integer.parseInt(ctx.getText())));
+		return GioviNatural.valueOf(ctx.getText());
 	}
 
 	@Override
 	public GioviObject visitRealLiteral(RealLiteralContext ctx) {
-		return new GioviReal(Double.parseDouble(ctx.getText()));
+		return GioviReal.valueOf(ctx.getText());
 	}
 
 	@Override
 	public GioviObject visitBoolLiteral(BoolLiteralContext ctx) {
-		return new GioviBool(Boolean.parseBoolean(ctx.getText()));
+		return GioviBool.valueOf(ctx.getText());
 	}
 
 	@Override

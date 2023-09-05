@@ -52,7 +52,7 @@ public class Range<T> extends GioviObject {
 		return expansion;
 	}
 
-	// TODO move in util class?
+	// TODO: move in util class?
 	public List<? extends GioviValue<?>> expandAsGioviValues() {
 		return expand().stream().map(GioviValue::of).toList();
 	}

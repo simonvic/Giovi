@@ -29,7 +29,7 @@ public final class GioviTypeStruct extends GioviType<String> {
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> {
-				yield false; //TODO stub
+				yield false; // TODO: stub
 			}
 			case GioviTypeList t -> false;
 			case GioviTypeMap t -> false;

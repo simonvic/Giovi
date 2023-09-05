@@ -59,8 +59,9 @@ public class TextProcessor {
 		return Pattern
 			.compile("\\$[a-zA-Z]\\w*")
 			.matcher(text)
-			.replaceAll(matchResult
-				-> scope.getVariableValue(matchResult.group().substring(1)).toString());
+			.replaceAll(matchResult -> scope
+				.getVariableValue(matchResult.group().substring(1))
+				.toString());
 	}
 
 	public static String injectExpressions(String text, GioviVisitor visitor) {
@@ -100,12 +101,6 @@ public class TextProcessor {
 				return linesList.get(0);
 		}
 
-		// if last line (i.e. line with delimiter) is empty, skip it
-//		int lastLineIndex = linesList.size() - 1;
-//		if (linesList.get(lastLineIndex).isEmpty()) {
-//			linesList.remove(lastLineIndex);
-//		}
-
 		// if first line (i.e. line with delimiter) is empty, skip it
 		if (linesList.get(0).isEmpty()) {
 			linesList.remove(0);
@@ -113,7 +108,8 @@ public class TextProcessor {
 
 		// build text and remove all incidental indentation characters
 		linesList.forEach(line -> {
-			s.append(line.replaceFirst(indentationLeader + "{" + minIncidentalWhiteSpace + "}", ""));
+			s.append(
+				line.replaceFirst(indentationLeader + "{" + minIncidentalWhiteSpace + "}", ""));
 			s.append("\n");
 		});
 
