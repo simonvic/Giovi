@@ -2,6 +2,8 @@ package it.simonvic.giovi.lang.values;
 
 public final class GioviTypeStruct extends GioviType<String> {
 
+	// TODO: add definition struct here, so we can use it for casting and other shit without having to query the visitor
+
 	public GioviTypeStruct(String value, String defaultValue) {
 		super(value, defaultValue);
 	}

@@ -54,6 +54,26 @@ public final class GioviStruct extends GioviValue<Struct> {
 	}
 
 	@Override
+	public GioviValue<?> castTo(GioviType<?> type) {
+		return switch (type) {
+			case GioviTypePrimitive primitiveType -> {
+				var clazz = primitiveType.unbox();
+				if (clazz == GioviText.class) {
+					yield new GioviText(this.toString());
+				}
+				yield super.castTo(type);
+			}
+			case GioviTypeStruct structType -> {
+				if (structType.unbox().equals(this.type)) {
+					yield new GioviStruct(structType.unbox(), value.copy(), defaultValue.copy());
+				}
+				yield super.castTo(type);
+			}
+			default -> super.castTo(type);
+		};
+	}
+
+	@Override
 	public void setDefaultValue(Struct struct) {
 		this.defaultValue.from(struct);
 	}
