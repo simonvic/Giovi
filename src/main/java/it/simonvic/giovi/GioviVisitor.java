@@ -441,6 +441,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
+	public GioviObject visitCastExpression(CastExpressionContext ctx) {
+		return visit(ctx.expression()).asGioviValue().castTo(visit(ctx.type()).asGioviType());
+	}
+
+	@Override
 	public GioviObject visitAccess(AccessContext ctx) {
 		return getCurrentScope()
 			.getVariableValue(ctx.anyIdentifier().getText())
