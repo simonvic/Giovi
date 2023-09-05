@@ -7,7 +7,6 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
-import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviText extends GioviValue<String> {
 
@@ -126,10 +125,10 @@ public final class GioviText extends GioviValue<String> {
 	@Override
 	public GioviObject divide(GioviObject right) {
 		return switch (right) {
-			case GioviText v -> GioviLists.of(
+			case GioviText v -> new GioviList(new ArrayList<>(
 				Stream.of(value.split(v.unbox()))
 					.map(this::toGioviText)
-					.toList());
+					.toList()));
 			default -> super.divide(right);
 		};
 	}
