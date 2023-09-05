@@ -1,8 +1,13 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.Range;
+import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviText extends GioviValue<String> {
 
@@ -113,10 +118,15 @@ public final class GioviText extends GioviValue<String> {
 		};
 	}
 
-	// TODO: split string ?
 	@Override
 	public GioviObject divide(GioviObject right) {
-		throw new OperatorNotSupported("/");
+		return switch (right) {
+			case GioviText v -> GioviLists.of(
+				Stream.of(value.split(v.unbox()))
+					.map(this::toGioviText)
+					.toList());
+			default -> super.divide(right);
+		};
 	}
 
 	//                                                                                      boolean
@@ -180,6 +190,34 @@ public final class GioviText extends GioviValue<String> {
 		};
 	}
 
-	//                                                                                       access
-	// TODO: access char
+	@Override
+	public GioviObject access(GioviObject right) {
+		return switch (right) {
+			case AccessKey accessKey -> switch (accessKey.get()) {
+				case "%" -> new GioviInt(value.length());
+				case "@" -> Range.of(0, value.length() - 1, 1);
+				case "*" -> new GioviList(
+					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
+				default -> throw new GioviException("Invalid access key: " + accessKey);
+			};
+			case Range<?> r -> {
+				if (r.getStart() instanceof Integer start && r.getEnd() instanceof Integer end) {
+					yield new GioviText(value.substring(start, end));
+				}
+				yield super.access(right);
+			}
+			case GioviInt index -> new GioviText(
+				String.valueOf(value.charAt(index.unbox() % value.length())));
+			default -> super.access(right);
+		};
+	}
+
+	GioviText toGioviChar(Integer c) {
+		return new GioviText(Character.toString(c));
+	}
+
+	GioviText toGioviText(String s) {
+		return new GioviText(s);
+	}
+
 }
