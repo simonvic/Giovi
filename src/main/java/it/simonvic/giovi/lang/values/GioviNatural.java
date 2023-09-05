@@ -22,6 +22,11 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	}
 
 	@Override
+	public String toString() {
+		return super.toString() + "n";
+	}
+
+	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypePrimitive(GioviNatural.class);
 	}

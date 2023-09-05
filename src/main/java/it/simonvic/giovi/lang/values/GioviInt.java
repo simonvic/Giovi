@@ -6,7 +6,7 @@ import it.simonvic.giovi.lang.primitives.Natural;
 public final class GioviInt extends GioviNumber<Integer> {
 
 	public static GioviInt valueOf(String s) throws NumberFormatException {
-		return new GioviInt(Integer.valueOf(s));
+		return new GioviInt(Integer.decode(s.replace("i", "")));
 	}
 
 	public GioviInt(Integer value, Integer defaultValue) {
@@ -19,6 +19,11 @@ public final class GioviInt extends GioviNumber<Integer> {
 
 	public GioviInt() {
 		super(0, 0);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "i";
 	}
 
 	@Override

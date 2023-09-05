@@ -6,7 +6,7 @@ import it.simonvic.giovi.lang.primitives.Natural;
 public final class GioviReal extends GioviNumber<Double> {
 
 	public static GioviReal valueOf(String s) throws NumberFormatException {
-		return new GioviReal(Double.valueOf(s));
+		return new GioviReal(Double.valueOf(s.replace("r", "")));
 	}
 
 	public GioviReal(Double value, Double defaultValue) {
@@ -19,6 +19,11 @@ public final class GioviReal extends GioviNumber<Double> {
 
 	public GioviReal() {
 		super(0d, 0d);
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + "r";
 	}
 
 	@Override

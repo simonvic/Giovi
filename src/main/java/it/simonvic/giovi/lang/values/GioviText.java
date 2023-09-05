@@ -24,6 +24,11 @@ public final class GioviText extends GioviValue<String> {
 	}
 
 	@Override
+	public String toString() {
+		return "'" + super.toString() + "'";
+	}
+
+	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypePrimitive(GioviText.class);
 	}
