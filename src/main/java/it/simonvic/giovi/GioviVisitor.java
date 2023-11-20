@@ -146,7 +146,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		if (iterators.size() != 1)
 			throw new GioviException("Wrong number of iterators");
-		if (gioviList.unbox().size() == 0)
+		if (gioviList.unbox().isEmpty())
 			return;
 
 		for (var gioviValue : gioviList.unbox()) {
@@ -183,7 +183,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		if (iterators.size() != 2)
 			throw new GioviException("Wrong number of iterators");
-		if (map.unbox().size() == 0)
+		if (map.unbox().isEmpty())
 			return;
 
 		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox()
@@ -730,6 +730,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 	}
 
+	// TODO: rework functions completely
+	// FIXME: functions with multiple struct parameters
 	private void setupFunctionParametersIteratively(FunctionCallContext ctx, GioviFunction func) {
 		List<FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
 			? List.of()
@@ -844,7 +846,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (ctx == null) {
 			return new GioviStruct(structType, struct);
 		}
-		if (ctx.namedStructField().size() != 0) {
+		if (!ctx.namedStructField().isEmpty()) {
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
 				String fieldName = namedStructFieldCtx.identifier().getText();
 				if (!struct.contains(fieldName)) {
@@ -873,18 +875,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (ctx == null) {
 			return new GioviStruct(new Struct.Unnamed());
 		}
-		if (ctx.namedStructField().size() != 0) {
-			var struct = new Struct.Named();
+		if (ctx.namedStructField().isEmpty()) {
+			var struct = new Struct.Unnamed();
+			for (var expressionCtx : ctx.expression()) {
+				struct.put(visit(expressionCtx).asGioviValue());
+			}
+			return new GioviStruct(struct);
+		} else {
+			var struct = new Named();
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
 				struct.put(
 					namedStructFieldCtx.identifier().getText(),
 					visit(namedStructFieldCtx.expression()).asGioviValue());
-			}
-			return new GioviStruct(struct);
-		} else {
-			var struct = new Struct.Unnamed();
-			for (var expressionCtx : ctx.expression()) {
-				struct.put(visit(expressionCtx).asGioviValue());
 			}
 			return new GioviStruct(struct);
 		}
