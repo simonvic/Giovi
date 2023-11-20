@@ -67,11 +67,11 @@ public class OperationEvaluator {
 
 	public static void redirection(GioviObject content, String operator, GioviObject destination) {
 		switch (operator) {
-			case ">", "<" -> destination.redirection(content);
-			case ">+", "+<" -> destination.redirectionPlus(content);
-			case ">-", "-<" -> destination.redirectionMinus(content);
-			case ">*", "*<" -> destination.redirectionMultiply(content);
-			case ">/", "/<" -> destination.redirectionDivide(content);
+			case "->", "<-" -> destination.redirection(content);
+			case "->+", "+<-" -> destination.redirectionPlus(content);
+			case "->-", "-<-" -> destination.redirectionMinus(content);
+			case "->*", "*<-" -> destination.redirectionMultiply(content);
+			case "->/", "/<-" -> destination.redirectionDivide(content);
 			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
 		}
 	}

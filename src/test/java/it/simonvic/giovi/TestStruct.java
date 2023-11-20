@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.Giovi.run;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,13 @@ public class TestStruct {
 				"x", 0,
 				"y", 0));
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	void sandbox() {
+		run("""
+			"hello world" / " " > \\out
+			""");
 	}
 
 }

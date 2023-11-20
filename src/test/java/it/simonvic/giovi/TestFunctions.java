@@ -56,20 +56,22 @@ public class TestFunctions {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {
-		"fun(){} fun(69)",
-		"fun(x Int){} fun()",
-		"fun(x Int, y Int){} fun(69)"
-	})
+	@ValueSource(
+		strings = {
+				"fun(){} fun(69)",
+				"fun(x Int){} fun()",
+				"fun(x Int, y Int){} fun(69)"
+		})
 	void functionCall_wrongParametersNumber_shouldThrowException(String code) {
-		assertThrows(GioviException.class, () -> new GioviVisitor().visit(setupParser(code).begin()));
+		assertThrows(GioviException.class,
+			() -> new GioviVisitor().visit(setupParser(code).begin()));
 	}
 
 	@Test
 	void testDeclaration_noParams_noReturn() {
 		GioviParser parser = setupParser("""
 			sayHelloWorld() {
-				"hello world" > \\out
+				"hello world" -> \\out
 			}
 			""");
 		GioviVisitor visitor = new GioviVisitor();

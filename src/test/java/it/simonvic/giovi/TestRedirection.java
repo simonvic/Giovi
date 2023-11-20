@@ -22,7 +22,7 @@ public class TestRedirection {
 		@Test
 		void redirToDeclaration_shouldInitialize() {
 			assertEquals(1d, visit("""
-				1.0 > x Real
+				1.0 -> x Real
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -33,7 +33,7 @@ public class TestRedirection {
 		void redir_shouldChangeValue() {
 			assertEquals(69d, visit("""
 				x Real
-				69 > x
+				69 -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -43,8 +43,8 @@ public class TestRedirection {
 		@Test
 		void redirPlus_shouldIncrement() {
 			assertEquals(4d, visit("""
-				2 > x Real
-				2 >+ x
+				2 -> x Real
+				2 ->+ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -54,8 +54,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_shouldDecrement() {
 			assertEquals(7d, visit("""
-				10 > x Real
-				3 >- x
+				10 -> x Real
+				3 ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -65,8 +65,8 @@ public class TestRedirection {
 		@Test
 		void redirStar_shouldMultiply() {
 			assertEquals(10d, visit("""
-				2 > x Real
-				5 >* x
+				2 -> x Real
+				5 ->* x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -76,8 +76,8 @@ public class TestRedirection {
 		@Test
 		void redirDiv_shouldDivide() {
 			assertEquals(5d, visit("""
-				10 > x Real
-				2 >/ x
+				10 -> x Real
+				2 ->/ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -91,7 +91,7 @@ public class TestRedirection {
 		void redir_shouldChangeValue() {
 			assertEquals("foo", visit("""
 				x Text
-				"foo" > x
+				"foo" -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -101,8 +101,8 @@ public class TestRedirection {
 		@Test
 		void redirPlus_shouldAppend() {
 			assertEquals("foobar", visit("""
-				"foo" > x Text
-				"bar" >+ x
+				"foo" -> x Text
+				"bar" ->+ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -112,8 +112,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_shouldRemove() {
 			assertEquals("bar", visit("""
-				"foobar" > x Text
-				"foo" >- x
+				"foobar" -> x Text
+				"foo" ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -123,8 +123,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_shouldRemoveAllOccurences() {
 			assertEquals("bar", visit("""
-				"foobarfoo" > x Text
-				"foo" >- x
+				"foobarfoo" -> x Text
+				"foo" ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
@@ -139,7 +139,7 @@ public class TestRedirection {
 		void redir_shouldChangeValue() {
 			assertEquals(GioviLists.of(1, 2, 3), visit("""
 				x [Int]
-				[1 2 3] > x
+				[1 2 3] -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -148,8 +148,8 @@ public class TestRedirection {
 		@Test
 		void redirPlus_shouldInsert() {
 			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2] > x [Int]
-				3 >+ x
+				[1 2] -> x [Int]
+				3 ->+ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -158,8 +158,8 @@ public class TestRedirection {
 		@Test
 		void redirPlus_shouldRemove() {
 			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2 3 4] > x [Int]
-				4 >- x
+				[1 2 3 4] -> x [Int]
+				4 ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -168,8 +168,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_shouldRemoveFirstOccurence() {
 			assertEquals(GioviLists.of(1, 2, 3, 4), visit("""
-				[1 2 4 3 4] > x [Int]
-				4 >- x
+				[1 2 4 3 4] -> x [Int]
+				4 ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -178,8 +178,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_otherList_shouldInsertAll() {
 			assertEquals(GioviLists.of(1, 2, 3, 4, 5, 6), visit("""
-				[1 2 3] > x [Int]
-				[4 5 6] >+ x
+				[1 2 3] -> x [Int]
+				[4 5 6] ->+ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -188,8 +188,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_otherList_shouldRemoveAll() {
 			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2 3 4 5 6] > x [Int]
-				[4 5 6] >- x
+				[1 2 3 4 5 6] -> x [Int]
+				[4 5 6] ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -198,8 +198,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_otherList_shouldRemoveAllOccurences() {
 			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[4 5 1 6 5 2 3 4 5 6] > x [Int]
-				[4 5 6] >- x
+				[4 5 1 6 5 2 3 4 5 6] -> x [Int]
+				[4 5 6] ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -208,8 +208,8 @@ public class TestRedirection {
 		@Test
 		void indexedRedirection() {
 			assertEquals(GioviLists.of(1, 69, 3), visit("""
-				[1 2 3] > x [Int]
-				69 > x@1
+				[1 2 3] -> x [Int]
+				69 -> x@1
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -223,8 +223,8 @@ public class TestRedirection {
 		@Test
 		void redir_shouldChangeValue() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[69:"foo"] > x [Int:Text]
-				[1:"a" 2:"b" 3:"c"] > x
+				[69:"foo"] -> x [Int:Text]
+				[1:"a" 2:"b" 3:"c"] -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -233,8 +233,8 @@ public class TestRedirection {
 		@Test
 		void redirPlus_shouldPut() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"foo"] > x [Int:Text]
-				[3:"c"] >+ x
+				[1:"a" 2:"b" 3:"foo"] -> x [Int:Text]
+				[3:"c"] ->+ x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -243,8 +243,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_shouldRemoveKeyValue() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"c" 4:"foo"] > x [Int:Text]
-				[4:"foo"] >- x
+				[1:"a" 2:"b" 3:"c" 4:"foo"] -> x [Int:Text]
+				[4:"foo"] ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -253,8 +253,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_wrongValue_shouldNotRemoveEntry() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"c"] > x [Int:Text]
-				[2:"foo"] >- x
+				[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
+				[2:"foo"] ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -263,8 +263,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_value_shouldRemoveKey() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"c" 4:"foo"] > x [Int:Text]
-				4 >- x
+				[1:"a" 2:"b" 3:"c" 4:"foo"] -> x [Int:Text]
+				4 ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -273,8 +273,8 @@ public class TestRedirection {
 		@Test
 		void redirMinus_map_shouldRemoveAllEntries() {
 			assertEquals(GioviMaps.of(1, "a", 2, "b", 3, "c"), visit("""
-				[1:"a" 2:"b" 3:"c" 4:"foo" 5:"bar"] > x [Int:Text]
-				[4:"foo" 5:"bar"] >- x
+				[1:"a" 2:"b" 3:"c" 4:"foo" 5:"bar"] -> x [Int:Text]
+				[4:"foo" 5:"bar"] ->- x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -288,9 +288,9 @@ public class TestRedirection {
 		@Test
 		void redir_shouldChangeFields() {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color (r Int; g Int; b Int;)
+				Color <r Int, g Int, b Int>
 				x Color
-				.(255 69 42) > x
+				<255 69 42> -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -299,9 +299,9 @@ public class TestRedirection {
 		@Test
 		void redir_namedFields_shouldChangeFields() {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color (r Int; g Int; b Int;)
+				Color <r Int, g Int, b Int>
 				x Color
-				.(b:42 r:255 g:69) > x
+				<b:42 r:255 g:69> -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -310,9 +310,9 @@ public class TestRedirection {
 		@Test
 		void redir_wrongNamedFields_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> visit("""
-				Color (r Int; g Int; b Int;)
+				Color <r Int, g Int, b Int>
 				x Color
-				.(red:255 b:42 g:69) > x
+				<red:255 b:42 g:69> -> x
 				"""));
 		}
 
@@ -320,10 +320,10 @@ public class TestRedirection {
 		@Test
 		void redir_wrongExplicitStruct_shouldFail() {
 			assertEquals(GioviStructs.of("r", 0, "g", 0, "b", 0), visit("""
-				Foo (r Int; g Int; b Int;)
-				Color (r Int; g Int; b Int;)
+				Foo <r Int, g Int, b Int>
+				Color <r Int, g Int, b Int>
 				x Color
-				Foo.(r:255 b:42 g:69) > x
+				Foo.<r:255 b:42 g:69> -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -332,11 +332,11 @@ public class TestRedirection {
 		@Test
 		void redir_toField_shouldChangeValue() {
 			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color (r Int; g Int; b Int;)
+				Color <r Int, g Int, b Int>
 				x Color
-				255 > x.r
-				69 > x.g
-				42 > x.b
+				255 -> x.r
+				69 -> x.g
+				42 -> x.b
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));

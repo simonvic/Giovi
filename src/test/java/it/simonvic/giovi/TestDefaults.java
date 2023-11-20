@@ -92,8 +92,8 @@ public class TestDefaults {
 		void testNatural() {
 			assertEquals(new GioviNatural(new Natural(69)), visit("""
 				x Natural default 69
-				420 > x
-				default > x
+				420 -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -103,8 +103,8 @@ public class TestDefaults {
 		void testInt() {
 			assertEquals(new GioviInt(69), visit("""
 				x Int default 69
-				420 > x
-				default > x
+				420 -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -114,8 +114,8 @@ public class TestDefaults {
 		void testReal() {
 			assertEquals(new GioviReal(6.9), visit("""
 				x Real default 6.9
-				4.20 > x
-				default > x
+				4.20 -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -125,8 +125,8 @@ public class TestDefaults {
 		void testBool() {
 			assertEquals(new GioviBool(true), visit("""
 				x Bool default true
-				false > x
-				default > x
+				false -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -136,8 +136,8 @@ public class TestDefaults {
 		void testText() {
 			assertEquals(new GioviText("foo"), visit("""
 				x Text default "foo"
-				"bar" > x
-				default > x
+				"bar" -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"));
@@ -148,8 +148,8 @@ public class TestDefaults {
 			var expected = GioviLists.of("a", "b", "c");
 			var actual = visit("""
 				x [Text] default ['a' 'b' 'c']
-				['z'] > x
-				default > x
+				['z'] -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x");
@@ -166,8 +166,8 @@ public class TestDefaults {
 			expected.put(new GioviInt(2), new GioviText("c"));
 			var actual = visit("""
 				x [Int:Text] default [0:'a' 1:'b' 2:'c']
-				[69:'z'] > x
-				default > x
+				[69:'z'] -> x
+				default -> x
 				""")
 				.getCurrentScope()
 				.getVariableValue("x");

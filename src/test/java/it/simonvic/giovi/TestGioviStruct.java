@@ -61,11 +61,11 @@ public class TestGioviStruct {
 		@Test
 		void testSimpleStruct() {
 			var visitor = visit("""
-				Foo (
+				Foo <
 					foo Int
 					bar Bool
 					foobar Text
-				)
+				>
 				""");
 			assertTrue(visitor.getCurrentScope().isDefinedStruct("Foo"));
 		}
@@ -73,11 +73,11 @@ public class TestGioviStruct {
 		@Test
 		void testSimpleStructDefaultFields() {
 			var visitor = visit("""
-				Foo (
+				Foo <
 					foo Int
 					bar Bool
 					foobar Text
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -90,11 +90,11 @@ public class TestGioviStruct {
 		@Test
 		void testFieldsDefaultOverride() {
 			var visitor = visit("""
-				Foo (
+				Foo <
 					foo Int default 69
 					bar Bool default true
 					foobar Text default "foobar"
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -107,15 +107,15 @@ public class TestGioviStruct {
 		@Test
 		void testNestedStruct() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				Person (
+				>
+				Person <
 					name Text
 					favoriteColor RGB
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -142,14 +142,14 @@ public class TestGioviStruct {
 		@Test
 		void testInheritance() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB : ARGB (
+				>
+				RGB : ARGB <
 					a Int
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -163,17 +163,17 @@ public class TestGioviStruct {
 		@Test
 		void testInheritedFieldsDefaultOverride() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB : SomeColor (
+				>
+				RGB : SomeColor <
 					r Int default 255
 					g Int default 255
 					b Int default 255
 					a Int default 255
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -187,17 +187,17 @@ public class TestGioviStruct {
 		@Test
 		void whenOverridingInheritedFieldsDefault_shouldNotChangeDefaultsInInheritedClass() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB : SomeColor (
+				>
+				RGB : SomeColor <
 					r Int default 255
 					g Int default 255
 					b Int default 255
 					a Int default 255
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -217,7 +217,7 @@ public class TestGioviStruct {
 				GioviStructs.of(List.of(
 					69, true, "foo")),
 				runExpression("""
-					.(69 true "foo")
+					<69 true "foo">
 					"""));
 		}
 
@@ -229,11 +229,11 @@ public class TestGioviStruct {
 					"bar", true,
 					"foobar", "hello"),
 				runExpression("""
-					.(
+					<
 						foo: 69
 						bar: true
 						foobar: "hello"
-					)
+					>
 					"""));
 		}
 
@@ -241,14 +241,14 @@ public class TestGioviStruct {
 		@Test
 		void structWithInheritance() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB : ARGB (
+				>
+				RGB : ARGB <
 					a Int
-				)
+				>
 				color ARGB
 				""");
 			assertEquals(
@@ -263,11 +263,11 @@ public class TestGioviStruct {
 		@Test
 		void typedStructWithUnnamedFields() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -275,18 +275,18 @@ public class TestGioviStruct {
 					"g", 2,
 					"b", 3),
 				runExpression(visitor, """
-					RGB.(1 2 3)
+					RGB.<1 2 3>
 					"""));
 		}
 
 		@Test
 		void typedStructWithNamedFields() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -294,77 +294,77 @@ public class TestGioviStruct {
 					"g", 2,
 					"b", 3),
 				runExpression(visitor, """
-					RGB.(
+					RGB.<
 						r: 1
 						g: 2
 						b: 3
-					)
+					>
 					"""));
 		}
 
 		@Test
 		void givenUndefinedType_whenCreatingTypedStruct_shouldThrow() {
 			assertThrows(GioviException.class, () -> runExpression("""
-				Foo.(69 420 "lol")
+				Foo.<69 420 "lol">
 				"""));
 		}
 
 		@Test
 		void givenDefinedType_whenCreatingTypedStruct_shouldNotThrow() {
 			assertDoesNotThrow(() -> run("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB.(69 42 255)
+				>
+				RGB.<69 42 255>
 				"""));
 		}
 
 		@Test
 		void whenCreatingTypedStructWithWrongFieldsCount_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> run("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB.(1 2 3 4)
+				>
+				RGB.<1 2 3 4>
 				"""));
 		}
 
 		@Test
 		void whenCreatingTypedStructWithWrongFieldsName_shouldThrow() {
 			assertThrows(IncompatibleStructs.class, () -> run("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB.(red:1 g:2 b:3)
+				>
+				RGB.<red:1 g:2 b:3>
 				"""));
 		}
 
 		@Test
 		void whenCreatingTypedStructWithSubsetOfFields_shouldNotThrow() {
 			assertDoesNotThrow(() -> run("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
-				RGB.(r:1 g:2)
+				>
+				RGB.<r:1 g:2>
 				"""));
 		}
 
 		@Test
 		void whenCreatingTypedStructWithSubsetOfFields_shouldOnlyInitTheSubset() {
 			var visitor = visit("""
-				RGB (
+				RGB <
 					r Int
 					g Int
 					b Int
-				)
+				>
 				""");
 			assertEquals(
 				GioviStructs.of(
@@ -372,7 +372,7 @@ public class TestGioviStruct {
 					"g", 0,
 					"b", 420),
 				runExpression(visitor, """
-					RGB.(r:69 b:420)
+					RGB.<r:69 b:420>
 					"""));
 		}
 

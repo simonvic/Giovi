@@ -255,7 +255,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		String bop = ctx.bop.getText();
 		var variable = visit(ctx.varDeclaration());
 		switch (bop) {
-			case ">" -> variable.redirection(visit(ctx.redirectionContent()));
+			case "->" -> variable.redirection(visit(ctx.redirectionContent()));
 			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
 		}
 		return null;
@@ -306,7 +306,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		String bop = ctx.bop.getText();
 		var variable = visit(ctx.varDeclaration());
 		switch (bop) {
-			case "<" -> variable.redirection(visit(ctx.redirectionContent()));
+			case "<-" -> variable.redirection(visit(ctx.redirectionContent()));
 			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
 		}
 		return null;
