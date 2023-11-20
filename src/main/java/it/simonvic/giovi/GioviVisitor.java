@@ -18,6 +18,8 @@ import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
+	protected final Scanner scanner = new Scanner(System.in);
+
 	private final Scope globalScope = new Scope();
 	private Scope currentScope = globalScope;
 
@@ -332,36 +334,28 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitPrimitiveContent(PrimitiveContentContext ctx) {
-		String identifier = ctx.identifier().getText();
-		return switch (identifier) {
-			case "out" -> new GioviText(new Scanner(System.in).nextLine());
-			default -> throw new GioviException("Unkown primitive content " + identifier);
-		};
+		return new GioviText(scanner.nextLine());
 	}
 
 	@Override
 	public GioviObject visitRedirectionToPrimitiveDestination(
 		RedirectionToPrimitiveDestinationContext ctx) {
-		GioviObject content = visit(ctx.redirectionContent());
-		switch (ctx.primitiveDestination().getText()) {
-			case "\\out" -> System.out.println(content);
-			case "\\err" -> System.err.println(content);
-			default -> throw new GioviException(
-				"Unkown primitive destination " + ctx.primitiveDestination().getText());
-		}
+		OperationEvaluator.redirectionToPrimitive(
+			visit(ctx.redirectionContent()),
+			ctx.redirectionOperator().getText(),
+			ctx.primitiveDestination().getText()
+		);
 		return null;
 	}
 
 	@Override
 	public GioviObject visitRedirectionToPrimitiveDestinationRTL(
 		RedirectionToPrimitiveDestinationRTLContext ctx) {
-		GioviObject content = visit(ctx.redirectionContent());
-		switch (ctx.primitiveDestination().getText()) {
-			case "\\out" -> System.out.println(content);
-			case "\\err" -> System.err.println(content);
-			default -> throw new GioviException(
-				"Unkown primitive destination " + ctx.primitiveDestination().getText());
-		}
+		OperationEvaluator.redirectionToPrimitive(
+			visit(ctx.redirectionContent()),
+			ctx.redirectionOperatorRTL().getText(),
+			ctx.primitiveDestination().getText()
+		);
 		return null;
 	}
 

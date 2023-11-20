@@ -1,5 +1,8 @@
 package it.simonvic.giovi.util;
 
+import java.io.PrintStream;
+
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.GioviObject;
@@ -73,6 +76,22 @@ public class OperationEvaluator {
 			case "->*", "*<-" -> destination.redirectionMultiply(content);
 			case "->/", "/<-" -> destination.redirectionDivide(content);
 			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
+		}
+	}
+
+	// TODO: move to visitor
+	public static void redirectionToPrimitive(GioviObject content, String operator,
+		String destination) {
+		PrintStream dest = switch (destination) {
+			case "\\out" -> System.out;
+			case "\\err" -> System.err;
+			default -> throw new GioviException("Unkown primitive destination " + destination);
+		};
+		switch (operator) {
+			case "->", "<-" -> dest.println(content);
+			case "->+", "+<-" -> dest.print(content);
+			default -> throw new RedirectionException(
+				"Operator not supported for primitive destination: " + operator);
 		}
 	}
 }
