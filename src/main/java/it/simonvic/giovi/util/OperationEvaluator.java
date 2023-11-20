@@ -43,8 +43,8 @@ public class OperationEvaluator {
 
 	public static GioviObject bool(GioviObject left, String operator, GioviObject right) {
 		return switch (operator) {
-			case "&" -> left.and(right);
-			case "|" -> left.or(right);
+			case "and", "&" -> left.and(right);
+			case "or", "|" -> left.or(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
