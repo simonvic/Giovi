@@ -1,10 +1,13 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.List;
+
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviStruct extends GioviValue<Struct> {
 
@@ -119,9 +122,21 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public GioviObject dot(GioviObject right) {
 		return switch (right) {
 			case AccessKey r -> value.getField(r.get());
-			case GioviInt r -> value.getField(r.unbox()); // TODO: should it?
 			case GioviFunction r -> super.dot(r); // TODO: implement
 			default -> super.dot(right);
+		};
+	}
+
+	@Override
+	public GioviObject access(GioviObject right) {
+		return switch (right) {
+			case AccessKey r -> switch (r.get()) {
+				case "%" -> new GioviInt(value.getFieldsCount());
+				case "@" -> GioviLists.of(value.getFieldNames());
+				default -> super.access(right);
+			};
+			case GioviInt r -> value.getField(r.unbox());
+			default -> super.access(right);
 		};
 	}
 

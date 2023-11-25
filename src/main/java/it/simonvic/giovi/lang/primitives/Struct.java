@@ -19,6 +19,8 @@ public abstract sealed class Struct {
 
 	public abstract int getFieldsCount();
 
+	public abstract List<String> getFieldNames();
+
 	public abstract Struct copy();
 
 	public static final class Named extends Struct {
@@ -81,6 +83,13 @@ public abstract sealed class Struct {
 		@Override
 		public int getFieldsCount() {
 			return fields.size();
+		}
+
+		@Override
+		public List<String> getFieldNames() {
+			var names = new ArrayList<String>();
+			names.addAll(fields.keySet());
+			return names;
 		}
 
 		@Override
@@ -192,6 +201,15 @@ public abstract sealed class Struct {
 		}
 
 		@Override
+		public List<String> getFieldNames() {
+			List<String> names = new ArrayList<>();
+			for (int i = 0; i < fields.size(); i++) {
+				names.add("" + i);
+			}
+			return names;
+		}
+
+		@Override
 		public Struct copy() {
 			var a = new ArrayList<GioviValue<?>>();
 			this.fields.forEach(value -> a.add(value.copy()));
@@ -212,7 +230,6 @@ public abstract sealed class Struct {
 		public void put(GioviValue<?> value) {
 			fields.add(value);
 		}
-
 
 	}
 
