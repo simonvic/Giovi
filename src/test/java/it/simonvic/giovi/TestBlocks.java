@@ -1,12 +1,13 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
-import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.values.GioviValue;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
+import it.simonvic.giovi.lang.Scope;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public class TestBlocks {
 
@@ -61,9 +62,16 @@ public class TestBlocks {
 	}
 
 	@Test
-	void nestedBlockShouldThrow_VariableAlreadyDefined() {
+	void sameBlockShouldThrow_VariableAlreadyDeclared() {
+		scope1.declare("aString", GioviValue.of("Hello world"));
+		assertThrows(VariableAlreadyDeclaredException.class,
+			() -> scope1.declare("aString", GioviValue.of("hello_world")));
+	}
+
+	@Test
+	void nestedBlockShouldNotThrow_VariableAlreadyDeclared() {
 		scope11.declare("aString", GioviValue.of("Hello world"));
-		assertThrows(VariableAlreadyDeclaredException.class, () -> scope111.declare("aString", GioviValue.of("hello_world")));
+		assertDoesNotThrow(() -> scope111.declare("aString", GioviValue.of("hello_world")));
 	}
 
 	@Test

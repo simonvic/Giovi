@@ -117,7 +117,7 @@ public class Scope {
 	}
 
 	public void declare(String identifier, GioviValue<?> value) {
-		if (isDeclaredVariable(identifier)) throw new VariableAlreadyDeclaredException(identifier);
+		if (isDeclaredLocalVariable(identifier)) throw new VariableAlreadyDeclaredException(identifier);
 		variables.put(identifier, value);
 	}
 
@@ -175,7 +175,7 @@ public class Scope {
 	}
 
 	public void declareConstant(String identifier, GioviValue<?> value) {
-		if (isDeclaredConstant(identifier)) throw new VariableAlreadyDeclaredException(identifier);
+		if (isDeclaredLocalConstant(identifier)) throw new VariableAlreadyDeclaredException(identifier);
 		constants.put(identifier, value);
 	}
 
