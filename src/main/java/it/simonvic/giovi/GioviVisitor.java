@@ -82,13 +82,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitSwitchStatement(SwitchStatementContext ctx) {
-		SwitchHelperVisitor
-			.evaluate(this, ctx)
-			.ifPresent(block -> {
-				enterScope();
-				visit(block);
-				exitScope();
-			});
+		var subject = visit(ctx.expression());
+		var matchedLabel = SwitchHelperVisitor.evaluate(this, ctx.switchBlock(), subject);
+		if (matchedLabel.isPresent()) {
+			enterScope();
+			var matchedLabelCtx = matchedLabel.get();
+			if (matchedLabelCtx.caseMatch() instanceof TypecheckCaseMatchContext typeCheckCtx
+				&& typeCheckCtx.identifier() != null) {
+				getCurrentScope().declare(
+					typeCheckCtx.identifier().getText(),
+					subject.asGioviValue().castTo(visit(typeCheckCtx.type()).asGioviType()));
+			}
+			visit(matchedLabelCtx.body);
+			exitScope();
+		} else if (ctx.elseBody != null) {
+			enterScope();
+			visit(ctx.elseBody);
+			exitScope();
+		}
 		return null;
 	}
 
@@ -434,7 +445,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitCastExpression(CastExpressionContext ctx) {
+		// TODO: add as operator in GioviObject
 		return visit(ctx.expression()).asGioviValue().castTo(visit(ctx.type()).asGioviType());
+	}
+
+	@Override
+	public GioviObject visitTypeCheckExpression(TypeCheckExpressionContext ctx) {
+		var expression = visit(ctx.expression()).asGioviValue();
+		var type = visit(ctx.type()).asGioviType();
+		return new GioviBool(expression.getGioviType().equals(type));
 	}
 
 	@Override
