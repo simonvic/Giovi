@@ -664,7 +664,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			case GioviTypeMap t -> new GioviMap(t.getKeyType(), t.getElementType());
 			case GioviTypePrimitive t -> t.spawn();
 			case GioviTypeStruct t -> getCurrentScope()
-				.getDefinitionStruct(typeCtx.typeIdentifier().getText());
+				.getDefinitionStruct(typeCtx.typeIdentifier().getText())
+				.copy();
 		};
 
 		if (defaultDefinitionCtx.isPresent()) {
