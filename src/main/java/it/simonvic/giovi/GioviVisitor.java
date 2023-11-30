@@ -343,8 +343,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		OperationEvaluator.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
-			ctx.primitiveDestination().getText()
-		);
+			ctx.primitiveDestination().getText());
 		return null;
 	}
 
@@ -354,8 +353,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		OperationEvaluator.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperatorRTL().getText(),
-			ctx.primitiveDestination().getText()
-		);
+			ctx.primitiveDestination().getText());
 		return null;
 	}
 

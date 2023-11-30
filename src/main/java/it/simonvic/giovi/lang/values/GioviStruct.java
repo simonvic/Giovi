@@ -1,7 +1,5 @@
 package it.simonvic.giovi.lang.values;
 
-import java.util.List;
-
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
