@@ -344,11 +344,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitPrimitiveContent(PrimitiveContentContext ctx) {
-		return new GioviText(scanner.nextLine());
-	}
-
-	@Override
 	public GioviObject visitRedirectionToPrimitiveDestination(
 		RedirectionToPrimitiveDestinationContext ctx) {
 		OperationEvaluator.redirectionToPrimitive(
@@ -399,6 +394,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	@Override
 	public GioviObject visitExpressionAccess(ExpressionAccessContext ctx) {
 		return visit(ctx.expression()).access(visit(ctx.accessKey()));
+	}
+
+	@Override
+	public GioviObject visitExpressionDot(ExpressionDotContext ctx) {
+		var lhs = visit(ctx.expression());
+		return ctx.anyIdentifier() != null
+			? lhs.dot(new AccessKey(ctx.anyIdentifier().getText()))
+			: lhs.dot(
+				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
 	}
 
 	@Override
@@ -530,109 +534,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			map.put(visit(entryCtx.mapKey).asGioviValue(), visit(entryCtx.mapValue).asGioviValue());
 		}
 		return new GioviMap(map);
-	}
-
-	@Override
-	public GioviObject visitIntegerLiteral(IntegerLiteralContext ctx) {
-		return GioviInt.valueOf(ctx.getText());
-	}
-
-	@Override
-	public GioviObject visitNaturalLiteral(NaturalLiteralContext ctx) {
-		return GioviNatural.valueOf(ctx.getText());
-	}
-
-	@Override
-	public GioviObject visitRealLiteral(RealLiteralContext ctx) {
-		return GioviReal.valueOf(ctx.getText());
-	}
-
-	@Override
-	public GioviObject visitBoolLiteral(BoolLiteralContext ctx) {
-		return GioviBool.valueOf(ctx.getText());
-	}
-
-	@Override
-	public GioviObject visitTextLiteral(TextLiteralContext ctx) {
-		return TextProcessor.of(ctx.getText())
-			.trimDelimiters(1)
-			.injectVariables(getCurrentScope())
-			.injectExpressions(this)
-			.unescapeUnicode()
-			.collect();
-	}
-
-	@Override
-	public GioviObject visitTextBlockLiteral(TextBlockLiteralContext ctx) {
-		return TextProcessor.of(ctx.getText())
-			.trimDelimiters(2)
-			.injectVariables(getCurrentScope())
-			.injectExpressions(this)
-			.trimIncidentalWhitespaces()
-			.unescapeUnicode()
-			.collect();
-	}
-
-	@Override
-	public GioviObject visitExactTextLiteral(ExactTextLiteralContext ctx) {
-		return TextProcessor.of(ctx.getText())
-			.trimDelimiters(1)
-			.unescapeUnicode()
-			.collect();
-	}
-
-	@Override
-	public GioviObject visitExactTextBlockLiteral(ExactTextBlockLiteralContext ctx) {
-		return TextProcessor.of(ctx.getText())
-			.trimDelimiters(2)
-			.trimIncidentalWhitespaces()
-			.unescapeUnicode()
-			.collect();
-	}
-
-	@Override
-	public GioviObject visitNullLiteral(NullLiteralContext ctx) {
-		return null;
-	}
-
-	@Override
-	public GioviObject visitDefaultLiteral(DefaultLiteralContext ctx) {
-		return new GioviDefault();
-	}
-
-	@Override
-	public GioviObject visitType(TypeContext ctx) {
-		if (ctx.collectionType() != null) {
-			return visit(ctx.collectionType());
-		}
-
-		String typeIdentifier = ctx.typeIdentifier().getText();
-		return switch (typeIdentifier) {
-			case "Natural" -> new GioviTypePrimitive(GioviNatural.class);
-			case "Int" -> new GioviTypePrimitive(GioviInt.class);
-			case "Real" -> new GioviTypePrimitive(GioviReal.class);
-			case "Bool" -> new GioviTypePrimitive(GioviBool.class);
-			case "Text" -> new GioviTypePrimitive(GioviText.class);
-			default -> {
-				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
-					yield new GioviTypeStruct(typeIdentifier);
-				} else {
-					throw new TypeNotFound(ctx.getText());
-				}
-			}
-		};
-	}
-
-	@Override
-	public GioviObject visitListType(ListTypeContext ctx) {
-		return new GioviTypeList(visit(ctx.type()).asGioviType());
-	}
-
-	@Override
-	public GioviObject visitMapType(MapTypeContext ctx) {
-		return new GioviTypeMap(
-			visit(ctx.mapKeyType).asGioviType(),
-			visit(ctx.mapValueType).asGioviType());
 	}
 
 	@Override
@@ -904,19 +805,124 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		}
 	}
 
-	@Override
-	public GioviObject visitExpressionDot(ExpressionDotContext ctx) {
-		var lhs = visit(ctx.expression());
-		return ctx.anyIdentifier() != null
-			? lhs.dot(new AccessKey(ctx.anyIdentifier().getText()))
-			: lhs.dot(
-				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
-	}
-
 	private GioviStruct getDefinitionStruct(String structType) {
 		if (!getCurrentScope().isDefinedStruct(structType)) {
 			throw new TypeNotFound(structType);
 		}
 		return getCurrentScope().getDefinitionStruct(structType);
 	}
+
+	@Override
+	public GioviObject visitType(TypeContext ctx) {
+		if (ctx.typeComposite() != null) {
+			return visit(ctx.typeComposite());
+		}
+
+		String typeIdentifier = ctx.typeIdentifier().getText();
+		return switch (typeIdentifier) {
+			case "Natural" -> new GioviTypePrimitive(GioviNatural.class);
+			case "Int" -> new GioviTypePrimitive(GioviInt.class);
+			case "Real" -> new GioviTypePrimitive(GioviReal.class);
+			case "Bool" -> new GioviTypePrimitive(GioviBool.class);
+			case "Text" -> new GioviTypePrimitive(GioviText.class);
+			default -> {
+				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
+					yield new GioviTypeStruct(typeIdentifier);
+				} else {
+					throw new TypeNotFound(ctx.getText());
+				}
+			}
+		};
+	}
+
+	@Override
+	public GioviObject visitTypeList(TypeListContext ctx) {
+		return new GioviTypeList(visit(ctx.type()).asGioviType());
+	}
+
+	@Override
+	public GioviObject visitTypeMap(TypeMapContext ctx) {
+		return new GioviTypeMap(
+			visit(ctx.mapKeyType).asGioviType(),
+			visit(ctx.mapValueType).asGioviType());
+	}
+
+	@Override
+	public GioviObject visitPrimitiveContent(PrimitiveContentContext ctx) {
+		return new GioviText(scanner.nextLine());
+	}
+
+	@Override
+	public GioviObject visitLiteralInteger(LiteralIntegerContext ctx) {
+		return GioviInt.valueOf(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitLiteralNatural(LiteralNaturalContext ctx) {
+		return GioviNatural.valueOf(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitLiteralReal(LiteralRealContext ctx) {
+		return GioviReal.valueOf(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitLiteralBool(LiteralBoolContext ctx) {
+		return GioviBool.valueOf(ctx.getText());
+	}
+
+	@Override
+	public GioviObject visitLiteralText(LiteralTextContext ctx) {
+		return TextProcessor.of(ctx.getText())
+			.trimDelimiters(1)
+			.injectVariables(getCurrentScope())
+			.injectExpressions(this)
+			.unescapeUnicode()
+			.collect();
+	}
+
+	@Override
+	public GioviObject visitLiteralTextBlock(LiteralTextBlockContext ctx) {
+		return TextProcessor.of(ctx.getText())
+			.trimDelimiters(2)
+			.injectVariables(getCurrentScope())
+			.injectExpressions(this)
+			.trimIncidentalWhitespaces()
+			.unescapeUnicode()
+			.collect();
+	}
+
+	@Override
+	public GioviObject visitLiteralExactText(LiteralExactTextContext ctx) {
+		return TextProcessor.of(ctx.getText())
+			.trimDelimiters(1)
+			.unescapeUnicode()
+			.collect();
+	}
+
+	@Override
+	public GioviObject visitLiteralExactTextBlock(LiteralExactTextBlockContext ctx) {
+		return TextProcessor.of(ctx.getText())
+			.trimDelimiters(2)
+			.trimIncidentalWhitespaces()
+			.unescapeUnicode()
+			.collect();
+	}
+
+	@Override
+	public GioviObject visitLiteralNull(LiteralNullContext ctx) {
+		return null;
+	}
+
+	@Override
+	public GioviObject visitLiteralDefault(LiteralDefaultContext ctx) {
+		return new GioviDefault();
+	}
+
+	@Override
+	public GioviObject visitLiteralPlaceholder(LiteralPlaceholderContext ctx) {
+		return new GioviDefault();
+	}
+
 }
