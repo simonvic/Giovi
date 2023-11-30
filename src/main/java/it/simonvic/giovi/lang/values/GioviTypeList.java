@@ -28,5 +28,25 @@ public final class GioviTypeList extends GioviTypePrimitive {
 		};
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((entryType == null) ? 0 : entryType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviTypeList other = (GioviTypeList) obj;
+		if (entryType == null) {
+			if (other.entryType != null) return false;
+		} else if (!entryType.equals(other.entryType)) return false;
+		return true;
+	}
+
 
 }

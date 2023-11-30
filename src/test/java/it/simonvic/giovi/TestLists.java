@@ -89,7 +89,7 @@ public class TestLists {
 			String code = """
 				[ [1 2 3] [1 2.0 3] ]
 				""";
-			var expected = new GioviTypeList(new GioviTypeList(new GioviTypePrimitive(GioviReal.class)));
+			var expected = new GioviTypeList(new GioviTypePrimitive(GioviReal.class));
 			var entryType = runExpression(code).asGioviList().getEntryType();
 			assertEquals(expected, entryType);
 		}
