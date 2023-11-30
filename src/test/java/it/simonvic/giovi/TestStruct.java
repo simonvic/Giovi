@@ -39,9 +39,6 @@ public class TestStruct {
 
 	@Test
 	void sandbox() {
-		run("""
-			"hello world" / " " > \\out
-			""");
 	}
 
 }

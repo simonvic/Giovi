@@ -39,12 +39,12 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitParenthesizedCaseMatch(ParenthesizedCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchParenthesized(CaseMatchParenthesizedContext ctx) {
 		return visit(ctx.caseMatch());
 	}
 
 	@Override
-	public GioviObject visitRelationalCaseMatch(RelationalCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
 		return OperationEvaluator.relational(
 			subject,
 			ctx.op.getText(),
@@ -52,7 +52,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitEqualityCaseMatch(EqualityCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
 		return OperationEvaluator.equality(
 			subject,
 			ctx.op.getText(),
@@ -60,8 +60,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitGuardedCaseMatch(GuardedCaseMatchContext ctx) {
-
+	public GioviObject visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
 		return OperationEvaluator.bool(
 			visit(ctx.caseMatch(0)),
 			ctx.bop.getText(),
@@ -69,7 +68,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitContainmentCaseMatch(ContainmentCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
 		return OperationEvaluator.containment(
 			subject,
 			ctx.op.getText(),
@@ -77,7 +76,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitBooleanCaseMatch(BooleanCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
 		return OperationEvaluator.bool(
 			subject,
 			ctx.op.getText(),
@@ -85,7 +84,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitTypecheckCaseMatch(TypecheckCaseMatchContext ctx) {
+	public GioviObject visitCaseMatchTypeCheck(CaseMatchTypeCheckContext ctx) {
 		var valueType = subject.asGioviValue().getGioviType();
 		var checkType = gioviVisitor.visit(ctx.type());
 		return new GioviBool(valueType.equals(checkType));

@@ -87,7 +87,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		if (matchedLabel.isPresent()) {
 			enterScope();
 			var matchedLabelCtx = matchedLabel.get();
-			if (matchedLabelCtx.caseMatch() instanceof TypecheckCaseMatchContext typeCheckCtx
+			if (matchedLabelCtx.caseMatch() instanceof CaseMatchTypeCheckContext typeCheckCtx
 				&& typeCheckCtx.identifier() != null) {
 				getCurrentScope().declare(
 					typeCheckCtx.identifier().getText(),
@@ -369,19 +369,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitParenthesizedExpression(ParenthesizedExpressionContext ctx) {
+	public GioviObject visitExpressionParenthesized(ExpressionParenthesizedContext ctx) {
 		return visit(ctx.expression());
 	}
 
 	@Override
-	public GioviObject visitPrefixedExpression(PrefixedExpressionContext ctx) {
+	public GioviObject visitExpressionPrefixed(ExpressionPrefixedContext ctx) {
 		return OperationEvaluator.prefixed(
 			ctx.prefix.getText(),
 			visit(ctx.expression()));
 	}
 
 	@Override
-	public GioviObject visitAdditiveExpression(AdditiveExpressionContext ctx) {
+	public GioviObject visitExpressionAdditive(ExpressionAdditiveContext ctx) {
 		return OperationEvaluator.additive(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -389,7 +389,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitMultiplicativeExpression(MultiplicativeExpressionContext ctx) {
+	public GioviObject visitExpressionMultiplicative(ExpressionMultiplicativeContext ctx) {
 		return OperationEvaluator.multiplicative(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -397,17 +397,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitAccessExpression(AccessExpressionContext ctx) {
+	public GioviObject visitExpressionAccess(ExpressionAccessContext ctx) {
 		return visit(ctx.expression()).access(visit(ctx.accessKey()));
 	}
 
 	@Override
-	public GioviObject visitPowerExpression(PowerExpressionContext ctx) {
+	public GioviObject visitExpressionPower(ExpressionPowerContext ctx) {
 		return visit(ctx.expression(0)).power(visit(ctx.expression(1)));
 	}
 
 	@Override
-	public GioviObject visitRelationalExpression(RelationalExpressionContext ctx) {
+	public GioviObject visitExpressionRelational(ExpressionRelationalContext ctx) {
 		return OperationEvaluator.relational(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -415,12 +415,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitNotExpression(NotExpressionContext ctx) {
+	public GioviObject visitExpressionNot(ExpressionNotContext ctx) {
 		return visit(ctx.expression()).not();
 	}
 
 	@Override
-	public GioviObject visitBoolExpression(BoolExpressionContext ctx) {
+	public GioviObject visitExpressionBool(ExpressionBoolContext ctx) {
 		return OperationEvaluator.bool(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -428,7 +428,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitEqualityExpression(EqualityExpressionContext ctx) {
+	public GioviObject visitExpressionEquality(ExpressionEqualityContext ctx) {
 		return OperationEvaluator.equality(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -436,7 +436,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitContainmentExpression(ContainmentExpressionContext ctx) {
+	public GioviObject visitExpressionContainment(ExpressionContainmentContext ctx) {
 		return OperationEvaluator.containment(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
@@ -444,13 +444,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitCastExpression(CastExpressionContext ctx) {
+	public GioviObject visitExpressionCast(ExpressionCastContext ctx) {
 		// TODO: add as operator in GioviObject
 		return visit(ctx.expression()).asGioviValue().castTo(visit(ctx.type()).asGioviType());
 	}
 
 	@Override
-	public GioviObject visitTypeCheckExpression(TypeCheckExpressionContext ctx) {
+	public GioviObject visitExpressionTypeCheck(ExpressionTypeCheckContext ctx) {
 		var expression = visit(ctx.expression()).asGioviValue();
 		var type = visit(ctx.type()).asGioviType();
 		return new GioviBool(expression.getGioviType().equals(type));
@@ -464,22 +464,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitSpecialAccessKey(SpecialAccessKeyContext ctx) {
+	public GioviObject visitAccessKeySpecial(AccessKeySpecialContext ctx) {
 		return new AccessKey(ctx.key.getText());
 	}
 
 	@Override
-	public GioviObject visitLiteralAccessKey(LiteralAccessKeyContext ctx) {
+	public GioviObject visitAccessKeyLiteral(AccessKeyLiteralContext ctx) {
 		return visit(ctx.literal());
 	}
 
 	@Override
-	public GioviObject visitParenthesizedAccessKey(ParenthesizedAccessKeyContext ctx) {
+	public GioviObject visitAccessKeyParenthesized(AccessKeyParenthesizedContext ctx) {
 		return visit(ctx.expression());
 	}
 
 	@Override
-	public GioviObject visitRangeAccessKey(RangeAccessKeyContext ctx) {
+	public GioviObject visitAccessKeyRange(AccessKeyRangeContext ctx) {
 		return visit(ctx.range());
 	}
 
@@ -905,7 +905,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	@Override
-	public GioviObject visitDotExpression(DotExpressionContext ctx) {
+	public GioviObject visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
 		return ctx.anyIdentifier() != null
 			? lhs.dot(new AccessKey(ctx.anyIdentifier().getText()))
