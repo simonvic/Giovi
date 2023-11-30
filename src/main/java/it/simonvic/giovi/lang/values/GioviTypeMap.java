@@ -1,5 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.Objects;
 
 public final class GioviTypeMap extends GioviTypePrimitive {
 
@@ -21,11 +22,6 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 	}
 
 	@Override
-	public String toString() {
-		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
-	}
-
-	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> false;
@@ -34,6 +30,11 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 				&& getElementType().canUpcast(t.getElementType());
 			case GioviTypePrimitive t -> false;
 		};
+	}
+
+	@Override
+	public String toString() {
+		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
 	}
 
 	@Override
@@ -51,13 +52,8 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		GioviTypeMap other = (GioviTypeMap) obj;
-		if (keyType == null) {
-			if (other.keyType != null) return false;
-		} else if (!keyType.equals(other.keyType)) return false;
-		if (elementType == null) {
-			if (other.elementType != null) return false;
-		} else if (!elementType.equals(other.elementType)) return false;
-		return true;
+		return Objects.equals(this.keyType, other.keyType)
+			&& Objects.equals(this.elementType, other.elementType);
 	}
 
 }

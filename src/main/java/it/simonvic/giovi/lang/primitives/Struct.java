@@ -56,17 +56,20 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null) return false;
-			if (getClass() != o.getClass()) return false;
-			Named that = (Named) o;
-			return fields.equals(that.fields);
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+			return result;
 		}
 
 		@Override
-		public int hashCode() {
-			return Objects.hash(fields);
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			Named other = (Named) obj;
+			return Objects.equals(this.fields, other.fields);
 		}
 
 		@Override
@@ -173,16 +176,20 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Unnamed unnamed = (Unnamed) o;
-			return fields.equals(unnamed.fields);
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+			return result;
 		}
 
 		@Override
-		public int hashCode() {
-			return Objects.hash(fields);
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (obj == null) return false;
+			if (getClass() != obj.getClass()) return false;
+			Unnamed other = (Unnamed) obj;
+			return Objects.equals(this.fields, other.fields);
 		}
 
 		@Override

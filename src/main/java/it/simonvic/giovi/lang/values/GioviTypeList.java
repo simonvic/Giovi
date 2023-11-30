@@ -1,5 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.Objects;
+
 public final class GioviTypeList extends GioviTypePrimitive {
 
 	private final GioviType<?> entryType;
@@ -14,11 +16,6 @@ public final class GioviTypeList extends GioviTypePrimitive {
 	}
 
 	@Override
-	public String toString() {
-		return "[" + entryType.toString() + "]";
-	}
-
-	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct t -> false;
@@ -26,6 +23,11 @@ public final class GioviTypeList extends GioviTypePrimitive {
 			case GioviTypeList t -> getEntryType().canUpcast(t.getEntryType());
 			case GioviTypePrimitive t -> false;
 		};
+	}
+
+	@Override
+	public String toString() {
+		return "[" + entryType.toString() + "]";
 	}
 
 	@Override
@@ -42,11 +44,7 @@ public final class GioviTypeList extends GioviTypePrimitive {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		GioviTypeList other = (GioviTypeList) obj;
-		if (entryType == null) {
-			if (other.entryType != null) return false;
-		} else if (!entryType.equals(other.entryType)) return false;
-		return true;
+		return Objects.equals(this.entryType, other.entryType);
 	}
-
 
 }

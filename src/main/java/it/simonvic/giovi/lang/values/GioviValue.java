@@ -85,16 +85,20 @@ public abstract sealed class GioviValue<T>
 	}
 
 	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		GioviValue<?> that = (GioviValue<?>) o;
-		return Objects.equals(value, that.value);
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		return Objects.hash(value);
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviValue<?> other = (GioviValue<?>) obj;
+		return Objects.equals(this.value, other.value);
 	}
 
 }

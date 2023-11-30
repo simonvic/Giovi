@@ -23,17 +23,25 @@ public final class Natural extends Number {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		final Natural other = (Natural) obj;
-		return this.value.equals(other.value);
+	public String toString() {
+		return value.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value);
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((value == null) ? 0 : value.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Natural other = (Natural) obj;
+		return Objects.equals(this.value, other.value);
 	}
 
 	@Override
@@ -70,11 +78,6 @@ public final class Natural extends Number {
 
 	public Natural divide(Number number) {
 		return new Natural(value / number.intValue());
-	}
-
-	@Override
-	public String toString() {
-		return value.toString();
 	}
 
 }

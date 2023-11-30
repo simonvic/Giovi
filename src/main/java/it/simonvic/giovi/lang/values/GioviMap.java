@@ -140,18 +140,12 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviMap other = (GioviMap) obj;
 
-		final GioviMap other = (GioviMap) obj;
-
-		if (value.size() != other.value.size())
-			return false;
-
+		if (value.size() != other.value.size()) return false;
 		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
 			if (!entry.getValue().equals(other.get(entry.getKey()))) {
 				return false;
