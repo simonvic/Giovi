@@ -480,7 +480,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitAccessKeyParenthesized(AccessKeyParenthesizedContext ctx) {
-		return visit(ctx.expression());
+		return ctx.accessKey() != null ? visit(ctx.accessKey()) : visit(ctx.expression());
 	}
 
 	@Override
