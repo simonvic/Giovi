@@ -6,6 +6,7 @@ import java.util.Map;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
@@ -14,8 +15,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 	public GioviMap(LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
 		this(
-			GioviType.inferGioviType(value.keySet()),
-			GioviType.inferGioviType(value.values()),
+			GioviTypes.inferGioviType(value.keySet()),
+			GioviTypes.inferGioviType(value.values()),
 			value);
 	}
 

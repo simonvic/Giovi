@@ -8,6 +8,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
+import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
@@ -18,7 +19,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	public GioviList(List<GioviValue<?>> entries) {
-		this(GioviType.inferGioviType(entries), entries, new ArrayList<>());
+		this(GioviTypes.inferGioviType(entries), entries, new ArrayList<>());
 	}
 
 	public GioviList(
