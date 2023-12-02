@@ -1,10 +1,10 @@
 package it.simonvic.giovi.util;
 
-import it.simonvic.giovi.lang.values.GioviList;
-import it.simonvic.giovi.lang.values.GioviValue;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import it.simonvic.giovi.lang.values.GioviList;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public class GioviLists {
 

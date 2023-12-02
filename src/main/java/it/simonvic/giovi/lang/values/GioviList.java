@@ -9,6 +9,7 @@ import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.primitives.Type.Primitive;
+import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
@@ -184,18 +185,33 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviObject access(GioviObject right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
-				case GioviInt index -> value.get(index.unbox());
+				case GioviInt i -> {
+					int index = i.unbox();
+					index = index >= 0 ? index : value.size() + index;
+					yield value.get(index);
+				}
 				default -> throw new GioviException("Invalid access key: " + right);
 			};
 			case AccessKey accessKey -> switch (accessKey.get()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
-					GioviList indeces = new GioviList(new GioviTypePrimitive(new Primitive<>(GioviInt.class)));
+					GioviList indeces = new GioviList(
+						new GioviTypePrimitive(new Primitive<>(GioviInt.class)));
 					indeces.addAll(Range.of(0, unbox().size() - 1, 1).expandAsGioviValues());
 					yield indeces;
 				}
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
+			case Range<?> range -> {
+				if (range.getStart() instanceof Integer start
+					&& range.getEnd() instanceof Integer end) {
+					var gioviList = new GioviList(this.entryType.copy());
+					var list = gioviList.value;
+					range.iterate(index -> list.add(this.value.get((int) index).copy()));
+					yield gioviList;
+				}
+				yield super.access(right);
+			}
 			default -> throw new GioviException("Invalid access key: " + right);
 		};
 	}
