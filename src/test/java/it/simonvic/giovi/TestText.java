@@ -227,6 +227,27 @@ public class TestText {
 					"hello" + " world"
 					"""));
 		}
+
+		@Test
+		void minus_shouldRemoveAllSubstrings() {
+			assertEquals(
+				GioviValue.of(
+					"hell wrld"),
+				runExpression("""
+					"hello world" - "o"
+					"""));
+		}
+
+		@Test
+		void divide_shouldSplitString() {
+			assertEquals(
+				GioviLists.of(
+					"hello", "beatiful", "world"),
+				runExpression("""
+					"hello beatiful world" / " "
+					"""));
+		}
+
 	}
 
 	@Nested
