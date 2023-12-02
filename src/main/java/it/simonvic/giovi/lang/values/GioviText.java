@@ -108,7 +108,7 @@ public final class GioviText extends GioviPrimitive<String> {
 		return switch (right) {
 			case GioviDefault v -> new GioviText(value.replace(defaultValue, ""));
 			case GioviText v -> new GioviText(value.replace(v.unbox(), ""));
-			default -> super.plus(right);
+			default -> super.minus(right);
 		};
 	}
 
@@ -116,7 +116,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	public GioviObject multiply(GioviObject right) {
 		return switch (right) {
 			case GioviNumber<?> v -> new GioviText(value.repeat(v.intValue().unbox()));
-			default -> super.divide(right);
+			default -> super.multiply(right);
 		};
 	}
 
