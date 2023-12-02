@@ -12,11 +12,11 @@ public class GioviObject {
 
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
-	public GioviObject redirection(GioviObject content) { throw new OperatorNotSupported(">"); }
-	public GioviObject redirectionPlus(GioviObject right) { throw new OperatorNotSupported(">+"); }
-	public GioviObject redirectionMinus(GioviObject right) { throw new OperatorNotSupported(">-"); }
-	public GioviObject redirectionMultiply(GioviObject right) { throw new OperatorNotSupported(">*"); }
-	public GioviObject redirectionDivide(GioviObject right) { throw new OperatorNotSupported(">/"); }
+	public GioviObject redirection(GioviObject content) { throw new OperatorNotSupported("->"); }
+	public GioviObject redirectionPlus(GioviObject right) { throw new OperatorNotSupported("->+"); }
+	public GioviObject redirectionMinus(GioviObject right) { throw new OperatorNotSupported("->-"); }
+	public GioviObject redirectionMultiply(GioviObject right) { throw new OperatorNotSupported("->*"); }
+	public GioviObject redirectionDivide(GioviObject right) { throw new OperatorNotSupported("->/"); }
 
 	//                                                                                   arithmetic
 	public GioviObject positive() { throw new OperatorNotSupported("+"); }
