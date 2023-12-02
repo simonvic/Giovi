@@ -23,11 +23,6 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
-	public String toString() {
-		return "'" + super.toString() + "'";
-	}
-
-	@Override
 	public GioviText copy() {
 		return new GioviText(this.value, this.defaultValue);
 	}

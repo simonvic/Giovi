@@ -22,11 +22,6 @@ public final class GioviInt extends GioviNumber<Integer> {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + "i";
-	}
-
-	@Override
 	public GioviInt copy() {
 		return new GioviInt(this.value, this.defaultValue);
 	}

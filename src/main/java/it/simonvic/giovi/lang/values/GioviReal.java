@@ -22,11 +22,6 @@ public final class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
-	public String toString() {
-		return super.toString() + "r";
-	}
-
-	@Override
 	public GioviReal copy() {
 		return new GioviReal(this.value, this.defaultValue);
 	}
