@@ -96,7 +96,7 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public Struct copy() {
+		public Named copy() {
 			var a = new LinkedHashMap<String, GioviValue<?>>();
 			this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 			return new Named(a);
@@ -217,7 +217,7 @@ public abstract sealed class Struct {
 		}
 
 		@Override
-		public Struct copy() {
+		public Unnamed copy() {
 			var a = new ArrayList<GioviValue<?>>();
 			this.fields.forEach(value -> a.add(value.copy()));
 			return new Unnamed(a);
