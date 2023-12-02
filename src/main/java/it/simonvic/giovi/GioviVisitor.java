@@ -669,7 +669,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 			} else {
 				throw new GioviException("Wrong number of parameters");
 			}
-			getCurrentScope().declare(formalParameterIdentifier, formalValue.value());
+			getCurrentScope().declare(formalParameterIdentifier, formalValue.value().copy());
 			i++;
 		}
 	}
