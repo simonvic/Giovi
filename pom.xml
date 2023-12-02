@@ -10,8 +10,8 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<maven.compiler.source>20</maven.compiler.source>
-		<maven.compiler.target>20</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<dependencies>
@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.9.2</version>
+			<version>5.10.1</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -28,23 +28,22 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-params</artifactId>
-			<version>5.9.2</version>
+			<version>5.10.1</version>
 			<scope>test</scope>
 		</dependency>
-
 
 		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4 -->
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4</artifactId>
-			<version>4.13.0</version>
+			<version>4.13.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-maven-plugin -->
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-maven-plugin</artifactId>
-			<version>4.13.0</version>
+			<version>4.13.1</version>
 		</dependency>
 	</dependencies>
 
@@ -53,7 +52,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.13.0</version>
+				<version>4.13.1</version>
 				<configuration>
 					<arguments>
 						<argument>-no-listener</argument>
@@ -77,10 +76,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.11.0</version>
 				<configuration>
-					<release>20</release>
-					<compilerArgs>
-						<arg>--enable-preview</arg>
-					</compilerArgs>
+					<release>21</release>
 				</configuration>
 			</plugin>
 
@@ -100,9 +96,6 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0</version>
-				<configuration>
-					<argLine>--enable-preview</argLine>
-				</configuration>
 			</plugin>
  			<plugin>
             	<artifactId>maven-assembly-plugin</artifactId>
