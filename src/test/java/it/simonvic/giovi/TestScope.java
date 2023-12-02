@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TestVariables {
+public class TestScope {
 
 	Scope scope;
 

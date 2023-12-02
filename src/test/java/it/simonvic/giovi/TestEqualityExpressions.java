@@ -1,24 +1,12 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviObject;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
+import static it.simonvic.giovi.Giovi.runExpression;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class TestEqualityExpressions {
-
-	private GioviObject run(String text) {
-		it.simonvic.giovi.antlr.GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		it.simonvic.giovi.antlr.GioviParser parser = new GioviParser(tokens);
-		GioviVisitor visitor = new GioviVisitor();
-		return visitor.visit(parser.expression());
-	}
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
@@ -34,7 +22,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Numbers(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -46,7 +34,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Strings(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -57,7 +45,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_List(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -70,7 +58,7 @@ public class TestEqualityExpressions {
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
-		assertEquals(expected, run(code).asBoolean());
+		assertEquals(expected, runExpression(code).asBoolean());
 	}
 
 }

@@ -16,20 +16,26 @@ public class GioviMaps {
 		return new GioviMap(entries);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1) {
+	public static <K, V> GioviMap of(
+		K k1, V v1) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		return new GioviMap(m);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1, K k2, V v2) {
+	public static <K, V> GioviMap of(
+		K k1, V v1,
+		K k2, V v2) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		m.put(GioviValue.of(k2), GioviValue.of(v2));
 		return new GioviMap(m);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1, K k2, V v2, K k3, V v3) {
+	public static <K, V> GioviMap of(
+		K k1, V v1,
+		K k2, V v2,
+		K k3, V v3) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		m.put(GioviValue.of(k2), GioviValue.of(v2));
@@ -37,7 +43,11 @@ public class GioviMaps {
 		return new GioviMap(m);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+	public static <K, V> GioviMap of(
+		K k1, V v1,
+		K k2, V v2,
+		K k3, V v3,
+		K k4, V v4) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		m.put(GioviValue.of(k2), GioviValue.of(v2));
@@ -46,7 +56,12 @@ public class GioviMaps {
 		return new GioviMap(m);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+	public static <K, V> GioviMap of(
+		K k1, V v1,
+		K k2, V v2,
+		K k3, V v3,
+		K k4, V v4,
+		K k5, V v5) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		m.put(GioviValue.of(k2), GioviValue.of(v2));
@@ -56,7 +71,13 @@ public class GioviMaps {
 		return new GioviMap(m);
 	}
 
-	public static <K, V> GioviMap of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+	public static <K, V> GioviMap of(
+		K k1, V v1,
+		K k2, V v2,
+		K k3, V v3,
+		K k4, V v4,
+		K k5, V v5,
+		K k6, V v6) {
 		var m = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		m.put(GioviValue.of(k1), GioviValue.of(v1));
 		m.put(GioviValue.of(k2), GioviValue.of(v2));

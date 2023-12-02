@@ -50,6 +50,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		});
 	}
 
+	// TODO: move map logic to native implementation
+
 	public void put(GioviValue<?> key, GioviValue<?> element) {
 		key = key.castTo(keyType);
 		element = element.castTo(elementType);

@@ -638,7 +638,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	// TODO: rework functions completely
-	// FIXME: functions with multiple struct parameters
 	private void setupFunctionParametersIteratively(FunctionCallContext ctx, GioviFunction func) {
 		List<FunctionParameterContext> funcCallParams = ctx.functionParameterList() == null
 			? List.of()
