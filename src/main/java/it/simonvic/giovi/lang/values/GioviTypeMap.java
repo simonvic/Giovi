@@ -2,15 +2,34 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.Objects;
 
-public final class GioviTypeMap extends GioviTypePrimitive {
+import it.simonvic.giovi.lang.primitives.Type.Map;
+
+public final class GioviTypeMap extends GioviType<Map> {
 
 	private final GioviType<?> keyType;
 	private final GioviType<?> elementType;
 
-	public GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType) {
-		super(GioviMap.class);
+	public GioviTypeMap(
+		Map value,
+		Map defaultValue,
+		GioviType<?> keyType,
+		GioviType<?> elementType) {
+		super(value, defaultValue);
 		this.keyType = keyType;
 		this.elementType = elementType;
+	}
+
+	public GioviTypeMap(
+		Map value,
+		GioviType<?> keyType,
+		GioviType<?> elementType) {
+		super(value, value.copy());
+		this.keyType = keyType;
+		this.elementType = elementType;
+	}
+
+	public GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType) {
+		this(new Map(keyType.unbox(), elementType.unbox()), keyType, elementType);
 	}
 
 	public GioviType<?> getKeyType() {
@@ -22,19 +41,8 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
-		return switch (to) {
-			case GioviTypeStruct t -> false;
-			case GioviTypeList t -> false;
-			case GioviTypeMap t -> getKeyType().canUpcast(t.getKeyType())
-				&& getElementType().canUpcast(t.getElementType());
-			case GioviTypePrimitive t -> false;
-		};
-	}
-
-	@Override
 	public String toString() {
-		return "[" + keyType.toString() + ":" + elementType.toString() + "]";
+		return "[" + keyType + " : " + elementType + "]";
 	}
 
 	@Override
@@ -55,5 +63,25 @@ public final class GioviTypeMap extends GioviTypePrimitive {
 		return Objects.equals(this.keyType, other.keyType)
 			&& Objects.equals(this.elementType, other.elementType);
 	}
+
+	@Override
+	public boolean canUpcast(GioviType<?> to) {
+		return switch (to) {
+			case GioviTypeMap t -> getKeyType().canUpcast(t.getKeyType())
+				&& getElementType().canUpcast(t.getElementType());
+			default -> false;
+		};
+	}
+
+	@Override
+	public GioviValue<?> spawn() {
+		return new GioviMap(this.keyType, this.elementType);
+	}
+
+	@Override
+	public GioviTypeMap copy() {
+		return new GioviTypeMap(this.keyType.copy(), this.elementType.copy());
+	}
+
 
 }

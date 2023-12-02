@@ -1,31 +1,25 @@
 package it.simonvic.giovi.lang.values;
 
-import java.util.Collection;
+import it.simonvic.giovi.lang.primitives.Type;
 
-import it.simonvic.giovi.exceptions.GioviException;
-
-public abstract sealed class GioviType<T>
-	extends GioviValue<T>
-	permits GioviTypePrimitive, GioviTypeStruct {
-
-	public static GioviType<?> inferGioviType(Collection<GioviValue<?>> entries) {
-		GioviType<?> inferred = null;
-		GioviType<?> next;
-		for (GioviValue<?> entry : entries) {
-			next = entry.getGioviType();
-			if (inferred == null || inferred.canUpcast(next)) {
-				inferred = next;
-			}
-		}
-		if (inferred == null) {
-			throw new GioviException("Impossible to infer list type");
-		}
-		return inferred;
-	}
+public abstract sealed class GioviType<T extends Type<?>>
+	extends GioviPrimitive<T>
+	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeStruct {
 
 	public GioviType(T value, T defaultValue) {
 		super(value, defaultValue);
 	}
 
+	@Override
+	public String toString() {
+		return value.getSimpleName();
+	}
+
 	public abstract boolean canUpcast(GioviType<?> to);
+
+	public abstract GioviValue<?> spawn();
+
+	@Override
+	public abstract GioviType<T> copy();
+
 }

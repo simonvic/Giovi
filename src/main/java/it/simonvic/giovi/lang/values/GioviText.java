@@ -8,7 +8,7 @@ import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
 
-public final class GioviText extends GioviValue<String> {
+public final class GioviText extends GioviPrimitive<String> {
 
 	public GioviText(String value, String defaultValue) {
 		super(value, defaultValue);
@@ -28,11 +28,6 @@ public final class GioviText extends GioviValue<String> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviText.class);
-	}
-
-	@Override
 	public GioviText copy() {
 		return new GioviText(this.value, this.defaultValue);
 	}
@@ -40,7 +35,7 @@ public final class GioviText extends GioviValue<String> {
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypePrimitive t) {
-			var typeClass = t.unbox();
+			var typeClass = t.unbox().getClazz();
 			if (typeClass == GioviText.class) return new GioviText(this.value);
 			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
 			try {

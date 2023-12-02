@@ -27,11 +27,6 @@ public final class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviReal.class);
-	}
-
-	@Override
 	public GioviReal copy() {
 		return new GioviReal(this.value, this.defaultValue);
 	}

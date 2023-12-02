@@ -287,29 +287,42 @@ public class TestRedirection {
 
 		@Test
 		void redir_shouldChangeFields() {
-			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color <r Int, g Int, b Int>
-				x Color
-				<255 69 42> -> x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
+			assertEquals(
+				GioviStructs.of(
+					"Color",
+					"r", 255,
+					"g", 69,
+					"b", 42),
+				visit("""
+					Color <r Int, g Int, b Int>
+					x Color
+					<255 69 42> -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x"));
 		}
 
 		@Test
 		void redir_namedFields_shouldChangeFields() {
-			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color <r Int, g Int, b Int>
-				x Color
-				<b:42 r:255 g:69> -> x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
+			assertEquals(
+				GioviStructs.of(
+					"Color",
+					"r", 255,
+					"g", 69,
+					"b", 42),
+				visit("""
+					Color <r Int, g Int, b Int>
+					x Color
+					<b:42 r:255 g:69> -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x"));
 		}
 
 		@Test
 		void redir_wrongNamedFields_shouldThrow() {
-			assertThrows(IncompatibleStructs.class, () -> visit("""
+			assertThrows(IncompatibleStructs.class, () ->
+				visit("""
 				Color <r Int, g Int, b Int>
 				x Color
 				<red:255 b:42 g:69> -> x
@@ -331,15 +344,21 @@ public class TestRedirection {
 
 		@Test
 		void redir_toField_shouldChangeValue() {
-			assertEquals(GioviStructs.of("r", 255, "g", 69, "b", 42), visit("""
-				Color <r Int, g Int, b Int>
-				x Color
-				255 -> x.r
-				69 -> x.g
-				42 -> x.b
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
+			assertEquals(
+				GioviStructs.of(
+					"Color",
+					"r", 255,
+					"g", 69,
+					"b", 42),
+				visit("""
+					Color <r Int, g Int, b Int>
+					x Color
+					255 -> x.r
+					69 -> x.g
+					42 -> x.b
+					""")
+					.getCurrentScope()
+					.getVariableValue("x"));
 		}
 	}
 

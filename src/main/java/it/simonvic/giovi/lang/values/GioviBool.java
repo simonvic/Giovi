@@ -2,7 +2,7 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
 
-public final class GioviBool extends GioviValue<Boolean> {
+public final class GioviBool extends GioviPrimitive<Boolean> {
 
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
@@ -21,11 +21,6 @@ public final class GioviBool extends GioviValue<Boolean> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviBool.class);
-	}
-
-	@Override
 	public GioviBool copy() {
 		return new GioviBool(this.value, this.defaultValue);
 	}
@@ -33,7 +28,7 @@ public final class GioviBool extends GioviValue<Boolean> {
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypePrimitive t) {
-			if (t.unbox() == GioviBool.class) {
+			if (t.unbox().getClazz() == GioviBool.class) {
 				return new GioviBool(this.value);
 			}
 			// if (t.unbox() == GioviInt.class) {

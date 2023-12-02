@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.*;
@@ -29,8 +30,10 @@ public class TestGioviValue {
 			Arguments.of(GioviText.class, GioviValue.of("hello")),
 			Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 			Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-			Arguments.of(GioviStruct.class, GioviValue.of(Structs.of("a", "a")))
-		);
+			Arguments.of(GioviStructTuple.class, GioviValue.of(Structs.of("a", "a"))),
+			Arguments.of(
+				GioviStructTyped.class,
+				GioviValue.of(new GioviStructDefinition("Foo", Structs.of("a", "a")))));
 	}
 
 	@ParameterizedTest
@@ -47,8 +50,7 @@ public class TestGioviValue {
 			Arguments.of(String.class, GioviValue.of("hello")),
 			Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 			Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-			Arguments.of(Struct.Named.class, GioviValue.of(Structs.of("a", "a")))
-		);
+			Arguments.of(Struct.Named.class, GioviValue.of(Structs.of("a", "a"))));
 	}
 
 	@ParameterizedTest
@@ -68,8 +70,7 @@ public class TestGioviValue {
 			Arguments.of(new GioviInt(69), new GioviInt(69)),
 			Arguments.of(new GioviReal(4.20), new GioviReal(4.20)),
 			Arguments.of(new GioviBool(true), new GioviBool(true)),
-			Arguments.of(new GioviText("hello"), new GioviText("hello"))
-		);
+			Arguments.of(new GioviText("hello"), new GioviText("hello")));
 	}
 
 	static Stream<Arguments> produceNotEquals() {
@@ -82,8 +83,7 @@ public class TestGioviValue {
 			Arguments.of(new GioviInt(420), new GioviInt(69)),
 			Arguments.of(new GioviReal(4.20), new GioviReal(6.9)),
 			Arguments.of(new GioviBool(true), new GioviBool(false)),
-			Arguments.of(new GioviText("hello"), new GioviText("heLLo"))
-		);
+			Arguments.of(new GioviText("hello"), new GioviText("heLLo")));
 	}
 
 	@ParameterizedTest
@@ -107,38 +107,29 @@ public class TestGioviValue {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 4)),
-						GioviValue.of(List.of(1, 2, 3, 4))
-					),
+						GioviValue.of(List.of(1, 2, 3, 4))),
 					Arguments.of(
 						GioviValue.of(List.of(1d, 2d, 3d, 4d)),
-						GioviValue.of(List.of(1d, 2d, 3d, 4d))
-					),
+						GioviValue.of(List.of(1d, 2d, 3d, 4d))),
 					Arguments.of(
 						GioviValue.of(List.of(true, false, true, true)),
-						GioviValue.of(List.of(true, false, true, true))
-					),
+						GioviValue.of(List.of(true, false, true, true))),
 					Arguments.of(
 						GioviValue.of(List.of("simone", "mario", "luigi")),
-						GioviValue.of(List.of("simone", "mario", "luigi"))
-					)
-				);
+						GioviValue.of(List.of("simone", "mario", "luigi"))));
 			}
 
 			static Stream<Arguments> produceNotEquals() {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 69)),
-						GioviValue.of(List.of(1, 2, 3, 4))
-					),
+						GioviValue.of(List.of(1, 2, 3, 4))),
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3)),
-						GioviValue.of(List.of(1, 2, 3, 4))
-					),
+						GioviValue.of(List.of(1, 2, 3, 4))),
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 4)),
-						GioviValue.of(List.of(1, 2, 3))
-					)
-				);
+						GioviValue.of(List.of(1, 2, 3))));
 			}
 
 			@ParameterizedTest
@@ -160,34 +151,26 @@ public class TestGioviValue {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
-					),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(2, "b", 1, "a", 3, "c"))
-					)
-				);
+						GioviValue.of(Map.of(2, "b", 1, "a", 3, "c"))));
 			}
 
 			static Stream<Arguments> produceNotEquals() {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(Map.of(1, "A", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
-					),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
 					Arguments.of(
 						GioviValue.of(Map.of(69, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
-					),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
-					),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
 					Arguments.of(
 						GioviValue.of(Map.of("1", "a", "2", "b", "3", "c", "4", "d")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
-					)
-				);
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))));
 			}
 
 			@ParameterizedTest

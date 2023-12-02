@@ -8,7 +8,6 @@ import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
 import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
 import it.simonvic.giovi.lang.functions.FunctionScope;
 import it.simonvic.giovi.lang.functions.GioviFunction;
-import it.simonvic.giovi.lang.values.GioviStruct;
 import it.simonvic.giovi.lang.values.GioviValue;
 
 public class Scope {
@@ -254,16 +253,16 @@ public class Scope {
 	////////////////////////////////////////////////
 	// Structs
 
-	private final Map<String, GioviStruct> structDefinitions = new HashMap<>();
+	private final Map<String, GioviStructDefinition> structDefinitions = new HashMap<>();
 
-	public void define(String identifier, GioviStruct struct) {
+	public void define(String identifier, GioviStructDefinition struct) {
 		if (isDefinedStruct(identifier)) {
 			throw new GioviException("Struct already defined: " + identifier);
 		}
 		structDefinitions.put(identifier, struct);
 	}
 
-	public GioviStruct getDefinitionStruct(String identifier) {
+	public GioviStructDefinition getDefinitionStruct(String identifier) {
 		return Scope.getDefinitionStruct(this, identifier);
 	}
 
@@ -282,11 +281,11 @@ public class Scope {
 			|| Scope.isDefinedStruct(scope.parentScope, identifier);
 	}
 
-	private GioviStruct getDefinitionLocalStruct(String identifier) {
+	private GioviStructDefinition getDefinitionLocalStruct(String identifier) {
 		return structDefinitions.get(identifier);
 	}
 
-	private static GioviStruct getDefinitionStruct(Scope scope, String identifier) {
+	private static GioviStructDefinition getDefinitionStruct(Scope scope, String identifier) {
 		if (scope == null) throw new GioviException("Struct not defined: " + identifier);
 		return scope.isDefinedLocalStruct(identifier)
 			? scope.getDefinitionLocalStruct(identifier)

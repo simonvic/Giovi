@@ -27,11 +27,6 @@ public final class GioviInt extends GioviNumber<Integer> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviInt.class);
-	}
-
-	@Override
 	public GioviInt copy() {
 		return new GioviInt(this.value, this.defaultValue);
 	}

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestDefaults {
 
@@ -159,8 +160,8 @@ public class TestDefaults {
 		@Test
 		void testMaps() {
 			var expected = new GioviMap(
-				new GioviTypePrimitive(GioviInt.class),
-				new GioviTypePrimitive(GioviText.class));
+				GioviTypes.of(GioviInt.class),
+				GioviTypes.of(GioviText.class));
 			expected.put(new GioviInt(0), new GioviText("a"));
 			expected.put(new GioviInt(1), new GioviText("b"));
 			expected.put(new GioviInt(2), new GioviText("c"));

@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestTypeCheckExpression {
 
@@ -53,47 +55,49 @@ public class TestTypeCheckExpression {
 
 	@Test
 	void testStruct() {
-		var definitionStruct = new GioviStruct("Foobar", new Struct.Named());
-		scope.define("Foobar", definitionStruct);
-		scope.declare("x", definitionStruct.copy());
+		var definition = new GioviStructDefinition("Foobar", new Struct.Named());
+		scope.define("Foobar", definition);
+		scope.declare("x", new GioviStructTyped(definition));
 		assertTrue(runExpression(visitor, "x is Foobar").asGioviBool().unbox());
 	}
 
 	@Test
 	void testListOfPrimitive() {
-		scope.declare("x", new GioviList(new GioviTypePrimitive(GioviInt.class)));
+		scope.declare("x", new GioviList(GioviTypes.of(GioviInt.class)));
 		assertTrue(runExpression(visitor, "x is [Int]").asGioviBool().unbox());
 	}
 
 	@Test
 	void testListOfList() {
 		scope.declare("x",
-			new GioviList(new GioviTypeList(new GioviTypePrimitive(GioviInt.class))));
+			new GioviList(new GioviTypeList(GioviTypes.of(GioviInt.class))));
 		assertTrue(runExpression(visitor, "x is [[Int]]").asGioviBool().unbox());
 	}
 
 	@Test
 	void testMapOfPrimitive() {
 		scope.declare("x", new GioviMap(
-			new GioviTypePrimitive(GioviText.class),
-			new GioviTypePrimitive(GioviInt.class)));
+			GioviTypes.of(GioviText.class),
+			GioviTypes.of(GioviInt.class)));
 		assertTrue(runExpression(visitor, "x is [Text : Int]").asGioviBool().unbox());
 	}
 
 	@Test
 	void testMapOfList() {
 		scope.declare("x", new GioviMap(
-			new GioviTypePrimitive(GioviText.class),
-			new GioviTypeList(new GioviTypePrimitive(GioviInt.class))));
+			GioviTypes.of(GioviText.class),
+			new GioviTypeList(GioviTypes.of(GioviInt.class))));
 		assertTrue(runExpression(visitor, "x is [Text : [Int]]").asGioviBool().unbox());
 	}
 
 	@Test
 	void testMapOfStruct() {
-		scope.define("Foobar", new GioviStruct("Foobar", new Struct.Named()));
+		var namedStruct = new Struct.Named();
+		var definition = new GioviStructDefinition("Foobar", namedStruct);
+		scope.define("Foobar", definition);
 		scope.declare("x", new GioviMap(
-			new GioviTypePrimitive(GioviText.class),
-			new GioviTypeStruct("Foobar")));
+			GioviTypes.of(GioviText.class),
+			new GioviTypeStructTyped(definition)));
 		assertTrue(runExpression(visitor, "x is [Text : Foobar]").asGioviBool().unbox());
 	}
 

@@ -2,32 +2,51 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.Objects;
 
-public final class GioviTypeList extends GioviTypePrimitive {
+import it.simonvic.giovi.lang.primitives.Type.List;
+
+public final class GioviTypeList extends GioviType<List> {
 
 	private final GioviType<?> entryType;
+	private final Integer initSize;
+
+	public GioviTypeList(
+		List value,
+		List defaultValue,
+		GioviType<?> entryType,
+		Integer initSize) {
+		super(value, defaultValue);
+		this.entryType = entryType;
+		this.initSize = initSize;
+	}
+
+	public GioviTypeList(
+		List value,
+		GioviType<?> entryType,
+		Integer initSize) {
+		this(value, value.copy(), entryType, initSize);
+	}
+
+	public GioviTypeList(
+		GioviType<?> entryType,
+		Integer initSize) {
+		this(new List(entryType.unbox()), entryType, initSize);
+	}
 
 	public GioviTypeList(GioviType<?> entryType) {
-		super(GioviList.class);
-		this.entryType = entryType;
+		this(entryType, 0);
 	}
 
 	public GioviType<?> getEntryType() {
 		return entryType;
 	}
 
-	@Override
-	public boolean canUpcast(GioviType<?> to) {
-		return switch (to) {
-			case GioviTypeStruct t -> false;
-			case GioviTypeMap t -> false;
-			case GioviTypeList t -> getEntryType().canUpcast(t.getEntryType());
-			case GioviTypePrimitive t -> false;
-		};
+	public Integer getInitSize() {
+		return initSize;
 	}
 
 	@Override
 	public String toString() {
-		return "[" + entryType.toString() + "]";
+		return "[" + entryType + "]";
 	}
 
 	@Override
@@ -45,6 +64,29 @@ public final class GioviTypeList extends GioviTypePrimitive {
 		if (getClass() != obj.getClass()) return false;
 		GioviTypeList other = (GioviTypeList) obj;
 		return Objects.equals(this.entryType, other.entryType);
+	}
+
+	@Override
+	public GioviTypeList copy() {
+		return new GioviTypeList(this.value.copy(), this.defaultValue.copy(), this.entryType.copy(), this.initSize);
+	}
+
+	@Override
+	public boolean canUpcast(GioviType<?> to) {
+		return switch (to) {
+			case GioviTypeList t -> getEntryType().canUpcast(t.getEntryType());
+			default -> false;
+		};
+	}
+
+	@Override
+	public GioviValue<?> spawn() {
+		var list = new GioviList(this.entryType);
+		var rawList = list.unbox();
+		for (int i = 0; i < this.initSize; i++) {
+			rawList.add(this.entryType.spawn());
+		}
+		return list;
 	}
 
 }

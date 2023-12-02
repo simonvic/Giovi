@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestLists {
 
@@ -32,7 +33,8 @@ public class TestLists {
 			String code = """
 				[ 1 2 3 4 ]
 				""";
-			assertEquals(GioviInt.class, runExpression(code).asGioviList().getEntryType().unbox());
+			assertEquals(GioviInt.class,
+				runExpression(code).asGioviList().getEntryType().unbox().getClazz());
 		}
 
 		@Test
@@ -40,7 +42,8 @@ public class TestLists {
 			String code = """
 				[ 1.0 2.0 3.0 4.0 ]
 				""";
-			assertEquals(GioviReal.class, runExpression(code).asGioviList().getEntryType().unbox());
+			assertEquals(GioviReal.class,
+				runExpression(code).asGioviList().getEntryType().unbox().getClazz());
 		}
 
 		@Test
@@ -48,7 +51,8 @@ public class TestLists {
 			String code = """
 				[ "A" "B" "C" ]
 				""";
-			assertEquals(GioviText.class, runExpression(code).asGioviList().getEntryType().unbox());
+			assertEquals(GioviText.class,
+				runExpression(code).asGioviList().getEntryType().unbox().getClazz());
 		}
 
 		@Test
@@ -56,7 +60,8 @@ public class TestLists {
 			String code = """
 				[ true false true true ]
 				""";
-			assertEquals(GioviBool.class, runExpression(code).asGioviList().getEntryType().unbox());
+			assertEquals(GioviBool.class,
+				runExpression(code).asGioviList().getEntryType().unbox().getClazz());
 		}
 
 		@Test
@@ -64,7 +69,8 @@ public class TestLists {
 			String code = """
 				[ 1 2 3.0 4 ]
 				""";
-			assertEquals(GioviReal.class, runExpression(code).asGioviList().getEntryType().unbox());
+			assertEquals(GioviReal.class,
+				runExpression(code).asGioviList().getEntryType().unbox().getClazz());
 		}
 
 		@Test
@@ -80,7 +86,7 @@ public class TestLists {
 			String code = """
 				[ [1 2 3] [1 2 3] ]
 				""";
-			var expected = new GioviTypeList(new GioviTypePrimitive(GioviInt.class));
+			var expected = new GioviTypeList(GioviTypes.of(GioviInt.class));
 			assertEquals(expected, runExpression(code).asGioviList().getEntryType());
 		}
 
@@ -89,7 +95,7 @@ public class TestLists {
 			String code = """
 				[ [1 2 3] [1 2.0 3] ]
 				""";
-			var expected = new GioviTypeList(new GioviTypePrimitive(GioviReal.class));
+			var expected = new GioviTypeList(GioviTypes.of(GioviReal.class));
 			var entryType = runExpression(code).asGioviList().getEntryType();
 			assertEquals(expected, entryType);
 		}
@@ -113,7 +119,8 @@ public class TestLists {
 
 	}
 
-	@ParameterizedTest @MethodSource("produceEqualLists")
+	@ParameterizedTest
+	@MethodSource("produceEqualLists")
 	void testListEquality(String code, GioviList expected) {
 		assertEquals(expected, runExpression(code));
 	}
@@ -130,7 +137,8 @@ public class TestLists {
 				GioviLists.of("Simone", "Francesco", "Mario")));
 	}
 
-	@ParameterizedTest @MethodSource("produceNotEqualLists")
+	@ParameterizedTest
+	@MethodSource("produceNotEqualLists")
 	void testListNonEquality(String code, GioviList expected) {
 		assertNotEquals(expected, runExpression(code));
 	}

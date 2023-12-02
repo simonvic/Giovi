@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleStructs;
+import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.Structs;
 
@@ -52,14 +53,9 @@ public class TestGioviStruct {
 
 	@Nested
 	class Definition {
-		@Test
-		@Disabled
-		void testEmptyStruct() {
-
-		}
 
 		@Test
-		void testSimpleStruct() {
+		void testDefinition() {
 			var visitor = visit("""
 				Foo <
 					foo Int
@@ -71,6 +67,16 @@ public class TestGioviStruct {
 		}
 
 		@Test
+		void testEmptyStruct() {
+			var visitor = visit("""
+				Foo <>
+				""");
+			assertEquals(new GioviStructDefinition(
+				"Foo", Structs.of()),
+				visitor.getCurrentScope().getDefinitionStruct("Foo"));
+		}
+
+		@Test
 		void testSimpleStructDefaultFields() {
 			var visitor = visit("""
 				Foo <
@@ -79,11 +85,11 @@ public class TestGioviStruct {
 					foobar Text
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			assertEquals(new GioviStructDefinition(
+				"Foo", Structs.of(
 					"foo", 0,
 					"bar", false,
-					"foobar", ""),
+					"foobar", "")),
 				visitor.getCurrentScope().getDefinitionStruct("Foo"));
 		}
 
@@ -96,11 +102,11 @@ public class TestGioviStruct {
 					foobar Text default "foobar"
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			assertEquals(new GioviStructDefinition(
+				"Foo", Structs.of(
 					"foo", 69,
 					"bar", true,
-					"foobar", "foobar"),
+					"foobar", "foobar")),
 				visitor.getCurrentScope().getDefinitionStruct("Foo"));
 		}
 
@@ -117,14 +123,15 @@ public class TestGioviStruct {
 					favoriteColor RGB
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			var expected = new GioviStructDefinition(
+				"Person", Structs.of(
 					"name", "",
-					"favoriteColor", Structs.of(
+					"favoriteColor", new GioviStructDefinition("RGB", Structs.of(
 						"r", 0,
 						"g", 0,
-						"b", 0)),
-				visitor.getCurrentScope().getDefinitionStruct("Person"));
+						"b", 0))));
+			var actual = visitor.getCurrentScope().getDefinitionStruct("Person");
+			assertEquals(expected, actual);
 		}
 
 		@Disabled("Not implemented yet")
@@ -151,12 +158,12 @@ public class TestGioviStruct {
 					a Int
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			assertEquals(new GioviStructDefinition(
+				"ARGB", Structs.of(
 					"r", 0,
 					"g", 0,
 					"b", 0,
-					"a", 0),
+					"a", 0)),
 				visitor.getCurrentScope().getDefinitionStruct("ARGB"));
 		}
 
@@ -175,12 +182,12 @@ public class TestGioviStruct {
 					a Int default 255
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			assertEquals(new GioviStructDefinition(
+				"SomeColor", Structs.of(
 					"r", 255,
 					"g", 255,
 					"b", 255,
-					"a", 255),
+					"a", 255)),
 				visitor.getCurrentScope().getDefinitionStruct("SomeColor"));
 		}
 
@@ -199,11 +206,11 @@ public class TestGioviStruct {
 					a Int default 255
 				>
 				""");
-			assertEquals(
-				GioviStructs.of(
+			assertEquals(new GioviStructDefinition(
+				"RGB", Structs.of(
 					"r", 0,
 					"g", 0,
-					"b", 0),
+					"b", 0)),
 				visitor.getCurrentScope().getDefinitionStruct("RGB"));
 		}
 	}
@@ -253,6 +260,7 @@ public class TestGioviStruct {
 				""");
 			assertEquals(
 				GioviStructs.of(
+					"ARGB",
 					"r", 0,
 					"g", 0,
 					"b", 0,
@@ -271,6 +279,7 @@ public class TestGioviStruct {
 				""");
 			assertEquals(
 				GioviStructs.of(
+					"RGB",
 					"r", 1,
 					"g", 2,
 					"b", 3),
@@ -290,6 +299,7 @@ public class TestGioviStruct {
 				""");
 			assertEquals(
 				GioviStructs.of(
+					"RGB",
 					"r", 1,
 					"g", 2,
 					"b", 3),
@@ -368,6 +378,7 @@ public class TestGioviStruct {
 				""");
 			assertEquals(
 				GioviStructs.of(
+					"RGB",
 					"r", 69,
 					"g", 0,
 					"b", 420),

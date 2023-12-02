@@ -8,6 +8,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
+import it.simonvic.giovi.lang.primitives.Type.Primitive;
 import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
@@ -189,7 +190,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 			case AccessKey accessKey -> switch (accessKey.get()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> {
-					GioviList indeces = new GioviList(new GioviTypePrimitive(GioviInt.class));
+					GioviList indeces = new GioviList(new GioviTypePrimitive(new Primitive<>(GioviInt.class)));
 					indeces.addAll(Range.of(0, unbox().size() - 1, 1).expandAsGioviValues());
 					yield indeces;
 				}

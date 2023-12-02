@@ -1,42 +1,14 @@
 package it.simonvic.giovi.lang.values;
 
-public final class GioviTypeStruct extends GioviType<String> {
+import it.simonvic.giovi.lang.primitives.Type;
 
-	// TODO: add definition struct here, so we can use it for casting and other shit without having to query the visitor
+public abstract sealed class GioviTypeStruct<T extends Type.Struct<?>>
+	extends GioviType<T>
+	permits GioviTypeStructTyped, GioviTypeStructTuple {
 
-	public GioviTypeStruct(String value, String defaultValue) {
+
+	public GioviTypeStruct(T value, T defaultValue) {
 		super(value, defaultValue);
-	}
-
-	public GioviTypeStruct(String value) {
-		super(value, value);
-	}
-
-	@Override
-	public String toString() {
-		return "giovi." + value;
-	}
-
-	@Override
-	public GioviType<?> getGioviType() {
-		return new GioviTypePrimitive(GioviTypeStruct.class);
-	}
-
-	@Override
-	public GioviTypeStruct copy() {
-		return new GioviTypeStruct(this.value, this.defaultValue);
-	}
-
-	@Override
-	public boolean canUpcast(GioviType<?> to) {
-		return switch (to) {
-			case GioviTypeStruct t -> {
-				yield false; // TODO: stub
-			}
-			case GioviTypeList t -> false;
-			case GioviTypeMap t -> false;
-			case GioviTypePrimitive t -> false;
-		};
 	}
 
 }

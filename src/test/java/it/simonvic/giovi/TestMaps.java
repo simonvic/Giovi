@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviMaps;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestMaps {
 
@@ -25,8 +26,8 @@ public class TestMaps {
 				[ 1:"a" 2:"b" 3:"c" ]
 				""";
 			GioviMap map = runExpression(code).asGioviMap();
-			assertEquals(GioviInt.class, map.getKeyType().unbox());
-			assertEquals(GioviText.class, map.getElementType().unbox());
+			assertEquals(GioviInt.class, map.getKeyType().unbox().getClazz());
+			assertEquals(GioviText.class, map.getElementType().unbox().getClazz());
 		}
 
 		@Test
@@ -35,8 +36,8 @@ public class TestMaps {
 				[ 1:true 2.0:true 3:false ]
 				""";
 			GioviMap map = runExpression(code).asGioviMap();
-			assertEquals(GioviReal.class, map.getKeyType().unbox());
-			assertEquals(GioviBool.class, map.getElementType().unbox());
+			assertEquals(GioviReal.class, map.getKeyType().unbox().getClazz());
+			assertEquals(GioviBool.class, map.getElementType().unbox().getClazz());
 		}
 
 		@Test
@@ -45,8 +46,8 @@ public class TestMaps {
 				[ 1:1 2:0.2 3:3 ]
 				""";
 			GioviMap map = runExpression(code).asGioviMap();
-			assertEquals(GioviInt.class, map.getKeyType().unbox());
-			assertEquals(GioviReal.class, map.getElementType().unbox());
+			assertEquals(GioviInt.class, map.getKeyType().unbox().getClazz());
+			assertEquals(GioviReal.class, map.getElementType().unbox().getClazz());
 		}
 
 	}
@@ -54,15 +55,15 @@ public class TestMaps {
 	@Test
 	void mapsShouldBeEqual() {
 		GioviMap map1 = new GioviMap(
-			new GioviTypePrimitive(GioviInt.class),
-			new GioviTypePrimitive(GioviText.class));
+			GioviTypes.of(GioviInt.class),
+			GioviTypes.of(GioviText.class));
 		map1.put(new GioviInt(0), new GioviText("a"));
 		map1.put(new GioviInt(1), new GioviText("b"));
 		map1.put(new GioviInt(2), new GioviText("c"));
 
 		GioviMap map2 = new GioviMap(
-			new GioviTypePrimitive(GioviInt.class),
-			new GioviTypePrimitive(GioviText.class));
+			GioviTypes.of(GioviInt.class),
+			GioviTypes.of(GioviText.class));
 		map2.put(new GioviInt(0), new GioviText("a"));
 		map2.put(new GioviInt(1), new GioviText("b"));
 		map2.put(new GioviInt(2), new GioviText("c"));

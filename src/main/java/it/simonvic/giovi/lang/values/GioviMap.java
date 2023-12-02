@@ -72,7 +72,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				return value.get(k);
 			}
 		}
-		return null;
+		return null; // TODO: throw exception instead of returning null
 	}
 
 

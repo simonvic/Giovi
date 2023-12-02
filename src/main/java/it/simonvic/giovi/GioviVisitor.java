@@ -12,6 +12,7 @@ import it.simonvic.giovi.lang.functions.GioviFunctionParameter;
 import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.primitives.Struct.Named;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
@@ -577,14 +578,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		Optional<DefaultDefinitionContext> defaultDefinitionCtx) {
 
 		var type = visit(typeCtx).asGioviType();
-		var value = switch (type) {
-			case GioviTypeList t -> new GioviList(t.getEntryType());
-			case GioviTypeMap t -> new GioviMap(t.getKeyType(), t.getElementType());
-			case GioviTypePrimitive t -> t.spawn();
-			case GioviTypeStruct t -> getCurrentScope()
-				.getDefinitionStruct(typeCtx.typeIdentifier().getText())
-				.copy();
-		};
+		var value = type.spawn();
 
 		if (defaultDefinitionCtx.isPresent()) {
 			var defaultValue = visit(defaultDefinitionCtx.get()).asGioviValue();
@@ -721,7 +715,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		var struct = new Struct.Named();
 		if (ctx.parentName != null) {
 			var parentDefinition = getDefinitionStruct(ctx.parentName.getText());
-			struct.putAll((Named) parentDefinition.unbox());
+			struct.putAll(parentDefinition.struct());
 		}
 		// TODO: nested struct definition
 		// for (var structDefinitionCtx : ctx.structBodyDefinition().structDefinition()) {
@@ -740,60 +734,60 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		// 	s.put(functionCtx.identifier().getText(), visit(functionCtx).asGioviFunction());
 		// }
 
-		String structName = ctx.structName.getText();
-		var definitionStruct = new GioviStruct(structName, struct);
-		getCurrentScope().define(structName, definitionStruct);
-		return definitionStruct;
+		String typename = ctx.structName.getText();
+		getCurrentScope().define(typename, new GioviStructDefinition(typename, struct));
+		return null;
 	}
 
 	@Override
 	public GioviObject visitStructCreation(StructCreationContext ctx) {
 		var structFieldsCtx = ctx.structFields();
 		return ctx.structType != null
-			? createTypedStruct(structFieldsCtx, ctx.structType.getText())
+			? createTypedStruct(ctx.structType.getText(), structFieldsCtx)
 			: createAnonStruct(structFieldsCtx);
 	}
 
-	private GioviStruct createTypedStruct(StructFieldsContext ctx, String structType) {
-		var struct = (Struct.Named) getDefinitionStruct(structType).unbox().copy();
+	private GioviStruct createTypedStruct(String typename, StructFieldsContext ctx) {
+		GioviStructDefinition definition = getDefinitionStruct(typename);
 		if (ctx == null) {
-			return new GioviStruct(structType, struct);
+			return new GioviStructTyped(definition);
 		}
+		var struct = definition.struct().copy();
 		if (!ctx.namedStructField().isEmpty()) {
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
 				String fieldName = namedStructFieldCtx.identifier().getText();
 				if (!struct.contains(fieldName)) {
 					throw new IncompatibleStructs(
-						"Struct " + structType + " doesn't have a field " + fieldName);
+						"Struct " + typename + " doesn't have a field " + fieldName);
 				}
 				struct.put(
 					fieldName,
 					visit(namedStructFieldCtx.expression()).asGioviValue());
 			}
-			return new GioviStruct(structType, struct);
+			return new GioviStructTyped(struct, definition);
 		} else {
 			int fieldsCount = ctx.expression().size();
 			if (fieldsCount != struct.getFieldsCount()) {
-				throw new IncompatibleStructs(structType + " has " + struct.getFieldsCount()
+				throw new IncompatibleStructs(typename + " has " + struct.getFieldsCount()
 					+ " but " + fieldsCount + " were provided");
 			}
 			for (int i = 0; i < fieldsCount; i++) {
 				struct.getField(i).box(visit(ctx.expression(i)).asGioviValue());
 			}
-			return new GioviStruct(structType, struct);
+			return new GioviStructTyped(struct, definition);
 		}
 	}
 
 	private GioviStruct createAnonStruct(StructFieldsContext ctx) {
 		if (ctx == null) {
-			return new GioviStruct(new Struct.Unnamed());
+			return new GioviStructTuple(new Struct.Unnamed());
 		}
 		if (ctx.namedStructField().isEmpty()) {
 			var struct = new Struct.Unnamed();
 			for (var expressionCtx : ctx.expression()) {
 				struct.put(visit(expressionCtx).asGioviValue());
 			}
-			return new GioviStruct(struct);
+			return new GioviStructTuple(struct);
 		} else {
 			var struct = new Named();
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
@@ -801,11 +795,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 					namedStructFieldCtx.identifier().getText(),
 					visit(namedStructFieldCtx.expression()).asGioviValue());
 			}
-			return new GioviStruct(struct);
+			return new GioviStructTuple(struct);
 		}
 	}
 
-	private GioviStruct getDefinitionStruct(String structType) {
+	private GioviStructDefinition getDefinitionStruct(String structType) {
 		if (!getCurrentScope().isDefinedStruct(structType)) {
 			throw new TypeNotFound(structType);
 		}
@@ -820,24 +814,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 		String typeIdentifier = ctx.typeIdentifier().getText();
 		return switch (typeIdentifier) {
-			case "Natural" -> new GioviTypePrimitive(GioviNatural.class);
-			case "Int" -> new GioviTypePrimitive(GioviInt.class);
-			case "Real" -> new GioviTypePrimitive(GioviReal.class);
-			case "Bool" -> new GioviTypePrimitive(GioviBool.class);
-			case "Text" -> new GioviTypePrimitive(GioviText.class);
-			default -> {
-				if (getCurrentScope().isDefinedStruct(typeIdentifier)) {
-					yield new GioviTypeStruct(typeIdentifier);
-				} else {
-					throw new TypeNotFound(ctx.getText());
-				}
-			}
+			case "Natural" -> GioviTypes.of(GioviNatural.class);
+			case "Int" -> GioviTypes.of(GioviInt.class);
+			case "Real" -> GioviTypes.of(GioviReal.class);
+			case "Bool" -> GioviTypes.of(GioviBool.class);
+			case "Text" -> GioviTypes.of(GioviText.class);
+			default -> new GioviTypeStructTyped(getDefinitionStruct(typeIdentifier));
 		};
 	}
 
 	@Override
 	public GioviObject visitTypeList(TypeListContext ctx) {
-		return new GioviTypeList(visit(ctx.type()).asGioviType());
+		var entryType = visit(ctx.type()).asGioviType();
+		if (ctx.initSize == null) return new GioviTypeList(entryType);
+		return switch (visit(ctx.initSize)) {
+			case GioviInt i -> new GioviTypeList(entryType, i.unbox());
+			case GioviNatural i -> new GioviTypeList(entryType, i.unbox().intValue());
+			default -> throw new GioviException("Invalid list init size");
+		};
 	}
 
 	@Override
