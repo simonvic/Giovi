@@ -40,7 +40,7 @@ public class TestStruct {
 	void sandbox() {
 		visit("""
 			factorial(n Int) => Int {
-				" " * n ->+ \\out
+			#" " * n ->+ \\out
 				n -> \\out
 				if n <= 1 do => 1
 				factorial(n - 1) -> p Int
