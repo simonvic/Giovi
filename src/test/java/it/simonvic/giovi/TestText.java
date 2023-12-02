@@ -1,13 +1,18 @@
 package it.simonvic.giovi;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestText {
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import it.simonvic.giovi.lang.Range;
+import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.util.GioviLists;
+
+public class TestText {
 
 	@Test
 	void testText() {
@@ -90,7 +95,7 @@ public class TestText {
 		void multiline_emptyLines_shouldBeMultiLineEmptyString() {
 			String actual = runExpression("""
 				"{
-							
+
 
 				}"
 				""").asGioviText().unbox();
@@ -210,4 +215,108 @@ public class TestText {
 
 	}
 
+	@Nested
+	class Operations {
+
+		@Test
+		void plus_shouldConcatenate() {
+			assertEquals(
+				GioviValue.of(
+					"hello world"),
+				runExpression("""
+					"hello" + " world"
+					"""));
+		}
+	}
+
+	@Nested
+	class Access {
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			"01234"@0, 0
+			"01234"@1, 1
+			"01234"@2, 2
+			"01234"@3, 3
+			"01234"@4, 4
+			""")
+		void accessWithInt_shouldReturnCharAtIndex(String expression, String expected) {
+			assertEquals(expected, runExpression(expression).asGioviText().unbox());
+		}
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			"01234"@{-1}, 4
+			"01234"@{-2}, 3
+			"01234"@{-3}, 2
+			"01234"@{-4}, 1
+			"01234"@{-5}, 0
+			""")
+		void accessWithNegativeInt_shouldReturnCharAtRearIndex(String expression, String expected) {
+			assertEquals(expected, runExpression(expression).asGioviText().unbox());
+		}
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			"01234"@0..4, 01234
+			"01234"@0..3, 0123
+			"01234"@0..2, 012
+			"01234"@0..1, 01
+			"01234"@0..0, 0
+			"01234"@0..4, 01234
+			"01234"@1..4, 1234
+			"01234"@2..4, 234
+			"01234"@3..4, 34
+			"01234"@4..4, 4
+			"01234"@1..3, 123
+			"01234"@2..4, 234
+			""")
+		void accessWithRange_shouldReturnSubstring(String expression, String expected) {
+			assertEquals(expected, runExpression(expression).asGioviText().unbox());
+		}
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			"01234"@4..0, 43210
+			"01234"@3..0, 3210
+			"01234"@2..0, 210
+			"01234"@1..0, 10
+			"01234"@4..1, 4321
+			"01234"@4..2, 432
+			"01234"@4..3, 43
+			"01234"@3..1, 321
+			"01234"@4..2, 432
+			""")
+		void accessWithInverseRange_shouldReturnSubstringReversed(String expression,
+			String expected) {
+			assertEquals(expected, runExpression(expression).asGioviText().unbox());
+		}
+
+		@Test
+		void testLength() {
+			assertEquals(5, runExpression("""
+				"01234"@%
+				""").asGioviInt().unbox());
+		}
+
+		@Test
+		void testElements() {
+			assertEquals(
+				GioviLists.of(
+					"0", "1", "2", "3", "4"),
+				runExpression("""
+					"01234"@*
+					"""));
+		}
+
+		@Test
+		void testIndexes() {
+			assertEquals(
+				Range.of(
+					0, 4, 1),
+				runExpression("""
+					"01234"@@
+					"""));
+		}
+	}
 }

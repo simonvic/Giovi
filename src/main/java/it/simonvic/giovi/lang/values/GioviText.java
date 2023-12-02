@@ -196,12 +196,17 @@ public final class GioviText extends GioviPrimitive<String> {
 			};
 			case Range<?> r -> {
 				if (r.getStart() instanceof Integer start && r.getEnd() instanceof Integer end) {
-					yield new GioviText(value.substring(start, end));
+					yield new GioviText(start <= end
+						? value.substring(start, end + 1)
+						: new StringBuilder(value.substring(end, start + 1)).reverse().toString());
 				}
 				yield super.access(right);
 			}
-			case GioviInt index -> new GioviText(
-				String.valueOf(value.charAt(index.unbox() % value.length())));
+			case GioviInt i -> {
+				int index = i.unbox();
+				index = index >= 0 ? index : value.length() + index;
+				yield new GioviText(String.valueOf(value.charAt(index)));
+			}
 			default -> super.access(right);
 		};
 	}
