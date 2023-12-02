@@ -202,11 +202,11 @@ public final class GioviText extends GioviPrimitive<String> {
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
-			case Range<?> r -> {
-				if (r.getStart() instanceof Integer start && r.getEnd() instanceof Integer end) {
-					yield new GioviText(start <= end
-						? value.substring(start, end + 1)
-						: new StringBuilder(value.substring(end, start + 1)).reverse().toString());
+			case Range<?> range -> {
+				if (range.getStart() instanceof Integer start && range.getEnd() instanceof Integer end) {
+					var sb = new StringBuilder();
+					range.iterate(index -> sb.append(this.value.charAt((int) index)));
+					yield new GioviText(sb.toString());
 				}
 				yield super.access(right);
 			}
