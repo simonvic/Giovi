@@ -23,6 +23,9 @@ public abstract sealed class Struct {
 
 	public abstract Struct copy();
 
+	public abstract boolean isSubset(Struct struct);
+
+
 	public static final class Named extends Struct {
 		private final LinkedHashMap<String, GioviValue<?>> fields;
 
@@ -124,6 +127,19 @@ public abstract sealed class Struct {
 						.box(GioviValue.of(unnamedIterator.next().unbox())));
 				}
 			}
+		}
+
+		@Override
+		public boolean isSubset(Struct struct) {
+			if (!(struct instanceof Struct.Named other)) return false;
+			if (this.getFieldsCount() > other.getFieldsCount()) return false;
+			for (String fieldName : this.getFieldNames()) {
+				if (!other.contains(fieldName)
+					|| !this.getField(fieldName).getGioviType()
+						.equals(other.getField(fieldName).getGioviType()))
+					return false;
+			}
+			return true;
 		}
 
 		public void put(String identifier, GioviValue<?> value) {
@@ -233,6 +249,18 @@ public abstract sealed class Struct {
 				case Unnamed s -> s.fields.forEach(gioviValue -> this.put(gioviValue.copy()));
 			}
 		}
+
+		@Override
+		public boolean isSubset(Struct struct) {
+			if (this.getFieldsCount() > struct.getFieldsCount()) return false;
+			for (int i = 0; i < this.getFieldsCount(); i++) {
+				// TODO: should we check canUpcast instead of type equality?
+				if (!this.getField(i).getGioviType().equals(struct.getField(i).getGioviType()))
+					return false;
+			}
+			return true;
+		}
+
 
 		public void put(GioviValue<?> value) {
 			fields.add(value);
