@@ -113,6 +113,14 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
+	public GioviObject multiply(GioviObject right) {
+		return switch (right) {
+			case GioviNumber<?> v -> new GioviText(value.repeat(v.intValue().unbox()));
+			default -> super.divide(right);
+		};
+	}
+
+	@Override
 	public GioviObject divide(GioviObject right) {
 		return switch (right) {
 			case GioviText v -> new GioviList(new ArrayList<>(

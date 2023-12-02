@@ -239,6 +239,16 @@ public class TestText {
 		}
 
 		@Test
+		void multiply_shouldRepeat() {
+			assertEquals(
+				GioviValue.of(
+					"HelloHelloHello"),
+				runExpression("""
+					"Hello" * 3
+					"""));
+		}
+
+		@Test
 		void divide_shouldSplitString() {
 			assertEquals(
 				GioviLists.of(
