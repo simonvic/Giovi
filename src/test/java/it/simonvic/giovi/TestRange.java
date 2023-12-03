@@ -14,7 +14,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.values.GioviList;
 import it.simonvic.giovi.util.GioviLists;
 
-public class TestSequence {
+public class TestRange {
 
 	private static Stream<Arguments> produceEqualListsInteger() {
 		return Stream.of(

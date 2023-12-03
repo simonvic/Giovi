@@ -1,7 +1,7 @@
 package it.simonvic.giovi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static it.simonvic.giovi.Giovi.visit;
+
 import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.util.Structs;
