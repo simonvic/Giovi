@@ -394,7 +394,7 @@ public class TestGioviMap {
 		class Access {
 
 			@Test
-			void accessSize_shouldReturnEntryCount() {
+			void accessWithLengthOperator_shouldReturnEntriesCount() {
 				assertThat(runExpression("""
 					[1:"a" 2:"b" 3:"c"]@%
 					""").asGioviInt().unbox())
@@ -402,7 +402,7 @@ public class TestGioviMap {
 			}
 
 			@Test
-			void accessKeys_shouldReturnListOfKeys() {
+			void accessWithIndexesOperator_shouldReturnListOfKeys() {
 				assertThat(runExpression("""
 					[1:"a" 2:"b" 3:"c"]@@
 					"""))
@@ -410,7 +410,7 @@ public class TestGioviMap {
 			}
 
 			@Test
-			void accessElement_shouldReturnListOfElements() {
+			void accessWithElementsOperator_shouldReturnListOfElements() {
 				assertThat(runExpression("""
 					[1:"a" 2:"b" 3:"c"]@*
 					"""))

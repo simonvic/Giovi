@@ -265,7 +265,7 @@ public class TestGioviText {
 			}
 
 			@Test
-			void divide_shouldSplitString() {
+			void divide_shouldSplit() {
 				assertThat(runExpression("""
 					"hello-beatiful-world" / "-"
 					""")).isEqualTo(GioviLists.of(
@@ -420,7 +420,7 @@ public class TestGioviText {
 			}
 
 			@Test
-			void testLength() {
+			void accessWithLengthOperator_shouldReturnCharactersCount() {
 				assertThat(runExpression("""
 					"01234"@%
 					""").asGioviInt().unbox())
@@ -428,7 +428,7 @@ public class TestGioviText {
 			}
 
 			@Test
-			void testElements() {
+			void accessWithElementsOperator_shouldReturnListOfCharacters() {
 				assertThat(runExpression("""
 					"01234"@*
 					"""))
@@ -436,7 +436,7 @@ public class TestGioviText {
 			}
 
 			@Test
-			void testIndexes() {
+			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(runExpression("""
 					"01234"@@
 					"""))

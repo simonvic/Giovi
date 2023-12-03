@@ -36,21 +36,4 @@ public class TestStruct {
 					"y", 0)));
 	}
 
-	@Test
-	void sandbox() {
-		visit("""
-			factorial(n Int) => Int {
-			#" " * n ->+ \\out
-				n -> \\out
-				if n <= 1 do => 1
-				factorial(n - 1) -> p Int
-				p -> \\out
-				=> n * p
-			}
-
-			factorial(4) -> \\out
-			""");
-
-	}
-
 }
