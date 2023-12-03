@@ -7,7 +7,6 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.Range;
-import it.simonvic.giovi.lang.primitives.Type.Primitive;
 import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {

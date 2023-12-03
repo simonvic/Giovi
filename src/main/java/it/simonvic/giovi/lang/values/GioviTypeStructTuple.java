@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
-import it.simonvic.giovi.lang.primitives.Type;
+import it.simonvic.giovi.lang.values.natives.Type;
 
 public final class GioviTypeStructTuple extends GioviTypeStruct<Type.Struct.Tuple> {
 

@@ -2,8 +2,8 @@ package it.simonvic.giovi.util;
 
 import java.util.List;
 
-import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.natives.Struct;
 
 public class Structs {
 

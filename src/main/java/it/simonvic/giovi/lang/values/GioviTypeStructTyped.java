@@ -1,8 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.primitives.Type;
-import it.simonvic.giovi.lang.primitives.Type.Struct.Typed;
+import it.simonvic.giovi.lang.values.natives.Type;
 
 public final class GioviTypeStructTyped extends GioviTypeStruct<Type.Struct.Typed> {
 
@@ -34,7 +33,7 @@ public final class GioviTypeStructTyped extends GioviTypeStruct<Type.Struct.Type
 	}
 
 	@Override
-	public GioviType<Typed> copy() {
+	public GioviType<Type.Struct.Typed> copy() {
 		return new GioviTypeStructTyped(value.copy(), defaultValue.copy(), definition);
 	}
 

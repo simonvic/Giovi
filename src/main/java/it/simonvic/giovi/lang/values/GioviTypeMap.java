@@ -2,16 +2,16 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.Objects;
 
-import it.simonvic.giovi.lang.primitives.Type.Map;
+import it.simonvic.giovi.lang.values.natives.Type;
 
-public final class GioviTypeMap extends GioviType<Map> {
+public final class GioviTypeMap extends GioviType<Type.Map> {
 
 	private final GioviType<?> keyType;
 	private final GioviType<?> elementType;
 
 	public GioviTypeMap(
-		Map value,
-		Map defaultValue,
+		Type.Map value,
+		Type.Map defaultValue,
 		GioviType<?> keyType,
 		GioviType<?> elementType) {
 		super(value, defaultValue);
@@ -20,7 +20,7 @@ public final class GioviTypeMap extends GioviType<Map> {
 	}
 
 	public GioviTypeMap(
-		Map value,
+		Type.Map value,
 		GioviType<?> keyType,
 		GioviType<?> elementType) {
 		super(value, value.copy());
@@ -29,7 +29,7 @@ public final class GioviTypeMap extends GioviType<Map> {
 	}
 
 	public GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType) {
-		this(new Map(keyType.unbox(), elementType.unbox()), keyType, elementType);
+		this(new Type.Map(keyType.unbox(), elementType.unbox()), keyType, elementType);
 	}
 
 	public GioviType<?> getKeyType() {

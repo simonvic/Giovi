@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestExpressionTypeCheck {

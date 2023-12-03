@@ -3,8 +3,8 @@ package it.simonvic.giovi.util;
 import java.util.Collection;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.primitives.Type;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Type;
 
 public class GioviTypes {
 

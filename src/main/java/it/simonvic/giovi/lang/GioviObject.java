@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Natural;
 
 public class GioviObject {
 	// @formatter:off

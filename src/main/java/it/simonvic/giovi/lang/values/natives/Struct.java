@@ -1,4 +1,4 @@
-package it.simonvic.giovi.lang.primitives;
+package it.simonvic.giovi.lang.values.natives;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

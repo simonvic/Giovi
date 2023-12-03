@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang.values;
 import java.lang.reflect.InvocationTargetException;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.primitives.Type;
+import it.simonvic.giovi.lang.values.natives.Type;
 
 public final class GioviTypePrimitive extends GioviType<Type.Primitive<?>> {
 

@@ -6,11 +6,10 @@ import java.util.Objects;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
-import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.primitives.Natural;
-import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.natives.Natural;
+import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 

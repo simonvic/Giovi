@@ -2,16 +2,16 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.Objects;
 
-import it.simonvic.giovi.lang.primitives.Type.List;
+import it.simonvic.giovi.lang.values.natives.Type;
 
-public final class GioviTypeList extends GioviType<List> {
+public final class GioviTypeList extends GioviType<Type.List> {
 
 	private final GioviType<?> entryType;
 	private final Integer initSize;
 
 	public GioviTypeList(
-		List value,
-		List defaultValue,
+		Type.List value,
+		Type.List defaultValue,
 		GioviType<?> entryType,
 		Integer initSize) {
 		super(value, defaultValue);
@@ -20,7 +20,7 @@ public final class GioviTypeList extends GioviType<List> {
 	}
 
 	public GioviTypeList(
-		List value,
+		Type.List value,
 		GioviType<?> entryType,
 		Integer initSize) {
 		this(value, value.copy(), entryType, initSize);
@@ -29,7 +29,7 @@ public final class GioviTypeList extends GioviType<List> {
 	public GioviTypeList(
 		GioviType<?> entryType,
 		Integer initSize) {
-		this(new List(entryType.unbox()), entryType, initSize);
+		this(new Type.List(entryType.unbox()), entryType, initSize);
 	}
 
 	public GioviTypeList(GioviType<?> entryType) {

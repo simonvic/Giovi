@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.natives.Struct;
 
 public record GioviStructDefinition(String typename, Struct.Named struct) {
 

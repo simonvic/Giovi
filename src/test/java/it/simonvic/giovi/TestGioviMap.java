@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
-import it.simonvic.giovi.lang.primitives.Type;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviReal;
 import it.simonvic.giovi.lang.values.GioviText;
+import it.simonvic.giovi.lang.values.natives.Type;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 

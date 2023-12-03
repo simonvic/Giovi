@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
-import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.natives.Struct;
 
 public final class GioviStructTuple extends GioviStruct {
 

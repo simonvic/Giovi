@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Natural;
 
 public class Range<T> extends GioviObject {
 

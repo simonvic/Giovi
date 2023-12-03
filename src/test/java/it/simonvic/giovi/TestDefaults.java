@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import it.simonvic.giovi.lang.primitives.Natural;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Natural;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTypes;
 

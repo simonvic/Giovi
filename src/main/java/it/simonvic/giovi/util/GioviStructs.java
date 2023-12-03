@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.GioviStructTuple;
 import it.simonvic.giovi.lang.values.GioviStructTyped;
 import it.simonvic.giovi.lang.values.GioviValue;
+import it.simonvic.giovi.lang.values.natives.Struct;
 
 public class GioviStructs {
 

@@ -16,9 +16,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.primitives.Natural;
-import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Natural;
+import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.Structs;
 

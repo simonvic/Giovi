@@ -4,7 +4,7 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.functions.GioviFunction;
-import it.simonvic.giovi.lang.primitives.Struct;
+import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 
 public abstract sealed class GioviStruct

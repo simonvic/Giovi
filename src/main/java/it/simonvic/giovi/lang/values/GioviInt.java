@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.primitives.Natural;
+import it.simonvic.giovi.lang.values.natives.Natural;
 
 public final class GioviInt extends GioviNumber<Integer> {
 
