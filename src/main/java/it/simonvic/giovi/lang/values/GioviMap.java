@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.util.GioviTypes;
@@ -74,7 +75,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				return value.get(k);
 			}
 		}
-		return null; // TODO: throw exception instead of returning null
+		throw new KeyNotPresent(this, key);
 	}
 
 
@@ -142,18 +143,26 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((keyType == null) ? 0 : keyType.hashCode());
+		result = prime * result + ((elementType == null) ? 0 : elementType.hashCode());
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (obj == null) return false;
+		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		GioviMap other = (GioviMap) obj;
-
-		if (value.size() != other.value.size()) return false;
-		for (Map.Entry<GioviValue<?>, GioviValue<?>> entry : value.entrySet()) {
-			if (!entry.getValue().equals(other.get(entry.getKey()))) {
-				return false;
-			}
-		}
+		if (keyType == null) {
+			if (other.keyType != null) return false;
+		} else if (!keyType.equals(other.keyType)) return false;
+		if (elementType == null) {
+			if (other.elementType != null) return false;
+		} else if (!elementType.equals(other.elementType)) return false;
 		return true;
 	}
 
