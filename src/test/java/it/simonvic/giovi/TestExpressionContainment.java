@@ -6,7 +6,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static it.simonvic.giovi.Giovi.runExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TestContainmentExpression {
+public class TestExpressionContainment {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """

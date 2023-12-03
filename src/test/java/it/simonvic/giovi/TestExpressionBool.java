@@ -6,7 +6,7 @@ import static it.simonvic.giovi.Giovi.runExpression;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-public class TestBoolExpressions {
+public class TestExpressionBool {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """

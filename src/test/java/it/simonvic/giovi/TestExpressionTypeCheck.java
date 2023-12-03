@@ -12,7 +12,7 @@ import it.simonvic.giovi.lang.primitives.Struct;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviTypes;
 
-public class TestTypeCheckExpression {
+public class TestExpressionTypeCheck {
 
 	GioviVisitor visitor;
 	Scope scope;
