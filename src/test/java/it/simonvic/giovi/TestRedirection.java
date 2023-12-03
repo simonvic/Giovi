@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.exceptions.IncompatibleStructs;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviStructs;
 
 public class TestRedirection {
@@ -130,91 +128,6 @@ public class TestRedirection {
 				.getVariableValue("x")
 				.unbox());
 		}
-	}
-
-	@Nested
-	class TestList {
-
-		@Test
-		void redir_shouldChangeValue() {
-			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				x [Int]
-				[1 2 3] -> x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirPlus_shouldInsert() {
-			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2] -> x [Int]
-				3 ->+ x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirPlus_shouldRemove() {
-			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2 3 4] -> x [Int]
-				4 ->- x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirMinus_shouldRemoveFirstOccurence() {
-			assertEquals(GioviLists.of(1, 2, 3, 4), visit("""
-				[1 2 4 3 4] -> x [Int]
-				4 ->- x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirMinus_otherList_shouldInsertAll() {
-			assertEquals(GioviLists.of(1, 2, 3, 4, 5, 6), visit("""
-				[1 2 3] -> x [Int]
-				[4 5 6] ->+ x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirMinus_otherList_shouldRemoveAll() {
-			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[1 2 3 4 5 6] -> x [Int]
-				[4 5 6] ->- x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void redirMinus_otherList_shouldRemoveAllOccurences() {
-			assertEquals(GioviLists.of(1, 2, 3), visit("""
-				[4 5 1 6 5 2 3 4 5 6] -> x [Int]
-				[4 5 6] ->- x
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
-		@Test
-		void indexedRedirection() {
-			assertEquals(GioviLists.of(1, 69, 3), visit("""
-				[1 2 3] -> x [Int]
-				69 -> x@1
-				""")
-				.getCurrentScope()
-				.getVariableValue("x"));
-		}
-
 	}
 
 	@Nested

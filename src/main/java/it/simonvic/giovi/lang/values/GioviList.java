@@ -2,7 +2,6 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
@@ -34,6 +33,26 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		this.defaultValue.forEach(entry -> entry.castTo(this.entryType));
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((entryType == null) ? 0 : entryType.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviList other = (GioviList) obj;
+		if (entryType == null) {
+			if (other.entryType != null) return false;
+		} else if (!entryType.equals(other.entryType)) return false;
+		return true;
+	}
 
 	public void add(GioviValue<?> entry) {
 		value.add(entry.castTo(entryType));
@@ -111,23 +130,6 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		this.init(defaultValue);
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((entryType == null) ? 0 : entryType.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviList other = (GioviList) obj;
-		return Objects.equals(this.entryType, other.entryType);
-	}
-
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
@@ -193,12 +195,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 			};
 			case AccessKey accessKey -> switch (accessKey.get()) {
 				case "%" -> new GioviInt(unbox().size());
-				case "@" -> {
-					GioviList indeces = new GioviList(
-						new GioviTypePrimitive(new Primitive<>(GioviInt.class)));
-					indeces.addAll(Range.of(0, unbox().size() - 1, 1).expandAsGioviValues());
-					yield indeces;
-				}
+				case "@" -> Range.of(0, unbox().size() - 1, 1);
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
 			case Range<?> range -> {
