@@ -21,8 +21,6 @@ public abstract sealed class GioviNumber<T extends Number>
 			if (typeClass == GioviInt.class) return intValue();
 			if (typeClass == GioviReal.class) return realValue();
 			if (typeClass == GioviNatural.class) return naturalValue();
-			if (typeClass == GioviText.class) return new GioviText(value.toString());
-			// if (typeClass == GioviBool.class) return new GioviBool(value == 1);
 		}
 		return super.castTo(type);
 	}
