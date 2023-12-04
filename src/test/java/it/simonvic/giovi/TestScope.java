@@ -1,11 +1,15 @@
 package it.simonvic.giovi;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDeclared;
 import it.simonvic.giovi.exceptions.VariableNotDeclared;
+import it.simonvic.giovi.lang.LoopScope;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviValue;
@@ -191,4 +195,72 @@ public class TestScope {
 			assertEquals("ciao mondo", global.getVariableValue("aString").unbox());
 		}
 	}
+
+	@Nested
+	class Loop {
+
+		@Test
+		void skipping_inNonLoopScope_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class)
+				.isThrownBy(() -> {
+					var global = new Scope(null);
+					var scope = new Scope(global);
+					scope.doSkip();
+				});
+		}
+
+		@Test
+		void skipping_inLoopScope_shouldNotThrow() {
+			assertDoesNotThrow(() -> {
+				var global = new Scope(null);
+				var scope = new Scope(global);
+				var scope1 = new LoopScope(scope);
+				scope1.doSkip();
+			});
+		}
+
+		@Test
+		void skipping_inScopeNestedInLoopScope_shouldNotThrow() {
+			assertDoesNotThrow(() -> {
+				var global = new Scope(null);
+				var scope = new Scope(global);
+				var scope1 = new LoopScope(scope);
+				var scope11 = new LoopScope(scope1);
+				scope11.doSkip();
+			});
+		}
+
+		@Test
+		void breaking_inNonLoopScope_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class)
+				.isThrownBy(() -> {
+					var global = new Scope(null);
+					var scope = new Scope(global);
+					scope.doBreak();
+				});
+		}
+
+		@Test
+		void breaking_inLoopScope_shouldNotThrow() {
+			assertDoesNotThrow(() -> {
+				var global = new Scope(null);
+				var scope = new Scope(global);
+				var scope1 = new LoopScope(scope);
+				scope1.doBreak();
+			});
+		}
+
+		@Test
+		void breaking_inScopeNestedInLoopScope_shouldNotThrow() {
+			assertDoesNotThrow(() -> {
+				var global = new Scope(null);
+				var scope = new Scope(global);
+				var scope1 = new LoopScope(scope);
+				var scope11 = new LoopScope(scope1);
+				scope11.doBreak();
+			});
+		}
+
+	}
+
 }

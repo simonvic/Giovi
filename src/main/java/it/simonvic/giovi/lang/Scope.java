@@ -9,97 +9,66 @@ import it.simonvic.giovi.lang.values.GioviValue;
 public class Scope {
 
 
-	private final Scope parentScope;
+	private final Scope parent;
 
-	public Scope(Scope parentScope) {
-		this.parentScope = parentScope;
+	public Scope(Scope parent) {
+		this.parent = parent;
 	}
 
 	public Scope() {
-		this.parentScope = null;
+		this.parent = null;
 	}
 
-	public Scope getParentScope() {
-		return parentScope;
+	public Scope getParent() {
+		return parent;
 	}
-
-	// TODO: wtf! Remove this crap. Scope should not know about LoopScope or FunctionScope
 
 	public boolean shouldSkip() {
-		if (this instanceof LoopScope s) {
-			return s.shouldSkip();
-		} else if (parentScope != null) {
-			return parentScope.shouldSkip();
-		}
-		return false;
+		return parent != null && parent.shouldSkip();
 	}
 
 	public void doSkip() {
-		if (this instanceof LoopScope s) {
-			s.doSkip();
-		} else if (parentScope != null) {
-			parentScope.doSkip();
-		} else {
+		if (parent == null) {
 			throw new GioviException("Skip statement in non-loop scope");
 		}
+		parent.doSkip();
 	}
 
 	public boolean shouldBreak() {
-		if (this instanceof LoopScope s) {
-			return s.shouldBreak();
-		} else if (parentScope != null) {
-			return parentScope.shouldBreak();
-		}
-		return false;
+		return parent != null && parent.shouldBreak();
 	}
 
 	public void doBreak() {
-		if (this instanceof LoopScope l) {
-			l.doBreak();
-		} else if (parentScope != null) {
-			parentScope.doBreak();
-		} else {
+		if (parent == null) {
 			throw new GioviException("Break statement in non-loop scope");
 		}
+		parent.doBreak();
 	}
 
-
 	public boolean shouldReturn() {
-		if (this instanceof FunctionScope s) {
-			return s.shouldReturn();
-		} else if (parentScope != null) {
-			return parentScope.shouldReturn();
-		}
-		return false;
+		return parent != null && parent.shouldReturn();
 	}
 
 	public void doReturn(GioviValue<?> returnValue) {
-		if (this instanceof FunctionScope s) {
-			s.doReturn(returnValue);
-		} else if (parentScope != null) {
-			parentScope.doReturn(returnValue);
-		} else {
+		if (parent == null) {
 			throw new GioviException("Return statement in non-function scope");
 		}
+		parent.doReturn(returnValue);
 	}
 
 	public GioviValue<?> getReturnValue() {
-		if (this instanceof FunctionScope s) {
-			return s.getReturnValue();
-		} else if (parentScope != null) {
-			return parentScope.getReturnValue();
-		} else {
+		if (parent == null) {
 			throw new GioviException("Return not available in non-function scope");
 		}
+		return parent.getReturnValue();
 	}
 
-
 	public boolean isInLoop() {
-		return this instanceof LoopScope || (parentScope != null && parentScope.isInLoop());
+		return parent != null && parent.isInLoop();
 	}
 
 	public boolean isInFunction() {
-		return this instanceof FunctionScope || (parentScope != null && parentScope.isInFunction());
+		return parent != null && parent.isInFunction();
 	}
 
 
@@ -116,17 +85,17 @@ public class Scope {
 
 	public boolean isDeclaredVariable(String identifier) {
 		return variables.containsKey(identifier)
-			|| (parentScope != null && parentScope.isDeclaredVariable(identifier));
+			|| (parent != null && parent.isDeclaredVariable(identifier));
 	}
 
 	public void setVariableValue(String identifier, GioviValue<?> value) {
 		if (variables.containsKey(identifier)) {
 			variables.get(identifier).box(value);
 		} else {
-			if (parentScope == null) {
+			if (parent == null) {
 				throw new VariableNotDeclared(identifier);
 			}
-			parentScope.setVariableValue(identifier, value);
+			parent.setVariableValue(identifier, value);
 		}
 	}
 
@@ -134,10 +103,10 @@ public class Scope {
 		if (variables.containsKey(identifier)) {
 			return variables.get(identifier);
 		}
-		if (parentScope == null) {
+		if (parent == null) {
 			throw new VariableNotDeclared(identifier);
 		}
-		return parentScope.getVariableValue(identifier);
+		return parent.getVariableValue(identifier);
 	}
 
 
@@ -154,17 +123,17 @@ public class Scope {
 
 	public boolean isDeclaredConstant(String identifier) {
 		return constants.containsKey(identifier)
-			|| (parentScope != null && parentScope.isDeclaredConstant(identifier));
+			|| (parent != null && parent.isDeclaredConstant(identifier));
 	}
 
 	public GioviValue<?> getConstantValue(String identifier) {
 		if (constants.containsKey(identifier)) {
 			return constants.get(identifier);
 		}
-		if (parentScope == null) {
+		if (parent == null) {
 			throw new VariableNotDeclared(identifier);
 		}
-		return parentScope.getConstantValue(identifier);
+		return parent.getConstantValue(identifier);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Functions
@@ -180,17 +149,17 @@ public class Scope {
 
 	public boolean isDeclaredFunction(String identifier) {
 		return functionSignatures.containsKey(identifier)
-			|| (parentScope != null && parentScope.isDeclaredFunction(identifier));
+			|| (parent != null && parent.isDeclaredFunction(identifier));
 	}
 
 	public GioviFunction getFunctionSignature(String identifier) {
 		if (functionSignatures.containsKey(identifier)) {
 			return functionSignatures.get(identifier);
 		}
-		if (parentScope == null) {
+		if (parent == null) {
 			throw new FunctionNotDeclared(identifier);
 		}
-		return parentScope.getFunctionSignature(identifier);
+		return parent.getFunctionSignature(identifier);
 	}
 
 
@@ -207,17 +176,17 @@ public class Scope {
 
 	public boolean isDefinedStruct(String identifier) {
 		return structDefinitions.containsKey(identifier)
-			|| (parentScope != null && parentScope.isDefinedStruct(identifier));
+			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
 	public GioviStructDefinition getDefinitionStruct(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
 			return structDefinitions.get(identifier);
 		}
-		if (parentScope == null) {
+		if (parent == null) {
 			throw new StructNotDefined(identifier);
 		}
-		return parentScope.getDefinitionStruct(identifier);
+		return parent.getDefinitionStruct(identifier);
 	}
 
 }

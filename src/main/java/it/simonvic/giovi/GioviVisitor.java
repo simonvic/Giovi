@@ -72,7 +72,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 	}
 
 	private void exitScope() {
-		setCurrentScope(getCurrentScope().getParentScope());
+		setCurrentScope(getCurrentScope().getParent());
 	}
 
 	@Override
