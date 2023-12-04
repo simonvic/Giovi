@@ -21,6 +21,7 @@ import it.simonvic.giovi.lang.values.GioviText;
 import it.simonvic.giovi.lang.values.natives.Type;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestGioviMap {
 
@@ -70,6 +71,16 @@ public class TestGioviMap {
 				() -> assertThat(map
 					.getElementType().unbox().getClazz())
 						.isEqualTo(GioviReal.class));
+		}
+
+		@Test
+		void mapOfMixedKeyElementType_shouldCastEntriesToTypeOfHighestOrder() {
+			assertThat(visitExpression("""
+				[ 1n:1n 2i:2i 3r:3r ]
+				""").asGioviMap().unbox())
+				.allSatisfy((k, e) -> assertAll(
+					() -> assertThat(k.getGioviType()).isEqualTo(GioviTypes.of(GioviReal.class)),
+					() -> assertThat(e.getGioviType()).isEqualTo(GioviTypes.of(GioviReal.class))));
 
 		}
 
@@ -356,9 +367,9 @@ public class TestGioviMap {
 			}
 
 			@Test
-			void comparingMapsWithElementsWithDifferentTypeButEqualValue_shouldReturnTrue() {
+			void comparingMapsWithDifferentEntryTypeButEqualValue_shouldReturnTrue() {
 				assertThat(visitExpression("""
-					["a":1n] = ["a":1i]
+					[1n:1n] = [1i:1i]
 					""").asGioviBool().unbox())
 					.isTrue();
 			}

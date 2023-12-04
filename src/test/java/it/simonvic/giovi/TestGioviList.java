@@ -81,6 +81,26 @@ public class TestGioviList {
 		}
 
 		@Test
+		void listOfMixedButCompatibleTypes_shouldCastAllEntriesToTypeOfHighestOrder() {
+			assertThat(visitExpression("""
+				[1n 1i 1r]
+				""").asGioviList().unbox())
+				.allSatisfy(entry -> assertThat(entry
+					.getGioviType())
+						.isEqualTo(GioviTypes.of(GioviReal.class)));
+		}
+
+		@Test
+		void listOfMixedButCompatibleTypes_shouldHaveAllValuesCastedToHighestOrderType() {
+			assertThat(visitExpression("""
+				[1n 1i 1r]
+				""").asGioviList().unbox())
+				.allSatisfy(entry -> assertThat(entry
+					.getGioviType())
+						.isEqualTo(GioviTypes.of(GioviReal.class)));
+		}
+
+		@Test
 		void listOfListOfPrimitive_shouldHaveGioviTypeOfListOfPrimitive() {
 			assertThat(visitExpression("""
 				[ [1 2 3] [1 2 3] ]
@@ -96,6 +116,19 @@ public class TestGioviList {
 				""").asGioviList()
 				.getEntryType())
 					.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class)));
+		}
+
+		@Test
+		// TODO: should it? Clarify requirements
+		// when accessing a Real list, we know all entries are Real
+		// or at least "subtypes" of Real (Int, Natural)
+		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToHighestType() {
+			assertThat(visitExpression("""
+				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
+				""").asGioviList().unbox())
+				.allSatisfy(entry -> assertThat(entry
+					.getGioviType())
+						.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class))));
 		}
 
 		@Test
@@ -346,6 +379,22 @@ public class TestGioviList {
 					[0 1 2 3 4]@@
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
+			}
+
+		}
+
+		@Nested
+		class Casts {
+
+			@Test
+			void upcastingListToCompatibleList_shouldCastAllEntries() {
+				assertThat(visitExpression("""
+					[1n 2i 3r] as [Real]
+					""").asGioviList().unbox())
+					.allSatisfy(entry -> assertThat(entry
+						.getGioviType())
+							.isEqualTo(GioviTypes.of(GioviReal.class)));
+
 			}
 
 		}
