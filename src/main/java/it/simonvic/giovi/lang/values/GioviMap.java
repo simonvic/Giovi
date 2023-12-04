@@ -37,18 +37,15 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		GioviType<?> elementType,
 		LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
 		LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
-
-		super(value, defaultValue);
+		super(new LinkedHashMap<>(), new LinkedHashMap<>());
 		this.keyType = keyType;
 		this.elementType = elementType;
-		this.value.forEach((k, e) -> {
-			k.castTo(this.keyType);
-			e.castTo(this.elementType);
-		});
-		this.defaultValue.forEach((k, e) -> {
-			k.castTo(this.keyType);
-			e.castTo(this.elementType);
-		});
+		value.forEach((k, e) -> this.value.put(
+			k.castTo(keyType),
+			e.castTo(elementType)));
+		defaultValue.forEach((k, e) -> this.defaultValue.put(
+			k.castTo(keyType),
+			e.castTo(elementType)));
 	}
 
 	// TODO: move map logic to native implementation

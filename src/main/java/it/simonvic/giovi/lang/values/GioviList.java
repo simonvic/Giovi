@@ -25,11 +25,14 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		GioviType<?> entryType,
 		List<GioviValue<?>> value,
 		List<GioviValue<?>> defaultValue) {
-
-		super(value, defaultValue);
+		super(new ArrayList<>(), new ArrayList<>());
 		this.entryType = entryType;
-		this.value.forEach(entry -> entry.castTo(this.entryType));
-		this.defaultValue.forEach(entry -> entry.castTo(this.entryType));
+		value.stream()
+			.map(entry -> entry.castTo(this.entryType))
+			.forEach(this.value::add);
+		defaultValue.stream()
+			.map(entry -> entry.castTo(this.entryType))
+			.forEach(this.defaultValue::add);
 	}
 
 
