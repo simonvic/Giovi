@@ -20,6 +20,8 @@ public final class GioviTypePrimitive extends GioviType<Type.Primitive<?>> {
 		return new GioviTypePrimitive(this.value.copy(), this.defaultValue.copy());
 	}
 
+
+	// TODO: add GioviType for all primitives
 	@Override
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {

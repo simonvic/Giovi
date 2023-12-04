@@ -80,7 +80,7 @@ public final class GioviTypeList extends GioviType<Type.List> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviList spawn() {
 		var list = new GioviList(this.entryType);
 		var rawList = list.unbox();
 		for (int i = 0; i < this.initSize; i++) {

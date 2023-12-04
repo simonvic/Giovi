@@ -104,9 +104,9 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypeList t) {
-			var list = new GioviList(t.getEntryType());
-			this.value.forEach(list::add);
-			return new GioviList(value);
+			var newGioviList = t.spawn();
+			this.value.forEach(newGioviList::add);
+			return newGioviList;
 		}
 		return super.castTo(type);
 	}

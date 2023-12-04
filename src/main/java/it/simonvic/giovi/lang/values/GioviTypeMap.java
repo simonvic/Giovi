@@ -74,7 +74,7 @@ public final class GioviTypeMap extends GioviType<Type.Map> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviMap spawn() {
 		return new GioviMap(this.keyType, this.elementType);
 	}
 

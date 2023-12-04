@@ -18,7 +18,7 @@ public final class GioviTypeStructTuple extends GioviTypeStruct<Type.Struct.Tupl
 
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviStructTuple spawn() {
 		throw new UnsupportedOperationException("Unimplemented method 'spawn'");
 	}
 

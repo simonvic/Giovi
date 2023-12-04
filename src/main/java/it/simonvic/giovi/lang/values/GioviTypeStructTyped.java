@@ -28,7 +28,7 @@ public final class GioviTypeStructTyped extends GioviTypeStruct<Type.Struct.Type
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviStructTyped spawn() {
 		return new GioviStructTyped(definition);
 	}
 
