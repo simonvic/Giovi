@@ -1,10 +1,9 @@
-package it.simonvic.giovi.lang.functions;
+package it.simonvic.giovi.lang;
 
 import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
-import it.simonvic.giovi.lang.GioviObject;
 import it.simonvic.giovi.lang.values.GioviType;
 
 public class GioviFunction extends GioviObject {

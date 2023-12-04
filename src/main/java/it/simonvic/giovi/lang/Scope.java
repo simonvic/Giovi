@@ -6,8 +6,6 @@ import java.util.Map;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
 import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
-import it.simonvic.giovi.lang.functions.FunctionScope;
-import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.values.GioviValue;
 
 public class Scope {
@@ -27,7 +25,8 @@ public class Scope {
 		return parentScope;
 	}
 
-
+	// TODO: wtf! Remove this crap. Scope should not know about LoopScope or FunctionScope
+	
 	public boolean shouldSkip() {
 		if (this instanceof LoopScope s) {
 			return s.shouldSkip();

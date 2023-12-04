@@ -1,9 +1,9 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.functions.GioviFunction;
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.LinkedHashMap;
+
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
@@ -12,9 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.LinkedHashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
+import it.simonvic.giovi.antlr.GioviLexer;
+import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.GioviFunction;
 
 public class TestFunctions {
 

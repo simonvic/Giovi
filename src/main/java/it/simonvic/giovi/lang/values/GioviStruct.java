@@ -3,7 +3,6 @@ package it.simonvic.giovi.lang.values;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviObject;
-import it.simonvic.giovi.lang.functions.GioviFunction;
 import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 
@@ -70,7 +69,6 @@ public abstract sealed class GioviStruct
 	public GioviObject dot(GioviObject right) {
 		return switch (right) {
 			case AccessKey r -> value.getField(r.get());
-			case GioviFunction r -> super.dot(r); // TODO: implement
 			default -> super.dot(right);
 		};
 	}

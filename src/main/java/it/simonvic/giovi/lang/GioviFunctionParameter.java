@@ -1,4 +1,4 @@
-package it.simonvic.giovi.lang.functions;
+package it.simonvic.giovi.lang;
 
 import it.simonvic.giovi.lang.values.GioviValue;
 
