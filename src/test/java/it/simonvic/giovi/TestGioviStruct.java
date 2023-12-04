@@ -1,6 +1,7 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.*;
+import static it.simonvic.giovi.GioviVisitor.visit;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -223,7 +224,7 @@ public class TestGioviStruct {
 			assertEquals(
 				GioviStructs.of(List.of(
 					69, true, "foo")),
-				runExpression("""
+				visitExpression("""
 					<69 true "foo">
 					"""));
 		}
@@ -235,7 +236,7 @@ public class TestGioviStruct {
 					"foo", 69,
 					"bar", true,
 					"foobar", "hello"),
-				runExpression("""
+				visitExpression("""
 					<
 						foo: 69
 						bar: true
@@ -283,7 +284,7 @@ public class TestGioviStruct {
 					"r", 1,
 					"g", 2,
 					"b", 3),
-				runExpression(visitor, """
+				visitExpression(visitor, """
 					RGB.<1 2 3>
 					"""));
 		}
@@ -303,7 +304,7 @@ public class TestGioviStruct {
 					"r", 1,
 					"g", 2,
 					"b", 3),
-				runExpression(visitor, """
+				visitExpression(visitor, """
 					RGB.<
 						r: 1
 						g: 2
@@ -314,14 +315,14 @@ public class TestGioviStruct {
 
 		@Test
 		void givenUndefinedType_whenCreatingTypedStruct_shouldThrow() {
-			assertThrows(GioviException.class, () -> runExpression("""
+			assertThrows(GioviException.class, () -> visitExpression("""
 				Foo.<69 420 "lol">
 				"""));
 		}
 
 		@Test
 		void givenDefinedType_whenCreatingTypedStruct_shouldNotThrow() {
-			assertDoesNotThrow(() -> run("""
+			assertDoesNotThrow(() -> visit("""
 				RGB <
 					r Int
 					g Int
@@ -333,7 +334,7 @@ public class TestGioviStruct {
 
 		@Test
 		void whenCreatingTypedStructWithWrongFieldsCount_shouldThrow() {
-			assertThrows(IncompatibleStructs.class, () -> run("""
+			assertThrows(IncompatibleStructs.class, () -> visit("""
 				RGB <
 					r Int
 					g Int
@@ -345,7 +346,7 @@ public class TestGioviStruct {
 
 		@Test
 		void whenCreatingTypedStructWithWrongFieldsName_shouldThrow() {
-			assertThrows(IncompatibleStructs.class, () -> run("""
+			assertThrows(IncompatibleStructs.class, () -> visit("""
 				RGB <
 					r Int
 					g Int
@@ -357,7 +358,7 @@ public class TestGioviStruct {
 
 		@Test
 		void whenCreatingTypedStructWithSubsetOfFields_shouldNotThrow() {
-			assertDoesNotThrow(() -> run("""
+			assertDoesNotThrow(() -> visit("""
 				RGB <
 					r Int
 					g Int
@@ -382,7 +383,7 @@ public class TestGioviStruct {
 					"r", 69,
 					"g", 0,
 					"b", 420),
-				runExpression(visitor, """
+				visitExpression(visitor, """
 					RGB.<r:69 b:420>
 					"""));
 		}

@@ -22,8 +22,8 @@ import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	public static GioviParser parserOf(String code) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(code));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		var lexer = new GioviLexer(CharStreams.fromString(code));
+		var tokens = new CommonTokenStream(lexer);
 		return new GioviParser(tokens);
 	}
 
@@ -31,12 +31,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return visit(new GioviVisitor(), code);
 	}
 
-	public static GioviObject runExpression(String code) {
-		return runExpression(new GioviVisitor(), code);
-	}
-
-	public static GioviObject run(String code) {
-		return run(new GioviVisitor(), code);
+	public static GioviObject visitExpression(String code) {
+		return visitExpression(new GioviVisitor(), code);
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {
@@ -46,12 +42,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return visitor;
 	}
 
-	public static GioviObject runExpression(GioviVisitor visitor, String code) {
+	public static GioviObject visitExpression(GioviVisitor visitor, String code) {
 		return visitor.visit(parserOf(code).expression());
-	}
-
-	public static GioviObject run(GioviVisitor visitor, String code) {
-		return visitor.visit(parserOf(code).begin());
 	}
 
 	protected final Scanner scanner = new Scanner(System.in);

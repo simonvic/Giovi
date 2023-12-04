@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +19,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testAdditiveExpression(String code, Integer expected) {
-		assertEquals(expected, runExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -31,7 +31,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testMultiplicativeExpression(String code, Double expected) {
-		assertEquals(expected, runExpression(code).asDouble());
+		assertEquals(expected, visitExpression(code).asDouble());
 	}
 
 	@ParameterizedTest
@@ -44,7 +44,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testPowerExpression(String code, Double expected) {
-		assertEquals(expected, runExpression(code).asDouble());
+		assertEquals(expected, visitExpression(code).asDouble());
 	}
 
 	@ParameterizedTest
@@ -58,7 +58,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testModuloExpression(String code, Integer expected) {
-		assertEquals(expected, runExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asInteger());
 	}
 
 	@ParameterizedTest
@@ -68,7 +68,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testParenthesizedExpression(String code, Integer expected) {
-		assertEquals(expected, runExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asInteger());
 	}
 
 }

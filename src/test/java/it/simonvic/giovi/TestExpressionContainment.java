@@ -3,7 +3,7 @@ package it.simonvic.giovi;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestExpressionContainment {
@@ -17,7 +17,7 @@ public class TestExpressionContainment {
 		"""
 	)
 	void testStrings(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -31,6 +31,6 @@ public class TestExpressionContainment {
 		"""
 	)
 	void testLists(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 }

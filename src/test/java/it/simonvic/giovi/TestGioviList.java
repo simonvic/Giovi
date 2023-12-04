@@ -1,7 +1,7 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
 import static it.simonvic.giovi.GioviVisitor.visit;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,7 +30,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfInt_shouldBe_listOfGioviInt() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ 1 2 3 4 ]
 				""").asGioviList()
 				.getEntryType().unbox().getClazz())
@@ -39,7 +39,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfReal_shouldBe_listOfGioviReal() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ 1.0 2.0 3.0 4.0 ]
 				""").asGioviList()
 				.getEntryType().unbox().getClazz())
@@ -48,7 +48,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfText_shouldBe_listOfGioviText() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ "A" "B" "C" ]
 				""").asGioviList()
 				.getEntryType().unbox().getClazz())
@@ -57,7 +57,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfBool_shouldBe_listOfGioviBool() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ true false true true ]
 				""").asGioviList()
 				.getEntryType().unbox().getClazz())
@@ -66,14 +66,14 @@ public class TestGioviList {
 
 		@Test
 		void listOfMixedTypes_shouldThrow() {
-			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> runExpression("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visitExpression("""
 				[ 1 2 3.0 4 "hello" 5 ]
 				"""));
 		}
 
 		@Test
 		void listOfMixedButCompatibleTypes_shouldInferTypeOfHighestOrder() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList()
 				.getEntryType().unbox().getClazz())
@@ -82,7 +82,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfListOfPrimitive_shouldHaveGioviTypeOfListOfPrimitive() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ [1 2 3] [1 2 3] ]
 				""").asGioviList()
 				.getEntryType())
@@ -91,7 +91,7 @@ public class TestGioviList {
 
 		@Test
 		void listOfMixedButCompatibleListOfPrimitive_shouldHaveGioviTypeOfListOfHighestType() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList()
 				.getEntryType())
@@ -101,7 +101,7 @@ public class TestGioviList {
 		@Test
 		void listOfMixedList_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[ ["hello" "world"] [1 2 3] ]
 					"""));
 		}
@@ -215,7 +215,7 @@ public class TestGioviList {
 			@Test
 			@Disabled("Candidate not implemented")
 			void plus_shouldConcatenate() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1 2] + [2 3]
 					"""))
 					.isEqualTo(GioviLists.of(1, 2, 2, 3));
@@ -224,7 +224,7 @@ public class TestGioviList {
 			@Test
 			@Disabled("Candidate not implemented")
 			void minus_shouldIntersecate() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1 2 3] - [3 4]
 					"""))
 					.isEqualTo(GioviLists.of(1, 2));
@@ -238,7 +238,7 @@ public class TestGioviList {
 
 			@Test
 			void contains() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["hello" "world"] =~ "world"
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -251,7 +251,7 @@ public class TestGioviList {
 
 			@Test
 			void equal() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["hello" "world"] = ["hello" "world"]
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -272,7 +272,7 @@ public class TestGioviList {
 				[0 1 2 3 4]@4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
-				assertEquals(expected, runExpression(expression).asGioviInt().unbox());
+				assertEquals(expected, visitExpression(expression).asGioviInt().unbox());
 			}
 
 			@ParameterizedTest
@@ -286,7 +286,7 @@ public class TestGioviList {
 			void accessWithNegativeInt_shouldReturnElementAtRearIndex(
 				String expression,
 				Integer expected) {
-				assertEquals(expected, runExpression(expression).asGioviInt().unbox());
+				assertEquals(expected, visitExpression(expression).asGioviInt().unbox());
 			}
 
 			static Stream<Arguments> produceEqualGioviLists_range() {
@@ -308,7 +308,7 @@ public class TestGioviList {
 			@ParameterizedTest
 			@MethodSource("produceEqualGioviLists_range")
 			void accessWithRange_shouldReturnSublist(String expression, GioviList expected) {
-				assertEquals(expected, runExpression(expression));
+				assertEquals(expected, visitExpression(expression));
 			}
 
 			static Stream<Arguments> produceEqualGioviLists_inverseRange() {
@@ -328,13 +328,13 @@ public class TestGioviList {
 			@MethodSource("produceEqualGioviLists_inverseRange")
 			void accessWithInverseRange_shouldReturnSublistReversed(String expression,
 				GioviList expected) {
-				assertEquals(expected, runExpression(expression));
+				assertEquals(expected, visitExpression(expression));
 			}
 
 
 			@Test
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[0 1 2 3 4]@%
 					""").asGioviInt().unbox())
 					.isEqualTo(5);
@@ -342,7 +342,7 @@ public class TestGioviList {
 
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[0 1 2 3 4]@@
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));

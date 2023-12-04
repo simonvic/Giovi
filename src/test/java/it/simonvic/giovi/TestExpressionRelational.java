@@ -3,7 +3,7 @@ package it.simonvic.giovi;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestExpressionRelational {
@@ -18,7 +18,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testGreater(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -31,7 +31,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testLess(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -47,7 +47,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testLessEqual(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -63,7 +63,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testGreaterEqual(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 }

@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +15,7 @@ public class TestExpressionBool {
 		"""
 	)
 	public void testLiterals(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -27,7 +27,7 @@ public class TestExpressionBool {
 		"""
 	)
 	public void testAndOperator(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -39,7 +39,7 @@ public class TestExpressionBool {
 		"""
 	)
 	public void testOrOperator(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -51,7 +51,7 @@ public class TestExpressionBool {
 		"""
 	)
 	public void testNotOperator(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 
@@ -64,7 +64,7 @@ public class TestExpressionBool {
 		"""
 	)
 	public void testParenthesizedExpression(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 }

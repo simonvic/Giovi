@@ -1,7 +1,7 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
 import static it.simonvic.giovi.GioviVisitor.visit;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -30,7 +30,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapOfIntText_shouldHaveIntKey_and_shouldHaveTextElement() {
-			var map = runExpression("""
+			var map = visitExpression("""
 				[ 1:"a" 2:"b" 3:"c" ]
 				""").asGioviMap();
 			assertAll(
@@ -42,7 +42,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapOfMixedKeyType_shouldInferHighestKeyType() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ 1n:"a" 2i:"b" 3r:"c" ]
 				""").asGioviMap()
 				.getKeyType().unbox().getClazz())
@@ -51,7 +51,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapOfMixedElementType_shouldInferHighestElementType() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[ 1:1n 2:2i 3:3r ]
 				""").asGioviMap()
 				.getElementType().unbox().getClazz())
@@ -60,7 +60,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapOfMixedKeyElementType_shouldInferHighestKeyElementType() {
-			var map = runExpression("""
+			var map = visitExpression("""
 				[ 1n:1n 2i:2i 3r:3r ]
 				""").asGioviMap();
 			assertAll(
@@ -76,7 +76,7 @@ public class TestGioviMap {
 		@Test
 		void mapOfMixedNonCompatibleElementType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[ 1:1 2:2 3:false ]
 					"""));
 		}
@@ -84,14 +84,14 @@ public class TestGioviMap {
 		@Test
 		void mapOfMixedNonCompatibleKeyType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[ 1:1 2:2 false:3 ]
 					"""));
 		}
 
 		@Test
 		void mapWithElementOfCompatibleLists() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[
 					1 : ["a" "b" "c"]
 					2 : ["foo" "bar"]
@@ -107,7 +107,7 @@ public class TestGioviMap {
 		@Test
 		void mapWithElementOfMixedNonCompatibleLists_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[
 						1 : ["a" "b" "c"]
 						2 : [1 2 3]
@@ -118,7 +118,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapWithElementOfListOfDifferentButCompatibleTypes_shouldInferHighestElementType() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[
 					1 : [1n 2n]
 					2 : [69i 420i]
@@ -132,7 +132,7 @@ public class TestGioviMap {
 		@Test
 		void mapWithElementOfListOfDifferentIncompatibleTypes_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[
 						1 : [1n 2n]
 						2 : [69i 420i]
@@ -144,7 +144,7 @@ public class TestGioviMap {
 		@Test
 		void mapWithElementOfListOfDifferentIncompatibleTypes_shouldThrow2() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[
 						1 : ["a" "b"]
 						2 : [69i 420i]
@@ -155,7 +155,7 @@ public class TestGioviMap {
 
 		@Test
 		void mapWithElementOfMap() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				[
 					1: ["a":true "b":true]
 					2: ["b":false]
@@ -171,7 +171,7 @@ public class TestGioviMap {
 		@Test
 		void mapWithElementOfIncompatibleMaps_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class)
-				.isThrownBy(() -> runExpression("""
+				.isThrownBy(() -> visitExpression("""
 					[
 						1: ["a":true "b":false]
 						2: ["a":69]
@@ -319,7 +319,7 @@ public class TestGioviMap {
 
 			@Test
 			void checkingExistingKey_shouldReturnTrue() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "a"
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -327,7 +327,7 @@ public class TestGioviMap {
 
 			@Test
 			void checkingNonExistingKey_shouldReturnFalse() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "zzz"
 					""").asGioviBool().unbox())
 					.isFalse();
@@ -336,7 +336,7 @@ public class TestGioviMap {
 			@Test
 			@Disabled("Candidate not implemented yet")
 			void checkingExistingSubset_shouldReturnTrue() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1 "b":2 "c":3] =~ ["b":2 "c":3]
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -349,7 +349,7 @@ public class TestGioviMap {
 
 			@Test
 			void comparingMapsWithEqualEntries_shouldReturnTrue() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1i] = ["a":1i]
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -357,7 +357,7 @@ public class TestGioviMap {
 
 			@Test
 			void comparingMapsWithElementsWithDifferentTypeButEqualValue_shouldReturnTrue() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1n] = ["a":1i]
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -365,7 +365,7 @@ public class TestGioviMap {
 
 			@Test
 			void comparingMapsWithDifferentElements_shouldReturnFalse() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1 "b":2] = ["a":1 "b":3]
 					""").asGioviBool().unbox())
 					.isFalse();
@@ -373,7 +373,7 @@ public class TestGioviMap {
 
 			@Test
 			void comparingMapsWithDifferentKeys_shouldReturnFalse() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1 "c":2] = ["a":1 "b":2]
 					""").asGioviBool().unbox())
 					.isFalse();
@@ -381,7 +381,7 @@ public class TestGioviMap {
 
 			@Test
 			void comparingMapsWithDifferentEntriesCount_shouldReturnFalse() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					["a":1] = ["a":1 "b":2]
 					""").asGioviBool().unbox())
 					.isFalse();
@@ -395,7 +395,7 @@ public class TestGioviMap {
 
 			@Test
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@%
 					""").asGioviInt().unbox())
 					.isEqualTo(3);
@@ -403,7 +403,7 @@ public class TestGioviMap {
 
 			@Test
 			void accessWithIndexesOperator_shouldReturnListOfKeys() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@@
 					"""))
 					.isEqualTo(GioviLists.of(1, 2, 3));
@@ -411,7 +411,7 @@ public class TestGioviMap {
 
 			@Test
 			void accessWithElementsOperator_shouldReturnListOfElements() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@*
 					"""))
 					.isEqualTo(GioviLists.of("a", "b", "c"));
@@ -419,7 +419,7 @@ public class TestGioviMap {
 
 			@Test
 			void accessWithValueKey_shouldReturnMappedElement() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@2
 					""").asGioviText().unbox())
 					.isEqualTo("b");
@@ -428,7 +428,7 @@ public class TestGioviMap {
 			@Test
 			void accessWithNotExistingValueKey_shouldThrow() {
 				assertThatExceptionOfType(KeyNotPresent.class)
-					.isThrownBy(() -> runExpression("""
+					.isThrownBy(() -> visitExpression("""
 						[1:"a" 2:"b" 3:"c"]@69
 						"""));
 			}

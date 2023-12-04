@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,31 +26,31 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testNatural() {
 		scope.declare("x", new GioviNatural());
-		assertTrue(runExpression(visitor, "x is Natural").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Natural").asGioviBool().unbox());
 	}
 
 	@Test
 	void testInt() {
 		scope.declare("x", new GioviInt());
-		assertTrue(runExpression(visitor, "x is Int").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Int").asGioviBool().unbox());
 	}
 
 	@Test
 	void testReal() {
 		scope.declare("x", new GioviInt());
-		assertTrue(runExpression(visitor, "x is Int").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Int").asGioviBool().unbox());
 	}
 
 	@Test
 	void testBool() {
 		scope.declare("x", new GioviBool());
-		assertTrue(runExpression(visitor, "x is Bool").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Bool").asGioviBool().unbox());
 	}
 
 	@Test
 	void testText() {
 		scope.declare("x", new GioviText());
-		assertTrue(runExpression(visitor, "x is Text").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Text").asGioviBool().unbox());
 	}
 
 	@Test
@@ -58,20 +58,20 @@ public class TestExpressionTypeCheck {
 		var definition = new GioviStructDefinition("Foobar", new Struct.Named());
 		scope.define("Foobar", definition);
 		scope.declare("x", new GioviStructTyped(definition));
-		assertTrue(runExpression(visitor, "x is Foobar").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is Foobar").asGioviBool().unbox());
 	}
 
 	@Test
 	void testListOfPrimitive() {
 		scope.declare("x", new GioviList(GioviTypes.of(GioviInt.class)));
-		assertTrue(runExpression(visitor, "x is [Int]").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is [Int]").asGioviBool().unbox());
 	}
 
 	@Test
 	void testListOfList() {
 		scope.declare("x",
 			new GioviList(new GioviTypeList(GioviTypes.of(GioviInt.class))));
-		assertTrue(runExpression(visitor, "x is [[Int]]").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is [[Int]]").asGioviBool().unbox());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class TestExpressionTypeCheck {
 		scope.declare("x", new GioviMap(
 			GioviTypes.of(GioviText.class),
 			GioviTypes.of(GioviInt.class)));
-		assertTrue(runExpression(visitor, "x is [Text : Int]").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is [Text : Int]").asGioviBool().unbox());
 	}
 
 	@Test
@@ -87,7 +87,7 @@ public class TestExpressionTypeCheck {
 		scope.declare("x", new GioviMap(
 			GioviTypes.of(GioviText.class),
 			new GioviTypeList(GioviTypes.of(GioviInt.class))));
-		assertTrue(runExpression(visitor, "x is [Text : [Int]]").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is [Text : [Int]]").asGioviBool().unbox());
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class TestExpressionTypeCheck {
 		scope.declare("x", new GioviMap(
 			GioviTypes.of(GioviText.class),
 			new GioviTypeStructTyped(definition)));
-		assertTrue(runExpression(visitor, "x is [Text : Foobar]").asGioviBool().unbox());
+		assertTrue(visitExpression(visitor, "x is [Text : Foobar]").asGioviBool().unbox());
 	}
 
 }

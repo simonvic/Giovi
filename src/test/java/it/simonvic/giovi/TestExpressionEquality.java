@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,7 +22,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Numbers(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -34,7 +34,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Strings(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -45,7 +45,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_List(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 	@ParameterizedTest
@@ -58,7 +58,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
-		assertEquals(expected, runExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asBoolean());
 	}
 
 }

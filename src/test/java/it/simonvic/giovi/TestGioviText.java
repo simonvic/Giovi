@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;
@@ -18,7 +18,7 @@ public class TestGioviText {
 
 		@Test
 		void testText() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				"hello world"
 				""").asGioviText().unbox()).isEqualTo(
 				"hello world");
@@ -26,7 +26,7 @@ public class TestGioviText {
 
 		@Test
 		void testExactText() {
-			assertThat(runExpression("""
+			assertThat(visitExpression("""
 				'hello world'
 				""").asGioviText().unbox()).isEqualTo(
 				"hello world");
@@ -37,7 +37,7 @@ public class TestGioviText {
 
 			@Test
 			void singleLineAndEmpty_shouldBeEmptyString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{}"
 					""").asGioviText().unbox()).isEqualTo(
 					"");
@@ -45,7 +45,7 @@ public class TestGioviText {
 
 			@Test
 			void singleLineNotEmpty_shouldBeOneLineString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{hello world}"
 					""").asGioviText().unbox()).isEqualTo(
 					"hello world");
@@ -53,7 +53,7 @@ public class TestGioviText {
 
 			@Test
 			void multiline_withEmptyDelimiterLines_shouldBeOneLineString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{
 					hello world
 					}"
@@ -64,7 +64,7 @@ public class TestGioviText {
 
 			@Test
 			void multiline_withEmptyDelimiterLines_shouldBeMultilineString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{
 					hello
 					world
@@ -77,7 +77,7 @@ public class TestGioviText {
 
 			@Test
 			void multiline_withEmptyFirstDelimiterLine_shouldBeMultiLineString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{hello
 					world
 					}"
@@ -89,7 +89,7 @@ public class TestGioviText {
 
 			@Test
 			void multiline_withEmptyLastDelimiterLine_shouldBeMultiLineString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{
 					hello
 					world}"
@@ -100,7 +100,7 @@ public class TestGioviText {
 
 			@Test
 			void multiline_emptyLines_shouldBeMultiLineEmptyString() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"{
 
 
@@ -117,7 +117,7 @@ public class TestGioviText {
 
 				@Test
 				void firstLine_shouldNotMatter() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 						"{	hello
 						world
 						}"
@@ -127,7 +127,7 @@ public class TestGioviText {
 
 				@Test
 				void firstLine_shouldNotMatter2() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 						"{
 							hello
 							world
@@ -138,7 +138,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_tabs() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 								"{
 									hello
 								world
@@ -150,7 +150,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_tabs2() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 								"{
 									hello
 									world
@@ -162,7 +162,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_spaces() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 						    "{
 						        hello
 						    world
@@ -174,7 +174,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_spaces2() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 						    "{
 						        hello
 						        world
@@ -186,7 +186,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_mixed_leaderTab() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 								    "{
 								    hello
 								    world
@@ -198,7 +198,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_mixed_leaderTab2() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 								"{
 									hello
 								  world
@@ -210,7 +210,7 @@ public class TestGioviText {
 
 				@Test
 				void testIndentation_mixed_leaderSpace() {
-					assertThat(runExpression("""
+					assertThat(visitExpression("""
 						    "{
 						    	hello
 						    	world
@@ -242,7 +242,7 @@ public class TestGioviText {
 
 			@Test
 			void plus_shouldConcatenate() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"hello" + " world"
 					""").asGioviText().unbox()).isEqualTo(
 					"hello world");
@@ -250,7 +250,7 @@ public class TestGioviText {
 
 			@Test
 			void minus_shouldRemoveAllSubstrings() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"hello world" - "o"
 					""").asGioviText().unbox()).isEqualTo(
 					"hell wrld");
@@ -258,7 +258,7 @@ public class TestGioviText {
 
 			@Test
 			void multiply_shouldRepeat() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"Hello" * 3
 					""").asGioviText().unbox()).isEqualTo(
 					"HelloHelloHello");
@@ -266,7 +266,7 @@ public class TestGioviText {
 
 			@Test
 			void divide_shouldSplit() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"hello-beatiful-world" / "-"
 					""")).isEqualTo(GioviLists.of(
 					"hello", "beatiful", "world"));
@@ -280,7 +280,7 @@ public class TestGioviText {
 
 			@Test
 			void less_shouldCompareLexicographically() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"11" < "2"
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -288,7 +288,7 @@ public class TestGioviText {
 
 			@Test
 			void greater_shouldCompareLexicographically() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"2" > "11"
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -296,7 +296,7 @@ public class TestGioviText {
 
 			@Test
 			void equalTexts_shouldBeEqual() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"hello" = "hello"
 					""").asGioviBool().unbox())
 					.isTrue();
@@ -304,7 +304,7 @@ public class TestGioviText {
 
 			@Test
 			void equal_shouldBeCaseSensitive() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"hello" = "heLLO"
 					""").asGioviBool().unbox())
 					.isFalse();
@@ -325,7 +325,7 @@ public class TestGioviText {
 				"01234"@4, 4
 				""")
 			void accessWithInt_shouldReturnCharAtIndex(String expression, String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
@@ -340,7 +340,7 @@ public class TestGioviText {
 			void accessWithNegativeInt_shouldReturnCharAtRearIndex(
 				String expression,
 				String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
@@ -359,7 +359,7 @@ public class TestGioviText {
 				"01234"@2..4, 234
 				""")
 			void accessWithRange_shouldReturnSubstring(String expression, String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
@@ -378,7 +378,7 @@ public class TestGioviText {
 			void accessWithInverseRange_shouldReturnSubstringReversed(
 				String expression,
 				String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
@@ -397,7 +397,7 @@ public class TestGioviText {
 				"01234"@2..4..2, 24
 				""")
 			void accessWithStepRange_shouldReturnSubstring(String expression, String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
@@ -415,13 +415,13 @@ public class TestGioviText {
 			void accessWithInverseStepRange_shouldReturnSubstringReversed(
 				String expression,
 				String expected) {
-				assertThat(runExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().unbox())
 					.isEqualTo(expected);
 			}
 
 			@Test
 			void accessWithLengthOperator_shouldReturnCharactersCount() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"01234"@%
 					""").asGioviInt().unbox())
 					.isEqualTo(5);
@@ -429,7 +429,7 @@ public class TestGioviText {
 
 			@Test
 			void accessWithElementsOperator_shouldReturnListOfCharacters() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"01234"@*
 					"""))
 					.isEqualTo(GioviLists.of("0", "1", "2", "3", "4"));
@@ -437,7 +437,7 @@ public class TestGioviText {
 
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
-				assertThat(runExpression("""
+				assertThat(visitExpression("""
 					"01234"@@
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));

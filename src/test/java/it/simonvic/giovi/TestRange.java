@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -32,7 +32,7 @@ public class TestRange {
 	@ParameterizedTest
 	@MethodSource("produceEqualListsInteger")
 	void testSequence_Integer(String code, GioviList expected) {
-		assertEquals(expected, runExpression(code));
+		assertEquals(expected, visitExpression(code));
 	}
 
 	private static Stream<Arguments> produceEqualListsDouble() {
@@ -54,7 +54,7 @@ public class TestRange {
 	@ParameterizedTest
 	@MethodSource("produceEqualListsDouble")
 	void testSequence_Double(String code, GioviList expected) {
-		assertEquals(expected, runExpression(code));
+		assertEquals(expected, visitExpression(code));
 	}
 
 
@@ -68,7 +68,7 @@ public class TestRange {
 	@ParameterizedTest
 	@MethodSource("produceEqualListsLetters")
 	void testSequence_Letters(String code, GioviList expected) {
-		assertEquals(expected, runExpression(code));
+		assertEquals(expected, visitExpression(code));
 	}
 
 	private static Stream<Arguments> produceIncompatibleValues() {
@@ -82,6 +82,6 @@ public class TestRange {
 	@ParameterizedTest
 	@MethodSource("produceIncompatibleValues")
 	void incompatibleValues_shouldThrow(String code) {
-		assertThrows(GioviException.class, () -> runExpression(code));
+		assertThrows(GioviException.class, () -> visitExpression(code));
 	}
 }
