@@ -170,13 +170,25 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
-			case GioviList v -> new GioviBool(value.equals(v.unbox()));
+			case GioviList v -> {
+				// NOTE: we are checking if entries are **equal** instead of **equals**
+				if (this.value.size() != v.value.size()) {
+					yield new GioviBool(false);
+				}
+				for (int i = 0; i < this.value.size(); i++) {
+					if (!this.value.get(i).equal(v.value.get(i)).asGioviBool().unbox()) {
+						yield new GioviBool(false);
+					}
+				}
+				yield new GioviBool(true);
+			}
 			default -> super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
+		// FIXME: we should check if contains key **equal** instead of **equals**
 		return new GioviBool(value.contains(right.asGioviValue()));
 	}
 
