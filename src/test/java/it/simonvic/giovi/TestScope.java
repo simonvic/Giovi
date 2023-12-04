@@ -1,13 +1,14 @@
 package it.simonvic.giovi;
 
-import it.simonvic.giovi.exceptions.VariableAlreadyDeclaredException;
-import it.simonvic.giovi.exceptions.VariableNotDeclaredException;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.*;
+
+import it.simonvic.giovi.exceptions.VariableAlreadyDeclared;
+import it.simonvic.giovi.exceptions.VariableNotDeclared;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviValue;
-import org.junit.jupiter.api.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -73,19 +74,19 @@ public class TestScope {
 		@Test
 		void declare_shouldThrow_VariableAlreadyDefined() {
 			scope.declare("someVar", GioviValue.of(69));
-			assertThrows(VariableAlreadyDeclaredException.class,
+			assertThrows(VariableAlreadyDeclared.class,
 				() -> scope.declare("someVar", GioviValue.of(69)));
 		}
 
 		@Test
 		void getVariable_shouldThrow_VariableNotDefined() {
-			assertThrows(VariableNotDeclaredException.class,
+			assertThrows(VariableNotDeclared.class,
 				() -> scope.getVariableValue("someUndefinedVariable"));
 		}
 
 		@Test
 		void update_shouldThrow_VariableNotDefined() {
-			assertThrows(VariableNotDeclaredException.class,
+			assertThrows(VariableNotDeclared.class,
 				() -> scope.setVariableValue("someUndefinedVariable", GioviValue.of(69)));
 		}
 
@@ -167,7 +168,7 @@ public class TestScope {
 		@Test
 		void sameBlockShouldThrow_VariableAlreadyDeclared() {
 			scope1.declare("aString", GioviValue.of("Hello world"));
-			assertThrows(VariableAlreadyDeclaredException.class,
+			assertThrows(VariableAlreadyDeclared.class,
 				() -> scope1.declare("aString", GioviValue.of("hello_world")));
 		}
 

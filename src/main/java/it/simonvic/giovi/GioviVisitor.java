@@ -430,7 +430,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 		return ctx.anyIdentifier() != null
 			? lhs.dot(new AccessKey(ctx.anyIdentifier().getText()))
 			: lhs.dot(
-				getCurrentScope().getDefinitionFunction(ctx.functionCall().identifier().getText()));
+				getCurrentScope().getFunctionSignature(ctx.functionCall().identifier().getText()));
 	}
 
 	@Override
@@ -593,7 +593,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 					new GioviFunctionParameter(paramValue, expectParamWithDefault));
 			}
 		}
-		getCurrentScope().define(ctx.identifier().getText(), new GioviFunction(
+		getCurrentScope().declare(ctx.identifier().getText(), new GioviFunction(
 			ctx.block(),
 			ctx.type() == null ? null : visit(ctx.type()).asGioviType(),
 			formalParameters));
@@ -618,7 +618,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
 
 	@Override
 	public GioviObject visitFunctionCall(FunctionCallContext ctx) {
-		GioviFunction func = getCurrentScope().getDefinitionFunction(ctx.identifier().getText());
+		GioviFunction func = getCurrentScope().getFunctionSignature(ctx.identifier().getText());
 		enterFunctionScope();
 		setupFunctionParameters(ctx, func);
 		GioviValue<?> returnValue = visitFunction(func);

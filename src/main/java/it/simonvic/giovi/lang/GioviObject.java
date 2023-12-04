@@ -29,7 +29,6 @@ public class GioviObject {
 	public GioviObject power(GioviObject right) { throw new OperatorNotSupported("^"); }
 
 
-	// TODO: should this return GioviBool? Or maybe some type wants to return a different type?
 	//                                                                                      boolean
 	public GioviObject not() { throw new OperatorNotSupported("!"); }
 	public GioviObject and(GioviObject right) { throw new OperatorNotSupported("&"); }
