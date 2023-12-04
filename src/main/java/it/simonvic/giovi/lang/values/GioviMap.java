@@ -254,13 +254,38 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviObject equal(GioviObject right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
-			case GioviMap v -> new GioviBool(this.equals(v));
+			case GioviMap v -> {
+				// NOTE: we need to check if the key and element is **equal** instead of **equals**
+				var thisEntrySet = this.value.entrySet();
+				var otherEntrySet = v.value.entrySet();
+				if (thisEntrySet.size() != otherEntrySet.size()) {
+					yield new GioviBool(false);
+				}
+				var thisIterator = thisEntrySet.iterator();
+				var otherIterator = otherEntrySet.iterator();
+				while (thisIterator.hasNext() && otherIterator.hasNext()) {
+					var thisEntry = thisIterator.next();
+					var otherEntry = otherIterator.next();
+					var thisKey = thisEntry.getKey();
+					var otherKey = otherEntry.getKey();
+					if (!thisKey.equal(otherKey).asBoolean()) {
+						yield new GioviBool(false);
+					}
+					var thisValue = thisEntry.getValue();
+					var otherValue = otherEntry.getValue();
+					if (!thisValue.equal(otherValue).asBoolean()) {
+						yield new GioviBool(false);
+					}
+				}
+				yield new GioviBool(true);
+			}
 			default -> super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviObject contains(GioviObject right) {
+		// FIXME: we should check if contains key **equal** instead of **equals**
 		return new GioviBool(value.containsKey(right.asGioviValue()));
 	}
 
