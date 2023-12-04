@@ -1,36 +1,113 @@
 package it.simonvic.giovi;
 
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
+import org.apache.commons.cli.*;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviObject;
 
 public class Giovi {
 
-	public static void main(String[] args) throws IOException {
+	private static final Option OPT_HELP = Option.builder()
+		.option("h")
+		.longOpt("help")
+		.desc("Show this help")
+		.build();
+
+	private static final Option OPT_VERBOSE = Option.builder()
+		.option("v")
+		.longOpt("verbose")
+		.desc("")
+		.build();
+
+	private static final Option OPT_SHELL = Option.builder()
+		.longOpt("shell")
+		.desc("Launch interactive REPL Giovi shell")
+		.build();
+
+	private static final Option OPT_FROM_ARG = Option.builder()
+		.option("f")
+		.longOpt("from")
+		.hasArg()
+		.argName("code")
+		.desc("Interpret code from argument")
+		.build();
+
+	private static final Option OPT_FORMAT = Option.builder()
+		.longOpt("format")
+		.hasArg()
+		.argName("file")
+		.desc("Format a giovi file")
+		.build();
+
+	private static final Option OPT_FORMAT_OUTPUT = Option.builder()
+		.longOpt("format-output")
+		.hasArg()
+		.argName("output-file")
+		.desc("Choose where to output formatted Giovi file")
+		.build();
+
+	private static final Options OPTIONS = optionsOf(
+		OPT_HELP,
+		OPT_VERBOSE,
+		OPT_SHELL,
+		OPT_FROM_ARG,
+		OPT_FORMAT,
+		OPT_FORMAT_OUTPUT);
+
+	private static void printHelp() {
+		HelpFormatter f = new HelpFormatter();
+		f.setWidth(80);
+		f.setOptionComparator(null);
+		f.printHelp("Giovi", OPTIONS, true);
+	}
+
+	private static Options optionsOf(Option... options) {
+		Options opts = new Options();
+		for (Option option : options) {
+			opts.addOption(option);
+		}
+		return opts;
+	}
+
+	public static void main(String[] args) throws IOException, ParseException {
+		CommandLine cli = new DefaultParser().parse(OPTIONS, args);
+
+		long verbosity = Stream.of(cli.getOptions())
+			.filter(OPT_VERBOSE::equals)
+			.count();
+
+		if (cli.hasOption(OPT_HELP)) {
+			printHelp();
+			return;
+		}
+
+		if (cli.hasOption(OPT_SHELL)) {
+			new GioviShell().run();
+			return;
+		}
+
 		CharStream charStream;
-		if (args.length == 0) return;
-		switch (args[0]) {
-			case "-i", "--interactive" -> {
-				interactiveMode();
+		if (cli.hasOption(OPT_FROM_ARG)) {
+			charStream = CharStreams.fromString(cli.getOptionValue(OPT_FROM_ARG));
+		} else {
+			if (cli.getArgs().length < 1) {
+				printHelp();
 				return;
 			}
-			case "-d", "--debug" -> charStream = CharStreams
-				.fromStream(Giovi.class.getResourceAsStream("/sample.giovi"));
-			case "-" -> charStream = CharStreams.fromStream(System.in);
-			case "--" -> charStream = CharStreams.fromString(args[1]);
-			default -> charStream = CharStreams.fromStream(new FileInputStream(args[0]));
+			String arg = cli.getArgs()[0];
+			charStream = CharStreams.fromStream(arg.equals("-")
+				? System.in
+				: new FileInputStream(arg));
 		}
+
 		var lexer = new GioviLexer(charStream);
 		var parser = new GioviParser(new CommonTokenStream(lexer));
 		var tree = parser.begin();
@@ -40,25 +117,7 @@ public class Giovi {
 		} catch (GioviException ex) {
 			System.err.println(ex.getMessage());
 		}
-	}
 
-	private static void interactiveMode() throws IOException {
-		var reader = new BufferedReader(new InputStreamReader(System.in));
-		String line;
-		var visitor = new GioviVisitor();
-		System.out.print("┃ ");
-		while ((line = reader.readLine()) != null) {
-			GioviLexer lexer = new GioviLexer(CharStreams.fromString(line));
-			CommonTokenStream tokens = new CommonTokenStream(lexer);
-			GioviParser parser = new GioviParser(tokens);
-			ParseTree tree = parser.begin();
-			try {
-				visitor.visit(tree);
-			} catch (Exception ex) {
-				System.err.println(ex.getMessage());
-			}
-			System.out.print("┃ ");
-		}
 	}
 
 }
