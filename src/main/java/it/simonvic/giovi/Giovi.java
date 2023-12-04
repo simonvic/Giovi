@@ -116,6 +116,12 @@ public class Giovi {
 			visitor.visit(tree);
 		} catch (GioviException ex) {
 			System.err.println(ex.getMessage());
+			if (verbosity >= 1 && ex.getCause() != null) {
+				System.err.println("Caused by: " + ex.getCause());
+			}
+			if (verbosity >= 2) {
+				ex.printStackTrace();
+			}
 		}
 
 	}
