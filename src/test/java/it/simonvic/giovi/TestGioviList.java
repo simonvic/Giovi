@@ -270,9 +270,17 @@ public class TestGioviList {
 		class Relational {
 
 			@Test
-			void contains() {
+			void checkingIfContainsEqualEntry_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["hello" "world"] =~ "world"
+					""").asGioviBool().unbox())
+					.isTrue();
+			}
+
+			@Test
+			void checkingIfContainsEqualEntryWithDifferentType_shouldReturnTrue() {
+				assertThat(visitExpression("""
+					[1i 2i 3i] =~ 1n
 					""").asGioviBool().unbox())
 					.isTrue();
 			}

@@ -191,8 +191,12 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		// FIXME: we should check if contains key **equal** instead of **equals**
-		return new GioviBool(value.contains(right.asGioviValue()));
+		for (var entry : this.value) {
+			if (entry.equal(right).asBoolean()) {
+				return new GioviBool(true);
+			}
+		}
+		return new GioviBool(false);
 	}
 
 	//                                                                                       access

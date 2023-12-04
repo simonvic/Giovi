@@ -329,7 +329,7 @@ public class TestGioviMap {
 		class Relational {
 
 			@Test
-			void checkingExistingKey_shouldReturnTrue() {
+			void checkingIfContainsExistingKey_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "a"
 					""").asGioviBool().unbox())
@@ -337,7 +337,15 @@ public class TestGioviMap {
 			}
 
 			@Test
-			void checkingNonExistingKey_shouldReturnFalse() {
+			void checkingIfContainsExistingEqualKeyWithDifferentType_shouldReturnTrue() {
+				assertThat(visitExpression("""
+					[1n:"a" 2n:"b"] =~ 1i
+					""").asGioviBool().unbox())
+					.isTrue();
+			}
+
+			@Test
+			void checkingIfContainsNonExistingKey_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "zzz"
 					""").asGioviBool().unbox())
@@ -346,7 +354,7 @@ public class TestGioviMap {
 
 			@Test
 			@Disabled("Candidate not implemented yet")
-			void checkingExistingSubset_shouldReturnTrue() {
+			void checkingIfContainsExistingSubset_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1 "b":2 "c":3] =~ ["b":2 "c":3]
 					""").asGioviBool().unbox())

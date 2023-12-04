@@ -282,8 +282,12 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 	@Override
 	public GioviObject contains(GioviObject right) {
-		// FIXME: we should check if contains key **equal** instead of **equals**
-		return new GioviBool(value.containsKey(right.asGioviValue()));
+		for (var key : this.value.keySet()) {
+			if (key.equal(right).asBoolean()) {
+				return new GioviBool(true);
+			}
+		}
+		return new GioviBool(false);
 	}
 
 	//                                                                                       access
