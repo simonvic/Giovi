@@ -2,6 +2,11 @@ package it.simonvic.giovi;
 
 import java.util.*;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+
+import it.simonvic.giovi.antlr.GioviLexer;
+import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.*;
@@ -15,6 +20,39 @@ import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviObject> {
+
+	public static GioviParser parserOf(String code) {
+		GioviLexer lexer = new GioviLexer(CharStreams.fromString(code));
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		return new GioviParser(tokens);
+	}
+
+	public static GioviVisitor visit(String code) {
+		return visit(new GioviVisitor(), code);
+	}
+
+	public static GioviObject runExpression(String code) {
+		return runExpression(new GioviVisitor(), code);
+	}
+
+	public static GioviObject run(String code) {
+		return run(new GioviVisitor(), code);
+	}
+
+	public static GioviVisitor visit(GioviVisitor visitor, String code) {
+		var lexer = new GioviLexer(CharStreams.fromString(code));
+		var tokens = new CommonTokenStream(lexer);
+		visitor.visit(new GioviParser(tokens).begin());
+		return visitor;
+	}
+
+	public static GioviObject runExpression(GioviVisitor visitor, String code) {
+		return visitor.visit(parserOf(code).expression());
+	}
+
+	public static GioviObject run(GioviVisitor visitor, String code) {
+		return visitor.visit(parserOf(code).begin());
+	}
 
 	protected final Scanner scanner = new Scanner(System.in);
 

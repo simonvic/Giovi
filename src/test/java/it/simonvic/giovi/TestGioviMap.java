@@ -1,7 +1,7 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.Giovi.runExpression;
-import static it.simonvic.giovi.Giovi.visit;
+import static it.simonvic.giovi.GioviVisitor.runExpression;
+import static it.simonvic.giovi.GioviVisitor.visit;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertAll;

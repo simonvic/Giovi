@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.Giovi.*;
+import static it.simonvic.giovi.GioviVisitor.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
