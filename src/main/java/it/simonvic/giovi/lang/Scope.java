@@ -138,9 +138,9 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Functions
 
-	private final Map<String, GioviFunction> functionSignatures = new HashMap<>();
+	private final Map<String, GioviFunctionSignature> functionSignatures = new HashMap<>();
 
-	public void declare(String identifier, GioviFunction signature) {
+	public void declare(String identifier, GioviFunctionSignature signature) {
 		if (functionSignatures.containsKey(identifier)) {
 			throw new FunctionAlreadyDeclared(signature);
 		}
@@ -152,7 +152,7 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredFunction(identifier));
 	}
 
-	public GioviFunction getFunctionSignature(String identifier) {
+	public GioviFunctionSignature getFunctionSignature(String identifier) {
 		if (functionSignatures.containsKey(identifier)) {
 			return functionSignatures.get(identifier);
 		}

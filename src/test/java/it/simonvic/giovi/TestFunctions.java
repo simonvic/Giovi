@@ -61,8 +61,8 @@ public class TestFunctions {
 			sayHelloWorld() {}
 			""").getCurrentScope().getFunctionSignature("sayHelloWorld");
 		assertAll(
-			() -> assertThat(functionSignature.getReturnType()).isEmpty(),
-			() -> assertThat(functionSignature.getParameters()).isEmpty());
+			() -> assertThat(functionSignature.parameters()).isEmpty(),
+			() -> assertThat(functionSignature.parameters()).isEmpty());
 	}
 
 	@Test
