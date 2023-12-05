@@ -1,59 +1,47 @@
 package it.simonvic.giovi;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static it.simonvic.giovi.GioviVisitor.visit;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-import java.util.LinkedHashMap;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import it.simonvic.giovi.antlr.GioviLexer;
-import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviFunction;
 
 public class TestFunctions {
 
-	private GioviParser setupParser(String text) {
-		GioviLexer lexer = new GioviLexer(CharStreams.fromString(text));
-		CommonTokenStream tokens = new CommonTokenStream(lexer);
-		return new GioviParser(tokens);
-	}
-
 	@Test
 	void notReturningInFunctionWithReturn_shouldThrow() {
-		GioviParser parser = setupParser("""
+		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 			someFunction() => Int {}
 			someFunction()
-			""");
-		assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+			"""));
 	}
 
 	@Test
-	void returningInFunctionWithNoReturn_shouldThrowException() {
-		GioviParser parser = setupParser("""
+	void returningInFunctionWithNoReturn_shouldThrow() {
+		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 			someFunction() {
 				=> 69
 			}
 			someFunction()
-			""");
-		assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+			"""));
 	}
 
 	@Test
-	void returningWrongType_shouldThrowException() {
-		GioviParser parser = setupParser("""
+	void returningWrongType_shouldThrow() {
+		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 			someFunction() => Text {
 				=> 69
 			}
 			someFunction()
-			""");
-		assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+			"""));
 	}
 
 	@ParameterizedTest
@@ -63,42 +51,34 @@ public class TestFunctions {
 				"fun(x Int){} fun()",
 				"fun(x Int, y Int){} fun(69)"
 		})
-	void functionCall_wrongParametersNumber_shouldThrowException(String code) {
-		assertThrows(GioviException.class,
-			() -> new GioviVisitor().visit(setupParser(code).begin()));
+	void functionCall_withWrongParametersNumber_shouldThrow(String code) {
+		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit(code));
 	}
 
 	@Test
 	void testDeclaration_noParams_noReturn() {
-		GioviParser parser = setupParser("""
-			sayHelloWorld() {
-				"hello world" -> \\out
-			}
-			""");
-		GioviVisitor visitor = new GioviVisitor();
-		visitor.visit(parser.begin());
-		GioviFunction actual = visitor.getCurrentScope().getFunctionSignature("sayHelloWorld");
-		GioviFunction expected = new GioviFunction(null, null, new LinkedHashMap<>());
-		assertEquals(actual.getReturnType(), expected.getReturnType());
-		assertEquals(actual.getParameters(), expected.getParameters());
+		var functionSignature = visit("""
+			sayHelloWorld() {}
+			""").getCurrentScope().getFunctionSignature("sayHelloWorld");
+		assertAll(
+			() -> assertThat(functionSignature.getReturnType()).isEmpty(),
+			() -> assertThat(functionSignature.getParameters()).isEmpty());
 	}
 
 	@Test
 	void nonDefaultParameterAfterDefaultParameter_shouldThrowException() {
-		GioviParser parser = setupParser("""
+		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 			fun(x Int default 69, y Int) {
 			}
-			""");
-		assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+			"""));
 	}
 
 	@Test
 	void correctDefaultParameters_shouldNotThrowException() {
-		GioviParser parser = setupParser("""
+		assertDoesNotThrow(() -> visit("""
 			fun(x Int, y Int default 69, z Int default 420) {
 			}
-			""");
-		assertDoesNotThrow(() -> new GioviVisitor().visit(parser.begin()));
+			"""));
 	}
 
 	@Disabled("Function overload not implemented yet")
@@ -107,20 +87,18 @@ public class TestFunctions {
 
 		@Test
 		void differentParameterCount_shouldNotThrow() {
-			GioviParser parser = setupParser("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(x Int, y Int) {}
 				fun(x Int, y Int, z Int) {}
-				""");
-			assertDoesNotThrow(() -> new GioviVisitor().visit(parser.begin()));
+				"""));
 		}
 
 		@Test
 		void sameSignature_shouldThrow() {
-			GioviParser parser = setupParser("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(x Int, y Int) {}
 				fun(x Int, y Int) {}
-				""");
-			assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+				"""));
 		}
 	}
 
@@ -129,29 +107,26 @@ public class TestFunctions {
 
 		@Test
 		void missingParameter_shouldThrow() {
-			GioviParser parser = setupParser("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(b: 0)
-				""");
-			assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+				"""));
 		}
 
 		@Test
 		void duplicateNamedParameter_shouldThrow() {
-			GioviParser parser = setupParser("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(a: 0, a: 1)
-				""");
-			assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+				"""));
 		}
 
 		@Test
 		void unknownNamedParameter_shouldThrow() {
-			GioviParser parser = setupParser("""
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(a: 0, b: 1, z: 69)
-				""");
-			assertThrows(GioviException.class, () -> new GioviVisitor().visit(parser.begin()));
+				"""));
 		}
 
 	}
