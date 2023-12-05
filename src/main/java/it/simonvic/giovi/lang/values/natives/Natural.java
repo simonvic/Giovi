@@ -7,7 +7,15 @@ import it.simonvic.giovi.exceptions.GioviException;
 public final class Natural extends Number {
 
 	public static Natural valueOf(String s) throws NumberFormatException {
-		return new Natural(Integer.decode(s.replace("n", "")));
+		s = s.replace("n", "") // n suffix
+			.replace("_", ""); // separators
+		if (s.startsWith("0b")) {
+			return new Natural(Integer.parseInt(s.replace("0b", ""), 2));
+		}
+		if (s.startsWith("0o")) {
+			return new Natural(Integer.parseInt(s.replace("0o", ""), 8));
+		}
+		return new Natural(Integer.decode(s));
 	}
 
 	private final Integer value;

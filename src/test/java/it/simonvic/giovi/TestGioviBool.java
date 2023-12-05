@@ -9,6 +9,20 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 public class TestGioviBool {
 
+	@Nested
+	class Creation {
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			true, true
+			false, false
+			""")
+		public void testLiterals(String code, boolean expected) {
+			assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+		}
+
+	}
+
 	//                                                                                              Operations
 	@Nested
 	class Operations {
@@ -23,15 +37,6 @@ public class TestGioviBool {
 		//                                                                                          boolean
 		@Nested
 		class Boolean {
-
-			@ParameterizedTest
-			@CsvSource(textBlock = """
-				true, true
-				false, false
-				""")
-			public void testLiterals(String code, boolean expected) {
-				assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
-			}
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """

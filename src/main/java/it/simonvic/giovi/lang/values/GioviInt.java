@@ -6,7 +6,15 @@ import it.simonvic.giovi.lang.values.natives.Natural;
 public final class GioviInt extends GioviNumber<Integer> {
 
 	public static GioviInt valueOf(String s) throws NumberFormatException {
-		return new GioviInt(Integer.decode(s.replace("i", "")));
+		s = s.replace("i", "") // i suffix
+			.replace("_", ""); // separators
+		if (s.startsWith("0b")) {
+			return new GioviInt(Integer.parseInt(s.replace("0b", ""), 2));
+		}
+		if (s.startsWith("0o")) {
+			return new GioviInt(Integer.parseInt(s.replace("0o", ""), 8));
+		}
+		return new GioviInt(Integer.decode(s));
 	}
 
 	public GioviInt(Integer value, Integer defaultValue) {

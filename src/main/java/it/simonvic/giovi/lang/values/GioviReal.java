@@ -6,7 +6,15 @@ import it.simonvic.giovi.lang.values.natives.Natural;
 public final class GioviReal extends GioviNumber<Double> {
 
 	public static GioviReal valueOf(String s) throws NumberFormatException {
-		return new GioviReal(Double.valueOf(s.replace("r", "")));
+		s = s.replace("r", "") // r suffix
+			.replace("_", ""); // separators
+		if (s.startsWith("0b")) {
+			return new GioviReal(Double.parseDouble(s.replace("0b", "")));
+		}
+		if (s.startsWith("0o")) {
+			return new GioviReal(Double.parseDouble(s.replace("0o", "")));
+		}
+		return new GioviReal(Double.valueOf(s));
 	}
 
 	public GioviReal(Double value, Double defaultValue) {
