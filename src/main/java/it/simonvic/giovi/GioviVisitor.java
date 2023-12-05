@@ -659,7 +659,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (func.returnType() != null) {
 			throw new GioviException("Missing return statement in function");
 		}
-		return null; // return GioviVoid
+		return new GioviVoid();
 	}
 
 	private void setupFunctionParameters(FunctionCallContext ctx, GioviFunctionSignature func) {
