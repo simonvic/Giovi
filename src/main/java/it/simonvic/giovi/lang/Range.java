@@ -57,7 +57,7 @@ public class Range<T> extends GioviObject {
 		return expand().stream().map(GioviValue::of).toList();
 	}
 
-	public static Range<?> of(GioviObject start, GioviObject end, GioviObject step) {
+	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end, GioviParserVisitResult step) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
 		}

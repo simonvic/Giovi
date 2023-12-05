@@ -4,19 +4,19 @@ import java.util.Optional;
 
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.values.GioviBool;
 import it.simonvic.giovi.util.OperationEvaluator;
 
 public class SwitchHelperVisitor extends GioviHelperVisitor {
 
 	private final SwitchBlockContext ctx;
-	private final GioviObject subject;
+	private final GioviParserVisitResult subject;
 
 	public SwitchHelperVisitor(
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
-		GioviObject subject) {
+		GioviParserVisitResult subject) {
 		super(gioviVisitor);
 		this.ctx = ctx;
 		this.subject = subject;
@@ -25,7 +25,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	public static Optional<SwitchLabelContext> evaluate(
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
-		GioviObject subject) {
+		GioviParserVisitResult subject) {
 		return new SwitchHelperVisitor(gioviVisitor, ctx, subject).evaluate();
 	}
 
@@ -39,12 +39,12 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchParenthesized(CaseMatchParenthesizedContext ctx) {
+	public GioviParserVisitResult visitCaseMatchParenthesized(CaseMatchParenthesizedContext ctx) {
 		return visit(ctx.caseMatch());
 	}
 
 	@Override
-	public GioviObject visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
+	public GioviParserVisitResult visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
 		return OperationEvaluator.relational(
 			subject,
 			ctx.op.getText(),
@@ -52,7 +52,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
+	public GioviParserVisitResult visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
 		return OperationEvaluator.equality(
 			subject,
 			ctx.op.getText(),
@@ -60,7 +60,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
+	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
 		return OperationEvaluator.bool(
 			visit(ctx.caseMatch(0)),
 			ctx.bop.getText(),
@@ -68,7 +68,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
+	public GioviParserVisitResult visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
 		return OperationEvaluator.containment(
 			subject,
 			ctx.op.getText(),
@@ -76,7 +76,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
+	public GioviParserVisitResult visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
 		return OperationEvaluator.bool(
 			subject,
 			ctx.op.getText(),
@@ -84,7 +84,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 	}
 
 	@Override
-	public GioviObject visitCaseMatchTypeCheck(CaseMatchTypeCheckContext ctx) {
+	public GioviParserVisitResult visitCaseMatchTypeCheck(CaseMatchTypeCheckContext ctx) {
 		var valueType = subject.asGioviValue().getGioviType();
 		var checkType = gioviVisitor.visit(ctx.type());
 		return new GioviBool(valueType.equals(checkType));

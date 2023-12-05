@@ -3,11 +3,11 @@ package it.simonvic.giovi.util;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 
 public class OperationEvaluator {
 
-	public static GioviObject prefixed(String prefix, GioviObject value) {
+	public static GioviParserVisitResult prefixed(String prefix, GioviParserVisitResult value) {
 		return switch (prefix) {
 			case "+" -> value.positive();
 			case "-" -> value.negative();
@@ -15,7 +15,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject additive(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult additive(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "+" -> left.plus(right);
 			case "-" -> left.minus(right);
@@ -23,7 +23,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject multiplicative(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult multiplicative(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "*" -> left.multiply(right);
 			case "/" -> left.divide(right);
@@ -32,7 +32,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject relational(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult relational(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "<=" -> left.lessEqual(right);
 			case ">=" -> left.greaterEqual(right);
@@ -42,7 +42,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject bool(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult bool(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "and", "&" -> left.and(right);
 			case "or", "|" -> left.or(right);
@@ -50,7 +50,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject equality(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult equality(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "=" -> left.equal(right);
 			case "!=" -> left.notEqual(right);
@@ -58,7 +58,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static GioviObject containment(GioviObject left, String operator, GioviObject right) {
+	public static GioviParserVisitResult containment(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
 			case "~=" -> left.isContained(right);
 			case "=~" -> left.contains(right);
@@ -66,7 +66,7 @@ public class OperationEvaluator {
 		};
 	}
 
-	public static void redirection(GioviObject content, String operator, GioviObject destination) {
+	public static void redirection(GioviParserVisitResult content, String operator, GioviParserVisitResult destination) {
 		switch (operator) {
 			case "->", "<-" -> destination.redirection(content);
 			case "->+", "+<-" -> destination.redirectionPlus(content);
@@ -79,7 +79,7 @@ public class OperationEvaluator {
 
 	// TODO: move to visitor
 	public static void redirectionToPrimitive(
-		GioviObject content,
+		GioviParserVisitResult content,
 		String operator,
 		String destination) {
 		switch (operator) {

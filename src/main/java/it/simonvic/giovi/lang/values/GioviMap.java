@@ -6,7 +6,7 @@ import java.util.Map;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.lang.AccessKey;
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
@@ -212,7 +212,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
-	public GioviObject redirection(GioviObject content) {
+	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviMap v -> init(v.unbox());
@@ -222,7 +222,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public GioviObject redirectionPlus(GioviObject right) {
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> putAll(defaultValue);
 			case GioviMap v -> putAll(v.unbox());
@@ -233,7 +233,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public GioviObject redirectionMinus(GioviObject right) {
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> removeAll(defaultValue);
 			case GioviMap v -> removeAll(v.unbox());
@@ -248,7 +248,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 	//                                                                                   relational
 	@Override
-	public GioviObject equal(GioviObject right) {
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviMap v -> {
@@ -281,7 +281,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public GioviObject contains(GioviObject right) {
+	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		for (var key : this.value.keySet()) {
 			if (key.equal(right).asBoolean()) {
 				return new GioviBool(true);
@@ -293,7 +293,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	//                                                                                       access
 
 	@Override
-	public GioviObject access(GioviObject right) {
+	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(gioviValue);
 			case AccessKey accessKey -> switch (accessKey.get()) {

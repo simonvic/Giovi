@@ -6,7 +6,7 @@ import java.util.Optional;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.values.GioviType;
 
-public class GioviFunction extends GioviObject {
+public class GioviFunction implements GioviParserVisitResult {
 
 	private final GioviType<?> returnType;
 	private final LinkedHashMap<String, GioviFunctionParameter> parameters;

@@ -5,7 +5,7 @@ import java.util.List;
 
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.util.GioviTypes;
 
@@ -135,7 +135,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
-	public GioviObject redirection(GioviObject content) {
+	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviList v -> this.init(v.unbox());
@@ -145,7 +145,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviObject redirectionPlus(GioviObject right) {
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> addAll(defaultValue);
 			case GioviList v -> addAll(v.unbox());
@@ -156,7 +156,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviObject redirectionMinus(GioviObject right) {
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> removeAll(defaultValue);
 			case GioviList v -> removeAll(v.unbox());
@@ -170,7 +170,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	//                                                                                      boolean
 	//                                                                                   relational
 	@Override
-	public GioviObject equal(GioviObject right) {
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviList v -> {
@@ -190,7 +190,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviObject contains(GioviObject right) {
+	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		for (var entry : this.value) {
 			if (entry.equal(right).asBoolean()) {
 				return new GioviBool(true);
@@ -201,7 +201,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
 	//                                                                                       access
 	@Override
-	public GioviObject access(GioviObject right) {
+	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt i -> {

@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 
-public class GioviDefault extends GioviObject {
+public class GioviDefault implements GioviParserVisitResult {
 }

@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang.values;
 
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 
 public final class GioviBool extends GioviPrimitive<Boolean> {
 
@@ -59,7 +59,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
-	public GioviObject redirection(GioviObject content) {
+	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviBool v -> value = v.unbox();
@@ -71,12 +71,12 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	//                                                                                   arithmetic
 	//                                                                                      boolean
 	@Override
-	public GioviObject not() {
+	public GioviParserVisitResult not() {
 		return new GioviBool(!value);
 	}
 
 	@Override
-	public GioviObject and(GioviObject right) {
+	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value && defaultValue);
 			case GioviBool v -> new GioviBool(value && v.unbox());
@@ -86,7 +86,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	}
 
 	@Override
-	public GioviObject or(GioviObject right) {
+	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value || defaultValue);
 			case GioviBool v -> new GioviBool(value || v.unbox());
@@ -98,7 +98,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	//                                                                                   relational
 
 	@Override
-	public GioviObject equal(GioviObject right) {
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
@@ -108,7 +108,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	}
 
 	@Override
-	public GioviObject notEqual(GioviObject right) {
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		return equal(right).not();
 	}
 

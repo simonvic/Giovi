@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang;
 
-public class AccessKey extends GioviObject {
+public class AccessKey implements GioviParserVisitResult {
 	private final String s;
 
 	public AccessKey(String s) {

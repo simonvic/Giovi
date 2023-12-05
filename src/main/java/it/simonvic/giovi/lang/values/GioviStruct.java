@@ -2,7 +2,7 @@ package it.simonvic.giovi.lang.values;
 
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.lang.AccessKey;
-import it.simonvic.giovi.lang.GioviObject;
+import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviLists;
 
@@ -44,7 +44,7 @@ public abstract sealed class GioviStruct
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
-	public GioviObject redirection(GioviObject content) {
+	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> boxDefault();
 			case GioviStruct v -> box(v.copy());
@@ -56,17 +56,17 @@ public abstract sealed class GioviStruct
 	//                                                                                   arithmetic
 	//                                                                                      boolean
 	//                                                                                   relational
-	public GioviObject equal(GioviObject right) {
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		throw new OperatorNotSupported("=");
 	}
 
-	public GioviObject notEqual(GioviObject right) {
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		throw new OperatorNotSupported("!=");
 	}
 
 	//                                                                                       access
 	@Override
-	public GioviObject dot(GioviObject right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey r -> value.getField(r.get());
 			default -> super.dot(right);
@@ -74,7 +74,7 @@ public abstract sealed class GioviStruct
 	}
 
 	@Override
-	public GioviObject access(GioviObject right) {
+	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey r -> switch (r.get()) {
 				case "%" -> new GioviInt(value.getFieldsCount());
