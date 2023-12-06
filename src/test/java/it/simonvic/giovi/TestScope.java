@@ -1,6 +1,7 @@
 package it.simonvic.giovi;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
@@ -178,7 +179,8 @@ public class TestScope {
 		@Test
 		void nestedBlockShouldNotThrow_VariableAlreadyDeclared() {
 			scope11.declare("aString", GioviValue.of("Hello world"));
-			assertDoesNotThrow(() -> scope111.declare("aString", GioviValue.of("hello_world")));
+			assertThatNoException()
+				.isThrownBy(() -> scope111.declare("aString", GioviValue.of("hello_world")));
 		}
 
 		@Test
@@ -210,7 +212,7 @@ public class TestScope {
 
 		@Test
 		void skipping_inLoopScope_shouldNotThrow() {
-			assertDoesNotThrow(() -> {
+			assertThatNoException().isThrownBy(() -> {
 				var global = new Scope(null);
 				var scope = new Scope(global);
 				var scope1 = new LoopScope(scope);
@@ -220,7 +222,7 @@ public class TestScope {
 
 		@Test
 		void skipping_inScopeNestedInLoopScope_shouldNotThrow() {
-			assertDoesNotThrow(() -> {
+			assertThatNoException().isThrownBy(() -> {
 				var global = new Scope(null);
 				var scope = new Scope(global);
 				var scope1 = new LoopScope(scope);
@@ -241,7 +243,7 @@ public class TestScope {
 
 		@Test
 		void breaking_inLoopScope_shouldNotThrow() {
-			assertDoesNotThrow(() -> {
+			assertThatNoException().isThrownBy(() -> {
 				var global = new Scope(null);
 				var scope = new Scope(global);
 				var scope1 = new LoopScope(scope);
@@ -251,7 +253,7 @@ public class TestScope {
 
 		@Test
 		void breaking_inScopeNestedInLoopScope_shouldNotThrow() {
-			assertDoesNotThrow(() -> {
+			assertThatNoException().isThrownBy(() -> {
 				var global = new Scope(null);
 				var scope = new Scope(global);
 				var scope1 = new LoopScope(scope);

@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import static it.simonvic.giovi.GioviVisitor.visit;
 import static it.simonvic.giovi.GioviVisitor.visitExpression;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -322,7 +323,7 @@ public class TestGioviStruct {
 
 		@Test
 		void givenDefinedType_whenCreatingTypedStruct_shouldNotThrow() {
-			assertDoesNotThrow(() -> visit("""
+			assertThatNoException().isThrownBy(() -> visit("""
 				RGB <
 					r Int
 					g Int
@@ -358,7 +359,7 @@ public class TestGioviStruct {
 
 		@Test
 		void whenCreatingTypedStructWithSubsetOfFields_shouldNotThrow() {
-			assertDoesNotThrow(() -> visit("""
+			assertThatNoException().isThrownBy(() -> visit("""
 				RGB <
 					r Int
 					g Int
