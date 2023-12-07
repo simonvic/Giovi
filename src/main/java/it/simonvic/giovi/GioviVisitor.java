@@ -9,6 +9,7 @@ import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
+import it.simonvic.giovi.delegates.SwitchStatementDelegate;
 import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.values.*;
@@ -17,7 +18,6 @@ import it.simonvic.giovi.lang.values.natives.Struct.Named;
 import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
-import it.simonvic.giovi.visitors.SwitchHelperVisitor;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
@@ -125,7 +125,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitSwitchStatement(SwitchStatementContext ctx) {
 		var subject = visit(ctx.expression());
-		var matchedLabel = SwitchHelperVisitor.evaluate(this, ctx.switchBlock(), subject);
+		var matchedLabel = SwitchStatementDelegate.evaluate(this, ctx.switchBlock(), subject);
 		if (matchedLabel.isPresent()) {
 			enterScope();
 			var matchedLabelCtx = matchedLabel.get();

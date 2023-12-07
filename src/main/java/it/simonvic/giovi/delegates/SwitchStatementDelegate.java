@@ -1,4 +1,4 @@
-package it.simonvic.giovi.visitors;
+package it.simonvic.giovi.delegates;
 
 import java.util.Optional;
 
@@ -8,12 +8,12 @@ import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.values.GioviBool;
 import it.simonvic.giovi.util.OperationEvaluator;
 
-public class SwitchHelperVisitor extends GioviHelperVisitor {
+public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	private final SwitchBlockContext ctx;
 	private final GioviParserVisitResult subject;
 
-	public SwitchHelperVisitor(
+	public SwitchStatementDelegate(
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
 		GioviParserVisitResult subject) {
@@ -26,7 +26,7 @@ public class SwitchHelperVisitor extends GioviHelperVisitor {
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
 		GioviParserVisitResult subject) {
-		return new SwitchHelperVisitor(gioviVisitor, ctx, subject).evaluate();
+		return new SwitchStatementDelegate(gioviVisitor, ctx, subject).evaluate();
 	}
 
 	public Optional<SwitchLabelContext> evaluate() {
