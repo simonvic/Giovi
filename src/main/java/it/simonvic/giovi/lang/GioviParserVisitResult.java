@@ -60,6 +60,7 @@ public interface GioviParserVisitResult {
 	public default GioviReal asGioviReal() { return asGioviNumber().realValue(); }
 	public default GioviBool asGioviBool() { return (GioviBool) this; }
 	public default GioviText asGioviText() { return (GioviText) this; }
+	// TODO: renamed to "asNativeXXX"
 	public default Number asNumber() { return asGioviNumber().unbox(); }
 	public default Natural asNatural() { return asGioviNatural().unbox(); }
 	public default Integer asInteger() { return asGioviInt().unbox(); }

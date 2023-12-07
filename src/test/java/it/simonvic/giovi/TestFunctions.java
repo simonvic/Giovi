@@ -5,17 +5,42 @@ import static it.simonvic.giovi.GioviVisitor.visitFunctionDeclaration;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.LinkedHashMap;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviFunctionSignatureParameters;
-import it.simonvic.giovi.lang.GioviFunctionSignatureParameters.FormalParameter;
+import it.simonvic.giovi.lang.GioviFunctionSignature;
+import it.simonvic.giovi.lang.GioviFunctionSignatureParameter;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestFunctions {
+
+	private static GioviFunctionSignature signatureOf(
+		String identifier,
+		GioviFunctionSignatureParameter... parameters) {
+		var params = new LinkedHashMap<String, GioviFunctionSignatureParameter>();
+		for (var param : parameters) {
+			params.put(param.identifier(), param);
+		}
+		return new GioviFunctionSignature(identifier, params, null);
+	}
+
+	private static GioviFunctionSignatureParameter paramOf(
+		String identifier,
+		Class<? extends GioviValue<?>> type,
+		GioviValue<?> defaultValue) {
+		return new GioviFunctionSignatureParameter(identifier, GioviTypes.of(type), defaultValue);
+	}
+
+	private static GioviFunctionSignatureParameter paramOf(
+		String identifier,
+		Class<? extends GioviValue<?>> type) {
+		return new GioviFunctionSignatureParameter(identifier, GioviTypes.of(type));
+	}
 
 	@Nested
 	class Declaration {
@@ -47,11 +72,14 @@ public class TestFunctions {
 		@Test
 		void testFunctionDeclaration_withRequiredParameter() {
 			assertThat(visitFunctionDeclaration("""
-				someFunction(a Int) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class))));
+				someFunction(
+					a Int
+				) {}
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class)));
+
 		}
 
 		@Test
@@ -61,11 +89,11 @@ public class TestFunctions {
 					a Int,
 					b Real
 				) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class)),
-						new FormalParameter("b", GioviTypes.of(GioviReal.class))));
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class),
+					paramOf("b", GioviReal.class)));
 		}
 
 		@Test
@@ -74,11 +102,10 @@ public class TestFunctions {
 				someFunction(
 					a Int default 69,
 				) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class),
-							GioviValue.of(69))));
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class, GioviValue.of(69))));
 		}
 
 		@Test
@@ -106,13 +133,11 @@ public class TestFunctions {
 					a Int default 69,
 					b Real default 6.9,
 				) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class),
-							GioviValue.of(69)),
-						new FormalParameter("b", GioviTypes.of(GioviReal.class),
-							GioviValue.of(6.9))));
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class, GioviValue.of(69)),
+					paramOf("b", GioviReal.class, GioviValue.of(6.9))));
 		}
 
 		@Test
@@ -123,13 +148,12 @@ public class TestFunctions {
 					b Real,
 					c Bool default true,
 				) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class)),
-						new FormalParameter("b", GioviTypes.of(GioviReal.class)),
-						new FormalParameter("c", GioviTypes.of(GioviBool.class),
-							GioviValue.of(true))));
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class),
+					paramOf("b", GioviReal.class),
+					paramOf("c", GioviBool.class, GioviValue.of(true))));
 		}
 
 		@Test
@@ -140,14 +164,12 @@ public class TestFunctions {
 					b Real,
 					c Bool default true,
 				) {}
-				""")
-				.parameters())
-					.isEqualTo(new GioviFunctionSignatureParameters(
-						new FormalParameter("a", GioviTypes.of(GioviInt.class),
-							GioviValue.of(69)),
-						new FormalParameter("b", GioviTypes.of(GioviReal.class)),
-						new FormalParameter("c", GioviTypes.of(GioviBool.class),
-							GioviValue.of(true))));
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class, GioviValue.of(69)),
+					paramOf("b", GioviReal.class),
+					paramOf("c", GioviBool.class, GioviValue.of(true))));
 		}
 
 		@Disabled("Function overload not implemented yet")
@@ -241,6 +263,14 @@ public class TestFunctions {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				someFunction() {}
 				someFunction(69)
+				"""));
+		}
+
+		@Test
+		void invokingFunction_withExtraPositionalParams_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction(x Int) {}
+				someFunction(69, 6.9)
 				"""));
 		}
 
