@@ -6,9 +6,10 @@ import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.values.GioviType;
 
 public record GioviFunctionSignature(
+	String identifier,
 	BlockContext body,
 	GioviType<?> returnType,
-	LinkedHashMap<String, GioviFunctionParameter> parameters)
+	LinkedHashMap<String, GioviFunctionSignatureParameter> parameters)
 	implements GioviParserVisitResult {
 
 

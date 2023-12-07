@@ -138,30 +138,43 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Functions
 
+	// TODO: when implementing overloading, use a Set
 	private final Map<String, GioviFunctionSignature> functionSignatures = new HashMap<>();
 
-	public void declare(String identifier, GioviFunctionSignature signature) {
-		if (functionSignatures.containsKey(identifier)) {
+	public void declare(GioviFunctionSignature signature) {
+		if (functionSignatures.containsKey(signature.identifier())) {
 			throw new FunctionAlreadyDeclared(signature);
 		}
-		functionSignatures.put(identifier, signature);
+		functionSignatures.put(signature.identifier(), signature);
 	}
 
-	public boolean isDeclaredFunction(String identifier) {
-		return functionSignatures.containsKey(identifier)
-			|| (parent != null && parent.isDeclaredFunction(identifier));
-	}
-
-	public GioviFunctionSignature getFunctionSignature(String identifier) {
-		if (functionSignatures.containsKey(identifier)) {
-			return functionSignatures.get(identifier);
+	public GioviFunctionSignature getFunctionSignature(String identifier)
+		throws FunctionNotDeclared {
+		if (!functionSignatures.containsKey(identifier)) {
+			if (parent == null) {
+				throw new FunctionNotDeclared(identifier);
+			}
+			return parent.getFunctionSignature(identifier);
 		}
-		if (parent == null) {
-			throw new FunctionNotDeclared(identifier);
-		}
-		return parent.getFunctionSignature(identifier);
+		return functionSignatures.get(identifier);
 	}
 
+
+	// public GioviFunctionSignature getFunctionSignature(GioviFunctionCallSignature signature)
+	// 	throws FunctionNotDeclared, MultipleFunctionSignatures {
+	// 	Stream<GioviFunctionSignature> stream = functionSignatures.stream()
+	// 		.filter(signature::isCompatible);
+	// 	return switch (stream.count()) {
+	// 		case 0l -> {
+	// 			if (parent == null) {
+	// 				throw new FunctionNotDeclared(signature);
+	// 			}
+	// 			yield parent.getFunctionSignature(signature);
+	// 		}
+	// 		case 1l -> stream.findFirst().get();
+	// 		default -> throw new MultipleFunctionSignatures(signature);
+	// 	};
+	// }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
