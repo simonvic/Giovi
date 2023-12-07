@@ -683,16 +683,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.returnType();
-				if (returnType.unbox().getClazz() == GioviVoid.class) {
-					throw new GioviException("Returning in function with no return value");
+				var returnedValue = getCurrentScope().getReturnValue();
+				var returnedType = returnedValue.getGioviType();
+				if (returnType.unbox().getClazz() == GioviVoid.class
+					&& returnedType.unbox().getClazz() != GioviVoid.class) {
+					throw new GioviException(
+						"Can't return " + returnedValue + " in a function with no return type");
 				}
-				var returnValue = getCurrentScope().getReturnValue();
-				var returnedType = returnValue.getGioviType();
 				if (returnedType.equals(returnType)) {
-					return returnValue;
+					return returnedValue;
 				}
 				if (returnedType.canUpcast(returnType)) {
-					return returnValue.castTo(returnType);
+					return returnedValue.castTo(returnType);
 				}
 				throw new GioviException(
 					"Wrong return type, expecting " + returnType + " but got " + returnedType);
@@ -838,7 +840,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitReturnStatement(ReturnStatementContext ctx) {
-		GioviValue<?> returnValue = visit(ctx.expression()).asGioviValue();
+		var returnValue = ctx.expression() == null
+			? new GioviVoid()
+			: visit(ctx.expression()).asGioviValue();
 		getCurrentScope().doReturn(returnValue);
 		return returnValue;
 	}
