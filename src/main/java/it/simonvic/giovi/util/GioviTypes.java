@@ -24,7 +24,8 @@ public class GioviTypes {
 	}
 
 	public static GioviType<?> of(Class<? extends GioviValue<?>> clazz) {
-		if (clazz == GioviNatural.class
+		if (clazz == GioviVoid.class
+			|| clazz == GioviNatural.class
 			|| clazz == GioviInt.class
 			|| clazz == GioviReal.class
 			|| clazz == GioviBool.class
