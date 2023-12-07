@@ -1043,11 +1043,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitLiteralNull(LiteralNullContext ctx) {
-		return null;
-	}
-
-	@Override
 	public GioviParserVisitResult visitLiteralDefault(LiteralDefaultContext ctx) {
 		return new GioviDefault();
 	}
