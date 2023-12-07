@@ -678,11 +678,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 				var returnValue = getCurrentScope().getReturnValue();
 				var returnedType = returnValue.getGioviType();
-				if (!returnedType.equals(returnType)) {
-					throw new GioviException(
-						"Wrong return type, expecting " + returnType + " but got " + returnedType);
+				if (returnedType.equals(returnType)) {
+					return returnValue;
 				}
-				return returnValue;
+				if (returnedType.canUpcast(returnType)) {
+					return returnValue.castTo(returnType);
+				}
+				throw new GioviException(
+					"Wrong return type, expecting " + returnType + " but got " + returnedType);
 			}
 		}
 		if (func.returnType().unbox().getClazz() != GioviVoid.class) {
