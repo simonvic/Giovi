@@ -27,4 +27,9 @@ public class FunctionScope extends Scope {
 		return returnValue;
 	}
 
+	@Override
+	public boolean isInFunction() {
+		return true;
+	}
+
 }

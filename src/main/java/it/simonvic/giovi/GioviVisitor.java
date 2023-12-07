@@ -277,7 +277,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRepeatStatement(RepeatStatementContext ctx) {
-		enterLoopScope(); // TODO: wtf?
 		boolean infiniteRepeat = ctx.IF() == null;
 		while (infiniteRepeat || visit(ctx.expression()).asBoolean()) {
 			enterLoopScope();

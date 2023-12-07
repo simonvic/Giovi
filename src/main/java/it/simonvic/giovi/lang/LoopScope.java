@@ -28,4 +28,10 @@ public class LoopScope extends Scope {
 	public boolean shouldBreak() {
 		return shouldBreak;
 	}
+
+	@Override
+	public boolean isInLoop() {
+		return true;
+	}
+
 }

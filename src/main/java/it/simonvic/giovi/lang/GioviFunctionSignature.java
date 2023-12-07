@@ -1,6 +1,8 @@
 package it.simonvic.giovi.lang;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.values.GioviType;
@@ -9,7 +11,7 @@ import it.simonvic.giovi.util.GioviTypes;
 
 public record GioviFunctionSignature(
 	String identifier,
-	BlockContext body,
+	BlockContext body, // TODO: when implementing GioviFunction value, remove the body from the signature
 	GioviType<?> returnType,
 	LinkedHashMap<String, GioviFunctionSignatureParameter> parameters)
 	implements GioviParserVisitResult {
