@@ -673,7 +673,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.returnType();
-				if (returnType == null) {
+				if (returnType.unbox().getClazz() == GioviVoid.class) {
 					throw new GioviException("Returning in function with no return value");
 				}
 				var returnValue = getCurrentScope().getReturnValue();
@@ -685,7 +685,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				return returnValue;
 			}
 		}
-		if (func.returnType() != null) {
+		if (func.returnType().unbox().getClazz() != GioviVoid.class) {
 			throw new GioviException("Missing return statement in function");
 		}
 		return new GioviVoid();
