@@ -1,112 +1,275 @@
 package it.simonvic.giovi;
 
 import static it.simonvic.giovi.GioviVisitor.visit;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static it.simonvic.giovi.GioviVisitor.visitFunctionDeclaration;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.GioviFunctionSignatureParameters;
+import it.simonvic.giovi.lang.GioviFunctionSignatureParameters.FormalParameter;
+import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class TestFunctions {
 
-	@Test
-	void notReturningInFunctionWithReturn_shouldThrow() {
-		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-			someFunction() => Int {}
-			someFunction()
-			"""));
-	}
-
-	@Test
-	void returningInFunctionWithNoReturn_shouldThrow() {
-		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-			someFunction() {
-				=> 69
-			}
-			someFunction()
-			"""));
-	}
-
-	@Test
-	void returningWrongType_shouldThrow() {
-		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-			someFunction() => Text {
-				=> 69
-			}
-			someFunction()
-			"""));
-	}
-
-	@ParameterizedTest
-	@ValueSource(
-		strings = {
-				"fun(){} fun(69)",
-				"fun(x Int){} fun()",
-				"fun(x Int, y Int){} fun(69)"
-		})
-	void functionCall_withWrongParametersNumber_shouldThrow(String code) {
-		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit(code));
-	}
-
-	@Test
-	void testDeclaration_noParams_noReturn() {
-		var functionSignature = visit("""
-			sayHelloWorld() {}
-			""").getCurrentScope().getFunctionSignature("sayHelloWorld");
-		assertAll(
-			() -> assertThat(functionSignature.parameters()).isEmpty(),
-			() -> assertThat(functionSignature.parameters()).isEmpty());
-	}
-
-	@Test
-	void nonDefaultParameterAfterDefaultParameter_shouldThrowException() {
-		assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-			fun(x Int default 69, y Int) {
-			}
-			"""));
-	}
-
-	@Test
-	void correctDefaultParameters_shouldNotThrowException() {
-		assertDoesNotThrow(() -> visit("""
-			fun(x Int, y Int default 69, z Int default 420) {
-			}
-			"""));
-	}
-
-	@Disabled("Function overload not implemented yet")
 	@Nested
-	class TestOverload {
+	class Declaration {
 
 		@Test
-		void differentParameterCount_shouldNotThrow() {
+		void testFunctionDeclaration_withNoParamsAndNoReturn() {
+			var functionSignature = visitFunctionDeclaration("""
+				someFunction() {}
+				""");
+			assertAll(
+				() -> assertThat(functionSignature.parameters())
+					.isEmpty(),
+				() -> assertThat(functionSignature.returnType())
+					.isEqualTo(GioviTypes.of(GioviVoid.class)));
+		}
+
+		@Test
+		void testFunctionDeclaration_withNoParamsAndReturn() {
+			var functionSignature = visitFunctionDeclaration("""
+				someFunction() => Int {}
+				""");
+			assertAll(
+				() -> assertThat(functionSignature.parameters())
+					.isEmpty(),
+				() -> assertThat(functionSignature.returnType())
+					.isEqualTo(GioviTypes.of(GioviInt.class)));
+		}
+
+		@Test
+		void testFunctionDeclaration_withRequiredParameter() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(a Int) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class))));
+		}
+
+		@Test
+		void testFunctionDeclaration_withRequiredParameters() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int,
+					b Real
+				) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class)),
+						new FormalParameter("b", GioviTypes.of(GioviReal.class))));
+		}
+
+		@Test
+		void testFunctionDeclaration_withOptionalParameter() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int default 69,
+				) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class),
+							GioviValue.of(69))));
+		}
+
+		@Test
+		void functionDeclaration_withOptionalParameterOfWrongType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				fun(x Int, y Int) {}
-				fun(x Int, y Int, z Int) {}
+				someFunction(
+					a Int default "hello",
+				) {}
 				"""));
 		}
 
 		@Test
-		void sameSignature_shouldThrow() {
-			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				fun(x Int, y Int) {}
-				fun(x Int, y Int) {}
+		void functionDeclaration_withOptionalParameterOfDifferentButCompatibleType_shouldNotThrow() {
+			assertThatNoException().isThrownBy(() -> visit("""
+				someFunction(
+					a Real default 69n,
+				) {}
 				"""));
 		}
+
+		@Test
+		void testFunctionDeclaration_withOptionalParameters() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int default 69,
+					b Real default 6.9,
+				) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class),
+							GioviValue.of(69)),
+						new FormalParameter("b", GioviTypes.of(GioviReal.class),
+							GioviValue.of(6.9))));
+		}
+
+		@Test
+		void testFunctionDeclaration_withRequiredParametersAndTerminalOptionalParameters() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int,
+					b Real,
+					c Bool default true,
+				) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class)),
+						new FormalParameter("b", GioviTypes.of(GioviReal.class)),
+						new FormalParameter("c", GioviTypes.of(GioviBool.class),
+							GioviValue.of(true))));
+		}
+
+		@Test
+		void testFunctionDeclaration_withMixedRequiredAndOptionalParameters() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int default 69,
+					b Real,
+					c Bool default true,
+				) {}
+				""")
+				.parameters())
+					.isEqualTo(new GioviFunctionSignatureParameters(
+						new FormalParameter("a", GioviTypes.of(GioviInt.class),
+							GioviValue.of(69)),
+						new FormalParameter("b", GioviTypes.of(GioviReal.class)),
+						new FormalParameter("c", GioviTypes.of(GioviBool.class),
+							GioviValue.of(true))));
+		}
+
+		@Disabled("Function overload not implemented yet")
+		@Nested
+		class TestOverload {
+
+			@Test
+			void overloading_withDifferentParameterCount_shouldNotThrow() {
+				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+					fun(x Int, y Int) {}
+					fun(x Int, y Int, z Int) {}
+					"""));
+			}
+
+			@Test
+			void overloading_withSameSignature_shouldThrow() {
+				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+					fun(x Int, y Int) {}
+					fun(x Int, y Int) {}
+					"""));
+			}
+
+		}
+
 	}
 
 	@Nested
-	class TestNamedParametersCall {
+	class Return {
 
 		@Test
-		void missingParameter_shouldThrow() {
+		void notReturningInFunctionWithReturn_shouldNotThrow() {
+			assertThatNoException().isThrownBy(() -> visit("""
+				someFunction() {}
+				someFunction()
+				"""));
+		}
+
+		@Test
+		void notReturningInFunctionWithReturn_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction() => Int {}
+				someFunction()
+				"""));
+		}
+
+		@Test
+		void returningInFunctionWithNoReturn_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction() {
+					=> 69
+				}
+				someFunction()
+				"""));
+		}
+
+		@Test
+		void returningWrongType_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction() => Text {
+					=> 69
+				}
+				someFunction()
+				"""));
+		}
+
+		@Test
+		void returningDifferentButCompatibleType_shouldNotThrow() {
+			assertThatNoException().isThrownBy(() -> visit("""
+				someFunction() => Real {
+					=> 69n
+				}
+				someFunction()
+				"""));
+		}
+
+	}
+
+	@Nested
+	class Invocation {
+
+		@Test
+		void invokingNonExistingFunction_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction() {}
+				someNonExistingFunction()
+				"""));
+		}
+
+		@Test
+		void invokingFunction_withExtraPositionalParam_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction() {}
+				someFunction(69)
+				"""));
+		}
+
+		@Test
+		void invokingFunction_withMissingRequiredParam_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction(a Int) {}
+				someFunction()
+				"""));
+		}
+
+		@Test
+		void invokingFunction_withMissingRequiredParams_shouldThrow() {
+			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				someFunction(a Int, b Real) {}
+				someFunction(69)
+				"""));
+		}
+
+		@Test
+		void invokingFunction_withNamedParams_shouldNotThrow() {
+			assertThatNoException().isThrownBy(() -> visit("""
+				someFunction(a Int, b Real) {}
+				someFunction(a: 69, b: 6.9)
+				"""));
+		}
+
+		@Test
+		void invokingFunction_usingNamedParam_withMissingRequiredParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(b: 0)
@@ -114,7 +277,7 @@ public class TestFunctions {
 		}
 
 		@Test
-		void duplicateNamedParameter_shouldThrow() {
+		void invokingFunction_usingDuplicateNamedParams_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(a: 0, a: 1)
@@ -122,7 +285,7 @@ public class TestFunctions {
 		}
 
 		@Test
-		void unknownNamedParameter_shouldThrow() {
+		void invokingFunction_usingUnkownNamedParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
 				fun(a: 0, b: 1, z: 69)
@@ -130,4 +293,5 @@ public class TestFunctions {
 		}
 
 	}
+
 }
