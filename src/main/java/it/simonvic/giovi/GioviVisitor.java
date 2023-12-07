@@ -243,8 +243,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (map.unbox().isEmpty())
 			return;
 
-		for (Map.Entry<? extends GioviValue<?>, ? extends GioviValue<?>> entry : map.unbox()
-			.entrySet()) {
+		for (var entry : map.unbox().entrySet()) {
 
 			enterLoopScope();
 
@@ -674,37 +673,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	/**
-	 * @param func
-	 * @return
+	 * Visit function call parameters and declare actual parameters
+	 * @param ctx Function call context
+	 * @param signature Function signature
 	 */
-	private GioviValue<?> callFunction(GioviFunctionSignature func) {
-		for (StatementContext statement : func.body().statement()) {
-			visit(statement);
-			if (getCurrentScope().shouldReturn()) {
-				var returnType = func.returnType();
-				var returnedValue = getCurrentScope().getReturnValue();
-				var returnedType = returnedValue.getGioviType();
-				if (returnType.unbox().getClazz() == GioviVoid.class
-					&& returnedType.unbox().getClazz() != GioviVoid.class) {
-					throw new GioviException(
-						"Can't return " + returnedValue + " in a function with no return type");
-				}
-				if (returnedType.equals(returnType)) {
-					return returnedValue;
-				}
-				if (returnedType.canUpcast(returnType)) {
-					return returnedValue.castTo(returnType);
-				}
-				throw new GioviException(
-					"Wrong return type, expecting " + returnType + " but got " + returnedType);
-			}
-		}
-		if (func.returnType().unbox().getClazz() != GioviVoid.class) {
-			throw new GioviException("Missing return statement in function");
-		}
-		return new GioviVoid();
-	}
-
 	private void setupFunctionParameters(
 		FunctionCallContext ctx,
 		GioviFunctionSignature signature) {
@@ -722,6 +694,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	}
 
+	/**
+	 * Visit function call positional parameters and declare actual parameters
+	 * @param ctx Function call context
+	 * @param signature Function signature
+	 */
 	private void setupFunctionParametersIteratively(
 		List<FunctionCallParameterContext> actualParamCtxList,
 		GioviFunctionSignature signature) {
@@ -779,6 +756,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	}
 
+	/**
+	 * Visit function call named parameters and declare actual parameters
+	 * @param ctx Function call context
+	 * @param signature Function signature
+	 */
 	private void setupNamedFunctionParameters(
 		List<FunctionCallParameterContext> actualParamCtxList,
 		GioviFunctionSignature signature) {
@@ -834,6 +816,38 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			getCurrentScope().declare(formalParamIdentifier, formalParam.defaultValue());
 		});
 
+	}
+
+	/** Actually perform function invocation by visiting its body
+	 * @param func function to invocate
+	 * @return returned value or GioviVoid
+	 */
+	private GioviValue<?> callFunction(GioviFunctionSignature func) {
+		for (StatementContext statement : func.body().statement()) {
+			visit(statement);
+			if (getCurrentScope().shouldReturn()) {
+				var returnType = func.returnType();
+				var returnedValue = getCurrentScope().getReturnValue();
+				var returnedType = returnedValue.getGioviType();
+				if (returnType.unbox().getClazz() == GioviVoid.class
+					&& returnedType.unbox().getClazz() != GioviVoid.class) {
+					throw new GioviException(
+						"Can't return " + returnedValue + " in a function with no return type");
+				}
+				if (returnedType.equals(returnType)) {
+					return returnedValue;
+				}
+				if (returnedType.canUpcast(returnType)) {
+					return returnedValue.castTo(returnType);
+				}
+				throw new GioviException(
+					"Wrong return type, expecting " + returnType + " but got " + returnedType);
+			}
+		}
+		if (func.returnType().unbox().getClazz() != GioviVoid.class) {
+			throw new GioviException("Missing return statement in function");
+		}
+		return new GioviVoid();
 	}
 
 
