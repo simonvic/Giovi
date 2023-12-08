@@ -18,7 +18,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testGreater(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -31,7 +31,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testLess(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -47,7 +47,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testLessEqual(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -63,7 +63,7 @@ public class TestExpressionRelational {
 		"""
 	)
 	void testGreaterEqual(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 }

@@ -60,15 +60,14 @@ public interface GioviParserVisitResult {
 	public default GioviReal asGioviReal() { return asGioviNumber().realValue(); }
 	public default GioviBool asGioviBool() { return (GioviBool) this; }
 	public default GioviText asGioviText() { return (GioviText) this; }
-	// TODO: renamed to "asNativeXXX"
-	public default Number asNumber() { return asGioviNumber().unbox(); }
-	public default Natural asNatural() { return asGioviNatural().unbox(); }
-	public default Integer asInteger() { return asGioviInt().unbox(); }
-	public default Double asDouble() { return asGioviReal().unbox(); }
-	public default Boolean asBoolean() { return asGioviBool().unbox(); }
-	public default String asString() { return asGioviText().unbox(); }
-	public default List<?> asList() { return asGioviList().unbox(); }
-	public default LinkedHashMap<?, ?> asMap() { return asGioviMap().unbox(); }
+	public default Number asNativeNumber() { return asGioviNumber().unbox(); }
+	public default Natural asNativeNatural() { return asGioviNatural().unbox(); }
+	public default Integer asNativeInt() { return asGioviInt().unbox(); }
+	public default Double asNativeReal() { return asGioviReal().unbox(); }
+	public default Boolean asNativeBool() { return asGioviBool().unbox(); }
+	public default String asNativeText() { return asGioviText().unbox(); }
+	public default List<?> asNativeList() { return asGioviList().unbox(); }
+	public default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().unbox(); }
 
 	// @formatter:on
 

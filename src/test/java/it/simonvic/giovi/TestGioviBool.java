@@ -18,7 +18,7 @@ public class TestGioviBool {
 			false, false
 			""")
 		public void testLiterals(String code, boolean expected) {
-			assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+			assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 		}
 
 	}
@@ -46,7 +46,7 @@ public class TestGioviBool {
 				false & false, false
 				""")
 			public void testAndOperator(String code, boolean expected) {
-				assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -57,7 +57,7 @@ public class TestGioviBool {
 				false | false, false
 				""")
 			public void testOrOperator(String code, boolean expected) {
-				assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -68,7 +68,7 @@ public class TestGioviBool {
 				!!true, true
 				""")
 			public void testNotOperator(String code, boolean expected) {
-				assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 			}
 
 
@@ -80,7 +80,7 @@ public class TestGioviBool {
 				{true & true} | !{true & {false | true}}, true
 				""")
 			public void testParenthesizedExpression(String code, boolean expected) {
-				assertThat(visitExpression(code).asBoolean()).isEqualTo(expected);
+				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 			}
 		}
 

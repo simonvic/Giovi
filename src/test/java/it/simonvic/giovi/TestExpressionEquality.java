@@ -22,7 +22,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Numbers(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -34,7 +34,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Strings(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -45,7 +45,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_List(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -58,7 +58,7 @@ public class TestExpressionEquality {
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 }

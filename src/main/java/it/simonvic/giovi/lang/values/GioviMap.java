@@ -265,12 +265,12 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 					var otherEntry = otherIterator.next();
 					var thisKey = thisEntry.getKey();
 					var otherKey = otherEntry.getKey();
-					if (!thisKey.equal(otherKey).asBoolean()) {
+					if (!thisKey.equal(otherKey).asNativeBool()) {
 						yield new GioviBool(false);
 					}
 					var thisValue = thisEntry.getValue();
 					var otherValue = otherEntry.getValue();
-					if (!thisValue.equal(otherValue).asBoolean()) {
+					if (!thisValue.equal(otherValue).asNativeBool()) {
 						yield new GioviBool(false);
 					}
 				}
@@ -283,7 +283,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		for (var key : this.value.keySet()) {
-			if (key.equal(right).asBoolean()) {
+			if (key.equal(right).asNativeBool()) {
 				return new GioviBool(true);
 			}
 		}

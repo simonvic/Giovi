@@ -32,12 +32,12 @@ public class TestGioviNatural {
 			0xFF_FF_FFn, 0xFFFFFF
 			""")
 		void testLiteral(String code, Integer expected) {
-			assertThat(visitExpression(code).asNatural()).isEqualTo(new Natural(expected));
+			assertThat(visitExpression(code).asNativeNatural()).isEqualTo(new Natural(expected));
 		}
 
 		@Test
 		void testMaxValue() {
-			assertThat(visitExpression("2147483647").asNatural())
+			assertThat(visitExpression("2147483647").asNativeNatural())
 				.isEqualTo(new Natural(Integer.MAX_VALUE));
 		}
 

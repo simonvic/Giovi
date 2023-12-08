@@ -62,11 +62,11 @@ public class Range<T> extends GioviObject {
 			throw new GioviException("A step must be a valid number but got " + step);
 		}
 
-		Number stepNumber = step == null ? null : step.asNumber();
+		Number stepNumber = step == null ? null : step.asNativeNumber();
 		if (start instanceof GioviReal || end instanceof GioviReal || step instanceof GioviReal) {
 			return Range.of(
-				start.asNumber().doubleValue(),
-				end.asNumber().doubleValue(),
+				start.asNativeNumber().doubleValue(),
+				end.asNativeNumber().doubleValue(),
 				stepNumber == null ? 1d : stepNumber.doubleValue());
 		}
 

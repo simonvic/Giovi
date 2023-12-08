@@ -17,7 +17,7 @@ public class TestExpressionContainment {
 		"""
 	)
 	void testStrings(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 
 	@ParameterizedTest
@@ -31,6 +31,6 @@ public class TestExpressionContainment {
 		"""
 	)
 	void testLists(String code, boolean expected) {
-		assertEquals(expected, visitExpression(code).asBoolean());
+		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
 }

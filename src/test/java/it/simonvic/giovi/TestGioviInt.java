@@ -30,12 +30,12 @@ public class TestGioviInt {
 			0xFF_FF_FF, 0xFFFFFF
 			""")
 		void testLiteral(String code, Integer expected) {
-			assertThat(visitExpression(code).asInteger()).isEqualTo(expected);
+			assertThat(visitExpression(code).asNativeInt()).isEqualTo(expected);
 		}
 
 		@Test
 		void testMaxValue() {
-			assertThat(visitExpression("2147483647").asInteger()).isEqualTo(Integer.MAX_VALUE);
+			assertThat(visitExpression("2147483647").asNativeInt()).isEqualTo(Integer.MAX_VALUE);
 		}
 
 		@Test
@@ -70,7 +70,7 @@ public class TestGioviInt {
 				-10 - -5, -5
 				""")
 			void testAdditiveExpression(String code, Integer expected) {
-				assertEquals(expected, visitExpression(code).asInteger());
+				assertEquals(expected, visitExpression(code).asNativeInt());
 			}
 
 			@ParameterizedTest
@@ -81,7 +81,7 @@ public class TestGioviInt {
 				10 / 0.5, 20
 				""")
 			void testMultiplicativeExpression(String code, Double expected) {
-				assertEquals(expected, visitExpression(code).asDouble());
+				assertEquals(expected, visitExpression(code).asNativeReal());
 			}
 
 			@ParameterizedTest
@@ -93,7 +93,7 @@ public class TestGioviInt {
 				10.0 ^ -{2 * 2}, 0.0001
 				""")
 			void testPowerExpression(String code, Double expected) {
-				assertEquals(expected, visitExpression(code).asDouble());
+				assertEquals(expected, visitExpression(code).asNativeReal());
 			}
 
 			@ParameterizedTest
@@ -106,7 +106,7 @@ public class TestGioviInt {
 				10 % 7, 3
 				""")
 			void testModuloExpression(String code, Integer expected) {
-				assertEquals(expected, visitExpression(code).asInteger());
+				assertEquals(expected, visitExpression(code).asNativeInt());
 			}
 
 			@ParameterizedTest
@@ -115,7 +115,7 @@ public class TestGioviInt {
 				10 * {2 * {3 + 2}}, 100
 				""")
 			void testParenthesizedExpression(String code, Integer expected) {
-				assertEquals(expected, visitExpression(code).asInteger());
+				assertEquals(expected, visitExpression(code).asNativeInt());
 			}
 
 		}

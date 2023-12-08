@@ -19,7 +19,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testAdditiveExpression(String code, Integer expected) {
-		assertEquals(expected, visitExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asNativeInt());
 	}
 
 	@ParameterizedTest
@@ -31,7 +31,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testMultiplicativeExpression(String code, Double expected) {
-		assertEquals(expected, visitExpression(code).asDouble());
+		assertEquals(expected, visitExpression(code).asNativeReal());
 	}
 
 	@ParameterizedTest
@@ -44,7 +44,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testPowerExpression(String code, Double expected) {
-		assertEquals(expected, visitExpression(code).asDouble());
+		assertEquals(expected, visitExpression(code).asNativeReal());
 	}
 
 	@ParameterizedTest
@@ -58,7 +58,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testModuloExpression(String code, Integer expected) {
-		assertEquals(expected, visitExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asNativeInt());
 	}
 
 	@ParameterizedTest
@@ -68,7 +68,7 @@ public class TestExpressionArithmetic {
 		"""
 	)
 	void testParenthesizedExpression(String code, Integer expected) {
-		assertEquals(expected, visitExpression(code).asInteger());
+		assertEquals(expected, visitExpression(code).asNativeInt());
 	}
 
 }

@@ -31,7 +31,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	public Optional<SwitchLabelContext> evaluate() {
 		for (SwitchLabelContext ctx : ctx.switchLabel()) {
-			if (visit(ctx.caseMatch()).asBoolean()) {
+			if (visit(ctx.caseMatch()).asNativeBool()) {
 				return Optional.of(ctx);
 			}
 		}

@@ -192,7 +192,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		for (var entry : this.value) {
-			if (entry.equal(right).asBoolean()) {
+			if (entry.equal(right).asNativeBool()) {
 				return new GioviBool(true);
 			}
 		}
