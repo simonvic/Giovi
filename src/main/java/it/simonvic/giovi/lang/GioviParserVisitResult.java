@@ -10,15 +10,17 @@ import it.simonvic.giovi.lang.values.natives.Natural;
 public interface GioviParserVisitResult {
 	// @formatter:off
 
-	//                                                                                OPERATORATION
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	public default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported("->"); }
 	public default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) { throw new OperatorNotSupported("->+"); }
 	public default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) { throw new OperatorNotSupported("->-"); }
 	public default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) { throw new OperatorNotSupported("->*"); }
 	public default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) { throw new OperatorNotSupported("->/"); }
 
-	//                                                                                   arithmetic
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 	public default GioviParserVisitResult positive() { throw new OperatorNotSupported("+"); }
 	public default GioviParserVisitResult negative() { throw new OperatorNotSupported("-"); }
 	public default GioviParserVisitResult plus(GioviParserVisitResult right) { throw new OperatorNotSupported("+"); }
@@ -29,12 +31,14 @@ public interface GioviParserVisitResult {
 	public default GioviParserVisitResult power(GioviParserVisitResult right) { throw new OperatorNotSupported("^"); }
 
 
-	//                                                                                      boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+
 	public default GioviParserVisitResult not() { throw new OperatorNotSupported("!"); }
 	public default GioviParserVisitResult and(GioviParserVisitResult right) { throw new OperatorNotSupported("&"); }
 	public default GioviParserVisitResult or(GioviParserVisitResult right) { throw new OperatorNotSupported("|"); }
 
-	//                                                                                              relational
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
+
 	public default GioviParserVisitResult equal(GioviParserVisitResult right) { throw new OperatorNotSupported("="); }
 	public default GioviParserVisitResult notEqual(GioviParserVisitResult right) { throw new OperatorNotSupported("!="); }
 	public default GioviParserVisitResult less(GioviParserVisitResult right) { throw new OperatorNotSupported("<"); }
@@ -44,11 +48,12 @@ public interface GioviParserVisitResult {
 	public default GioviParserVisitResult contains(GioviParserVisitResult right) { throw new OperatorNotSupported("=~"); }
 	public default GioviParserVisitResult isContained(GioviParserVisitResult right) { return right.contains(this); }
 
-	//                                                                                       access
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
 	public default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported("@"); }
 	public default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(". (dot)"); }
 
-	//                                                                                        CASTS
+	//////////////////////////////////////////////////////////////////////////////////////////////// CASTS
+
 	public default GioviValue<?> asGioviValue() { return (GioviValue<?>) this; }
 	public default GioviType<?> asGioviType() { return (GioviType<?>) this; }
 	public default GioviStruct asGioviStruct() { return (GioviStruct) this; }

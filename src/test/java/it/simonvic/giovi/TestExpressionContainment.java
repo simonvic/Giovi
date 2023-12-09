@@ -3,7 +3,7 @@ package it.simonvic.giovi;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import static it.simonvic.giovi.GioviVisitor.visitExpression;
+import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TestExpressionContainment {

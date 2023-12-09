@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.visit;
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.LinkedHashMap;

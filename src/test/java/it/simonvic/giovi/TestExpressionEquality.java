@@ -1,6 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitor.visitExpression;
+import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
