@@ -260,11 +260,11 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 					yield new GioviBool(false);
 				}
 				if (!this.keyType.equals(v.keyType)
-					|| !this.keyType.canUpcast(v.keyType)) {
+					&& !this.keyType.canUpcast(v.keyType)) {
 					yield new GioviBool(false);
 				}
 				if (!this.elementType.equals(v.elementType)
-					|| !this.elementType.canUpcast(v.elementType)) {
+					&& !this.elementType.canUpcast(v.elementType)) {
 					yield new GioviBool(false);
 				}
 				var thisIterator = thisEntrySet.iterator();

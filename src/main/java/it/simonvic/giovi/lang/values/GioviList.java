@@ -181,7 +181,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 					yield new GioviBool(false);
 				}
 				if (!this.entryType.equals(v.entryType)
-					|| !this.entryType.canUpcast(v.entryType)) {
+					&& !this.entryType.canUpcast(v.entryType)) {
 					yield new GioviBool(false);
 				}
 				for (int i = 0; i < this.value.size(); i++) {
