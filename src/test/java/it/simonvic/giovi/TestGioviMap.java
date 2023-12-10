@@ -25,7 +25,8 @@ import it.simonvic.giovi.util.GioviTypes;
 
 public class TestGioviMap {
 
-	//                                                                                              Creation
+	//////////////////////////////////////////////////////////////////////////////////////////////// CREATIONS
+
 	@Nested
 	class Creation {
 
@@ -195,11 +196,13 @@ public class TestGioviMap {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+	
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
 
@@ -317,14 +320,16 @@ public class TestGioviMap {
 			// TODO(test): map with map as key or element
 		}
 
-		//                                                                                          arithmetic
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 		@Nested
 		@Disabled("Candidate not implemented yet")
 		class Arithmetic {
 		}
 
-		//                                                                                          boolean
-		//                                                                                          relational
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
 		@Nested
 		class Relational {
 
@@ -383,6 +388,22 @@ public class TestGioviMap {
 			}
 
 			@Test
+			void comparingMapsWithDifferentKeyType_shouldReturnFalse() {
+				assertThat(visitExpression("""
+					[1:69] = ["hello":69]
+					""").asGioviBool().unbox())
+					.isFalse();
+			}
+
+			@Test
+			void comparingMapsWithDifferentElementType_shouldReturnFalse() {
+				assertThat(visitExpression("""
+					[1:"hello"] = [1:69]
+					""").asGioviBool().unbox())
+					.isFalse();
+			}
+
+			@Test
 			void comparingMapsWithDifferentElements_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] = ["a":1 "b":3]
@@ -408,7 +429,8 @@ public class TestGioviMap {
 
 		}
 
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
 		@Nested
 		class Access {
 

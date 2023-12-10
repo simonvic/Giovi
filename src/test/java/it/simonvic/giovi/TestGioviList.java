@@ -24,7 +24,8 @@ import it.simonvic.giovi.util.GioviTypes;
 
 public class TestGioviList {
 
-	//                                                                                              Creation
+	//////////////////////////////////////////////////////////////////////////////////////////////// CREATION
+
 	@Nested
 	class Creation {
 
@@ -141,11 +142,13 @@ public class TestGioviList {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
 
@@ -240,7 +243,7 @@ public class TestGioviList {
 
 		}
 
-		//                                                                                          arithmetic
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 		@Nested
 		@Disabled("Candidate not implemented yet")
 		class Arithmetic {
@@ -264,8 +267,9 @@ public class TestGioviList {
 			}
 		}
 
-		//                                                                                          boolean
-		//                                                                                          relational
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
 		@Nested
 		class Relational {
 
@@ -291,16 +295,41 @@ public class TestGioviList {
 		class Equality {
 
 			@Test
-			void equal() {
+			void comparingLists_withEqualValues_shouldBeTrue() {
 				assertThat(visitExpression("""
 					["hello" "world"] = ["hello" "world"]
 					""").asGioviBool().unbox())
 					.isTrue();
 			}
 
+			@Test
+			void comparingLists_withEqualValues_butDifferentSize_shouldBeFalse() {
+				assertThat(visitExpression("""
+					["hello" "world"] = ["hello"]
+					""").asGioviBool().unbox())
+					.isFalse();
+			}
+
+			@Test
+			void comparingLists_withDifferentValueTypes_shouldBeFalse() {
+				assertThat(visitExpression("""
+					[1 2] = ["hello" "world"]
+					""").asGioviBool().unbox())
+					.isFalse();
+			}
+
+			@Test
+			void comparingLists_withDifferentButCompatibleValueTypes_shouldBeTrue() {
+				assertThat(visitExpression("""
+					[1n 2n] = [1r 2r]
+					""").asGioviBool().unbox())
+					.isTrue();
+			}
+
 		}
 
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
 		@Nested
 		class Access {
 

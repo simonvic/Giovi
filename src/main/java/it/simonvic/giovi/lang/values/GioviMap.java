@@ -209,8 +209,9 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		this.init(defaultValue);
 	}
 
-	//                                                                                OPERATORATION
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
@@ -243,10 +244,10 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		return this;
 	}
 
-	//                                                                                   arithmetic
-	//                                                                                      boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
-	//                                                                                   relational
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
@@ -256,6 +257,14 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				var thisEntrySet = this.value.entrySet();
 				var otherEntrySet = v.value.entrySet();
 				if (thisEntrySet.size() != otherEntrySet.size()) {
+					yield new GioviBool(false);
+				}
+				if (!this.keyType.equals(v.keyType)
+					|| !this.keyType.canUpcast(v.keyType)) {
+					yield new GioviBool(false);
+				}
+				if (!this.elementType.equals(v.elementType)
+					|| !this.elementType.canUpcast(v.elementType)) {
 					yield new GioviBool(false);
 				}
 				var thisIterator = thisEntrySet.iterator();
@@ -290,7 +299,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		return new GioviBool(false);
 	}
 
-	//                                                                                       access
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {

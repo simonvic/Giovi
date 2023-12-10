@@ -132,8 +132,9 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		this.init(defaultValue);
 	}
 
-	//                                                                                OPERATORATION
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
@@ -166,9 +167,10 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return this;
 	}
 
-	//                                                                                   arithmetic
-	//                                                                                      boolean
-	//                                                                                   relational
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
+
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
@@ -176,6 +178,10 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 			case GioviList v -> {
 				// NOTE: we are checking if entries are **equal** instead of **equals**
 				if (this.value.size() != v.value.size()) {
+					yield new GioviBool(false);
+				}
+				if (!this.entryType.equals(v.entryType)
+					|| !this.entryType.canUpcast(v.entryType)) {
 					yield new GioviBool(false);
 				}
 				for (int i = 0; i < this.value.size(); i++) {
@@ -199,7 +205,8 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return new GioviBool(false);
 	}
 
-	//                                                                                       access
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
+
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
