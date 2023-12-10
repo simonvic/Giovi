@@ -134,9 +134,11 @@ public abstract sealed class Struct {
 			if (!(struct instanceof Struct.Named other)) return false;
 			if (this.getFieldsCount() > other.getFieldsCount()) return false;
 			for (String fieldName : this.getFieldNames()) {
+				var otherGioviType = other.getField(fieldName).getGioviType();
+				var thisGioviType = this.getField(fieldName).getGioviType();
 				if (!other.contains(fieldName)
-					|| !this.getField(fieldName).getGioviType()
-						.equals(other.getField(fieldName).getGioviType()))
+					|| !thisGioviType.equals(otherGioviType)
+					|| !thisGioviType.canUpcast(otherGioviType))
 					return false;
 			}
 			return true;
@@ -254,9 +256,11 @@ public abstract sealed class Struct {
 		public boolean isSubset(Struct struct) {
 			if (this.getFieldsCount() > struct.getFieldsCount()) return false;
 			for (int i = 0; i < this.getFieldsCount(); i++) {
-				// TODO: should we check canUpcast instead of type equality?
-				if (!this.getField(i).getGioviType().equals(struct.getField(i).getGioviType()))
+				var thisType = this.getField(i).getGioviType();
+				var otherType = struct.getField(i).getGioviType();
+				if (!thisType.equals(otherType) || !thisType.canUpcast(otherType)) {
 					return false;
+				}
 			}
 			return true;
 		}
