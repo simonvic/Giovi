@@ -211,7 +211,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				}
 				default -> throw new GioviException("Invalid access key: " + right);
 			};
-			case AccessKey accessKey -> switch (accessKey.get()) {
+			case AccessKey accessKey -> switch (accessKey.text()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> Range.of(0, unbox().size() - 1, 1);
 				default -> throw new GioviException("Invalid access key: " + accessKey);

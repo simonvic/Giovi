@@ -68,7 +68,7 @@ public abstract sealed class GioviStruct
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> value.getField(r.get());
+			case AccessKey r -> value.getField(r.text());
 			default -> super.dot(right);
 		};
 	}
@@ -76,7 +76,7 @@ public abstract sealed class GioviStruct
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> switch (r.get()) {
+			case AccessKey r -> switch (r.text()) {
 				case "%" -> new GioviInt(value.getFieldsCount());
 				case "@" -> GioviLists.of(value.getFieldNames());
 				default -> super.access(right);

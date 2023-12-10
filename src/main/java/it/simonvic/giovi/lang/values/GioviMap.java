@@ -296,7 +296,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(gioviValue);
-			case AccessKey accessKey -> switch (accessKey.get()) {
+			case AccessKey accessKey -> switch (accessKey.text()) {
 				case "%" -> new GioviInt(unbox().size());
 				case "@" -> new GioviList(unbox().keySet().stream().toList());
 				case "*" -> new GioviList(unbox().values().stream().toList());

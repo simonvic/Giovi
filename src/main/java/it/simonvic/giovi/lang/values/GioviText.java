@@ -195,7 +195,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey.get()) {
+			case AccessKey accessKey -> switch (accessKey.text()) {
 				case "%" -> new GioviInt(value.length());
 				case "@" -> Range.of(0, value.length() - 1, 1);
 				case "*" -> new GioviList(
