@@ -2,34 +2,15 @@ package it.simonvic.giovi.lang.values;
 
 import java.util.Objects;
 
-import it.simonvic.giovi.lang.values.natives.Type;
-
-public final class GioviTypeList extends GioviType<Type.List> {
+public final class GioviTypeList extends GioviType<GioviList> {
 
 	private final GioviType<?> entryType;
 	private final Integer initSize;
 
-	public GioviTypeList(
-		Type.List value,
-		Type.List defaultValue,
-		GioviType<?> entryType,
-		Integer initSize) {
-		super(value, defaultValue);
+	public GioviTypeList(GioviType<?> entryType, Integer initSize) {
+		super(GioviList.class);
 		this.entryType = entryType;
 		this.initSize = initSize;
-	}
-
-	public GioviTypeList(
-		Type.List value,
-		GioviType<?> entryType,
-		Integer initSize) {
-		this(value, value.copy(), entryType, initSize);
-	}
-
-	public GioviTypeList(
-		GioviType<?> entryType,
-		Integer initSize) {
-		this(new Type.List(entryType.unbox()), entryType, initSize);
 	}
 
 	public GioviTypeList(GioviType<?> entryType) {
@@ -68,7 +49,7 @@ public final class GioviTypeList extends GioviType<Type.List> {
 
 	@Override
 	public GioviTypeList copy() {
-		return new GioviTypeList(this.value.copy(), this.defaultValue.copy(), this.entryType.copy(), this.initSize);
+		return new GioviTypeList(this.entryType.copy(), this.initSize);
 	}
 
 	@Override

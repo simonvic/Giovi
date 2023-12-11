@@ -23,6 +23,11 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
+	public GioviTypeText getGioviType() {
+		return new GioviTypeText();
+	}
+
+	@Override
 	public GioviText copy() {
 		return new GioviText(this.value, this.defaultValue);
 	}
@@ -30,7 +35,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
 		if (type instanceof GioviTypePrimitive t) {
-			var typeClass = t.unbox().getClazz();
+			var typeClass = t.unbox();
 			if (typeClass == GioviText.class) return new GioviText(this.value);
 			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
 			try {
@@ -203,7 +208,8 @@ public final class GioviText extends GioviPrimitive<String> {
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
 			case Range<?> range -> {
-				if (range.getStart() instanceof Integer start && range.getEnd() instanceof Integer end) {
+				if (range.getStart() instanceof Integer start
+					&& range.getEnd() instanceof Integer end) {
 					var sb = new StringBuilder();
 					range.iterate(index -> sb.append(this.value.charAt((int) index)));
 					yield new GioviText(sb.toString());

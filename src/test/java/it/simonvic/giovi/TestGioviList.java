@@ -34,7 +34,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1 2 3 4 ]
 				""").asGioviList()
-				.getEntryType().unbox().getClazz())
+				.getEntryType().unbox())
 					.isEqualTo(GioviInt.class);
 		}
 
@@ -43,7 +43,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1.0 2.0 3.0 4.0 ]
 				""").asGioviList()
-				.getEntryType().unbox().getClazz())
+				.getEntryType().unbox())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -52,7 +52,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ "A" "B" "C" ]
 				""").asGioviList()
-				.getEntryType().unbox().getClazz())
+				.getEntryType().unbox())
 					.isEqualTo(GioviText.class);
 		}
 
@@ -61,7 +61,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ true false true true ]
 				""").asGioviList()
-				.getEntryType().unbox().getClazz())
+				.getEntryType().unbox())
 					.isEqualTo(GioviBool.class);
 		}
 
@@ -77,7 +77,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList()
-				.getEntryType().unbox().getClazz())
+				.getEntryType().unbox())
 					.isEqualTo(GioviReal.class);
 		}
 

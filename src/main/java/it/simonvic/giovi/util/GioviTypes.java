@@ -3,8 +3,8 @@ package it.simonvic.giovi.util;
 import java.util.Collection;
 
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.lang.values.natives.Type;
 
 public class GioviTypes {
 
@@ -24,15 +24,17 @@ public class GioviTypes {
 	}
 
 	public static GioviType<?> of(Class<? extends GioviValue<?>> clazz) {
-		if (clazz == GioviVoid.class
-			|| clazz == GioviNatural.class
-			|| clazz == GioviInt.class
-			|| clazz == GioviReal.class
-			|| clazz == GioviBool.class
-			|| clazz == GioviText.class) {
-			return new GioviTypePrimitive(new Type.Primitive<>(clazz));
-		}
+		if (clazz == GioviVoid.class) return new GioviTypeVoid();
+		if (clazz == GioviBool.class) return new GioviTypeBool();
+		if (clazz == GioviNatural.class) return new GioviTypeNatural();
+		if (clazz == GioviInt.class) return new GioviTypeInt();
+		if (clazz == GioviReal.class) return new GioviTypeReal();
+		if (clazz == GioviText.class) return new GioviTypeText();
 		throw new GioviException("Unknown type for class " + clazz);
+	}
+
+	public static GioviType<?> of(GioviStructDefinition structDefinition) {
+		return new GioviTypeStruct(structDefinition);
 	}
 
 

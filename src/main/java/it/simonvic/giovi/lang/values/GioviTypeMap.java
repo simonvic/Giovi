@@ -1,35 +1,14 @@
 package it.simonvic.giovi.lang.values;
 
-import java.util.Objects;
-
-import it.simonvic.giovi.lang.values.natives.Type;
-
-public final class GioviTypeMap extends GioviType<Type.Map> {
+public final class GioviTypeMap extends GioviType<GioviMap> {
 
 	private final GioviType<?> keyType;
 	private final GioviType<?> elementType;
 
-	public GioviTypeMap(
-		Type.Map value,
-		Type.Map defaultValue,
-		GioviType<?> keyType,
-		GioviType<?> elementType) {
-		super(value, defaultValue);
-		this.keyType = keyType;
-		this.elementType = elementType;
-	}
-
-	public GioviTypeMap(
-		Type.Map value,
-		GioviType<?> keyType,
-		GioviType<?> elementType) {
-		super(value, value.copy());
-		this.keyType = keyType;
-		this.elementType = elementType;
-	}
-
 	public GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType) {
-		this(new Type.Map(keyType.unbox(), elementType.unbox()), keyType, elementType);
+		super(GioviMap.class);
+		this.keyType = keyType;
+		this.elementType = elementType;
 	}
 
 	public GioviType<?> getKeyType() {
@@ -60,8 +39,13 @@ public final class GioviTypeMap extends GioviType<Type.Map> {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		GioviTypeMap other = (GioviTypeMap) obj;
-		return Objects.equals(this.keyType, other.keyType)
-			&& Objects.equals(this.elementType, other.elementType);
+		if (keyType == null) {
+			if (other.keyType != null) return false;
+		} else if (!keyType.equals(other.keyType)) return false;
+		if (elementType == null) {
+			if (other.elementType != null) return false;
+		} else if (!elementType.equals(other.elementType)) return false;
+		return true;
 	}
 
 	@Override

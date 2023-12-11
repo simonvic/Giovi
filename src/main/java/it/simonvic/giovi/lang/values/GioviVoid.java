@@ -9,6 +9,11 @@ public final class GioviVoid extends GioviPrimitive<Void> {
 	}
 
 	@Override
+	public GioviTypeVoid getGioviType() {
+		return new GioviTypeVoid();
+	}
+
+	@Override
 	public Class<?> getValueType() {
 		return Void.class;
 	}

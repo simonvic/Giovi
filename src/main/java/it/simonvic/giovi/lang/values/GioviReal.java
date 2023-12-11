@@ -30,6 +30,11 @@ public final class GioviReal extends GioviNumber<Double> {
 	}
 
 	@Override
+	public GioviTypeReal getGioviType() {
+		return new GioviTypeReal();
+	}
+
+	@Override
 	public GioviReal copy() {
 		return new GioviReal(this.value, this.defaultValue);
 	}

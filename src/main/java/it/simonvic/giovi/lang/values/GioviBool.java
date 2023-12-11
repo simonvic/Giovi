@@ -21,21 +21,21 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	}
 
 	@Override
+	public GioviTypeBool getGioviType() {
+		return new GioviTypeBool();
+	}
+
+	@Override
 	public GioviBool copy() {
 		return new GioviBool(this.value, this.defaultValue);
 	}
 
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypePrimitive t) {
-			if (t.unbox().getClazz() == GioviBool.class) {
-				return new GioviBool(this.value);
-			}
-			// if (t.unbox() == GioviInt.class) {
-			// 	return new GioviInt(value ? 1 : 0);
-			// }
-		}
-		return super.castTo(type);
+		return switch (type) {
+			case GioviTypeBool __ -> new GioviBool(this.value);
+			default -> super.castTo(type);
+		};
 	}
 
 	@Override

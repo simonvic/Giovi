@@ -18,7 +18,7 @@ import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.lang.values.GioviInt;
 import it.simonvic.giovi.lang.values.GioviReal;
 import it.simonvic.giovi.lang.values.GioviText;
-import it.simonvic.giovi.lang.values.natives.Type;
+import it.simonvic.giovi.lang.values.GioviTypeList;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviTypes;
@@ -36,9 +36,9 @@ public class TestGioviMap {
 				[ 1:"a" 2:"b" 3:"c" ]
 				""").asGioviMap();
 			assertAll(
-				() -> assertThat(map.getKeyType().unbox().getClazz())
+				() -> assertThat(map.getKeyType().unbox())
 					.isEqualTo(GioviInt.class),
-				() -> assertThat(map.getElementType().unbox().getClazz())
+				() -> assertThat(map.getElementType().unbox())
 					.isEqualTo(GioviText.class));
 		}
 
@@ -47,7 +47,7 @@ public class TestGioviMap {
 			assertThat(visitExpression("""
 				[ 1n:"a" 2i:"b" 3r:"c" ]
 				""").asGioviMap()
-				.getKeyType().unbox().getClazz())
+				.getKeyType().unbox())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -56,7 +56,7 @@ public class TestGioviMap {
 			assertThat(visitExpression("""
 				[ 1:1n 2:2i 3:3r ]
 				""").asGioviMap()
-				.getElementType().unbox().getClazz())
+				.getElementType().unbox())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -67,10 +67,10 @@ public class TestGioviMap {
 				""").asGioviMap();
 			assertAll(
 				() -> assertThat(map
-					.getKeyType().unbox().getClazz())
+					.getKeyType().unbox())
 						.isEqualTo(GioviReal.class),
 				() -> assertThat(map
-					.getElementType().unbox().getClazz())
+					.getElementType().unbox())
 						.isEqualTo(GioviReal.class));
 		}
 
@@ -137,8 +137,8 @@ public class TestGioviMap {
 					3 : [6.9 4.20]
 				]
 				""").asGioviMap()
-				.getElementType().unbox())
-					.isEqualTo(new Type.List(new Type.Primitive<>(GioviReal.class)));
+				.getElementType())
+					.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class)));
 		}
 
 		@Test
@@ -197,7 +197,7 @@ public class TestGioviMap {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
-	
+
 	@Nested
 	class Operations {
 

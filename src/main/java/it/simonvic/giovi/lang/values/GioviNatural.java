@@ -22,6 +22,11 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	}
 
 	@Override
+	public GioviTypeNatural getGioviType() {
+		return new GioviTypeNatural();
+	}
+
+	@Override
 	public GioviNatural copy() {
 		return new GioviNatural(
 			new Natural(this.value.intValue()),

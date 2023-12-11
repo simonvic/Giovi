@@ -789,8 +789,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				var returnType = func.returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
 				var returnedType = returnedValue.getGioviType();
-				if (returnType.unbox().getClazz() == GioviVoid.class
-					&& returnedType.unbox().getClazz() != GioviVoid.class) {
+				if (returnType.unbox() == GioviVoid.class
+					&& returnedType.unbox() != GioviVoid.class) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
@@ -804,7 +804,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					"Wrong return type, expecting " + returnType + " but got " + returnedType);
 			}
 		}
-		if (func.returnType().unbox().getClazz() != GioviVoid.class) {
+		if (func.returnType().unbox() != GioviVoid.class) {
 			throw new GioviException("Missing return statement in function");
 		}
 		return new GioviVoid();
