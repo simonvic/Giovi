@@ -180,11 +180,11 @@ public class Scope {
 
 	private final Map<String, GioviStructDefinition> structDefinitions = new HashMap<>();
 
-	public void define(String identifier, GioviStructDefinition definition) {
-		if (structDefinitions.containsKey(identifier)) {
-			throw new StructAlreadyDefined(identifier);
+	public void define(GioviStructDefinition definition) {
+		if (structDefinitions.containsKey(definition.typename())) {
+			throw new StructAlreadyDefined(definition.typename());
 		}
-		structDefinitions.put(identifier, definition);
+		structDefinitions.put(definition.typename(), definition);
 	}
 
 	public boolean isDefinedStruct(String identifier) {

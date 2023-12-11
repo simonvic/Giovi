@@ -54,13 +54,19 @@ public class Giovi {
 		.desc("Choose where to output formatted Giovi file")
 		.build();
 
+	private static final Option OPT_DEBUG_AST = Option.builder()
+		.longOpt("debug-ast")
+		.desc("Debug AST")
+		.build();
+
 	private static final Options OPTIONS = optionsOf(
 		OPT_HELP,
 		OPT_VERBOSE,
 		OPT_SHELL,
 		OPT_FROM_ARG,
 		OPT_FORMAT,
-		OPT_FORMAT_OUTPUT);
+		OPT_FORMAT_OUTPUT,
+		OPT_DEBUG_AST);
 
 	private static void printHelp() {
 		HelpFormatter f = new HelpFormatter();

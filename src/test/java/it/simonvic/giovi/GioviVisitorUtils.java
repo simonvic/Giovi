@@ -7,6 +7,8 @@ import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviFunctionSignature;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
+import it.simonvic.giovi.lang.GioviStructDefinition;
+import it.simonvic.giovi.lang.values.GioviValue;
 
 public class GioviVisitorUtils {
 
@@ -22,6 +24,18 @@ public class GioviVisitorUtils {
 
 	public static GioviParserVisitResult visitExpression(String code) {
 		return visitExpression(new GioviVisitor(), code);
+	}
+
+	public static boolean visitNativeBool(String code) {
+		return visitExpression(code).asNativeBool();
+	}
+
+	public static GioviValue<?> visitValue(String code) {
+		return visitExpression(code).asGioviValue();
+	}
+
+	public static Object visitNativeValue(String code) {
+		return visitValue(code).unbox();
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {
@@ -43,6 +57,14 @@ public class GioviVisitorUtils {
 		GioviVisitor visitor,
 		String code) {
 		return (GioviFunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
+	}
+
+	public static GioviStructDefinition visitStructDefinition(String code) {
+		return visitStructDefinition(new GioviVisitor(), code);
+	}
+
+	public static GioviStructDefinition visitStructDefinition(GioviVisitor visitor, String code) {
+		return (GioviStructDefinition) visitor.visit(parserOf(code).structDefinition());
 	}
 
 

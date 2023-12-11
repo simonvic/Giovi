@@ -18,9 +18,11 @@ import org.junit.jupiter.params.provider.MethodSource;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Natural;
-import it.simonvic.giovi.lang.values.natives.Struct;
+import it.simonvic.giovi.lang.values.natives.Tuple;
 import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.Structs;
+import it.simonvic.giovi.util.GioviStructs;
+import it.simonvic.giovi.util.GioviTuples;
+import it.simonvic.giovi.util.Tuples;
 
 public class TestUtils {
 
@@ -36,10 +38,7 @@ public class TestUtils {
 				Arguments.of(GioviText.class, GioviValue.of("hello")),
 				Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 				Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(GioviStructTuple.class, GioviValue.of(Structs.of("a", "a"))),
-				Arguments.of(
-					GioviStructTyped.class,
-					GioviValue.of(new GioviStructDefinition("Foo", Structs.of("a", "a")))));
+				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.of("a", "a"))));
 		}
 
 		@ParameterizedTest
@@ -57,7 +56,7 @@ public class TestUtils {
 				Arguments.of(String.class, GioviValue.of("hello")),
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(Struct.Named.class, GioviValue.of(Structs.of("a", "a"))));
+				Arguments.of(Tuple.Named.class, GioviValue.of(Tuples.of("a", "a"))));
 		}
 
 		@ParameterizedTest
@@ -217,7 +216,102 @@ public class TestUtils {
 	}
 
 	@Nested
+	class GioviTuplesUtil {
+
+		@Test
+		void testEquals() {
+			assertEquals(
+				Tuples.of(
+					"foo", "lol",
+					"bar", true),
+				Tuples.of(
+					"foo", "lol",
+					"bar", true));
+		}
+
+		@Test
+		void testEqualsNested() {
+			assertEquals(
+				Tuples.of(
+					"foo", 69,
+					"bar", true,
+					"foobar", Tuples.of(
+						"x", 0,
+						"y", 0)),
+				Tuples.of(
+					"foo", 69,
+					"bar", true,
+					"foobar", Tuples.of(
+						"x", 0,
+						"y", 0)));
+		}
+
+		@Test
+		void tuples_withSameFieldsAndEqualValues_shouldBeEquals() {
+			assertEquals(
+				GioviTuples.of(69, true, "hello"),
+				GioviTuples.of(69, true, "hello"));
+		}
+
+		@Test
+		void tuples_withDifferentFieldType_shouldNotBeEquals() {
+			assertNotEquals(
+				GioviTuples.of(69, true, "hello"),
+				GioviTuples.of(69, "hello", true));
+		}
+
+		@Test
+		void tuples_withDifferentValues_shouldNotBeEquals() {
+			assertNotEquals(
+				GioviTuples.of(69, true, "hello"),
+				GioviTuples.of(69, true, "HELLO"));
+		}
+
+	}
+
+	@Nested
 	class GioviStructsUtil {
+
+		@Test
+		void structs_withSameName_sameFields_equalValues_shouldBeEquals() {
+			assertEquals(
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69,
+					"bar", true,
+					"foobar", "hello"),
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69,
+					"bar", true,
+					"foobar", "hello"));
+		}
+
+		@Test
+		void structs_withDifferentValues_shoudNotBeEquals() {
+			assertNotEquals(
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69,
+					"bar", true),
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69));
+		}
+
+		@Test
+		void structs_withDifferentValues_shouldNotBeEquals() {
+			assertNotEquals(
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69,
+					"bar", true),
+				GioviStructs.of(
+					"Foobar",
+					"foo", 69,
+					"bar", 420));
+		}
+
 	}
 
 }

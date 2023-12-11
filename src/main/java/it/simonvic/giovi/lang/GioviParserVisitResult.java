@@ -49,14 +49,14 @@ public interface GioviParserVisitResult {
 	public default GioviParserVisitResult isContained(GioviParserVisitResult right) { return right.contains(this); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
-	public default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported("@"); }
+	public default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported("@"+right); }
 	public default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(". (dot)"); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// CASTS
 
 	public default GioviValue<?> asGioviValue() { return (GioviValue<?>) this; }
 	public default GioviType<?> asGioviType() { return (GioviType<?>) this; }
-	public default GioviStruct asGioviStruct() { return (GioviStruct) this; }
+	public default GioviTuple asGioviStruct() { return (GioviTuple) this; }
 	public default GioviList asGioviList() { return (GioviList) this; }
 	public default GioviMap asGioviMap() { return (GioviMap) this; }
 	public default GioviNumber<?> asGioviNumber() { return (GioviNumber<?>) this; }

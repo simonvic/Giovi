@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestExpressionTypeCheck {
@@ -55,9 +54,9 @@ public class TestExpressionTypeCheck {
 
 	@Test
 	void testStruct() {
-		var definition = new GioviStructDefinition("Foobar", new Struct.Named());
-		scope.define("Foobar", definition);
-		scope.declare("x", new GioviStructTyped(definition));
+		var definition = new GioviStructDefinition("Foobar");
+		scope.define(definition);
+		scope.declare("x", definition.spawn());
 		assertTrue(visitExpression(visitor, "x is Foobar").asGioviBool().unbox());
 	}
 
@@ -92,12 +91,11 @@ public class TestExpressionTypeCheck {
 
 	@Test
 	void testMapOfStruct() {
-		var namedStruct = new Struct.Named();
-		var definition = new GioviStructDefinition("Foobar", namedStruct);
-		scope.define("Foobar", definition);
+		var definition = new GioviStructDefinition("Foobar");
+		scope.define(definition);
 		scope.declare("x", new GioviMap(
 			GioviTypes.of(GioviText.class),
-			new GioviTypeStructTyped(definition)));
+			GioviTypes.of(definition)));
 		assertTrue(visitExpression(visitor, "x is [Text : Foobar]").asGioviBool().unbox());
 	}
 
