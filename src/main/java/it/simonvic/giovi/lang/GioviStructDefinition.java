@@ -41,7 +41,7 @@ public record GioviStructDefinition(
 		var values = new LinkedHashMap<String, GioviValue<?>>();
 		fields.forEach((identifier, definition) -> values.put(
 			identifier,
-			definition.defaultValue()));
+			definition.defaultValue().copy()));
 		return new GioviStruct(new Struct(typename, new Tuple.Named(values)));
 	}
 
