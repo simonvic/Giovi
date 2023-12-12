@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -233,7 +234,55 @@ public class TestGioviText {
 		//                                                                                          redirection
 		@Nested
 		class Redirection {
-			// TODO(test): ...
+
+			@Test
+			void redir_shouldChangeValue() {
+				assertThat(visit("""
+					x Text
+					"foo" -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo("foo");
+			}
+
+			@Test
+			void redirPlus_shouldAppend() {
+				assertThat(visit("""
+					"foo" -> x Text
+					"bar" ->+ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo("foobar");
+			}
+
+			@Test
+			void redirMinus_shouldRemove() {
+				assertThat(visit("""
+					"foobar" -> x Text
+					"foo" ->- x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo("bar");
+			}
+
+			@Test
+			void redirMinus_shouldRemoveAllOccurences() {
+				assertThat(visit("""
+					"foobarfoo" -> x Text
+					"foo" ->- x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo("bar");
+			}
+
 		}
 
 		//                                                                                          arithmetic

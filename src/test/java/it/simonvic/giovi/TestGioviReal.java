@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -52,6 +53,77 @@ public class TestGioviReal {
 		//                                                                                          redirection
 		@Nested
 		class Redirection {
+
+			@Test
+			void redirToDeclaration_shouldInitialize() {
+				assertThat(visit("""
+					69r -> x Real
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
+
+			@Test
+			void redir_shouldChangeValue() {
+				assertThat(visit("""
+					x Real
+					69r -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
+
+			@Test
+			void redirPlus_shouldIncrement() {
+				assertThat(visit("""
+					60r -> x Real
+					9r ->+ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
+
+			@Test
+			void redirMinus_shouldDecrement() {
+				assertThat(visit("""
+					79r -> x Real
+					10r ->- x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
+
+			@Test
+			void redirStar_shouldMultiply() {
+				assertThat(visit("""
+					6.9r -> x Real
+					10r ->* x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
+
+			@Test
+			void redirDiv_shouldDivide() {
+				assertThat(visit("""
+					690r -> x Real
+					10r ->/ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69d);
+			}
 		}
 
 		//                                                                                          arithmetic
