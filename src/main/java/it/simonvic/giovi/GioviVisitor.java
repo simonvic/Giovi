@@ -983,9 +983,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitLiteralText(LiteralTextContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
+			.unescapeEscapes()
 			.injectVariables(getCurrentScope())
 			.injectExpressions(this)
-			.unescapeUnicode()
 			.collect();
 	}
 
@@ -993,10 +993,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitLiteralTextBlock(LiteralTextBlockContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
+			.unescapeEscapes()
 			.injectVariables(getCurrentScope())
 			.injectExpressions(this)
 			.trimIncidentalWhitespaces()
-			.unescapeUnicode()
 			.collect();
 	}
 
@@ -1004,7 +1004,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitLiteralExactText(LiteralExactTextContext ctx) {
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(1)
-			.unescapeUnicode()
+			.unescapeEscapes()
 			.collect();
 	}
 
@@ -1013,7 +1013,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return TextProcessor.of(ctx.getText())
 			.trimDelimiters(2)
 			.trimIncidentalWhitespaces()
-			.unescapeUnicode()
+			.unescapeEscapes()
 			.collect();
 	}
 

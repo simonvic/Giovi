@@ -1,17 +1,19 @@
 package it.simonvic.giovi.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.lang.values.GioviText;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class TextProcessor {
 
@@ -50,8 +52,8 @@ public class TextProcessor {
 		return this;
 	}
 
-	public TextProcessor unescapeUnicode() {
-		this.text = unescapeUnicode(this.text);
+	public TextProcessor unescapeEscapes() {
+		this.text = unescapeEscapes(this.text);
 		return this;
 	}
 
@@ -147,22 +149,17 @@ public class TextProcessor {
 		return lines[1].charAt(0) == ' ' ? ' ' : '\t';
 	}
 
-	public static String unescapeUnicode(String text) {
-		StringBuilder sb = new StringBuilder();
-		int oldIndex = 0;
-		for (int i = 0; i + 2 < text.length(); i++) {
-			if (text.substring(i, i + 2).equals("\\u")) {
-				sb.append(text.substring(oldIndex, i));
-				int codePoint = Integer.parseInt(text.substring(i + 2, i + 6), 16);
-				sb.append(Character.toChars(codePoint));
-
-				i += 5;
-				oldIndex = i + 1;
-			}
-		}
-
-		sb.append(text.substring(oldIndex, text.length()));
-
-		return sb.toString();
+	public static String unescapeEscapes(String text) {
+		text = text.replaceAll(Pattern.quote("\\s"), "\s");
+		text = text.replaceAll(Pattern.quote("\\t"), "\t");
+		text = text.replaceAll(Pattern.quote("\\n"), "\n");
+		text = text.replaceAll(Pattern.quote("\\b"), "\b");
+		text = text.replaceAll(Pattern.quote("\\r"), "\r");
+		text = text.replaceAll(Pattern.quote("\\f"), "\f");
+		text = Pattern
+			.compile(Matcher.quoteReplacement("\\u([a-fA-F0-9]{4})"))
+			.matcher(text)
+			.replaceAll(result -> String.valueOf((char) Integer.parseInt(result.group(1), 16)));
+		return text;
 	}
 }
