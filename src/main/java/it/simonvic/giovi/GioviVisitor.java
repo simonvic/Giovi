@@ -212,10 +212,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			String elementIteratorName = iterators.get(1).getText();
 
 			// TODO: iterators should be by value?
-			getCurrentScope().declare(keyIteratorName, entry.getKey());
-			getCurrentScope().getVariableValue(keyIteratorName).box(entry.getKey());
+			getCurrentScope().declare(keyIteratorName, entry.getKey().copy());
 			getCurrentScope().declare(elementIteratorName, entry.getValue());
-			getCurrentScope().getVariableValue(elementIteratorName).box(entry.getValue());
 
 			visit(statementOrBlock);
 
