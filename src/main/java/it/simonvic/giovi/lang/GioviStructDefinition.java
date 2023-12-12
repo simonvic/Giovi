@@ -37,6 +37,30 @@ public record GioviStructDefinition(
 		return sb.toString() + ">";
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((typename == null) ? 0 : typename.hashCode());
+		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviStructDefinition other = (GioviStructDefinition) obj;
+		if (typename == null) {
+			if (other.typename != null) return false;
+		} else if (!typename.equals(other.typename)) return false;
+		if (fields == null) {
+			if (other.fields != null) return false;
+		} else if (!fields.equals(other.fields)) return false;
+		return true;
+	}
+
 	public GioviStruct spawn() {
 		var values = new LinkedHashMap<String, GioviValue<?>>();
 		fields.forEach((identifier, definition) -> values.put(
