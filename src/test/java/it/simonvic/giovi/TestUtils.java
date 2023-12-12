@@ -15,7 +15,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Natural;
 import it.simonvic.giovi.lang.values.natives.Tuple;

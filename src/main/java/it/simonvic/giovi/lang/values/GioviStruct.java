@@ -1,6 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.*;
@@ -33,6 +34,28 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviStruct copy() {
 		return new GioviStruct(value.copy(), defaultValue.copy());
+	}
+
+	@Override
+	public GioviValue<?> castTo(GioviType<?> type) {
+		return switch (type) {
+			case GioviTypeStruct otherType -> {
+				var thisType = this.getGioviType();
+				if (!thisType.canUpcast(otherType)) {
+					yield super.castTo(type);
+				}
+				var castedStruct = otherType.spawn();
+				for (String fieldName : this.getFieldNames()) {
+					castedStruct.setField(fieldName, this.getField(fieldName).copy());
+				}
+				yield castedStruct;
+			}
+			default -> super.castTo(type);
+		};
+	}
+
+	public List<String> getFieldNames() {
+		return value.getFieldNames();
 	}
 
 	public GioviValue<?> getField(String identifier) {

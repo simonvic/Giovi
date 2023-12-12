@@ -42,11 +42,11 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 		} else if (!definition.equals(other.definition)) return false;
 		return true;
 	}
+
 	@Override
 	public boolean canUpcast(GioviType<?> to) {
-		return switch (to) {
-			default -> false;
-		};
+		// TODO: clarify requirements. Should subsets be allowed?
+		return this.equals(to);
 	}
 
 	@Override

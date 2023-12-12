@@ -327,6 +327,72 @@ public class TestGioviStruct {
 	@Nested
 	class Operations {
 
+		//////////////////////////////////////////////////////////////////////////////////////////// casting
+
+		@Nested
+		class Casting {
+
+			@Test
+			void testCastingToSameType() {
+				var visitor = visit("""
+					Color <r Int, g Int, b Int>
+					""");
+				assertThat(visitExpression(visitor, """
+					Color.<1 2 3> as Color
+					"""))
+					.isEqualTo(GioviStructs.of(
+						"Color",
+						"r", 1,
+						"g", 2,
+						"b", 3));
+			}
+
+			@Disabled("Need requirements clarification")
+			@Test
+			void testCastingToCompatibleType() {
+				var visitor = visit("""
+					Color <r Int, g Int, b Int>
+					RGB <r Int, g Int, b Int>
+					""");
+				assertThat(visitExpression(visitor, """
+					Color.<1 2 3> as RGB
+					"""))
+					.isEqualTo(GioviStructs.of(
+						"RGB",
+						"r", 1,
+						"g", 2,
+						"b", 3));
+			}
+
+			@Disabled("Need requirements clarification")
+			@Test
+			void testCastingToSupersetType() {
+				var visitor = visit("""
+					RGB <r Int, g Int, b Int>
+					RGBA <r Int, g Int, b Int, a Int>
+					""");
+				assertThat(visitExpression(visitor, """
+					RGB.<1 2 3> as RGBA
+					"""))
+					.isEqualTo(GioviStructs.of(
+						"RGBA",
+						"r", 1,
+						"g", 2,
+						"b", 3,
+						"a", 0));
+			}
+
+			@Test
+			void whenCastingToSubsetType_shouldThrow() {
+				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+					RGB <r Int, g Int, b Int>
+					RGBA <r Int, g Int, b Int, a Int>
+					RGBA.<r:1 g:2 b:3> as RGB
+					"""));
+			}
+
+		}
+
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 		@Nested
