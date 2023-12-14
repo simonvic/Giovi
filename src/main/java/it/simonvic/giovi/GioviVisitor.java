@@ -121,115 +121,183 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitForStatement(ForStatementContext ctx) {
-		var iterators = ctx.iterators().identifier();
-		var iterated = visit(ctx.rangeOrExpression());
+		var iterator = ctx.iterator();
+		var iterated = visit(ctx.iterable());
 		var statementOrBlock = ctx.statementOrBlock();
 		switch (iterated) {
-			case Range<?> range -> forLoop(iterators, range, statementOrBlock);
-			case GioviList list -> forLoop(iterators, list, statementOrBlock);
-			case GioviMap map -> forLoop(iterators, map, statementOrBlock);
+			case Range<?> range -> {
+				switch (iterator) {
+					case IteratorUnaryContext i -> forLoop(i, range, statementOrBlock);
+					default -> throw new GioviException("Unexpected iterator" + iterator.getText());
+				}
+			}
+			case GioviList list -> {
+				switch (iterator) {
+					case IteratorUnaryContext i -> forLoop(i, list, statementOrBlock);
+					case IteratorStructContext i -> {
+						var entryType = list.getEntryType();
+						if (entryType instanceof GioviTypeTuple
+							|| entryType instanceof GioviTypeStruct) {
+							forLoop(i, list, statementOrBlock);
+						} else {
+							throw new GioviException(
+								"Can't deconstruct " + entryType + " into a tuple iterator");
+						}
+					}
+					default -> throw new GioviException(
+						"Can't iterate range with " + iterator.getText());
+				}
+			}
+			case GioviMap map -> {
+				switch (iterator) {
+					case IteratorUnaryContext i -> forLoop(i, map, statementOrBlock);
+					case IteratorMapContext i -> forLoop(i, map, statementOrBlock);
+					default -> throw new GioviException("Unexpected iterator" + iterator.getText());
+				}
+			}
 			default -> throw new OperatorNotSupported("for");
 		}
 		return null;
 	}
 
+	/**
+	 * Iterate over a range
+	 * @param iteratorCtx
+	 * @param range
+	 * @param statementOrBlock
+	 */
 	private void forLoop(
-		List<IdentifierContext> iterators,
+		IteratorUnaryContext iteratorCtx,
 		Range<?> range,
 		StatementOrBlockContext statementOrBlock) {
-
-		// workaround
-		List<GioviValue<?>> entries = new ArrayList<>(range.expandAsGioviValues());
-		forLoop(iterators, new GioviList(entries), statementOrBlock);
-
-		// TODO: what about skip and breaks?
-		// if (iterators.size() != 1) {
-		// 	throw new GioviException("Wrong number of iterators");
-		// }
-		// String iteratorName = iterators.get(0).getText();
-		// range.iterate(value -> {
-		// 	enterLoopScope();
-		// 	getCurrentScope().declare(iteratorName, value);
-		// 	visit(statementOrBlock);
-		// 	exitScope();
-		// });
+		// TODO: workaround
+		forLoop(iteratorCtx, range.expandAsGioviList(), statementOrBlock);
 	}
 
+	// TODO: iterators should be by value?
 
+	/**
+	 * Iterate over a list
+	 * @param iteratorCtx
+	 * @param gioviList
+	 * @param statementOrBlockCtx
+	 */
 	private void forLoop(
-		List<IdentifierContext> iterators,
+		IteratorUnaryContext iteratorCtx,
 		GioviList gioviList,
-		StatementOrBlockContext statementOrBlock) {
-
-		if (iterators.size() != 1)
-			throw new GioviException("Wrong number of iterators");
-		if (gioviList.unbox().isEmpty())
-			return;
-
+		StatementOrBlockContext statementOrBlockCtx) {
 		for (var gioviValue : gioviList.unbox()) {
-
 			enterLoopScope();
-
-			// TODO: update when structs are implemented
-			String iteratorName = iterators.get(0).getText();
-			getCurrentScope().declare(iteratorName, gioviValue); // TODO: iterator should be by value?
-			// GioviValue<?> iterator = getCurrentScope().getVariableValue(iteratorName);
-			// iterator.box(gioviValue);
-
-			visit(statementOrBlock);
-
+			getCurrentScope().declare(iteratorCtx.identifier().getText(), gioviValue);
+			visit(statementOrBlockCtx);
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
 				exitScope();
 				break;
 			}
-
 			if (getCurrentScope().shouldSkip()) {
 				exitScope();
 				continue;
 			}
-
 			exitScope();
 		}
-
 	}
 
+	/**
+	 * Iterate over a list of structs by deconstructing them
+	 * @param iteratorCtx
+	 * @param gioviList
+	 * @param statementOrBlockCtx
+	 */
 	private void forLoop(
-		List<IdentifierContext> iterators,
-		GioviMap map,
-		StatementOrBlockContext statementOrBlock) {
-
-		if (iterators.size() != 2)
-			throw new GioviException("Wrong number of iterators");
-		if (map.unbox().isEmpty())
-			return;
-
-		for (var entry : map.unbox().entrySet()) {
-
+		IteratorStructContext iteratorCtx,
+		GioviList gioviList,
+		StatementOrBlockContext statementOrBlockCtx) {
+		if (gioviList.unbox().isEmpty()) return;
+		for (var gioviValue : gioviList.unbox()) {
+			Tuple tuple = switch (gioviValue) {
+				case GioviStruct s -> s.unbox().tuple();
+				case GioviTuple t -> t.unbox();
+				default -> throw new GioviException("wtf!");
+			};
 			enterLoopScope();
+			for (var fieldIdentifierCtx : iteratorCtx.identifier()) {
+				if (fieldIdentifierCtx == iteratorCtx.struct) {
+					getCurrentScope().declare(iteratorCtx.struct.getText(), gioviValue);
+				} else {
+					String fieldIdentifier = fieldIdentifierCtx.getText();
+					if (!tuple.containsField(fieldIdentifier)) {
+						throw new GioviException("Can't deconstruct " + gioviValue
+							+ " because a field " + fieldIdentifier + " doesn't exist");
+					}
+					getCurrentScope().declare(fieldIdentifier, tuple.getField(fieldIdentifier));
+				}
+			}
+			visit(statementOrBlockCtx);
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
+				break;
+			}
+			if (getCurrentScope().shouldSkip()) {
+				exitScope();
+				continue;
+			}
+			exitScope();
+		}
+	}
 
-			// TODO: update when structs are implemented
-			String keyIteratorName = iterators.get(0).getText();
-			String elementIteratorName = iterators.get(1).getText();
+	/**
+	 * Iterate over map keys
+	 * @param iteratorCtx
+	 * @param map
+	 * @param statementOrBlockCtx
+	 */
+	private void forLoop(
+		IteratorUnaryContext iteratorCtx,
+		GioviMap map,
+		StatementOrBlockContext statementOrBlockCtx) {
+		for (var key : map.unbox().keySet()) {
+			enterLoopScope();
+			getCurrentScope().declare(iteratorCtx.identifier().getText(), key.copy());
+			visit(statementOrBlockCtx);
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
+				break;
+			}
+			if (getCurrentScope().shouldSkip()) {
+				exitScope();
+				continue;
+			}
+			exitScope();
+		}
+	}
 
-			// TODO: iterators should be by value?
+	/**
+	 * Iterate over map key-value pair
+	 * @param iteratorCtx
+	 * @param map
+	 * @param statementOrBlockCtx
+	 */
+	private void forLoop(
+		IteratorMapContext iteratorCtx,
+		GioviMap map,
+		StatementOrBlockContext statementOrBlockCtx) {
+		for (var entry : map.unbox().entrySet()) {
+			enterLoopScope();
+			String keyIteratorName = iteratorCtx.key.getText();
+			String elementIteratorName = iteratorCtx.value.getText();
 			getCurrentScope().declare(keyIteratorName, entry.getKey().copy());
 			getCurrentScope().declare(elementIteratorName, entry.getValue());
-
-			visit(statementOrBlock);
-
+			visit(statementOrBlockCtx);
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
 				exitScope();
 				break;
 			}
-
 			if (getCurrentScope().shouldSkip()) {
 				exitScope();
 				continue;
 			}
-
 			exitScope();
 		}
-
 	}
 
 	@Override
@@ -510,7 +578,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitRangeOrExpression(RangeOrExpressionContext ctx) {
+	public GioviParserVisitResult visitIterable(IterableContext ctx) {
 		return ctx.range() != null
 			? visit(ctx.range())
 			: visit(ctx.expression());

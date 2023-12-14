@@ -12,7 +12,9 @@ public class Range<T> extends GioviObject {
 
 	@FunctionalInterface
 	public interface IterationStrategy<V> {
+
 		void iterate(Range<V> sequence, Consumer<V> callback);
+
 	}
 
 	private final T start;
@@ -57,7 +59,12 @@ public class Range<T> extends GioviObject {
 		return expand().stream().map(GioviValue::of).toList();
 	}
 
-	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end, GioviParserVisitResult step) {
+	public GioviList expandAsGioviList() {
+		return new GioviList(new ArrayList<>(expand().stream().map(GioviValue::of).toList()));
+	}
+
+	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end,
+		GioviParserVisitResult step) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
 		}
