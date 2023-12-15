@@ -22,7 +22,7 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 
 	@Override
 	public String toString() {
-		return value.getSimpleName();
+		return getSimpleName();
 	}
 
 	@Override
