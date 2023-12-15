@@ -27,7 +27,7 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 
 	@Override
 	public GioviType<?> getGioviType() {
-		return null; // TODO: GioviTypeType
+		return new GioviTypeType();
 	}
 
 	public abstract boolean canUpcast(GioviType<?> to);
