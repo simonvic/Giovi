@@ -13,8 +13,15 @@ public class GioviTypes {
 		GioviType<?> next;
 		for (GioviValue<?> entry : entries) {
 			next = entry.getGioviType();
-			if (inferred == null || inferred.canUpcast(next)) {
+			if (inferred == null) {
 				inferred = next;
+				continue;
+			}
+			if (inferred.canUpcast(next)) {
+				inferred = next;
+			} else {
+				throw new GioviException(
+					"Impossible to infer list type. Expecting " + inferred + " but got " + next);
 			}
 		}
 		if (inferred == null) {
