@@ -45,8 +45,44 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 
 	@Override
 	public boolean canUpcast(GioviType<?> to) {
-		// TODO: clarify requirements. Should subsets be allowed?
-		return this.equals(to);
+		return switch (to) {
+			case GioviTypeStruct s -> {
+				if (to.equals(s)) {
+					yield true;
+				}
+				for (var entry : this.definition.fields().entrySet()) {
+					if (!s.definition.fields().containsKey(entry.getKey())) {
+						yield false;
+					}
+					var otherFieldType = s.definition.fields().get(entry.getKey()).type();
+					var thisFieldType = entry.getValue().type();
+					if (!thisFieldType.equals(otherFieldType)
+						|| !thisFieldType.canUpcast(otherFieldType)) {
+						yield false;
+					}
+				}
+				yield true;
+			}
+			case GioviTypeTuple t -> {
+				// TODO: what about named tuples?
+				var tupleTypes = t.getFieldTypes();
+				int tupleSize = tupleTypes.size();
+				var thisFields = this.definition.fields().values().stream().toList();
+				if (thisFields.size() > tupleSize) {
+					yield false;
+				}
+				for (int i = 0; i < thisFields.size(); i++) {
+					var tupleFieldType = tupleTypes.get(i);
+					var thisFieldType = thisFields.get(i).type();
+					if (!tupleFieldType.equals(thisFieldType)
+						|| !tupleFieldType.canUpcast(thisFieldType)) {
+						yield false;
+					}
+				}
+				yield true;
+			}
+			default -> false;
+		};
 	}
 
 	@Override

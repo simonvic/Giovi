@@ -347,7 +347,6 @@ public class TestGioviStruct {
 						"b", 3));
 			}
 
-			@Disabled("Need requirements clarification")
 			@Test
 			void testCastingToCompatibleType() {
 				var visitor = visit("""
@@ -364,7 +363,6 @@ public class TestGioviStruct {
 						"b", 3));
 			}
 
-			@Disabled("Need requirements clarification")
 			@Test
 			void testCastingToSupersetType() {
 				var visitor = visit("""
