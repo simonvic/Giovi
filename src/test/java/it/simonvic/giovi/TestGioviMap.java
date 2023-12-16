@@ -45,7 +45,7 @@ public class TestGioviMap {
 		@Test
 		void mapOfMixedKeyType_shouldInferHighestKeyType() {
 			assertThat(visitExpression("""
-				[ 1n:"a" 2i:"b" 3r:"c" ]
+				[ 1i:"a" 2n:"b" 3r:"c" ]
 				""").asGioviMap()
 				.getKeyType().unbox())
 					.isEqualTo(GioviReal.class);

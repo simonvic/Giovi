@@ -17,12 +17,15 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
+			if (next.canUpcast(inferred)) {
+				continue;
+			}
 			if (inferred.canUpcast(next)) {
 				inferred = next;
-			} else {
-				throw new GioviException(
-					"Impossible to infer list type. Expecting " + inferred + " but got " + next);
+				continue;
 			}
+			throw new GioviException(
+				"Impossible to infer list type. Expecting " + inferred + " but got " + next);
 		}
 		if (inferred == null) {
 			throw new GioviException("Impossible to infer list type");
