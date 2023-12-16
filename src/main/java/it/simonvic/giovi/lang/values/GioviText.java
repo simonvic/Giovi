@@ -7,6 +7,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Range;
+import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviText extends GioviPrimitive<String> {
 
@@ -128,8 +129,10 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText v -> new GioviList(new ArrayList<>(
-				Stream.of(value.split(v.unbox()))
+			case GioviText v -> new GioviList(
+				GioviTypes.of(GioviText.class),
+				new ArrayList<>(Stream.of(value
+					.split(v.unbox()))
 					.map(this::toGioviText)
 					.toList()));
 			default -> super.divide(right);
@@ -204,6 +207,7 @@ public final class GioviText extends GioviPrimitive<String> {
 				case "%" -> new GioviInt(value.length());
 				case "@" -> Range.of(0, value.length() - 1, 1);
 				case "*" -> new GioviList(
+					GioviTypes.of(GioviText.class),
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};

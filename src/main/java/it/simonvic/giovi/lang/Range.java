@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Natural;
+import it.simonvic.giovi.util.GioviTypes;
 
 public class Range<T> extends GioviObject {
 
@@ -60,7 +61,8 @@ public class Range<T> extends GioviObject {
 	}
 
 	public GioviList expandAsGioviList() {
-		return new GioviList(new ArrayList<>(expand().stream().map(GioviValue::of).toList()));
+		var gioviList = new ArrayList<GioviValue<?>>(expand().stream().map(GioviValue::of).toList());
+		return new GioviList(GioviTypes.inferGioviType(gioviList), gioviList);
 	}
 
 	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end,

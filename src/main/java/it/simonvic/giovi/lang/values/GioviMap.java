@@ -7,19 +7,11 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
-import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
 	private final GioviType<?> keyType;
 	private final GioviType<?> elementType;
-
-	public GioviMap(LinkedHashMap<GioviValue<?>, GioviValue<?>> value) {
-		this(
-			GioviTypes.inferGioviType(value.keySet()),
-			GioviTypes.inferGioviType(value.values()),
-			value);
-	}
 
 	public GioviMap(
 		GioviType<?> keyType,
@@ -307,11 +299,12 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 			case GioviValue<?> gioviValue -> get(gioviValue);
 			case AccessKey accessKey -> switch (accessKey.text()) {
 				case "%" -> new GioviInt(unbox().size());
-				case "@" -> new GioviList(unbox().keySet().stream().toList());
-				case "*" -> new GioviList(unbox().values().stream().toList());
+				case "@" -> new GioviList(keyType, unbox().keySet().stream().toList());
+				case "*" -> new GioviList(elementType, unbox().values().stream().toList());
 				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
 			default -> throw new GioviException("Invalid access key: " + right);
 		};
 	}
+
 }

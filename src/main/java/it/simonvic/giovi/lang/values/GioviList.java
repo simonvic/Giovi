@@ -7,19 +7,10 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Range;
-import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
 	private final GioviType<?> entryType;
-
-	public GioviList(GioviType<?> entryType) {
-		this(entryType, new ArrayList<>(), new ArrayList<>());
-	}
-
-	public GioviList(List<GioviValue<?>> entries) {
-		this(GioviTypes.inferGioviType(entries), entries, new ArrayList<>());
-	}
 
 	public GioviList(
 		GioviType<?> entryType,
@@ -35,6 +26,15 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 			.forEach(this.defaultValue::add);
 	}
 
+	public GioviList(
+		GioviType<?> entryType,
+		List<GioviValue<?>> value) {
+		this(entryType, value, new ArrayList<>());
+	}
+
+	public GioviList(GioviType<?> entryType) {
+		this(entryType, new ArrayList<>(), new ArrayList<>());
+	}
 
 	@Override
 	public int hashCode() {

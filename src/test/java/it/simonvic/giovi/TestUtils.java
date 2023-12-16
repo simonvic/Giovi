@@ -107,6 +107,7 @@ public class TestUtils {
 
 		@Nested
 		class TestLists {
+
 			static Stream<Arguments> produceEquals() {
 				return Stream.of(
 					Arguments.of(
@@ -147,10 +148,12 @@ public class TestUtils {
 			void shouldNotBeEquals(GioviValue<?> v1, GioviValue<?> v2) {
 				assertNotEquals(v1, v2);
 			}
+
 		}
 
 		@Nested
 		class TestMaps {
+
 			static Stream<Arguments> produceEquals() {
 				return Stream.of(
 					Arguments.of(
@@ -199,9 +202,14 @@ public class TestUtils {
 
 		@Test
 		void test_GioviListsOf() {
-			assertEquals(GioviLists.of(1, 2, 3), GioviLists.of(1, 2, 3));
-			assertEquals(GioviLists.of("Simone", "Francesco", "Mario"),
+			assertEquals(
+				GioviLists.of("Simone", "Francesco", "Mario"),
 				GioviLists.of("Simone", "Francesco", "Mario"));
+		}
+
+		@Test
+		void test_GioviListsOf2() {
+			assertEquals(GioviLists.of(1, 2, 3), GioviLists.of(1, 2, 3));
 		}
 
 	}
