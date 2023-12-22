@@ -17,7 +17,7 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
-			if (next.canUpcast(inferred)) {
+			if (next.equals(inferred) || next.canUpcast(inferred)) {
 				continue;
 			}
 			if (inferred.canUpcast(next)) {
