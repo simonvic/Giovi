@@ -8,8 +8,8 @@ import it.simonvic.giovi.delegates.SwitchStatementDelegate;
 import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.values.*;
+import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.lang.values.natives.Tuple;
-import it.simonvic.giovi.lang.values.natives.Tuple.Named;
 import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
@@ -214,17 +214,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		StatementOrBlockContext statementOrBlockCtx) {
 		if (gioviList.unbox().isEmpty()) return;
 		for (var gioviValue : gioviList.unbox()) {
-			Tuple tuple = switch (gioviValue) {
-				case GioviStruct s -> s.unbox().tuple();
-				case GioviTuple t -> t.unbox();
-				default -> throw new GioviException("wtf!");
-			};
 			enterLoopScope();
 			for (var fieldIdentifierCtx : iteratorCtx.identifier()) {
 				if (fieldIdentifierCtx == iteratorCtx.struct) {
 					getCurrentScope().declare(iteratorCtx.struct.getText(), gioviValue);
 				} else {
 					String fieldIdentifier = fieldIdentifierCtx.getText();
+					if (!(gioviValue.unbox() instanceof Tuple.Named tuple)) {
+						throw new GioviException("Can't deconstruct " + gioviValue);
+					}
 					if (!tuple.containsField(fieldIdentifier)) {
 						throw new GioviException("Can't deconstruct " + gioviValue
 							+ " because a field " + fieldIdentifier + " doesn't exist");
@@ -947,7 +945,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				throw new GioviException("Unexpected field " + fieldIdentifier + " for type "
 					+ gioviStruct.getGioviType().getSimpleName());
 			}
-			gioviStruct.setField(
+			gioviStruct.boxField(
 				fieldIdentifier,
 				visit(fieldCtx.expression()).asGioviValue());
 		}
@@ -960,28 +958,28 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				+ " but instead got " + expressionsCount);
 		}
 		for (int i = 0; i < expressionsCount; i++) {
-			gioviStruct.setField(i, visit(expressions.get(i)).asGioviValue());
+			gioviStruct.boxField(i, visit(expressions.get(i)).asGioviValue());
 		}
 	}
 
 	private GioviTuple createTuple(StructFieldsContext ctx) {
 		if (ctx == null) {
-			return new GioviTuple(new Tuple.Unnamed());
+			return new GioviTuple(new Tuple());
 		}
 		if (ctx.namedStructField().isEmpty()) {
-			var struct = new Tuple.Unnamed();
+			var fields = new ArrayList<GioviValue<?>>();
 			for (var expressionCtx : ctx.expression()) {
-				struct.put(visit(expressionCtx).asGioviValue());
+				fields.add(visit(expressionCtx).asGioviValue());
 			}
-			return new GioviTuple(struct);
+			return new GioviTuple(new Tuple(fields));
 		} else {
-			var struct = new Named();
+			var fields = new LinkedHashMap<String, GioviValue<?>>();
 			for (var namedStructFieldCtx : ctx.namedStructField()) {
-				struct.put(
+				fields.put(
 					namedStructFieldCtx.identifier().getText(),
 					visit(namedStructFieldCtx.expression()).asGioviValue());
 			}
-			return new GioviTuple(struct);
+			return new GioviTuple(new Tuple.Named(fields));
 		}
 	}
 

@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.values.GioviTuple;
 import it.simonvic.giovi.lang.values.GioviValue;
-import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
 public class TestGioviTuple {
@@ -233,14 +232,6 @@ public class TestGioviTuple {
 					<0 1 2 3 4>@%
 					"""))
 					.isEqualTo(5);
-			}
-
-			@Test
-			void accessWithElementsOperator_shouldReturnListOfFields() {
-				assertThat(visitExpression("""
-					<0 1 2 3 4>@*
-					"""))
-					.isEqualTo(GioviLists.of("0", "1", "2", "3", "4"));
 			}
 
 			@Test

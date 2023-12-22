@@ -412,7 +412,7 @@ public class TestGioviStruct {
 			}
 
 			@Test
-			void whenRedirectingIncompatibleTuple_shouldThrow() {
+			void whenRedirectingSubsetTuple_shouldThrow() {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 					Color <r Int, g Int, b Int>
 					x Color
@@ -436,7 +436,7 @@ public class TestGioviStruct {
 			}
 
 			@Test
-			void whenRedirectingSubsetTuple_shouldChangeOnlySpecifiedFields() {
+			void whenRedirectingSubsetNamedTuple_shouldChangeOnlySpecifiedFields() {
 				assertThat(visit("""
 					Color <r Int, g Int, b Int>
 					x Color
@@ -486,46 +486,6 @@ public class TestGioviStruct {
 		@Nested
 		class Equality {
 
-			@Test
-			void tuples_withEqualValues_shouldBeTrue() {
-				assertThat(visitNativeBool("""
-					<1 true "hello"> = <1 true "hello">
-					"""))
-					.isTrue();
-			}
-
-			@Test
-			void tuples_withEqualValuesOfDifferentButCompatibleType_shouldBeTrue() {
-				assertThat(visitNativeBool("""
-					<1n true "hello"> = <1r true "hello">
-					"""))
-					.isTrue();
-			}
-
-			@Test
-			void tuples_withAtLeastOneDifferentValue_shouldBeFalse() {
-				assertThat(visitNativeBool("""
-					<1 true "hello"> = <1 true "HELLO">
-					"""))
-					.isFalse();
-			}
-
-			@Test
-			void tuples_withDifferentValueTypes_shouldBeFalse() {
-				assertThat(visitNativeBool("""
-					<1 true "hello"> = <1 true 69>
-					"""))
-					.isFalse();
-			}
-
-			@Test
-			void tuples_withEqualValuesButInDifferentOrder_shouldBeFalse() {
-				assertThat(visitNativeBool("""
-					<1 true "hello"> = <true 1 "hello">
-					"""))
-					.isFalse();
-			}
-
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// access
@@ -535,61 +495,70 @@ public class TestGioviStruct {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				<0 1 2 3>@0, 0
-				<0 1 2 3>@1, 1
-				<0 1 2 3>@2, 2
-				<0 1 2 3>@3, 3
+				Foobar.<0 1 2 3>@0, 0
+				Foobar.<0 1 2 3>@1, 1
+				Foobar.<0 1 2 3>@2, 2
+				Foobar.<0 1 2 3>@3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
-				assertThat(visitNativeValue(code)).isEqualTo(expected);
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int>
+					""");
+				assertThat(visitNativeValue(visitor, code)).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				<0 1 2 3>@{-1}, 3
-				<0 1 2 3>@{-2}, 2
-				<0 1 2 3>@{-3}, 1
-				<0 1 2 3>@{-4}, 0
+				Foobar.<0 1 2 3>@{-1}, 3
+				Foobar.<0 1 2 3>@{-2}, 2
+				Foobar.<0 1 2 3>@{-3}, 1
+				Foobar.<0 1 2 3>@{-4}, 0
 				""")
 			void access_withNegativeInt_shouldReturnFieldAtRearIndex(
 				String code,
 				Integer expected) {
-				assertThat(visitValue(code)).isEqualTo(GioviValue.of(expected));
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int>
+					""");
+				assertThat(visitNativeValue(visitor, code)).isEqualTo(expected);
 			}
 
 
 			static Stream<Arguments> produceArgs_access_withRange() {
 				return Stream.of(
-					Arguments.of("<0 1 2 3 4>@0..4", GioviTuples.of(0, 1, 2, 3, 4)),
-					Arguments.of("<0 1 2 3 4>@0..3", GioviTuples.of(0, 1, 2, 3)),
-					Arguments.of("<0 1 2 3 4>@0..2", GioviTuples.of(0, 1, 2)),
-					Arguments.of("<0 1 2 3 4>@0..1", GioviTuples.of(0, 1)),
-					Arguments.of("<0 1 2 3 4>@0..0", GioviTuples.of(0)),
-					Arguments.of("<0 1 2 3 4>@1..4", GioviTuples.of(1, 2, 3, 4)),
-					Arguments.of("<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4)),
-					Arguments.of("<0 1 2 3 4>@3..4", GioviTuples.of(3, 4)),
-					Arguments.of("<0 1 2 3 4>@4..4", GioviTuples.of(4)),
-					Arguments.of("<0 1 2 3 4>@1..3", GioviTuples.of(1, 2, 3)),
-					Arguments.of("<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4)));
+					Arguments.of("Foobar.<0 1 2 3 4>@0..4", GioviTuples.of(0, 1, 2, 3, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..3", GioviTuples.of(0, 1, 2, 3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..2", GioviTuples.of(0, 1, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..1", GioviTuples.of(0, 1)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..0", GioviTuples.of(0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@1..4", GioviTuples.of(1, 2, 3, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..4", GioviTuples.of(3, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..4", GioviTuples.of(4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@1..3", GioviTuples.of(1, 2, 3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4)));
 			}
 
 			@ParameterizedTest
 			@MethodSource("produceArgs_access_withRange")
 			void access_withRange_shouldReturnSubset(String code, GioviTuple expected) {
-				assertThat(visitValue(code)).isEqualTo(expected);
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitValue(visitor, code)).isEqualTo(expected);
 			}
 
 			static Stream<Arguments> produceArgs_access_withInverseRange() {
 				return Stream.of(
-					Arguments.of("<0 1 2 3 4>@4..0", GioviTuples.of(4, 3, 2, 1, 0)),
-					Arguments.of("<0 1 2 3 4>@3..0", GioviTuples.of(3, 2, 1, 0)),
-					Arguments.of("<0 1 2 3 4>@2..0", GioviTuples.of(2, 1, 0)),
-					Arguments.of("<0 1 2 3 4>@1..0", GioviTuples.of(1, 0)),
-					Arguments.of("<0 1 2 3 4>@4..1", GioviTuples.of(4, 3, 2, 1)),
-					Arguments.of("<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)),
-					Arguments.of("<0 1 2 3 4>@4..3", GioviTuples.of(4, 3)),
-					Arguments.of("<0 1 2 3 4>@3..1", GioviTuples.of(3, 2, 1)),
-					Arguments.of("<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)));
+					Arguments.of("Foobar.<0 1 2 3 4>@4..0", GioviTuples.of(4, 3, 2, 1, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..0", GioviTuples.of(3, 2, 1, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..0", GioviTuples.of(2, 1, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@1..0", GioviTuples.of(1, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..1", GioviTuples.of(4, 3, 2, 1)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..3", GioviTuples.of(4, 3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..1", GioviTuples.of(3, 2, 1)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)));
 			}
 
 			@ParameterizedTest
@@ -597,41 +566,47 @@ public class TestGioviStruct {
 			void access_withInverseRange_shouldReturnSubsetReversed(
 				String code,
 				GioviTuple expected) {
-				assertThat(visitValue(code)).isEqualTo(expected);
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitValue(visitor, code)).isEqualTo(expected);
 			}
 
 			static Stream<Arguments> produceArgs_access_withStepRange() {
 				return Stream.of(
-					Arguments.of("<0 1 2 3 4>@0..4..2", GioviTuples.of(0, 2, 4)),
-					Arguments.of("<0 1 2 3 4>@0..3..2", GioviTuples.of(0, 2)),
-					Arguments.of("<0 1 2 3 4>@0..2..2", GioviTuples.of(0, 2)),
-					Arguments.of("<0 1 2 3 4>@0..1..2", GioviTuples.of(0)),
-					Arguments.of("<0 1 2 3 4>@0..0..2", GioviTuples.of(0)),
-					Arguments.of("<0 1 2 3 4>@1..4..2", GioviTuples.of(1, 3)),
-					Arguments.of("<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4)),
-					Arguments.of("<0 1 2 3 4>@3..4..2", GioviTuples.of(3)),
-					Arguments.of("<0 1 2 3 4>@4..4..2", GioviTuples.of(4)),
-					Arguments.of("<0 1 2 3 4>@1..3..2", GioviTuples.of(1, 3)),
-					Arguments.of("<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4)));
+					Arguments.of("Foobar.<0 1 2 3 4>@0..4..2", GioviTuples.of(0, 2, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..3..2", GioviTuples.of(0, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..2..2", GioviTuples.of(0, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..1..2", GioviTuples.of(0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@0..0..2", GioviTuples.of(0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@1..4..2", GioviTuples.of(1, 3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..4..2", GioviTuples.of(3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..4..2", GioviTuples.of(4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@1..3..2", GioviTuples.of(1, 3)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4)));
 			}
 
 			@ParameterizedTest
 			@MethodSource("produceArgs_access_withStepRange")
 			void access_withStepRange_shouldReturnSubset(String code, GioviTuple expected) {
-				assertThat(visitValue(code)).isEqualTo(expected);
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitValue(visitor, code)).isEqualTo(expected);
 			}
 
 
 			static Stream<Arguments> produceArgs_inverseStepRange() {
 				return Stream.of(
-					Arguments.of("<0 1 2 3 4>@4..0..2", GioviTuples.of(4, 2, 0)),
-					Arguments.of("<0 1 2 3 4>@3..0..2", GioviTuples.of(3, 1)),
-					Arguments.of("<0 1 2 3 4>@2..0..2", GioviTuples.of(2, 0)),
-					Arguments.of("<0 1 2 3 4>@4..1..2", GioviTuples.of(4, 2)),
-					Arguments.of("<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)),
-					Arguments.of("<0 1 2 3 4>@4..3..2", GioviTuples.of(4)),
-					Arguments.of("<0 1 2 3 4>@3..1..2", GioviTuples.of(3, 1)),
-					Arguments.of("<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)));
+					Arguments.of("Foobar.<0 1 2 3 4>@4..0..2", GioviTuples.of(4, 2, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..0..2", GioviTuples.of(3, 1)),
+					Arguments.of("Foobar.<0 1 2 3 4>@2..0..2", GioviTuples.of(2, 0)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..1..2", GioviTuples.of(4, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..3..2", GioviTuples.of(4)),
+					Arguments.of("Foobar.<0 1 2 3 4>@3..1..2", GioviTuples.of(3, 1)),
+					Arguments.of("Foobar.<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)));
 			}
 
 			@ParameterizedTest
@@ -639,35 +614,37 @@ public class TestGioviStruct {
 			void access_withInverseStepRange_shouldReturnSubsetReversed(
 				String code,
 				GioviTuple expected) {
-				assertThat(visitValue(code)).isEqualTo(expected);
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitValue(visitor, code)).isEqualTo(expected);
 			}
 
 			@Test
 			void access_withLengthOperator_shouldReturnFieldsCount() {
-				assertThat(visitNativeValue("""
-					<0 1 2 3 4>@%
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitNativeValue(visitor, """
+					Foobar.<>@%
 					"""))
 					.isEqualTo(5);
 			}
 
 			@Test
-			void accessWithElementsOperator_shouldReturnListOfFields() {
-				assertThat(visitExpression("""
-					<0 1 2 3 4>@*
-					"""))
-					.isEqualTo(GioviLists.of("0", "1", "2", "3", "4"));
-			}
-
-			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
-				assertThat(visitExpression("""
-					<0 1 2 3 4>@@
+				var visitor = visit("""
+					Foobar <a Int, b Int, c Int, d Int, e Int>
+					""");
+				assertThat(visitExpression(visitor, """
+					Foobar.<>@@
 					"""))
 					.isEqualTo(Range.of(0, 5, 1));
 			}
 
 
 		}
+
 	}
 
 }

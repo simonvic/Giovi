@@ -1,58 +1,58 @@
 package it.simonvic.giovi.lang.values.natives;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.values.GioviValue;
 
-public final record Struct(String typename, Tuple tuple) {
+public final class Struct extends Tuple.Named {
+
+	private final String typename;
+
+	public Struct(String typename, LinkedHashMap<String, GioviValue<?>> fields) {
+		super(fields);
+		this.typename = typename;
+	}
 
 	public Struct(String typename) {
-		this(typename, new Tuple.Named());
-	}
-
-	public Struct copy() {
-		return new Struct(typename, tuple.copy());
-	}
-
-	public Struct copy(Range<Integer> range) {
-		var copiedFields = new LinkedHashMap<String, GioviValue<?>>();
-		this.tuple.forEach((identifier, value) -> copiedFields.put(identifier, value.copy()));
-		return new Struct(typename, new Tuple.Named(copiedFields));
+		this.typename = typename;
 	}
 
 	@Override
 	public String toString() {
-		return typename + tuple;
+		return typename + super.toString();
 	}
 
-	public GioviValue<?> getField(String identifier) {
-		return tuple.getField(identifier);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((typename == null) ? 0 : typename.hashCode());
+		return result;
 	}
 
-	public GioviValue<?> getField(int index) {
-		return tuple.getField(index);
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		Struct other = (Struct) obj;
+		if (typename == null) {
+			if (other.typename != null) return false;
+		} else if (!typename.equals(other.typename)) return false;
+		return true;
 	}
 
-	public void setField(String identifier, GioviValue<?> fieldValue) {
-		tuple.getField(identifier).box(fieldValue);
+
+	@Override
+	public Struct copy() {
+		var a = new LinkedHashMap<String, GioviValue<?>>();
+		forEach((identifier, value) -> a.put(identifier, value.copy()));
+		return new Struct(typename, a);
 	}
 
-	public void setField(int index, GioviValue<?> fieldValue) {
-		tuple.getField(index).box(fieldValue);
-	}
-
-	public int getFieldsCount() {
-		return tuple.getFieldsCount();
-	}
-
-	public boolean containsField(String identifier) {
-		return tuple.containsField(identifier);
-	}
-
-	public List<String> getFieldNames() {
-		return tuple.getFieldNames();
+	public String getTypename() {
+		return typename;
 	}
 
 }

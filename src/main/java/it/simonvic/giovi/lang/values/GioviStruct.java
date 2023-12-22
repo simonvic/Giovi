@@ -1,9 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 
-import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.lang.values.natives.Tuple;
@@ -19,16 +17,64 @@ public final class GioviStruct extends GioviValue<Struct> {
 		super(value, value.copy());
 	}
 
+
+	public int getFieldsCount() {
+		return value.getFieldsCount();
+	}
+
+	public GioviValue<?> getField(String identifier) {
+		return value.getField(identifier);
+	}
+
+	public void boxField(int index, GioviValue<?> fieldValue) {
+		value.getField(index).box(fieldValue);
+	}
+
+	public void boxField(String field, GioviValue<?> fieldValue) {
+		value.getField(field).box(fieldValue);
+	}
+
+	public boolean containsField(String field) {
+		return value.containsField(field);
+	}
+
+	@Override
+	public void box(GioviValue<?> gioviValue) {
+		switch (gioviValue) {
+			case GioviStruct s -> this.value = s.unbox();
+			case GioviTuple gioviTuple -> {
+				if (!gioviTuple.value.isSubset(this.value)) {
+					super.box(gioviValue);
+					return;
+				}
+				switch (gioviTuple.unbox()) {
+					case Tuple.Named t -> {
+						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
+							fieldValue.copy()));
+					}
+					case Tuple t -> {
+						if (t.getFieldsCount() != this.value.getFieldsCount()) {
+							super.box(gioviValue);
+							return;
+						}
+						t.forEachIndexed((i, fieldValue) -> this.boxField(i, fieldValue.copy()));
+					}
+				}
+			}
+			default -> super.box(gioviValue);
+		}
+	}
+
 	@Override
 	public GioviTypeStruct getGioviType() {
 		var fields = new LinkedHashMap<String, GioviFieldDefinition>();
-		value.tuple().forEach((identifier, value) -> fields.put(
+		this.value.forEach((identifier, fieldValue) -> fields.put(
 			identifier,
 			new GioviFieldDefinition(
 				identifier,
-				value.getGioviType(),
-				GioviValue.of(value.getDefaultValue()))));
-		return new GioviTypeStruct(new GioviStructDefinition(value.typename(), fields));
+				fieldValue.getGioviType(),
+				GioviValue.of(fieldValue.getDefaultValue()))));
+		return new GioviTypeStruct(new GioviStructDefinition(this.value.getTypename(), fields));
 	}
 
 	@Override
@@ -38,48 +84,19 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
+		var thisType = this.getGioviType();
+		if (!thisType.canUpcast(type)) {
+			return super.castTo(type);
+		}
 		return switch (type) {
 			case GioviTypeStruct otherType -> {
-				var thisType = this.getGioviType();
-				if (!thisType.canUpcast(otherType)) {
-					yield super.castTo(type);
-				}
-				var castedStruct = otherType.spawn();
-				for (String fieldName : this.getFieldNames()) {
-					castedStruct.setField(fieldName, this.getField(fieldName).copy());
-				}
-				yield castedStruct;
+				var castedTuple = otherType.spawn();
+				this.value.forEach((identifier, fieldValue) -> castedTuple
+					.boxField(identifier, fieldValue.copy()));
+				yield castedTuple;
 			}
 			default -> super.castTo(type);
 		};
-	}
-
-	public List<String> getFieldNames() {
-		return value.getFieldNames();
-	}
-
-	public GioviValue<?> getField(String identifier) {
-		return value.getField(identifier);
-	}
-
-	public GioviValue<?> getField(int index) {
-		return value.getField(index);
-	}
-
-	public void setField(String identifier, GioviValue<?> fieldValue) {
-		this.value.setField(identifier, fieldValue);
-	}
-
-	public void setField(int index, GioviValue<?> fieldValue) {
-		this.value.setField(index, fieldValue);
-	}
-
-	public int getFieldsCount() {
-		return this.value.getFieldsCount();
-	}
-
-	public boolean containsField(String identifier) {
-		return this.value.containsField(identifier);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -88,55 +105,30 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
-			case GioviValue<?> v -> {
-				switch (v.unbox()) {
-
+			case GioviStruct gioviStruct -> {
+				if (!gioviStruct.value.isSubset(this.value)) {
+					return super.redirection(content);
+				}
+				gioviStruct.unbox().forEach((identifier, fieldValue) -> this.boxField(identifier,
+					fieldValue.copy()));
+			}
+			case GioviTuple gioviTuple -> {
+				if (!gioviTuple.value.isSubset(this.value)) {
+					return super.redirection(content);
+				}
+				switch (gioviTuple.unbox()) {
 					case Tuple.Named t -> {
-						for (String fieldName : t.getFieldNames()) {
-							if (!this.value.containsField(fieldName)) {
-								throw new IncompatibleTypes(this.getGioviType(), v.getGioviType());
-							}
-							var thisField = this.value.getField(fieldName);
-							var otherField = t.getField(fieldName);
-							var thisFieldType = thisField.getGioviType();
-							var otherFieldType = otherField.getGioviType();
-							if (thisFieldType.equals(otherFieldType)) {
-								thisField.box(otherField.copy());
-								continue;
-							}
-							if (thisFieldType.canUpcast(otherFieldType)) {
-								thisField.box(otherField.castTo(thisFieldType));
-								continue;
-							}
-							throw new IncompatibleTypes(this.getGioviType(), v.getGioviType());
-						}
+						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
+							fieldValue.copy()));
 					}
-
-					case Tuple.Unnamed t -> {
-						if (this.value.getFieldsCount() != t.getFieldsCount()) {
-							throw new IncompatibleTypes(this.getGioviType(), v.getGioviType());
+					case Tuple t -> {
+						if (t.getFieldsCount() != this.value.getFieldsCount()) {
+							return super.redirection(content);
 						}
-						for (int i = 0; i < this.value.getFieldsCount(); i++) {
-							var thisField = this.value.getField(i);
-							var otherField = t.getField(i);
-							var thisFieldType = thisField.getGioviType();
-							var otherFieldType = otherField.getGioviType();
-							if (thisFieldType.equals(otherFieldType)) {
-								thisField.box(otherField.copy());
-								continue;
-							}
-							if (thisFieldType.canUpcast(otherFieldType)) {
-								thisField.box(otherField.castTo(thisFieldType));
-								continue;
-							}
-							throw new IncompatibleTypes(this.getGioviType(), v.getGioviType());
-						}
+						t.forEachIndexed((i, fieldValue) -> this.boxField(i, fieldValue.copy()));
 					}
-					default -> super.redirection(content);
 				}
 			}
-
 			default -> super.redirection(content);
 		}
 		return this;
@@ -148,59 +140,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviStruct r -> {
-				if (this.value.getFieldsCount() != r.value.getFieldsCount()) {
-					yield new GioviBool(false);
-				}
-				var thisFieldNames = this.value.getFieldNames();
-				for (String fieldName : thisFieldNames) {
-					if (!r.containsField(fieldName)) {
-						yield new GioviBool(false);
-					}
-					var thisField = this.value.getField(fieldName);
-					var otherField = r.value.getField(fieldName);
-					var thisFieldType = thisField.getGioviType();
-					var otherFieldType = otherField.getGioviType();
-					if (!thisFieldType.equals(otherFieldType)) {
-						if (!thisFieldType.canUpcast(otherFieldType)) {
-							yield new GioviBool(false);
-						}
-						if (!thisField.equal(otherField.castTo(thisFieldType)).asNativeBool()) {
-							yield new GioviBool(false);
-						}
-					}
-					if (!thisField.equal(otherField).asNativeBool()) {
-						yield new GioviBool(false);
-					}
-				}
-				yield new GioviBool(true);
-			}
-			case GioviTuple r -> {
-				if (this.value.getFieldsCount() != r.value.getFieldsCount()) {
-					yield new GioviBool(false);
-				}
-				for (int i = 0; i < value.getFieldsCount(); i++) {
-					var thisField = this.value.getField(i);
-					var otherField = r.value.getField(i);
-					var thisFieldType = thisField.getGioviType();
-					var otherFieldType = otherField.getGioviType();
-					if (!thisFieldType.equals(otherFieldType)) {
-						if (!thisFieldType.canUpcast(otherFieldType)) {
-							yield new GioviBool(false);
-						}
-						if (!thisField.equal(otherField.castTo(thisFieldType)).asNativeBool()) {
-							yield new GioviBool(false);
-						}
-					}
-					if (!thisField.equal(otherField).asNativeBool()) {
-						yield new GioviBool(false);
-					}
-				}
-				yield new GioviBool(true);
-			}
-			default -> new GioviBool(false);
-		};
+		return super.equal(right);
 	}
 
 	@Override
@@ -230,7 +170,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 			case Range<?> range -> {
 				if (range.getStart() instanceof Integer start
 					&& range.getEnd() instanceof Integer end) {
-					yield new GioviStruct(this.value.copy((Range<Integer>) range)); // TODO: RangeInteger
+					yield new GioviTuple(this.value.copy((Range<Integer>) range)); // TODO: RangeInteger
 				}
 				yield super.access(right);
 			}
@@ -242,5 +182,6 @@ public final class GioviStruct extends GioviValue<Struct> {
 			default -> super.access(right);
 		};
 	}
+
 }
 

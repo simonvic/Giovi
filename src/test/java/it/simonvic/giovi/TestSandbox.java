@@ -1,6 +1,7 @@
 package it.simonvic.giovi;
 
-import org.junit.jupiter.api.Disabled;
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -9,8 +10,10 @@ import org.junit.jupiter.api.Test;
 public class TestSandbox {
 
 	@Test
-	@Disabled
 	void sandbox() {
+		// visit("""
+		// 	[<r:1 g:2 b:3>] -> \\out
+		// 	""");
 	}
 
 }

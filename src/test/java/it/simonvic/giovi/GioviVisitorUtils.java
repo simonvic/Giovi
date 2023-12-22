@@ -34,8 +34,16 @@ public class GioviVisitorUtils {
 		return visitExpression(code).asGioviValue();
 	}
 
+	public static GioviValue<?> visitValue(GioviVisitor visitor, String code) {
+		return visitExpression(visitor, code).asGioviValue();
+	}
+
 	public static Object visitNativeValue(String code) {
 		return visitValue(code).unbox();
+	}
+
+	public static Object visitNativeValue(GioviVisitor visitor, String code) {
+		return visitValue(visitor, code).unbox();
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {

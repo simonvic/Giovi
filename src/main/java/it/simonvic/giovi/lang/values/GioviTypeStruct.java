@@ -1,10 +1,11 @@
 package it.simonvic.giovi.lang.values;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.values.natives.Struct;
-import it.simonvic.giovi.lang.values.natives.Tuple;
 
 public final class GioviTypeStruct extends GioviType<GioviStruct> {
 
@@ -13,6 +14,24 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 	public GioviTypeStruct(GioviStructDefinition definition) {
 		super(GioviStruct.class);
 		this.definition = definition;
+	}
+
+	public int getFieldsCount() {
+		return definition.fields().size();
+	}
+
+	public List<GioviType<?>> getFieldTypes() {
+		var fieldTypes = new ArrayList<GioviType<?>>();
+		definition.fields()
+			.forEach((__, fieldDefinition) -> fieldTypes.add(fieldDefinition.type()));
+		return fieldTypes;
+	}
+
+	public LinkedHashMap<String, GioviType<?>> getNamedFieldTypes() {
+		var fieldTypes = new LinkedHashMap<String, GioviType<?>>();
+		definition.fields().forEach(
+			(identifier, fieldDefinition) -> fieldTypes.put(identifier, fieldDefinition.type()));
+		return fieldTypes;
 	}
 
 	@Override
@@ -47,9 +66,6 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 	public boolean canUpcast(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeStruct s -> {
-				if (to.equals(s)) {
-					yield true;
-				}
 				for (var entry : this.definition.fields().entrySet()) {
 					if (!s.definition.fields().containsKey(entry.getKey())) {
 						yield false;
@@ -57,29 +73,45 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 					var otherFieldType = s.definition.fields().get(entry.getKey()).type();
 					var thisFieldType = entry.getValue().type();
 					if (!thisFieldType.equals(otherFieldType)
-						|| !thisFieldType.canUpcast(otherFieldType)) {
+						&& !thisFieldType.canUpcast(otherFieldType)) {
 						yield false;
 					}
 				}
 				yield true;
 			}
-			case GioviTypeTuple t -> {
-				// TODO: what about named tuples?
-				var tupleTypes = t.getFieldTypes();
-				int tupleSize = tupleTypes.size();
-				var thisFields = this.definition.fields().values().stream().toList();
-				if (thisFields.size() > tupleSize) {
+			case GioviTypeTuple other -> {
+				if (this.getFieldsCount() > other.getFieldsCount()) {
 					yield false;
 				}
-				for (int i = 0; i < thisFields.size(); i++) {
-					var tupleFieldType = tupleTypes.get(i);
-					var thisFieldType = thisFields.get(i).type();
-					if (!tupleFieldType.equals(thisFieldType)
-						|| !tupleFieldType.canUpcast(thisFieldType)) {
-						yield false;
+				var otherNamedFieldTypes = other.getNamedFieldTypes();
+				if (otherNamedFieldTypes.isPresent()) {
+					var otherFieldTypes = otherNamedFieldTypes.get();
+					var thisFieldTypes = this.getNamedFieldTypes();
+					for (var entry : thisFieldTypes.entrySet()) {
+						if (!otherFieldTypes.containsKey(entry.getKey())) {
+							yield false;
+						}
+						var thisFieldType = entry.getValue();
+						var otherFieldType = otherFieldTypes.get(entry.getKey());
+						if (!thisFieldType.equals(otherFieldType)
+							&& !thisFieldType.canUpcast(otherFieldType)) {
+							yield false;
+						}
 					}
+					yield true;
+				} else {
+					var tupleTypes = other.getFieldTypes();
+					var thisFields = this.definition.fields().values().stream().toList();
+					for (int i = 0; i < thisFields.size(); i++) {
+						var tupleFieldType = tupleTypes.get(i);
+						var thisFieldType = thisFields.get(i).type();
+						if (!tupleFieldType.equals(thisFieldType)
+							&& !tupleFieldType.canUpcast(thisFieldType)) {
+							yield false;
+						}
+					}
+					yield true;
 				}
-				yield true;
 			}
 			default -> false;
 		};
@@ -91,7 +123,7 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 		definition.fields().forEach((identifier, field) -> values.put(
 			identifier,
 			field.defaultValue().copy()));
-		return new GioviStruct(new Struct(definition.typename(), new Tuple.Named(values)));
+		return new GioviStruct(new Struct(definition.typename(), values));
 	}
 
 	@Override

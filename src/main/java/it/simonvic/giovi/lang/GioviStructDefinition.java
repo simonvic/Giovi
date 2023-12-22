@@ -6,7 +6,6 @@ import java.util.List;
 import it.simonvic.giovi.lang.values.GioviStruct;
 import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.lang.values.natives.Struct;
-import it.simonvic.giovi.lang.values.natives.Tuple;
 
 public record GioviStructDefinition(
 	String typename,
@@ -66,7 +65,7 @@ public record GioviStructDefinition(
 		fields.forEach((identifier, definition) -> values.put(
 			identifier,
 			definition.defaultValue().copy()));
-		return new GioviStruct(new Struct(typename, new Tuple.Named(values)));
+		return new GioviStruct(new Struct(typename, values));
 	}
 
 }
