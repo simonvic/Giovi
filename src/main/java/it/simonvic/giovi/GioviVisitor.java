@@ -8,8 +8,8 @@ import it.simonvic.giovi.delegates.SwitchStatementDelegate;
 import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.lang.values.natives.Tuple;
+import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
@@ -220,7 +220,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					getCurrentScope().declare(iteratorCtx.struct.getText(), gioviValue);
 				} else {
 					String fieldIdentifier = fieldIdentifierCtx.getText();
-					if (!(gioviValue.unbox() instanceof Tuple.Named tuple)) {
+					if (!(gioviValue.unbox() instanceof TupleNamed tuple)) {
 						throw new GioviException("Can't deconstruct " + gioviValue);
 					}
 					if (!tuple.containsField(fieldIdentifier)) {
@@ -979,7 +979,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					namedStructFieldCtx.identifier().getText(),
 					visit(namedStructFieldCtx.expression()).asGioviValue());
 			}
-			return new GioviTuple(new Tuple.Named(fields));
+			return new GioviTuple(new TupleNamed(fields));
 		}
 	}
 

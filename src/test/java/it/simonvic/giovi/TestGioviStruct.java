@@ -20,7 +20,6 @@ import it.simonvic.giovi.lang.GioviFieldDefinition;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.GioviTypes;

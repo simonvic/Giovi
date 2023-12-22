@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.values.natives.Struct;
 import it.simonvic.giovi.lang.values.natives.Tuple;
+import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviStruct extends GioviValue<Struct> {
@@ -48,7 +49,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 					return;
 				}
 				switch (gioviTuple.unbox()) {
-					case Tuple.Named t -> {
+					case TupleNamed t -> {
 						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
 							fieldValue.copy()));
 					}
@@ -117,7 +118,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 					return super.redirection(content);
 				}
 				switch (gioviTuple.unbox()) {
-					case Tuple.Named t -> {
+					case TupleNamed t -> {
 						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
 							fieldValue.copy()));
 					}

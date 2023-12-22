@@ -7,6 +7,7 @@ import it.simonvic.giovi.lang.AccessKey;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.values.natives.Tuple;
+import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviTuple extends GioviValue<Tuple> {
@@ -21,7 +22,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		if (value instanceof Tuple.Named named) {
+		if (value instanceof TupleNamed named) {
 			var typesMap = new LinkedHashMap<String, GioviType<?>>();
 			named.forEach(
 				(identifier, fieldValue) -> typesMap.put(identifier, fieldValue.getGioviType()));
@@ -46,8 +47,8 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		return switch (type) {
 			case GioviTypeTuple otherType -> {
 				var castedTuple = otherType.spawn();
-				if (castedTuple.unbox() instanceof Tuple.Named named
-					&& this.value instanceof Tuple.Named thisTuple) {
+				if (castedTuple.unbox() instanceof TupleNamed named
+					&& this.value instanceof TupleNamed thisTuple) {
 					thisTuple.forEach((identifier, fieldValue) -> named
 						.getField(identifier)
 						.box(fieldValue.copy()));
@@ -146,7 +147,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey r -> switch (value) {
-				case Tuple.Named named -> named.getField(r.text());
+				case TupleNamed named -> named.getField(r.text());
 				default -> super.dot(right);
 			};
 			default -> super.dot(right);
@@ -160,7 +161,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 				case "%" -> new GioviInt(value.getFieldsCount());
 				case "@" -> Range.of(0, value.getFieldsCount(), 1);
 				case "*" -> switch (value) {
-					case Tuple.Named named -> GioviLists.of(named.getFieldNames());
+					case TupleNamed named -> GioviLists.of(named.getFieldNames());
 					default -> super.access(right);
 				};
 				default -> super.access(right);

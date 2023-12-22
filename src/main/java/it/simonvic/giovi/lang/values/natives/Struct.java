@@ -2,10 +2,9 @@ package it.simonvic.giovi.lang.values.natives;
 
 import java.util.LinkedHashMap;
 
-import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.lang.values.GioviValue;
 
-public final class Struct extends Tuple.Named {
+public final class Struct extends TupleNamed {
 
 	private final String typename;
 

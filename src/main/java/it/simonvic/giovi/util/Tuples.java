@@ -6,6 +6,7 @@ import java.util.List;
 
 import it.simonvic.giovi.lang.values.GioviValue;
 import it.simonvic.giovi.lang.values.natives.Tuple;
+import it.simonvic.giovi.lang.values.natives.TupleNamed;
 
 public class Tuples {
 
@@ -17,27 +18,27 @@ public class Tuples {
 		return new Tuple(l);
 	}
 
-	public static Tuple.Named of() {
-		return new Tuple.Named();
+	public static TupleNamed of() {
+		return new TupleNamed();
 	}
 
-	public static <T> Tuple.Named of(
+	public static <T> TupleNamed of(
 		String f1, T v1) {
 		var s = new LinkedHashMap<String, GioviValue<?>>();
 		s.put(f1, GioviValue.of(v1));
-		return new Tuple.Named(s);
+		return new TupleNamed(s);
 	}
 
-	public static <T> Tuple.Named of(
+	public static <T> TupleNamed of(
 		String f1, T v1,
 		String f2, T v2) {
 		var s = new LinkedHashMap<String, GioviValue<?>>();
 		s.put(f1, GioviValue.of(v1));
 		s.put(f2, GioviValue.of(v2));
-		return new Tuple.Named(s);
+		return new TupleNamed(s);
 	}
 
-	public static <T> Tuple.Named of(
+	public static <T> TupleNamed of(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3) {
@@ -45,10 +46,10 @@ public class Tuples {
 		s.put(f1, GioviValue.of(v1));
 		s.put(f2, GioviValue.of(v2));
 		s.put(f3, GioviValue.of(v3));
-		return new Tuple.Named(s);
+		return new TupleNamed(s);
 	}
 
-	public static <T> Tuple.Named of(
+	public static <T> TupleNamed of(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3,
@@ -58,10 +59,10 @@ public class Tuples {
 		s.put(f2, GioviValue.of(v2));
 		s.put(f3, GioviValue.of(v3));
 		s.put(f4, GioviValue.of(v4));
-		return new Tuple.Named(s);
+		return new TupleNamed(s);
 	}
 
-	public static <T> Tuple.Named of(
+	public static <T> TupleNamed of(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3,
@@ -73,7 +74,7 @@ public class Tuples {
 		s.put(f3, GioviValue.of(v3));
 		s.put(f4, GioviValue.of(v4));
 		s.put(f5, GioviValue.of(v5));
-		return new Tuple.Named(s);
+		return new TupleNamed(s);
 	}
 
 }

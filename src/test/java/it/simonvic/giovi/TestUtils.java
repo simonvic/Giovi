@@ -17,7 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Natural;
-import it.simonvic.giovi.lang.values.natives.Tuple;
+import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
@@ -55,7 +55,7 @@ public class TestUtils {
 				Arguments.of(String.class, GioviValue.of("hello")),
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(Tuple.Named.class, GioviValue.of(Tuples.of("a", "a"))));
+				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.of("a", "a"))));
 		}
 
 		@ParameterizedTest
