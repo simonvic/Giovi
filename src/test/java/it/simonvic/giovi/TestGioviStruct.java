@@ -385,7 +385,7 @@ public class TestGioviStruct {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 					RGB <r Int, g Int, b Int>
 					RGBA <r Int, g Int, b Int, a Int>
-					RGBA.<r:1 g:2 b:3> as RGB
+					RGBA.<> as RGB
 					"""));
 			}
 
