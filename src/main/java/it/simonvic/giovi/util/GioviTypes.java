@@ -24,8 +24,7 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
-			throw new GioviException(
-				"Impossible to infer list type. Expecting " + inferred + " but got " + next);
+			throw new GioviException("Impossible to infer list type. Expecting\n\t" + inferred + " but got\n\t" + next);
 		}
 		if (inferred == null) {
 			throw new GioviException("Impossible to infer list type");
