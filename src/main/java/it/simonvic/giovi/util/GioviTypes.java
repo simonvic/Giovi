@@ -9,6 +9,7 @@ import it.simonvic.giovi.lang.values.*;
 public class GioviTypes {
 
 	public static GioviType<?> inferGioviType(Collection<GioviValue<?>> entries) {
+		if (entries.isEmpty()) return new GioviTypeVoid(); // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
 		for (GioviValue<?> entry : entries) {
