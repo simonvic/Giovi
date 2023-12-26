@@ -343,7 +343,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitVarDeclaration(VarDeclarationContext ctx) {
-		var variable = spawnType(ctx.type(), Optional.ofNullable(ctx.defaultDefinition()));
+		var variable = spawnType(ctx.type(), ctx.defaultDefinition());
 		getCurrentScope().declare(ctx.identifier().getText(), variable);
 		return variable;
 	}
@@ -672,13 +672,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private GioviValue<?> spawnType(
 		TypeContext typeCtx,
-		Optional<DefaultDefinitionContext> defaultDefinitionCtx) {
+		DefaultDefinitionContext defaultDefinitionCtx) {
 
 		var type = visit(typeCtx).asGioviType();
 		var value = type.spawn();
 
-		if (defaultDefinitionCtx.isPresent()) {
-			var defaultValue = visit(defaultDefinitionCtx.get()).asGioviValue();
+		if (defaultDefinitionCtx != null) {
+			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
 			value.setDefaultValue(defaultValue);
 			value.boxDefault();
 		}
