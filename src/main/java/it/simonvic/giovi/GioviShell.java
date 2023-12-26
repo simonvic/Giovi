@@ -1,7 +1,5 @@
 package it.simonvic.giovi;
 
-import java.io.IOException;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -11,7 +9,7 @@ import it.simonvic.giovi.antlr.GioviParser;
 
 public class GioviShell {
 
-	public void run() throws RecognitionException, IOException {
+	public void run() throws RecognitionException {
 		var console = System.console();
 		var visitor = new GioviVisitor();
 		System.out.print("┃ ");

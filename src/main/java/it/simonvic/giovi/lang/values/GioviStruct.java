@@ -49,10 +49,8 @@ public final class GioviStruct extends GioviValue<Struct> {
 					return;
 				}
 				switch (gioviTuple.unbox()) {
-					case TupleNamed t -> {
-						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
-							fieldValue.copy()));
-					}
+					case TupleNamed t -> t.forEach(
+						(identifier, fieldValue) -> this.boxField(identifier, fieldValue.copy()));
 					case Tuple t -> {
 						if (t.getFieldsCount() != this.value.getFieldsCount()) {
 							super.box(gioviValue);
@@ -118,10 +116,8 @@ public final class GioviStruct extends GioviValue<Struct> {
 					return super.redirection(content);
 				}
 				switch (gioviTuple.unbox()) {
-					case TupleNamed t -> {
-						t.forEach((identifier, fieldValue) -> this.boxField(identifier,
-							fieldValue.copy()));
-					}
+					case TupleNamed t -> t.forEach(
+						(identifier, fieldValue) -> this.boxField(identifier, fieldValue.copy()));
 					case Tuple t -> {
 						if (t.getFieldsCount() != this.value.getFieldsCount()) {
 							return super.redirection(content);

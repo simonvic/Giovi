@@ -35,7 +35,7 @@ public final class GioviText extends GioviPrimitive<String> {
 
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypePrimitive t) {
+		if (type instanceof GioviTypePrimitive<?> t) {
 			var typeClass = t.unbox();
 			if (typeClass == GioviText.class) return new GioviText(this.value);
 			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);

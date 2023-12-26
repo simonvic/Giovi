@@ -51,7 +51,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 			namedFieldTypes.forEach(
 				(identifier, type) -> sb.append(identifier + " " + type.getSimpleName() + ","));
 		}
-		return sb.toString() + ">";
+		return sb + ">";
 	}
 
 	@Override

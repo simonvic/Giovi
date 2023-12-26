@@ -39,7 +39,7 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 		var sb = new StringBuilder(definition.typename() + "<");
 		definition.fields().forEach((identifier, fieldDefinition) -> sb
 			.append(fieldDefinition + ","));
-		return sb.toString() + ">";
+		return sb + ">";
 	}
 
 	@Override
@@ -98,7 +98,6 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 							yield false;
 						}
 					}
-					yield true;
 				} else {
 					var tupleTypes = other.getFieldTypes();
 					var thisFields = this.definition.fields().values().stream().toList();
@@ -110,8 +109,8 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 							yield false;
 						}
 					}
-					yield true;
 				}
+				yield true;
 			}
 			default -> false;
 		};

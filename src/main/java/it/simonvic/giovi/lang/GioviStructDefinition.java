@@ -33,7 +33,7 @@ public record GioviStructDefinition(
 	public String toString() {
 		var sb = new StringBuilder(typename + "<");
 		fields.forEach((identifier, field) -> sb.append(field + ","));
-		return sb.toString() + ">";
+		return sb + ">";
 	}
 
 	@Override

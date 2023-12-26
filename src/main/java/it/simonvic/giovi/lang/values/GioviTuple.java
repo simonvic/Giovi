@@ -73,11 +73,6 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	}
 
 	@Override
-	public void setDefaultValue(Tuple tuple) {
-		defaultValue = tuple;
-	}
-
-	@Override
 	public void setDefaultValue(GioviValue<?> defaultValue) {
 		switch (defaultValue.unbox()) {
 			case Tuple v -> setDefaultValue(v);

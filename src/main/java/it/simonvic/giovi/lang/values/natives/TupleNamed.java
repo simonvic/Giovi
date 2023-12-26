@@ -99,9 +99,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	}
 
 	public List<String> getFieldNames() {
-		var names = new ArrayList<String>();
-		names.addAll(fields.keySet());
-		return names;
+		return new ArrayList<>(fields.keySet());
 	}
 
 	public GioviValue<?> get(String identifier) {

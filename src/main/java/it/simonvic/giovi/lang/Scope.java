@@ -159,23 +159,6 @@ public class Scope {
 		return functionSignatures.get(identifier);
 	}
 
-
-	// public GioviFunctionSignature getFunctionSignature(GioviFunctionCallSignature signature)
-	// 	throws FunctionNotDeclared, MultipleFunctionSignatures {
-	// 	Stream<GioviFunctionSignature> stream = functionSignatures.stream()
-	// 		.filter(signature::isCompatible);
-	// 	return switch (stream.count()) {
-	// 		case 0l -> {
-	// 			if (parent == null) {
-	// 				throw new FunctionNotDeclared(signature);
-	// 			}
-	// 			yield parent.getFunctionSignature(signature);
-	// 		}
-	// 		case 1l -> stream.findFirst().get();
-	// 		default -> throw new MultipleFunctionSignatures(signature);
-	// 	};
-	// }
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
 	private final Map<String, GioviStructDefinition> structDefinitions = new HashMap<>();

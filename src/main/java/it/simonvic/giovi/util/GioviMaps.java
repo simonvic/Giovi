@@ -10,9 +10,7 @@ public class GioviMaps {
 
 	public static <K, V> GioviMap of(Map<K, V> map) {
 		var entries = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
-		map.forEach((k, v) -> {
-			entries.put(GioviValue.of(k), GioviValue.of(v));
-		});
+		map.forEach((k, v) -> entries.put(GioviValue.of(k), GioviValue.of(v)));
 		return new GioviMap(
 			GioviTypes.inferGioviType(entries.keySet()),
 			GioviTypes.inferGioviType(entries.values()),

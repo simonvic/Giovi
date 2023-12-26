@@ -96,19 +96,19 @@ public class Range<T> extends GioviObject {
 	}
 
 	public static Range<Integer> of(int start, int end, int step) {
-		return new Range<Integer>(start, end, step, Range::iterateInt);
+		return new Range<>(start, end, step, Range::iterateInt);
 	}
 
 	public static Range<Double> of(double start, double end, double step) {
-		return new Range<Double>(start, end, step, Range::iterateReal);
+		return new Range<>(start, end, step, Range::iterateReal);
 	}
 
 	public static Range<Natural> of(Natural start, Natural end, int step) {
-		return new Range<Natural>(start, end, step, Range::iterateNatural);
+		return new Range<>(start, end, step, Range::iterateNatural);
 	}
 
 	public static Range<String> of(String start, String end, int step) {
-		return new Range<String>(start, end, step, Range::iterateText);
+		return new Range<>(start, end, step, Range::iterateText);
 	}
 
 	public static void iterateReal(Range<Double> sequence, Consumer<Double> callback) {

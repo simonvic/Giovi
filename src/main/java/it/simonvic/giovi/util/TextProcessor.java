@@ -105,12 +105,12 @@ public class TextProcessor {
 			case 0:
 				return "";
 			case 1:
-				return linesList.get(0);
+				return linesList.getFirst();
 		}
 
 		// if first line (i.e. line with delimiter) is empty, skip it
-		if (linesList.get(0).isEmpty()) {
-			linesList.remove(0);
+		if (linesList.getFirst().isEmpty()) {
+			linesList.removeFirst();
 		}
 
 		// build text and remove all incidental indentation characters
@@ -128,7 +128,7 @@ public class TextProcessor {
 	}
 
 	private static int startingIndentationCharCount(String line, char indentationLeader) {
-		if (line.length() == 0) return 0;
+		if (line.isEmpty()) return 0;
 		int count = 0;
 		char firstChar = line.charAt(0);
 		if (firstChar != '\t' && firstChar != ' ') {
@@ -145,7 +145,7 @@ public class TextProcessor {
 
 	public static char indentationLeader(String text) {
 		String[] lines = text.split("\n");
-		if (lines.length <= 1 || lines[1].length() == 0) return '\t';
+		if (lines.length <= 1 || lines[1].isEmpty()) return '\t';
 		return lines[1].charAt(0) == ' ' ? ' ' : '\t';
 	}
 

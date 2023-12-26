@@ -16,7 +16,7 @@ public abstract sealed class GioviNumber<T extends Number>
 
 	@Override
 	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypePrimitive t) {
+		if (type instanceof GioviTypePrimitive<?> t) {
 			var typeClass = t.unbox();
 			if (typeClass == GioviInt.class) return intValue();
 			if (typeClass == GioviReal.class) return realValue();
