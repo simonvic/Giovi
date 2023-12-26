@@ -161,7 +161,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	/**
-	 * Iterate over a range
 	 * @param iteratorCtx
 	 * @param range
 	 * @param statementOrBlock
@@ -725,7 +724,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	/**
 	 * Visit function call positional parameters and declare actual parameters
-	 * @param ctx Function call context
+	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
 	 */
 	private void setupFunctionParametersIteratively(
@@ -787,7 +786,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	/**
 	 * Visit function call named parameters and declare actual parameters
-	 * @param ctx Function call context
+	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
 	 */
 	private void setupNamedFunctionParameters(
@@ -906,7 +905,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			String identifier = fieldCtx.identifier().getText();
 			var fieldType = visit(fieldCtx.type()).asGioviType();
 			GioviFieldDefinition fieldDefinition = fieldCtx.defaultDefinition() == null
-				? fieldDefinition = new GioviFieldDefinition(identifier, fieldType)
+				? new GioviFieldDefinition(identifier, fieldType)
 				: new GioviFieldDefinition(identifier, fieldType,
 					visit(fieldCtx.defaultDefinition()).asGioviValue());
 			fieldDefinitions.put(identifier, fieldDefinition);
