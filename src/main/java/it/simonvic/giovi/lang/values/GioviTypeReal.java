@@ -7,7 +7,7 @@ public final class GioviTypeReal extends GioviTypeNumber<GioviReal> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return to instanceof GioviTypeReal;
 	}
 

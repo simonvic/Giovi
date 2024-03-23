@@ -668,7 +668,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (defaultValueType.equals(type)) {
 			return new GioviFunctionSignatureParameter(identifier, type, defaultValue);
 		}
-		if (defaultValueType.canUpcast(type)) {
+		if (defaultValueType.canWidenTo(type)) {
 			return new GioviFunctionSignatureParameter(identifier, type,
 				defaultValue.as(type).asGioviValue());
 		}
@@ -778,7 +778,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				getCurrentScope().declare(
 					formalParamIdentifier,
 					actualParamValue);
-			} else if (actualParamType.canUpcast(formalParamType)) {
+			} else if (actualParamType.canWidenTo(formalParamType)) {
 				getCurrentScope().declare(
 					formalParamIdentifier,
 					actualParamValue.as(formalParamType).asGioviValue());
@@ -829,7 +829,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					getCurrentScope().declare(
 						formalParamIdentifier,
 						actualParamValue);
-				} else if (actualParamType.canUpcast(formalParamType)) {
+				} else if (actualParamType.canWidenTo(formalParamType)) {
 					getCurrentScope().declare(
 						formalParamIdentifier,
 						actualParamValue.as(formalParamType).asGioviValue());
@@ -871,7 +871,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				if (returnedType.equals(returnType)) {
 					return returnedValue;
 				}
-				if (returnedType.canUpcast(returnType)) {
+				if (returnedType.canWidenTo(returnType)) {
 					return returnedValue.as(returnType).asGioviValue();
 				}
 				throw new GioviException(

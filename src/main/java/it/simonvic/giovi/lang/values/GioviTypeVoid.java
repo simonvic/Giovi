@@ -7,7 +7,7 @@ public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return true;
 	}
 

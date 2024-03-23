@@ -68,7 +68,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (!(right instanceof GioviType<?> type)) return super.as(right);
 		var thisType = this.getGioviType();
-		if (!thisType.canUpcast(type)) {
+		if (!thisType.canWidenTo(type)) {
 			return super.as(type);
 		}
 		return switch (type) {
@@ -118,7 +118,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 					var thisFieldType = thisField.getGioviType();
 					var otherFieldType = otherField.getGioviType();
 					if (!thisFieldType.equals(otherFieldType)) {
-						if (!thisFieldType.canUpcast(otherFieldType)) {
+						if (!thisFieldType.canWidenTo(otherFieldType)) {
 							yield new GioviBool(false);
 						}
 						if (!thisField.equal(otherField.as(thisFieldType)).asNativeBool()) {

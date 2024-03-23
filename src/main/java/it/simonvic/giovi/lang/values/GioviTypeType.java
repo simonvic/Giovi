@@ -22,7 +22,7 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return to instanceof GioviTypeType;
 	}
 

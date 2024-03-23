@@ -7,7 +7,7 @@ public final class GioviTypeText extends GioviTypePrimitive<GioviText> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return to instanceof GioviTypeText;
 	}
 

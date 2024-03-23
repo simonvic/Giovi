@@ -81,7 +81,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 				}
 				var otherGioviType = other.getField(fieldName).getGioviType();
 				if (!thisGioviType.equals(otherGioviType)
-					&& !thisGioviType.canUpcast(otherGioviType))
+					&& !thisGioviType.canWidenTo(otherGioviType))
 					return false;
 
 			}

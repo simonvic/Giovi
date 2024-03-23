@@ -79,7 +79,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeTuple other -> {
 				if (this.getFieldsCount() > other.getFieldsCount()) {
@@ -97,7 +97,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 						var thisFieldType = entry.getValue();
 						var otherFieldType = otherFieldTypes.get(entry.getKey());
 						if (!thisFieldType.equals(otherFieldType)
-							&& !thisFieldType.canUpcast(otherFieldType)) {
+							&& !thisFieldType.canWidenTo(otherFieldType)) {
 							yield false;
 						}
 					}
@@ -108,7 +108,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 						var thisFieldType = thisFieldTypes.get(i);
 						var otherFieldType = otherFieldTypes.get(i);
 						if (!thisFieldType.equals(otherFieldType)
-							&& !thisFieldType.canUpcast(otherFieldType)) {
+							&& !thisFieldType.canWidenTo(otherFieldType)) {
 							yield false;
 						}
 					}
@@ -130,7 +130,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 						var thisFieldType = entry.getValue();
 						var otherFieldType = otherFieldTypes.get(entry.getKey());
 						if (!thisFieldType.equals(otherFieldType)
-							&& !thisFieldType.canUpcast(otherFieldType)) {
+							&& !thisFieldType.canWidenTo(otherFieldType)) {
 							yield false;
 						}
 					}
@@ -141,7 +141,7 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 						var thisFieldType = thisFieldTypes.get(i);
 						var otherFieldType = otherFieldTypes.get(i);
 						if (!thisFieldType.equals(otherFieldType)
-							&& !thisFieldType.canUpcast(otherFieldType)) {
+							&& !thisFieldType.canWidenTo(otherFieldType)) {
 							yield false;
 						}
 					}

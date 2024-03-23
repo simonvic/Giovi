@@ -89,7 +89,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (!(right instanceof GioviType<?> type)) return super.as(right);
 		var thisType = this.getGioviType();
-		if (!thisType.canUpcast(type)) {
+		if (!thisType.canWidenTo(type)) {
 			return super.as(type);
 		}
 		return switch (type) {

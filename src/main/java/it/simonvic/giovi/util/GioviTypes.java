@@ -18,10 +18,10 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
-			if (next.equals(inferred) || next.canUpcast(inferred)) {
+			if (next.equals(inferred) || next.canWidenTo(inferred)) {
 				continue;
 			}
-			if (inferred.canUpcast(next)) {
+			if (inferred.canWidenTo(next)) {
 				inferred = next;
 				continue;
 			}

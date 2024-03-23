@@ -76,7 +76,7 @@ public sealed class Tuple permits TupleNamed {
 		for (int i = 0; i < this.getFieldsCount(); i++) {
 			var thisType = this.getField(i).getGioviType();
 			var otherType = tuple.getField(i).getGioviType();
-			if (!thisType.equals(otherType) && !thisType.canUpcast(otherType)) {
+			if (!thisType.equals(otherType) && !thisType.canWidenTo(otherType)) {
 				return false;
 			}
 		}

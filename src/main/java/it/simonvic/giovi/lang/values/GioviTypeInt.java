@@ -7,7 +7,7 @@ public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeInt __ -> true;
 			case GioviTypeReal __ -> true;

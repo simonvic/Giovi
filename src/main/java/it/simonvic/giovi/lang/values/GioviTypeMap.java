@@ -49,10 +49,10 @@ public final class GioviTypeMap extends GioviType<GioviMap> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeMap t -> getKeyType().canUpcast(t.getKeyType())
-				&& getElementType().canUpcast(t.getElementType());
+			case GioviTypeMap t -> getKeyType().canWidenTo(t.getKeyType())
+				&& getElementType().canWidenTo(t.getElementType());
 			default -> false;
 		};
 	}

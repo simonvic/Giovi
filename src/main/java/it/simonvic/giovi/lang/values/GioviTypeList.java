@@ -53,9 +53,9 @@ public final class GioviTypeList extends GioviType<GioviList> {
 	}
 
 	@Override
-	public boolean canUpcast(GioviType<?> to) {
+	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeList t -> getEntryType().canUpcast(t.getEntryType());
+			case GioviTypeList t -> getEntryType().canWidenTo(t.getEntryType());
 			default -> false;
 		};
 	}
