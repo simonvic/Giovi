@@ -2,6 +2,7 @@ package it.simonvic.giovi.util;
 
 import java.util.function.Supplier;
 
+import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
@@ -10,105 +11,126 @@ import it.simonvic.giovi.lang.values.GioviBool;
 
 public class VisitorUtils {
 
-	public static GioviParserVisitResult prefixed(String prefix, GioviParserVisitResult value) {
+	public static GioviParserVisitResult prefixed(GioviToken prefix, GioviParserVisitResult value) {
 		return switch (prefix) {
-			case "+" -> value.positive();
-			case "-" -> value.negative();
+			case PLUS -> value.positive();
+			case MINUS -> value.negative();
 			default -> throw new OperatorNotSupported(prefix);
 		};
 	}
 
-	public static GioviParserVisitResult additive(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
+	public static GioviParserVisitResult additive(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
 		return switch (operator) {
-			case "+" -> left.plus(right);
-			case "-" -> left.minus(right);
+			case PLUS -> left.plus(right);
+			case MINUS -> left.minus(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
-	public static GioviParserVisitResult multiplicative(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
+	public static GioviParserVisitResult multiplicative(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
 		return switch (operator) {
-			case "*" -> left.multiply(right);
-			case "/" -> left.divide(right);
-			case "%" -> left.modulo(right);
+			case MULT -> left.multiply(right);
+			case DIV -> left.divide(right);
+			case MODULO -> left.modulo(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
-	public static GioviParserVisitResult relational(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
+	public static GioviParserVisitResult relational(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
 		return switch (operator) {
-			case "<=" -> left.lessEqual(right);
-			case ">=" -> left.greaterEqual(right);
-			case ">" -> left.greater(right);
-			case "<" -> left.less(right);
-			default -> throw new OperatorNotSupported(operator);
-		};
-	}
-
-	public static GioviParserVisitResult bool(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
-		return switch (operator) {
-			case "and", "&" -> left.and(right);
-			case "or", "|" -> left.or(right);
+			case LESS_EQUAL -> left.lessEqual(right);
+			case GREATER_EQUAL -> left.greaterEqual(right);
+			case GREATER -> left.greater(right);
+			case LESS -> left.less(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
 	public static GioviParserVisitResult bool(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
+		return switch (operator) {
+			case AND, AND_SYM -> left.and(right);
+			case OR, OR_SYM -> left.or(right);
+			default -> throw new OperatorNotSupported(operator);
+		};
+	}
+
+	@SuppressWarnings("incomplete-switch")
+	public static GioviParserVisitResult bool(
 		GioviParserVisitResult lhs,
-		String bop,
+		GioviToken operator,
 		Supplier<GioviParserVisitResult> rhsVisit) {
 		if (lhs instanceof GioviBool b) {
-			switch (bop) {
-				case "and", "&" -> {
+			switch (operator) {
+				case AND, AND_SYM -> {
 					if (!b.unbox()) {
 						return new GioviBool(false);
 					}
 				}
-				case "or", "|" -> {
+				case OR, OR_SYM -> {
 					if (b.unbox()) {
 						return new GioviBool(true);
 					}
 				}
 			}
 		}
-		return VisitorUtils.bool(lhs, bop, rhsVisit.get());
+		return VisitorUtils.bool(lhs, operator, rhsVisit.get());
 	}
 
 
-	public static GioviParserVisitResult equality(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
+	public static GioviParserVisitResult equality(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
 		return switch (operator) {
-			case "=" -> left.equal(right);
-			case "!=" -> left.notEqual(right);
+			case EQUAL -> left.equal(right);
+			case NOT_EQUAL -> left.notEqual(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
-	public static GioviParserVisitResult containment(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
+	public static GioviParserVisitResult containment(
+		GioviParserVisitResult left,
+		GioviToken operator,
+		GioviParserVisitResult right) {
 		return switch (operator) {
-			case "~=" -> left.isContained(right);
-			case "=~" -> left.contains(right);
+			case CONTAINED -> left.isContained(right);
+			case CONTAINS -> left.contains(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
 
-	public static void redirection(GioviParserVisitResult content, String operator, GioviParserVisitResult destination) {
+	public static void redirection(
+		GioviParserVisitResult content,
+		GioviToken operator,
+		GioviParserVisitResult destination) {
 		switch (operator) {
-			case "->", "<-" -> destination.redirection(content);
-			case "->+", "+<-" -> destination.redirectionPlus(content);
-			case "->-", "-<-" -> destination.redirectionMinus(content);
-			case "->*", "*<-" -> destination.redirectionMultiply(content);
-			case "->/", "/<-" -> destination.redirectionDivide(content);
+			case REDIR, REDIR_RTL -> destination.redirection(content);
+			case REDIR_PLUS, REDIR_PLUS_RTL -> destination.redirectionPlus(content);
+			case REDIR_MINUS, REDIR_MINUS_RTL -> destination.redirectionMinus(content);
+			case REDIR_MULT, REDIR_MULT_RTL -> destination.redirectionMultiply(content);
+			case REDIR_DIV, REDIR_DIV_RTL -> destination.redirectionDivide(content);
 			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
 		}
 	}
 
-	// TODO: move to visitor
 	public static void redirectionToPrimitive(
 		GioviParserVisitResult content,
-		String operator,
+		GioviToken operator,
 		String destination) {
 		switch (operator) {
-			case "->", "<-" -> {
+			case REDIR, REDIR_RTL -> {
 				switch (destination) {
 					case "\\out" -> System.out.println(content);
 					case "\\err" -> System.err.println(content);
@@ -116,7 +138,7 @@ public class VisitorUtils {
 						"Unkown primitive destination " + destination);
 				}
 			}
-			case "->+", "+<-" -> {
+			case REDIR_PLUS, REDIR_PLUS_RTL -> {
 				switch (destination) {
 					case "\\out" -> System.out.print(content);
 					case "\\err" -> System.err.print(content);
@@ -128,4 +150,5 @@ public class VisitorUtils {
 				"Operator not supported for primitive destination: " + operator);
 		}
 	}
+
 }

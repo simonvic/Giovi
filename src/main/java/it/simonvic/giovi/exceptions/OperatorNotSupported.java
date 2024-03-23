@@ -1,7 +1,11 @@
 package it.simonvic.giovi.exceptions;
 
+import it.simonvic.giovi.GioviToken;
+
 public class OperatorNotSupported extends GioviException {
-	public OperatorNotSupported(String operator) {
-		super("The operator '" + operator + "' is not applicable to given types");
+
+	public OperatorNotSupported(GioviToken op) {
+		super("The operator '" + op + "(" + op.label + ")" + "' is not applicable to given types");
 	}
+
 }

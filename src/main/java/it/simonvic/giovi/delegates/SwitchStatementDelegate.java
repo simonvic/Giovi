@@ -2,6 +2,7 @@ package it.simonvic.giovi.delegates;
 
 import java.util.Optional;
 
+import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
@@ -47,7 +48,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
 		return VisitorUtils.relational(
 			subject,
-			ctx.op.getText(),
+			GioviToken.of(ctx.op.getText()),
 			gioviVisitor.visit(ctx.expression()));
 	}
 
@@ -55,7 +56,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
 		return VisitorUtils.equality(
 			subject,
-			ctx.op.getText(),
+			GioviToken.of(ctx.op.getText()),
 			gioviVisitor.visit(ctx.expression()));
 	}
 
@@ -63,7 +64,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
 		return VisitorUtils.bool(
 			visit(ctx.caseMatch(0)),
-			ctx.bop.getText(),
+			GioviToken.of(ctx.bop.getText()),
 			() -> visit(ctx.caseMatch(1)));
 	}
 
@@ -71,7 +72,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
 		return VisitorUtils.containment(
 			subject,
-			ctx.op.getText(),
+			GioviToken.of(ctx.op.getText()),
 			gioviVisitor.visit(ctx.expression()));
 	}
 
@@ -79,7 +80,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
 		return VisitorUtils.bool(
 			subject,
-			ctx.op.getText(),
+			GioviToken.of(ctx.op.getText()),
 			() -> gioviVisitor.visit(ctx.expression()));
 	}
 
