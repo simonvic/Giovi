@@ -64,7 +64,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return OperationEvaluator.bool(
 			visit(ctx.caseMatch(0)),
 			ctx.bop.getText(),
-			visit(ctx.caseMatch(1)));
+			() -> visit(ctx.caseMatch(1)));
 	}
 
 	@Override
@@ -80,7 +80,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return OperationEvaluator.bool(
 			subject,
 			ctx.op.getText(),
-			gioviVisitor.visit(ctx.expression()));
+			() -> gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override

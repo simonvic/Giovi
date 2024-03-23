@@ -1,6 +1,9 @@
 package it.simonvic.giovi;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Scanner;
 
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
@@ -15,6 +18,8 @@ import it.simonvic.giovi.util.OperationEvaluator;
 import it.simonvic.giovi.util.TextProcessor;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
+
+	// TODO: use enums for operators instead of string
 
 	protected final Scanner scanner = new Scanner(System.in);
 
@@ -505,7 +510,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return OperationEvaluator.bool(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
-			visit(ctx.expression(1)));
+			() -> visit(ctx.expression(1)));
 	}
 
 	@Override

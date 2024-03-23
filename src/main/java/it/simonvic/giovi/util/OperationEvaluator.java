@@ -1,9 +1,12 @@
 package it.simonvic.giovi.util;
 
+import java.util.function.Supplier;
+
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
+import it.simonvic.giovi.lang.values.GioviBool;
 
 public class OperationEvaluator {
 
@@ -49,6 +52,28 @@ public class OperationEvaluator {
 			default -> throw new OperatorNotSupported(operator);
 		};
 	}
+
+	public static GioviParserVisitResult bool(
+		GioviParserVisitResult lhs,
+		String bop,
+		Supplier<GioviParserVisitResult> rhsVisit) {
+		if (lhs instanceof GioviBool b) {
+			switch (bop) {
+				case "and", "&" -> {
+					if (!b.unbox()) {
+						return new GioviBool(false);
+					}
+				}
+				case "or", "|" -> {
+					if (b.unbox()) {
+						return new GioviBool(true);
+					}
+				}
+			}
+		}
+		return OperationEvaluator.bool(lhs, bop, rhsVisit.get());
+	}
+
 
 	public static GioviParserVisitResult equality(GioviParserVisitResult left, String operator, GioviParserVisitResult right) {
 		return switch (operator) {
