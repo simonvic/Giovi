@@ -166,8 +166,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 				default -> super.access(right);
 			};
 			case Range<?> range -> {
-				if (range.getStart() instanceof Integer start
-					&& range.getEnd() instanceof Integer end) {
+				if (range.getStart() instanceof Integer && range.getEnd() instanceof Integer) {
 					yield new GioviTuple(this.value.copy((Range<Integer>) range)); // TODO: RangeInteger
 				}
 				yield super.access(right);

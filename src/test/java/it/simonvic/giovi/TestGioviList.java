@@ -121,8 +121,9 @@ public class TestGioviList {
 
 		@Test
 		// TODO: should it? Clarify requirements
-		// when accessing a Real list, we know all entries are Real
-		// or at least "subtypes" of Real (Int, Natural)
+		// When accessing a Real list, we know all entries are Real
+		// or at least can be widened to Real (Int, Natural)
+		// When is it wiser to widen the entry? What about a very deep tuple?
 		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToHighestType() {
 			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]

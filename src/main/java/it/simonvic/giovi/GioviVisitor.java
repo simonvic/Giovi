@@ -19,8 +19,6 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	// TODO: use enums for operators instead of string
-
 	protected final Scanner scanner = new Scanner(System.in);
 
 	private final Scope globalScope = new Scope();
@@ -531,7 +529,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionCast(ExpressionCastContext ctx) {
-		// TODO: add as operator in GioviObject
 		return visit(ctx.expression()).as(visit(ctx.type()));
 	}
 
