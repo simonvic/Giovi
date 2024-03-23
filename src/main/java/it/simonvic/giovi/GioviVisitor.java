@@ -14,8 +14,8 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Tuple;
 import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviTypes;
-import it.simonvic.giovi.util.VisitorUtils;
 import it.simonvic.giovi.util.TextProcessor;
+import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
@@ -98,7 +98,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				&& typeCheckCtx.identifier() != null) {
 				getCurrentScope().declare(
 					typeCheckCtx.identifier().getText(),
-					subject.asGioviValue().castTo(visit(typeCheckCtx.type()).asGioviType()));
+					subject.as(visit(typeCheckCtx.type())).asGioviValue());
 			}
 			visit(matchedLabelCtx.body);
 			exitScope();
@@ -532,7 +532,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitExpressionCast(ExpressionCastContext ctx) {
 		// TODO: add as operator in GioviObject
-		return visit(ctx.expression()).asGioviValue().castTo(visit(ctx.type()).asGioviType());
+		return visit(ctx.expression()).as(visit(ctx.type()));
 	}
 
 	@Override
@@ -669,7 +669,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			return new GioviFunctionSignatureParameter(identifier, type, defaultValue);
 		}
 		if (defaultValueType.canUpcast(type)) {
-			return new GioviFunctionSignatureParameter(identifier, type, defaultValue.castTo(type));
+			return new GioviFunctionSignatureParameter(identifier, type,
+				defaultValue.as(type).asGioviValue());
 		}
 		throw new GioviException("Incompatible default value. Expecting a " + type
 			+ " but instead got " + defaultValueType);
@@ -780,7 +781,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			} else if (actualParamType.canUpcast(formalParamType)) {
 				getCurrentScope().declare(
 					formalParamIdentifier,
-					actualParamValue.castTo(formalParamType));
+					actualParamValue.as(formalParamType).asGioviValue());
 			} else {
 				throw new GioviException("Wrong parameter type. Expecting " + formalParamType
 					+ " but instead got " + actualParamType);
@@ -831,7 +832,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				} else if (actualParamType.canUpcast(formalParamType)) {
 					getCurrentScope().declare(
 						formalParamIdentifier,
-						actualParamValue.castTo(formalParamType));
+						actualParamValue.as(formalParamType).asGioviValue());
 				} else {
 					throw new GioviException("Wrong parameter type. Expecting "
 						+ formalParamType + " but instead got " + actualParamType);
@@ -871,7 +872,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					return returnedValue;
 				}
 				if (returnedType.canUpcast(returnType)) {
-					return returnedValue.castTo(returnType);
+					return returnedValue.as(returnType).asGioviValue();
 				}
 				throw new GioviException(
 					"Wrong return type, expecting " + returnType + " but got " + returnedType);

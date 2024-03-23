@@ -81,11 +81,16 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return new GioviStruct(value.copy(), defaultValue.copy());
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (!(right instanceof GioviType<?> type)) return super.as(right);
 		var thisType = this.getGioviType();
 		if (!thisType.canUpcast(type)) {
-			return super.castTo(type);
+			return super.as(type);
 		}
 		return switch (type) {
 			case GioviTypeStruct otherType -> {
@@ -94,11 +99,10 @@ public final class GioviStruct extends GioviValue<Struct> {
 					.boxField(identifier, fieldValue.copy()));
 				yield castedTuple;
 			}
-			default -> super.castTo(type);
+			default -> super.as(type);
 		};
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override

@@ -1,5 +1,7 @@
 package it.simonvic.giovi.lang.values;
 
+import it.simonvic.giovi.lang.GioviParserVisitResult;
+
 public abstract sealed class GioviNumber<T extends Number>
 	extends GioviPrimitive<T>
 	permits GioviNatural, GioviInt, GioviReal {
@@ -15,14 +17,14 @@ public abstract sealed class GioviNumber<T extends Number>
 	public abstract GioviReal realValue();
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypePrimitive<?> t) {
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (right instanceof GioviTypePrimitive<?> t) {
 			var typeClass = t.unbox();
 			if (typeClass == GioviInt.class) return intValue();
 			if (typeClass == GioviReal.class) return realValue();
 			if (typeClass == GioviNatural.class) return naturalValue();
 		}
-		return super.castTo(type);
+		return super.as(right);
 	}
 
 }

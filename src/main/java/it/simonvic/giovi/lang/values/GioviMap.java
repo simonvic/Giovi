@@ -33,18 +33,18 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		this.keyType = keyType;
 		this.elementType = elementType;
 		value.forEach((k, e) -> this.value.put(
-			k.castTo(keyType),
-			e.castTo(elementType)));
+			k.as(keyType).asGioviValue(),
+			e.as(elementType).asGioviValue()));
 		defaultValue.forEach((k, e) -> this.defaultValue.put(
-			k.castTo(keyType),
-			e.castTo(elementType)));
+			k.as(keyType).asGioviValue(),
+			e.as(elementType).asGioviValue()));
 	}
 
 	// TODO: move map logic to native implementation
 
 	public void put(GioviValue<?> key, GioviValue<?> element) {
-		key = key.castTo(keyType);
-		element = element.castTo(elementType);
+		key = key.as(keyType).asGioviValue();
+		element = element.as(elementType).asGioviValue();
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key)) {
 				value.get(k).box(element);
@@ -69,8 +69,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 
 	public void remove(GioviValue<?> key, GioviValue<?> element) {
-		key = key.castTo(keyType);
-		element = element.castTo(elementType);
+		key = key.as(keyType).asGioviValue();
+		element = element.as(elementType).asGioviValue();
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key) && element.equals(value.get(k))) {
 				value.remove(k);
@@ -80,7 +80,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	public void remove(GioviValue<?> key) {
-		key = key.castTo(keyType);
+		key = key.as(keyType).asGioviValue();
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key)) {
 				value.remove(k);
@@ -171,13 +171,13 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypeMap t) {
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(t.getKeyType(), t.getElementType());
 			this.value.forEach(map::put);
 			return map;
 		}
-		return super.castTo(type);
+		return super.as(right);
 	}
 
 	@Override

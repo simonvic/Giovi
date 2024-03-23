@@ -19,10 +19,10 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		super(new ArrayList<>(), new ArrayList<>());
 		this.entryType = entryType;
 		value.stream()
-			.map(entry -> entry.castTo(this.entryType))
+			.map(entry -> entry.as(this.entryType).asGioviValue())
 			.forEach(this.value::add);
 		defaultValue.stream()
-			.map(entry -> entry.castTo(this.entryType))
+			.map(entry -> entry.as(this.entryType).asGioviValue())
 			.forEach(this.defaultValue::add);
 	}
 
@@ -57,7 +57,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	public void add(GioviValue<?> entry) {
-		value.add(entry.castTo(entryType));
+		value.add(entry.as(entryType).asGioviValue());
 	}
 
 	public void addAll(List<? extends GioviValue<?>> entries) {
@@ -102,16 +102,6 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypeList t) {
-			var newGioviList = t.spawn();
-			this.value.forEach(newGioviList::add);
-			return newGioviList;
-		}
-		return super.castTo(type);
-	}
-
-	@Override
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue) {
 			case GioviList v -> value = v.unbox();
@@ -133,6 +123,19 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
+	@Override
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (right instanceof GioviTypeList t) {
+			var newGioviList = t.spawn();
+			this.value.forEach(newGioviList::add);
+			return newGioviList;
+		}
+		return super.as(right);
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override

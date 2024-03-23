@@ -34,8 +34,8 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		if (type instanceof GioviTypePrimitive<?> t) {
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (right instanceof GioviTypePrimitive<?> t) {
 			var typeClass = t.unbox();
 			if (typeClass == GioviText.class) return new GioviText(this.value);
 			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
@@ -47,7 +47,7 @@ public final class GioviText extends GioviPrimitive<String> {
 				throw new GioviException(ex);
 			}
 		}
-		return super.castTo(type);
+		return super.as(right);
 	}
 
 	@Override

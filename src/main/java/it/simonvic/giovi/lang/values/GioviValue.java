@@ -78,10 +78,6 @@ public abstract sealed class GioviValue<T>
 
 	public abstract GioviValue<T> copy();
 
-	public GioviValue<?> castTo(GioviType<?> type) {
-		throw new GioviException("Cast not implemented: " + this.getGioviType() + " to " + type);
-	}
-
 	@Override
 	public String toString() {
 		return value.toString();

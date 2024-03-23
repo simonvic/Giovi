@@ -31,14 +31,6 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		return switch (type) {
-			case GioviTypeBool __ -> new GioviBool(this.value);
-			default -> super.castTo(type);
-		};
-	}
-
-	@Override
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue.unbox()) {
 			case Boolean v -> box(v);
@@ -57,6 +49,16 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	}
 
 	//                                                                                OPERATORATION
+
+	//                                                                                         cast
+	@Override
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviTypeBool __ -> new GioviBool(this.value);
+			default -> super.as(right);
+		};
+	}
+
 	//                                                                                  redirection
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {

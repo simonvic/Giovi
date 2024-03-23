@@ -39,31 +39,6 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	}
 
 	@Override
-	public GioviValue<?> castTo(GioviType<?> type) {
-		var thisType = this.getGioviType();
-		if (!thisType.canUpcast(type)) {
-			return super.castTo(type);
-		}
-		return switch (type) {
-			case GioviTypeTuple otherType -> {
-				var castedTuple = otherType.spawn();
-				if (castedTuple.unbox() instanceof TupleNamed named
-					&& this.value instanceof TupleNamed thisTuple) {
-					thisTuple.forEach((identifier, fieldValue) -> named
-						.getField(identifier)
-						.box(fieldValue.copy()));
-				} else {
-					for (int i = 0; i < this.value.getFieldsCount(); i++) {
-						castedTuple.unbox().getField(i).box(this.value.getField(i).copy());
-					}
-				}
-				yield castedTuple;
-			}
-			default -> super.castTo(type);
-		};
-	}
-
-	@Override
 	public void box(GioviValue<?> gioviValue) {
 		if (gioviValue instanceof GioviTuple tuple) {
 			this.value = tuple.unbox();
@@ -86,6 +61,35 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
+	@Override
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		if (!(right instanceof GioviType<?> type)) return super.as(right);
+		var thisType = this.getGioviType();
+		if (!thisType.canUpcast(type)) {
+			return super.as(type);
+		}
+		return switch (type) {
+			case GioviTypeTuple otherType -> {
+				var castedTuple = otherType.spawn();
+				if (castedTuple.unbox() instanceof TupleNamed named
+					&& this.value instanceof TupleNamed thisTuple) {
+					thisTuple.forEach((identifier, fieldValue) -> named
+						.getField(identifier)
+						.box(fieldValue.copy()));
+				} else {
+					for (int i = 0; i < this.value.getFieldsCount(); i++) {
+						castedTuple.unbox().getField(i).box(this.value.getField(i).copy());
+					}
+				}
+				yield castedTuple;
+			}
+			default -> super.as(type);
+		};
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override
@@ -117,7 +121,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 						if (!thisFieldType.canUpcast(otherFieldType)) {
 							yield new GioviBool(false);
 						}
-						if (!thisField.equal(otherField.castTo(thisFieldType)).asNativeBool()) {
+						if (!thisField.equal(otherField.as(thisFieldType)).asNativeBool()) {
 							yield new GioviBool(false);
 						}
 					}

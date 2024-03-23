@@ -92,7 +92,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviNatural(new Natural(69))
-					.castTo(GioviTypes.of(GioviNatural.class))
+					.as(GioviTypes.of(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -101,7 +101,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviNatural(new Natural(69))
-					.castTo(GioviTypes.of(GioviInt.class))
+					.as(GioviTypes.of(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -110,7 +110,7 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviNatural(new Natural(69))
-					.castTo(GioviTypes.of(GioviReal.class))
+					.as(GioviTypes.of(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
@@ -123,7 +123,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviInt(69)
-					.castTo(GioviTypes.of(GioviNatural.class))
+					.as(GioviTypes.of(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -132,7 +132,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviInt(69)
-					.castTo(GioviTypes.of(GioviInt.class))
+					.as(GioviTypes.of(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -141,7 +141,7 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviInt(69)
-					.castTo(GioviTypes.of(GioviReal.class))
+					.as(GioviTypes.of(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
@@ -154,7 +154,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviReal(69d)
-					.castTo(GioviTypes.of(GioviNatural.class))
+					.as(GioviTypes.of(GioviNatural.class))
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -163,7 +163,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviReal(69d)
-					.castTo(GioviTypes.of(GioviInt.class))
+					.as(GioviTypes.of(GioviInt.class))
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -172,7 +172,7 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviReal(69d)
-					.castTo(GioviTypes.of(GioviReal.class))
+					.as(GioviTypes.of(GioviReal.class))
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
@@ -185,7 +185,7 @@ public class TestGioviType {
 			void toText() {
 				var expected = new GioviText("hello world");
 				var actual = new GioviText("hello world")
-					.castTo(GioviTypes.of(GioviText.class))
+					.as(GioviTypes.of(GioviText.class))
 					.asGioviText();
 				assertEquals(expected, actual);
 			}
@@ -199,7 +199,7 @@ public class TestGioviType {
 			void toBool() {
 				var expected = new GioviBool(true);
 				var actual = new GioviBool(true)
-					.castTo(GioviTypes.of(GioviBool.class))
+					.as(GioviTypes.of(GioviBool.class))
 					.asGioviBool();
 				assertEquals(expected, actual);
 			}
