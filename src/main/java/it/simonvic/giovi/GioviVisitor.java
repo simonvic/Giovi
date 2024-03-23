@@ -14,7 +14,7 @@ import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.lang.values.natives.Tuple;
 import it.simonvic.giovi.lang.values.natives.TupleNamed;
 import it.simonvic.giovi.util.GioviTypes;
-import it.simonvic.giovi.util.OperationEvaluator;
+import it.simonvic.giovi.util.VisitorUtils;
 import it.simonvic.giovi.util.TextProcessor;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
@@ -362,7 +362,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
-		OperationEvaluator.redirection(
+		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
 			visit(ctx.identifier()));
@@ -377,7 +377,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
-		OperationEvaluator.redirection(
+		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
 			visit(ctx.expression()));
@@ -400,7 +400,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
 		RedirectionToIdentifierRTLContext ctx) {
-		OperationEvaluator.redirection(
+		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperatorRTL().getText(),
 			visit(ctx.identifier()));
@@ -410,7 +410,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToExpressionRTL(
 		RedirectionToExpressionRTLContext ctx) {
-		OperationEvaluator.redirection(
+		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperatorRTL().getText(),
 			visit(ctx.expression()));
@@ -420,7 +420,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToPrimitiveDestination(
 		RedirectionToPrimitiveDestinationContext ctx) {
-		OperationEvaluator.redirectionToPrimitive(
+		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperator().getText(),
 			ctx.primitiveDestination().getText());
@@ -430,7 +430,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToPrimitiveDestinationRTL(
 		RedirectionToPrimitiveDestinationRTLContext ctx) {
-		OperationEvaluator.redirectionToPrimitive(
+		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			ctx.redirectionOperatorRTL().getText(),
 			ctx.primitiveDestination().getText());
@@ -446,14 +446,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionPrefixed(ExpressionPrefixedContext ctx) {
-		return OperationEvaluator.prefixed(
+		return VisitorUtils.prefixed(
 			ctx.prefix.getText(),
 			visit(ctx.expression()));
 	}
 
 	@Override
 	public GioviParserVisitResult visitExpressionAdditive(ExpressionAdditiveContext ctx) {
-		return OperationEvaluator.additive(
+		return VisitorUtils.additive(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			visit(ctx.expression(1)));
@@ -462,7 +462,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitExpressionMultiplicative(
 		ExpressionMultiplicativeContext ctx) {
-		return OperationEvaluator.multiplicative(
+		return VisitorUtils.multiplicative(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			visit(ctx.expression(1)));
@@ -494,7 +494,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionRelational(ExpressionRelationalContext ctx) {
-		return OperationEvaluator.relational(
+		return VisitorUtils.relational(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			visit(ctx.expression(1)));
@@ -507,7 +507,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionBool(ExpressionBoolContext ctx) {
-		return OperationEvaluator.bool(
+		return VisitorUtils.bool(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			() -> visit(ctx.expression(1)));
@@ -515,7 +515,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionEquality(ExpressionEqualityContext ctx) {
-		return OperationEvaluator.equality(
+		return VisitorUtils.equality(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			visit(ctx.expression(1)));
@@ -523,7 +523,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionContainment(ExpressionContainmentContext ctx) {
-		return OperationEvaluator.containment(
+		return VisitorUtils.containment(
 			visit(ctx.expression(0)),
 			ctx.bop.getText(),
 			visit(ctx.expression(1)));

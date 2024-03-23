@@ -6,7 +6,7 @@ import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.values.GioviBool;
-import it.simonvic.giovi.util.OperationEvaluator;
+import it.simonvic.giovi.util.VisitorUtils;
 
 public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
@@ -45,7 +45,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	@Override
 	public GioviParserVisitResult visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
-		return OperationEvaluator.relational(
+		return VisitorUtils.relational(
 			subject,
 			ctx.op.getText(),
 			gioviVisitor.visit(ctx.expression()));
@@ -53,7 +53,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	@Override
 	public GioviParserVisitResult visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
-		return OperationEvaluator.equality(
+		return VisitorUtils.equality(
 			subject,
 			ctx.op.getText(),
 			gioviVisitor.visit(ctx.expression()));
@@ -61,7 +61,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	@Override
 	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
-		return OperationEvaluator.bool(
+		return VisitorUtils.bool(
 			visit(ctx.caseMatch(0)),
 			ctx.bop.getText(),
 			() -> visit(ctx.caseMatch(1)));
@@ -69,7 +69,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	@Override
 	public GioviParserVisitResult visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
-		return OperationEvaluator.containment(
+		return VisitorUtils.containment(
 			subject,
 			ctx.op.getText(),
 			gioviVisitor.visit(ctx.expression()));
@@ -77,7 +77,7 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	@Override
 	public GioviParserVisitResult visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
-		return OperationEvaluator.bool(
+		return VisitorUtils.bool(
 			subject,
 			ctx.op.getText(),
 			() -> gioviVisitor.visit(ctx.expression()));

@@ -8,7 +8,7 @@ import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.values.GioviBool;
 
-public class OperationEvaluator {
+public class VisitorUtils {
 
 	public static GioviParserVisitResult prefixed(String prefix, GioviParserVisitResult value) {
 		return switch (prefix) {
@@ -71,7 +71,7 @@ public class OperationEvaluator {
 				}
 			}
 		}
-		return OperationEvaluator.bool(lhs, bop, rhsVisit.get());
+		return VisitorUtils.bool(lhs, bop, rhsVisit.get());
 	}
 
 

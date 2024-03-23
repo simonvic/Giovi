@@ -48,6 +48,8 @@ public interface GioviParserVisitResult {
 	default GioviParserVisitResult contains(GioviParserVisitResult right) { throw new OperatorNotSupported("=~"); }
 	default GioviParserVisitResult isContained(GioviParserVisitResult right) { return right.contains(this); }
 
+	// TODO: not contain
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported("@"+right); }
 	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(". (dot)"); }

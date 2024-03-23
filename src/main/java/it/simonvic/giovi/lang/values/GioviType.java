@@ -30,6 +30,7 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 		return new GioviTypeType();
 	}
 
+	// TODO: rename to canWiden
 	public abstract boolean canUpcast(GioviType<?> to);
 
 	public abstract GioviValue<?> spawn();

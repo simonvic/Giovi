@@ -145,6 +145,8 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return this;
 	}
 
+	// TODO: remove this crap and use concat/intersaction operator
+
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {

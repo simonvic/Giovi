@@ -214,6 +214,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		return this;
 	}
 
+	// TODO: remove this crap and use union/intersaction operator
+
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
