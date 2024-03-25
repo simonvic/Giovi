@@ -5,7 +5,6 @@ import java.util.List;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Range;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
@@ -221,12 +220,12 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 					index = index >= 0 ? index : value.size() + index;
 					yield value.get(index);
 				}
-				default -> throw new GioviException("Invalid access key: " + right);
+				default -> super.access(right);
 			};
-			case AccessKey accessKey -> switch (accessKey.text()) {
-				case "%" -> new GioviInt(unbox().size());
-				case "@" -> Range.of(0, unbox().size() - 1, 1);
-				default -> throw new GioviException("Invalid access key: " + accessKey);
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(unbox().size());
+				case KEYS -> Range.of(0, unbox().size() - 1, 1);
+				case VALUES -> super.access(right);
 			};
 			case Range<?> range -> {
 				if (range.getStart() instanceof Integer start
@@ -238,7 +237,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				}
 				yield super.access(right);
 			}
-			default -> throw new GioviException("Invalid access key: " + right);
+			default -> super.access(right);
 		};
 	}
 

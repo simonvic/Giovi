@@ -299,11 +299,10 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(gioviValue);
-			case AccessKey accessKey -> switch (accessKey.text()) {
-				case "%" -> new GioviInt(unbox().size());
-				case "@" -> new GioviList(keyType, unbox().keySet().stream().toList());
-				case "*" -> new GioviList(elementType, unbox().values().stream().toList());
-				default -> throw new GioviException("Invalid access key: " + accessKey);
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(unbox().size());
+				case KEYS -> new GioviList(keyType, unbox().keySet().stream().toList());
+				case VALUES -> new GioviList(elementType, unbox().values().stream().toList());
 			};
 			default -> throw new GioviException("Invalid access key: " + right);
 		};

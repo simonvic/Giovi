@@ -203,13 +203,12 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey.text()) {
-				case "%" -> new GioviInt(value.length());
-				case "@" -> Range.of(0, value.length() - 1, 1);
-				case "*" -> new GioviList(
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(value.length());
+				case KEYS -> Range.of(0, value.length() - 1, 1);
+				case VALUES -> new GioviList(
 					GioviTypes.of(GioviText.class),
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
-				default -> throw new GioviException("Invalid access key: " + accessKey);
 			};
 			case Range<?> range -> {
 				if (range.getStart() instanceof Integer start

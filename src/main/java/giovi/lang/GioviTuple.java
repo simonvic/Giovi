@@ -3,10 +3,7 @@ package giovi.lang;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import giovi.AccessKey;
-import giovi.GioviParserVisitResult;
-import giovi.Tuple;
-import giovi.TupleNamed;
+import giovi.*;
 import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.util.GioviLists;
 
@@ -145,8 +142,8 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> switch (value) {
-				case TupleNamed named -> named.getField(r.text());
+			case FieldKey(var identifier) -> switch (value) {
+				case TupleNamed named -> named.getField(identifier);
 				default -> super.dot(right);
 			};
 			default -> super.dot(right);
@@ -156,14 +153,13 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> switch (r.text()) {
-				case "%" -> new GioviInt(value.getFieldsCount());
-				case "@" -> Range.of(0, value.getFieldsCount(), 1);
-				case "*" -> switch (value) {
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(value.getFieldsCount());
+				case KEYS -> Range.of(0, value.getFieldsCount(), 1);
+				case VALUES -> switch (value) {
 					case TupleNamed named -> GioviLists.of(named.getFieldNames());
 					default -> super.access(right);
 				};
-				default -> super.access(right);
 			};
 			case Range<?> range -> {
 				if (range.getStart() instanceof Integer && range.getEnd() instanceof Integer) {

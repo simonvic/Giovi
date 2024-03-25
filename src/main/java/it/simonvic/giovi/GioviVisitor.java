@@ -5,10 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
 
-import giovi.AccessKey;
-import giovi.GioviParserVisitResult;
-import giovi.Tuple;
-import giovi.TupleNamed;
+import giovi.*;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
@@ -477,7 +474,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
 		if (ctx.anyIdentifier() != null) {
-			return lhs.dot(new AccessKey(ctx.anyIdentifier().getText()));
+			return lhs.dot(new FieldKey(ctx.anyIdentifier().getText()));
 		}
 		String functionIdentifier = ctx.functionCall().identifier().getText();
 		try {
@@ -550,7 +547,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitAccessKeySpecial(AccessKeySpecialContext ctx) {
-		return new AccessKey(ctx.key.getText());
+		return AccessKey.of(ctx.key.getText());
 	}
 
 	@Override

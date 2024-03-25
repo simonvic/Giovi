@@ -154,7 +154,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> value.getField(r.text());
+			case FieldKey(var identifier) -> value.getField(identifier);
 			default -> super.dot(right);
 		};
 	}
@@ -162,11 +162,10 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey r -> switch (r.text()) {
-				case "%" -> new GioviInt(value.getFieldsCount());
-				case "*" -> GioviLists.of(value.getFieldNames());
-				case "@" -> Range.of(0, value.getFieldsCount(), 1);
-				default -> super.access(right);
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(value.getFieldsCount());
+				case KEYS -> Range.of(0, value.getFieldsCount(), 1);
+				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range<?> range -> {
 				if (range.getStart() instanceof Integer start
