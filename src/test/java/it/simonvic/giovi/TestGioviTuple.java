@@ -14,9 +14,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.Range;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.util.GioviTuples;
 
 public class TestGioviTuple {

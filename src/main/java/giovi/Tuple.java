@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.lang.Range;
 
 public sealed class Tuple permits TupleNamed {
 

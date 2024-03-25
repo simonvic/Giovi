@@ -5,7 +5,7 @@ import java.util.List;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.lang.Range;
+import giovi.Range;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 

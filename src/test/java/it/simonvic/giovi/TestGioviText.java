@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import it.simonvic.giovi.lang.Range;
+import giovi.Range;
 import it.simonvic.giovi.util.GioviLists;
 
 public class TestGioviText {

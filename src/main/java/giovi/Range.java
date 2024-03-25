@@ -1,11 +1,9 @@
-package it.simonvic.giovi.lang;
+package giovi;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import giovi.GioviParserVisitResult;
-import giovi.Natural;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;

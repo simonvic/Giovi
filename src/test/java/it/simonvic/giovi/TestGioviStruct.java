@@ -15,11 +15,11 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.Range;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviFieldDefinition;
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.GioviTypes;

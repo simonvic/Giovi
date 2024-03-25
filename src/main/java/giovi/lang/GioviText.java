@@ -5,8 +5,8 @@ import java.util.stream.Stream;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
+import giovi.Range;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.Range;
 import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviText extends GioviPrimitive<String> {
