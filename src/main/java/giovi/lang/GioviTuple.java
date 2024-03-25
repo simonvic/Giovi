@@ -161,12 +161,8 @@ public final class GioviTuple extends GioviValue<Tuple> {
 					default -> super.access(right);
 				};
 			};
-			case Range<?> range -> {
-				if (range.getStart() instanceof Integer && range.getEnd() instanceof Integer) {
-					yield new GioviTuple(this.value.copy((Range<Integer>) range)); // TODO: RangeInteger
-				}
-				yield super.access(right);
-			}
+			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
+				this.value.copy(Range.of(start, end, step)));
 			case GioviInt i -> {
 				int index = i.unbox();
 				index = index >= 0 ? index : value.getFieldsCount() + index;

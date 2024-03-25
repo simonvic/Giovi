@@ -10,38 +10,14 @@ import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
-public class Range<T> extends GioviObject {
+public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterationStrategy)
+	implements GioviParserVisitResult {
 
 	@FunctionalInterface
 	public interface IterationStrategy<V> {
 
-		void iterate(Range<V> sequence, Consumer<V> callback);
+		void iterate(Range<V> range, Consumer<V> callback);
 
-	}
-
-	private final T start;
-	private final T end;
-	private final Number step;
-	private final IterationStrategy<T> iterationStrategy;
-	private List<T> expansion;
-
-	public Range(T start, T end, Number step, IterationStrategy<T> iterationStrategy) {
-		this.start = start;
-		this.end = end;
-		this.step = step;
-		this.iterationStrategy = iterationStrategy;
-	}
-
-	public T getStart() {
-		return start;
-	}
-
-	public T getEnd() {
-		return end;
-	}
-
-	public Number getStep() {
-		return step;
 	}
 
 	public void iterate(Consumer<T> callback) {
@@ -49,10 +25,8 @@ public class Range<T> extends GioviObject {
 	}
 
 	public List<T> expand() {
-		if (expansion == null) {
-			expansion = new ArrayList<>();
-			iterate(expansion::add);
-		}
+		List<T> expansion = new ArrayList<>();
+		iterate(expansion::add);
 		return expansion;
 	}
 
@@ -62,7 +36,8 @@ public class Range<T> extends GioviObject {
 	}
 
 	public GioviList expandAsGioviList() {
-		var gioviList = new ArrayList<GioviValue<?>>(expand().stream().map(GioviValue::of).toList());
+		var gioviList = new ArrayList<GioviValue<?>>(
+			expand().stream().map(GioviValue::of).toList());
 		return new GioviList(GioviTypes.inferGioviType(gioviList), gioviList);
 	}
 
@@ -93,7 +68,7 @@ public class Range<T> extends GioviObject {
 			return Range.of(s.unbox(), e.unbox(), stepInt);
 		}
 
-		throw new GioviException("Invalid sequence: %s .. %s .. %s".formatted(start, end, step));
+		throw new GioviException("Invalid range: %s .. %s .. %s".formatted(start, end, step));
 	}
 
 	public static Range<Integer> of(int start, int end, int step) {
@@ -112,10 +87,10 @@ public class Range<T> extends GioviObject {
 		return new Range<>(start, end, step, Range::iterateText);
 	}
 
-	public static void iterateReal(Range<Double> sequence, Consumer<Double> callback) {
-		double start = sequence.getStart();
-		double end = sequence.getEnd();
-		double step = sequence.getStep().doubleValue();
+	public static void iterateReal(Range<Double> range, Consumer<Double> callback) {
+		double start = range.start();
+		double end = range.end();
+		double step = range.step().doubleValue();
 		if (start <= end) {
 			for (double i = start; i <= end; i += step) {
 				callback.accept(i);
@@ -127,10 +102,10 @@ public class Range<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateInt(Range<Integer> sequence, Consumer<Integer> callback) {
-		int start = sequence.getStart();
-		int end = sequence.getEnd();
-		int step = sequence.getStep().intValue();
+	public static void iterateInt(Range<Integer> range, Consumer<Integer> callback) {
+		int start = range.start();
+		int end = range.end();
+		int step = range.step().intValue();
 		if (start <= end) {
 			for (int i = start; i <= end; i += step) {
 				callback.accept(i);
@@ -142,10 +117,10 @@ public class Range<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateNatural(Range<Natural> sequence, Consumer<Natural> callback) {
-		int start = sequence.getStart().intValue();
-		int end = sequence.getEnd().intValue();
-		int step = sequence.getStep().intValue();
+	public static void iterateNatural(Range<Natural> range, Consumer<Natural> callback) {
+		int start = range.start().intValue();
+		int end = range.end().intValue();
+		int step = range.step().intValue();
 		if (start <= end) {
 			for (int i = start; i <= end; i += step) {
 				callback.accept(new Natural(i));
@@ -157,16 +132,16 @@ public class Range<T> extends GioviObject {
 		}
 	}
 
-	public static void iterateText(Range<String> sequence, Consumer<String> callback) {
-		String start = sequence.getStart();
-		String end = sequence.getEnd();
-		int step = sequence.getStep().intValue();
+	public static void iterateText(Range<String> range, Consumer<String> callback) {
+		String start = range.start();
+		String end = range.end();
+		int step = range.step().intValue();
 		if (start.length() != 1 || end.length() != 1) {
-			throw new GioviException("sequence is only applicable to one characters");
+			throw new GioviException("A Range is only applicable to one characters");
 		}
 		if (!start.matches("[a-zA-Z]") || !end.matches("[a-zA-Z]")) {
 			throw new GioviException(
-				"sequence is not applicable to given characters: start=" + start + " end=" + end);
+				"A Range is not applicable to given characters: start=" + start + " end=" + end);
 		}
 
 		char startChar = start.toCharArray()[0];

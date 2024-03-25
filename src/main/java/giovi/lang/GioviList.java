@@ -227,16 +227,14 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				case KEYS -> Range.of(0, unbox().size() - 1, 1);
 				case VALUES -> super.access(right);
 			};
-			case Range<?> range -> {
-				if (range.getStart() instanceof Integer start
-					&& range.getEnd() instanceof Integer end) {
+			case Range<?> range -> switch (range) {
+				case Range(Integer start, Integer end, var step, var strategy) -> {
 					var gioviList = new GioviList(this.entryType.copy());
-					var list = gioviList.value;
-					range.iterate(index -> list.add(this.value.get((int) index).copy()));
+					range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 					yield gioviList;
 				}
-				yield super.access(right);
-			}
+				default -> super.access(right);
+			};
 			default -> super.access(right);
 		};
 	}
