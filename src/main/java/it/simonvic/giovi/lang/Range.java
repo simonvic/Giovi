@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import giovi.GioviParserVisitResult;
+import giovi.Natural;
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.values.*;
-import it.simonvic.giovi.lang.values.natives.Natural;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class Range<T> extends GioviObject {

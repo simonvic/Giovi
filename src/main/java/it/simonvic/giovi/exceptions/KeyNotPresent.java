@@ -1,7 +1,7 @@
 package it.simonvic.giovi.exceptions;
 
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviValue;
+import giovi.lang.GioviMap;
+import giovi.lang.GioviValue;
 
 public class KeyNotPresent extends GioviException {
 

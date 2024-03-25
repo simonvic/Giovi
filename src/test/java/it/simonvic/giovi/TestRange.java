@@ -10,8 +10,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.lang.GioviList;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.values.GioviList;
 import it.simonvic.giovi.util.GioviLists;
 
 public class TestRange {

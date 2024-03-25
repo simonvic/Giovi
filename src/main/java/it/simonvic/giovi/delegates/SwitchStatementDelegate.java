@@ -2,11 +2,11 @@ package it.simonvic.giovi.delegates;
 
 import java.util.Optional;
 
+import giovi.GioviParserVisitResult;
+import giovi.lang.GioviBool;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.lang.GioviParserVisitResult;
-import it.simonvic.giovi.lang.values.GioviBool;
 import it.simonvic.giovi.util.VisitorUtils;
 
 public class SwitchStatementDelegate extends GioviVisitorDelegate {

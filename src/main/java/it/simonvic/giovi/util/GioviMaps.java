@@ -1,10 +1,10 @@
 package it.simonvic.giovi.util;
 
-import it.simonvic.giovi.lang.values.GioviMap;
-import it.simonvic.giovi.lang.values.GioviValue;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import giovi.lang.GioviMap;
+import giovi.lang.GioviValue;
 
 public class GioviMaps {
 

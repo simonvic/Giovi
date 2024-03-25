@@ -1,7 +1,7 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.lang.values.GioviType;
-import it.simonvic.giovi.lang.values.GioviValue;
+import giovi.lang.GioviType;
+import giovi.lang.GioviValue;
 
 public record GioviFieldDefinition(
 	String identifier,

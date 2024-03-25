@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import giovi.lang.GioviInt;
+import giovi.lang.GioviReal;
+import giovi.lang.GioviText;
+import giovi.lang.GioviTypeList;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviReal;
-import it.simonvic.giovi.lang.values.GioviText;
-import it.simonvic.giovi.lang.values.GioviTypeList;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviTypes;

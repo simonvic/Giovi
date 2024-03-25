@@ -1,6 +1,6 @@
 package it.simonvic.giovi.exceptions;
 
-import it.simonvic.giovi.lang.values.GioviType;
+import giovi.lang.GioviType;
 
 public class IncompatibleTypes extends GioviException {
 	public IncompatibleTypes(GioviType<?> type, GioviType<?> newType) {

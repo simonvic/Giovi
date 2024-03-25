@@ -1,6 +1,6 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.lang.values.GioviValue;
+import giovi.lang.GioviValue;
 
 public class FunctionScope extends Scope {
 

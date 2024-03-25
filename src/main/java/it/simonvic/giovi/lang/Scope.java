@@ -3,8 +3,8 @@ package it.simonvic.giovi.lang;
 import java.util.HashMap;
 import java.util.Map;
 
+import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.*;
-import it.simonvic.giovi.lang.values.GioviValue;
 
 public class Scope {
 

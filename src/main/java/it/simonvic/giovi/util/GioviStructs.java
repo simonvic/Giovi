@@ -2,9 +2,9 @@ package it.simonvic.giovi.util;
 
 import java.util.LinkedHashMap;
 
-import it.simonvic.giovi.lang.values.GioviStruct;
-import it.simonvic.giovi.lang.values.GioviValue;
-import it.simonvic.giovi.lang.values.natives.Struct;
+import giovi.Struct;
+import giovi.lang.GioviStruct;
+import giovi.lang.GioviValue;
 
 public class GioviStructs {
 

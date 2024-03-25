@@ -3,9 +3,10 @@ package it.simonvic.giovi.lang;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import it.simonvic.giovi.lang.values.GioviStruct;
-import it.simonvic.giovi.lang.values.GioviValue;
-import it.simonvic.giovi.lang.values.natives.Struct;
+import giovi.GioviParserVisitResult;
+import giovi.Struct;
+import giovi.lang.GioviStruct;
+import giovi.lang.GioviValue;
 
 public record GioviStructDefinition(
 	String typename,

@@ -3,12 +3,12 @@ package it.simonvic.giovi;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import giovi.GioviParserVisitResult;
+import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.GioviFunctionSignature;
-import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.GioviStructDefinition;
-import it.simonvic.giovi.lang.values.GioviValue;
 
 public class GioviVisitorUtils {
 

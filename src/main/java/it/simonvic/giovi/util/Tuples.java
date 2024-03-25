@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import it.simonvic.giovi.lang.values.GioviValue;
-import it.simonvic.giovi.lang.values.natives.Tuple;
-import it.simonvic.giovi.lang.values.natives.TupleNamed;
+import giovi.Tuple;
+import giovi.TupleNamed;
+import giovi.lang.GioviValue;
 
 public class Tuples {
 

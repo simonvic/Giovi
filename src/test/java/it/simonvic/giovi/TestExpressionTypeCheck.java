@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import giovi.lang.*;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestExpressionTypeCheck {

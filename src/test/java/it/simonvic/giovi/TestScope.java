@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
+import giovi.lang.GioviInt;
+import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDeclared;
 import it.simonvic.giovi.exceptions.VariableNotDeclared;
 import it.simonvic.giovi.lang.LoopScope;
 import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.values.GioviInt;
-import it.simonvic.giovi.lang.values.GioviValue;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)

@@ -2,12 +2,12 @@ package it.simonvic.giovi.util;
 
 import java.util.function.Supplier;
 
+import giovi.GioviParserVisitResult;
+import giovi.lang.GioviBool;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
-import it.simonvic.giovi.lang.GioviParserVisitResult;
-import it.simonvic.giovi.lang.values.GioviBool;
 
 public class VisitorUtils {
 

@@ -2,7 +2,7 @@ package it.simonvic.giovi.util;
 
 import java.util.List;
 
-import it.simonvic.giovi.lang.values.GioviTuple;
+import giovi.lang.GioviTuple;
 
 public class GioviTuples {
 

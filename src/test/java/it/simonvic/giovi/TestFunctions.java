@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.GioviFunctionSignature;
 import it.simonvic.giovi.lang.GioviFunctionSignatureParameter;
-import it.simonvic.giovi.lang.values.*;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestFunctions {

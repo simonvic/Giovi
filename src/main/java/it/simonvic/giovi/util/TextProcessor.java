@@ -8,12 +8,12 @@ import java.util.regex.Pattern;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import giovi.GioviParserVisitResult;
+import giovi.lang.GioviText;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviParserVisitResult;
 import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.values.GioviText;
 
 public class TextProcessor {
 

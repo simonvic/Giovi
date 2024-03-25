@@ -1,7 +1,8 @@
 package it.simonvic.giovi.lang;
 
-import it.simonvic.giovi.lang.values.GioviType;
-import it.simonvic.giovi.lang.values.GioviValue;
+import giovi.GioviParserVisitResult;
+import giovi.lang.GioviType;
+import giovi.lang.GioviValue;
 
 public record GioviFunctionSignatureParameter(
 	String identifier,
