@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang;
 import java.util.HashMap;
 import java.util.Map;
 
+import giovi.Function;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.*;
 
@@ -139,24 +140,23 @@ public class Scope {
 	//////////////////////////////////////////////////////////////////////////////////////////////// Functions
 
 	// TODO: when implementing overloading, use a Set
-	private final Map<String, GioviFunctionSignature> functionSignatures = new HashMap<>();
+	private final Map<String, Function> functions = new HashMap<>();
 
-	public void declare(GioviFunctionSignature signature) {
-		if (functionSignatures.containsKey(signature.identifier())) {
-			throw new FunctionAlreadyDeclared(signature);
+	public void declare(Function function) {
+		if (functions.containsKey(function.signature().identifier())) {
+			throw new FunctionAlreadyDeclared(function.signature());
 		}
-		functionSignatures.put(signature.identifier(), signature);
+		functions.put(function.signature().identifier(), function);
 	}
 
-	public GioviFunctionSignature getFunctionSignature(String identifier)
-		throws FunctionNotDeclared {
-		if (!functionSignatures.containsKey(identifier)) {
+	public Function getFunction(String identifier) throws FunctionNotDeclared {
+		if (!functions.containsKey(identifier)) {
 			if (parent == null) {
 				throw new FunctionNotDeclared(identifier);
 			}
-			return parent.getFunctionSignature(identifier);
+			return parent.getFunction(identifier);
 		}
-		return functionSignatures.get(identifier);
+		return functions.get(identifier);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs

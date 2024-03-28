@@ -2,7 +2,8 @@ package giovi.lang;
 
 public abstract sealed class GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<T>>
-	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeStruct {
+	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeStruct,
+	GioviTypeFunction {
 
 	public GioviType(Class<T> value, Class<T> defaultValue) {
 		super(value, defaultValue);

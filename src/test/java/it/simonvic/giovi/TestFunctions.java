@@ -13,33 +13,33 @@ import org.junit.jupiter.api.Test;
 
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviFunctionSignature;
-import it.simonvic.giovi.lang.GioviFunctionSignatureParameter;
+import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestFunctions {
 
-	private static GioviFunctionSignature signatureOf(
+	private static FunctionSignature signatureOf(
 		String identifier,
-		GioviFunctionSignatureParameter... parameters) {
-		var params = new LinkedHashMap<String, GioviFunctionSignatureParameter>();
+		FunctionSignatureParam... parameters) {
+		var params = new LinkedHashMap<String, FunctionSignatureParam>();
 		for (var param : parameters) {
 			params.put(param.identifier(), param);
 		}
-		return new GioviFunctionSignature(identifier, params, null);
+		return new FunctionSignature(identifier, params);
 	}
 
-	private static GioviFunctionSignatureParameter paramOf(
+	private static FunctionSignatureParam paramOf(
 		String identifier,
 		Class<? extends GioviValue<?>> type,
 		GioviValue<?> defaultValue) {
-		return new GioviFunctionSignatureParameter(identifier, GioviTypes.of(type), defaultValue);
+		return new FunctionSignatureParam(identifier, GioviTypes.of(type), defaultValue);
 	}
 
-	private static GioviFunctionSignatureParameter paramOf(
+	private static FunctionSignatureParam paramOf(
 		String identifier,
 		Class<? extends GioviValue<?>> type) {
-		return new GioviFunctionSignatureParameter(identifier, GioviTypes.of(type));
+		return new FunctionSignatureParam(identifier, GioviTypes.of(type));
 	}
 
 	@Nested

@@ -4,22 +4,33 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 
-public record GioviFunctionSignatureParameter(
+public record FunctionSignatureParam(
 	String identifier,
 	GioviType<?> type,
 	GioviValue<?> defaultValue,
 	boolean isOptional)
 	implements GioviParserVisitResult {
 
-	public GioviFunctionSignatureParameter(
+	public FunctionSignatureParam(
 		String identifier,
 		GioviType<?> type,
 		GioviValue<?> defaultValue) {
 		this(identifier, type, defaultValue, true);
 	}
 
-	public GioviFunctionSignatureParameter(String identifier, GioviType<?> type) {
+	public FunctionSignatureParam(String identifier, GioviType<?> type) {
 		this(identifier, type, type.spawn(), false);
+	}
+
+
+	@Override
+	public String toString() {
+		return String.format("%s %s%s", identifier, type, isOptional ? "?" + defaultValue : "");
+	}
+
+	public FunctionSignatureParam copy() {
+		return new FunctionSignatureParam(
+			identifier, type.copy(), defaultValue.copy(), isOptional);
 	}
 
 }

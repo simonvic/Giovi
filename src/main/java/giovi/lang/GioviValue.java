@@ -12,7 +12,7 @@ import it.simonvic.giovi.util.GioviMaps;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviStruct {
+	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviStruct, GioviFunction {
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {

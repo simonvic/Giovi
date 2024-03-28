@@ -1,9 +1,9 @@
 package it.simonvic.giovi.exceptions;
 
-import it.simonvic.giovi.lang.GioviFunctionSignature;
+import it.simonvic.giovi.lang.FunctionSignature;
 
 public class FunctionAlreadyDeclared extends GioviException {
-	public FunctionAlreadyDeclared(GioviFunctionSignature signature) {
+	public FunctionAlreadyDeclared(FunctionSignature signature) {
 		super("Function already declared with signature: " + signature);
 	}
 }

@@ -72,6 +72,7 @@ public interface GioviParserVisitResult {
 	default GioviReal asGioviReal() { return asGioviNumber().realValue(); }
 	default GioviBool asGioviBool() { return (GioviBool) this; }
 	default GioviText asGioviText() { return (GioviText) this; }
+	default GioviFunction asGioviFunction() { return (GioviFunction) this; }
 	default Number asNativeNumber() { return asGioviNumber().unbox(); }
 	default Natural asNativeNatural() { return asGioviNatural().unbox(); }
 	default Integer asNativeInt() { return asGioviInt().unbox(); }
@@ -80,6 +81,7 @@ public interface GioviParserVisitResult {
 	default String asNativeText() { return asGioviText().unbox(); }
 	default List<?> asNativeList() { return asGioviList().unbox(); }
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().unbox(); }
+	default Function asNativeFunction() { return (Function) this; }
 
 	// @formatter:on
 

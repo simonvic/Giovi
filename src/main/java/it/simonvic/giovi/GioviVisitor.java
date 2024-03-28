@@ -350,6 +350,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return variable;
 	}
 
+	private GioviValue<?> spawnType(
+		TypeContext typeCtx,
+		DefaultDefinitionContext defaultDefinitionCtx) {
+		var type = visit(typeCtx).asGioviType();
+		var value = type.spawn();
+		if (defaultDefinitionCtx != null) {
+			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
+			value.setDefaultValue(defaultValue);
+			value.boxDefault();
+		}
+		return value;
+	}
+
 	@Override
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
 		var constant = visit(ctx.expression()).asGioviValue();
@@ -442,6 +455,40 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitExpressionRef(ExpressionRefContext ctx) {
+		return new GioviFunction(visit(ctx.referenceable()).asNativeFunction());
+	}
+
+	@Override
+	public GioviParserVisitResult visitReferenceable(ReferenceableContext ctx) {
+		String identifier;
+		if (ctx.identifier() != null) {
+			identifier = ctx.identifier().getText();
+			try {
+				return getCurrentScope().getFunction(identifier);
+			} catch (FunctionNotDeclared e) {
+				throw new GioviException("Can't reference non-existing function " + identifier);
+			}
+		}
+
+		FunctionSignature signature;
+		var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
+		if (ctx.formalParameters() != null) {
+			for (var formalParamCtx : ctx.formalParameters().formalParameter()) {
+				var formalParameter = (FunctionSignatureParam) visit(formalParamCtx);
+				parameters.put(formalParameter.identifier(), formalParameter);
+			}
+		}
+
+		GioviType<?> returnType = ctx.returnType != null
+			? visit(ctx.returnType).asGioviType()
+			: new GioviTypeVoid();
+
+		signature = new FunctionSignature("", parameters, returnType);
+		return new Function(signature, ctx.body);
+	}
+
+	@Override
 	public GioviParserVisitResult visitExpressionPrefixed(ExpressionPrefixedContext ctx) {
 		return VisitorUtils.prefixed(
 			GioviToken.of(ctx.prefix.getText()),
@@ -476,12 +523,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.anyIdentifier() != null) {
 			return lhs.dot(new FieldKey(ctx.anyIdentifier().getText()));
 		}
-		String functionIdentifier = ctx.functionCall().identifier().getText();
-		try {
-			return lhs.dot(getCurrentScope().getFunctionSignature(functionIdentifier));
-		} catch (FunctionNotDeclared ex) {
-			throw new GioviException("Can't invoke function " + functionIdentifier, ex);
-		}
+		return null;
+		// TODO: struct functions
 	}
 
 	@Override
@@ -623,7 +666,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitFunctionDeclaration(FunctionDeclarationContext ctx) {
-		GioviFunctionSignature signature;
+		FunctionSignature signature;
 
 		String identifier = ctx.identifier().getText();
 
@@ -633,18 +676,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		if (ctx.formalParameters() == null) {
 			signature = ctx.type() == null
-				? new GioviFunctionSignature(identifier, ctx.body)
-				: new GioviFunctionSignature(identifier, returnType, ctx.body);
+				? new FunctionSignature(identifier)
+				: new FunctionSignature(identifier, returnType);
 		} else {
-			var parameters = new LinkedHashMap<String, GioviFunctionSignatureParameter>();
+			var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
 			for (var formalParamCtx : ctx.formalParameters().formalParameter()) {
-				var formalParameter = (GioviFunctionSignatureParameter) visit(formalParamCtx);
+				var formalParameter = (FunctionSignatureParam) visit(formalParamCtx);
 				parameters.put(formalParameter.identifier(), formalParameter);
 			}
-			signature = new GioviFunctionSignature(identifier, ctx.body, returnType, parameters);
+			signature = new FunctionSignature(identifier, parameters, returnType);
 		}
 
-		getCurrentScope().declare(signature);
+		getCurrentScope().declare(new Function(signature, ctx.body));
 		return signature;
 	}
 
@@ -653,51 +696,42 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		String identifier = ctx.identifier().getText();
 		var type = visit(ctx.type()).asGioviType();
 		if (ctx.defaultDefinition() == null) {
-			return new GioviFunctionSignatureParameter(identifier, type);
+			return new FunctionSignatureParam(identifier, type);
 		}
 		var defaultExpression = visit(ctx.defaultDefinition().expression());
 		if (defaultExpression instanceof GioviDefault) { // TODO use GioviPlaceholder (underscore) instead
-			return new GioviFunctionSignatureParameter(identifier, type, type.spawn(), true);
+			return new FunctionSignatureParam(identifier, type, type.spawn(), true);
 		}
 		var defaultValue = defaultExpression.asGioviValue();
 		var defaultValueType = defaultValue.getGioviType();
 		if (defaultValueType.equals(type)) {
-			return new GioviFunctionSignatureParameter(identifier, type, defaultValue);
+			return new FunctionSignatureParam(identifier, type, defaultValue);
 		}
 		if (defaultValueType.canWidenTo(type)) {
-			return new GioviFunctionSignatureParameter(identifier, type,
+			return new FunctionSignatureParam(identifier, type,
 				defaultValue.as(type).asGioviValue());
 		}
 		throw new GioviException("Incompatible default value. Expecting a " + type
 			+ " but instead got " + defaultValueType);
 	}
 
-	private GioviValue<?> spawnType(
-		TypeContext typeCtx,
-		DefaultDefinitionContext defaultDefinitionCtx) {
-
-		var type = visit(typeCtx).asGioviType();
-		var value = type.spawn();
-
-		if (defaultDefinitionCtx != null) {
-			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
-			value.setDefaultValue(defaultValue);
-			value.boxDefault();
-		}
-		return value;
-	}
-
 	@Override
 	public GioviParserVisitResult visitFunctionCall(FunctionCallContext ctx) {
-		GioviFunctionSignature signature;
+		Function function;
+		String identifier = ctx.identifier().getText();
 		try {
-			signature = getCurrentScope().getFunctionSignature(ctx.identifier().getText());
+			function = getCurrentScope().getFunction(identifier);
 		} catch (FunctionNotDeclared e) {
-			throw new GioviException("Can't call " + ctx.identifier().getText(), e);
+			var reference = getCurrentScope().getVariableValue(identifier);
+			if (reference instanceof GioviFunction gioviFunction) {
+				function = gioviFunction.unbox();
+			} else {
+				throw new GioviException("Can't call " + identifier, e);
+			}
 		}
 		enterFunctionScope();
-		setupFunctionParameters(ctx, signature);
-		var returnValue = callFunction(signature);
+		setupFunctionParameters(ctx, function.signature());
+		var returnValue = callFunction(function);
 		exitScope();
 		return returnValue;
 	}
@@ -709,8 +743,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private void setupFunctionParameters(
 		FunctionCallContext ctx,
-		GioviFunctionSignature signature) {
-
+		FunctionSignature signature) {
 		var callParamsCtx = ctx.functionCallParameters();
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
@@ -731,7 +764,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private void setupFunctionParametersIteratively(
 		List<FunctionCallParameterContext> actualParamCtxList,
-		GioviFunctionSignature signature) {
+		FunctionSignature signature) {
 		var formalParamsArray = signature.getParametersList();
 		int formalParamsCount = formalParamsArray.size();
 		int actualParamsCount = actualParamCtxList.size();
@@ -793,7 +826,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private void setupNamedFunctionParameters(
 		List<FunctionCallParameterContext> actualParamCtxList,
-		GioviFunctionSignature signature) {
+		FunctionSignature signature) {
 
 		// cache actual params mapped by their identifiers
 		var actualParams = new LinkedHashMap<String, FunctionCallParameterContext>();
@@ -848,15 +881,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	}
 
-	/** Actually perform function invocation by visiting its body
+	/**
+	 * Actually perform function invocation by visiting its body
 	 * @param func function to invocate
 	 * @return returned value or GioviVoid
 	 */
-	private GioviValue<?> callFunction(GioviFunctionSignature func) {
-		for (StatementContext statement : func.body().statement()) {
+	private GioviValue<?> callFunction(Function func) {
+		for (StatementContext statement : func.bodyCtx().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
-				var returnType = func.returnType();
+				var returnType = func.signature().returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
 				var returnedType = returnedValue.getGioviType();
 				if (returnType.unbox() == GioviVoid.class
@@ -874,7 +908,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					"Wrong return type, expecting " + returnType + " but got " + returnedType);
 			}
 		}
-		if (func.returnType().unbox() != GioviVoid.class) {
+		if (func.signature().returnType().unbox() != GioviVoid.class) {
 			throw new GioviException("Missing return statement in function");
 		}
 		return new GioviVoid();
@@ -1021,6 +1055,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			throw new TypeNotFound(structType);
 		}
 		return getCurrentScope().getDefinitionStruct(structType);
+	}
+
+	@Override
+	public GioviParserVisitResult visitTypeFunctionRef(TypeFunctionRefContext ctx) {
+		return new GioviTypeFunction();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Literals

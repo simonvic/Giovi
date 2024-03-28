@@ -7,7 +7,7 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.GioviFunctionSignature;
+import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 
 public class GioviVisitorUtils {
@@ -57,14 +57,14 @@ public class GioviVisitorUtils {
 		return visitor.visit(parserOf(code).expression());
 	}
 
-	public static GioviFunctionSignature visitFunctionDeclaration(String code) {
+	public static FunctionSignature visitFunctionDeclaration(String code) {
 		return visitFunctionDeclaration(new GioviVisitor(), code);
 	}
 
-	public static GioviFunctionSignature visitFunctionDeclaration(
+	public static FunctionSignature visitFunctionDeclaration(
 		GioviVisitor visitor,
 		String code) {
-		return (GioviFunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
+		return (FunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
 	}
 
 	public static GioviStructDefinition visitStructDefinition(String code) {
