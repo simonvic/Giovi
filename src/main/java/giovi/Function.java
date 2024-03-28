@@ -20,7 +20,7 @@ public record Function(
 
 	@Override
 	public String toString() {
-		String body = bodyCtx != null ? "{" + bodyCtx + "}" : "";
+		String body = bodyCtx != null ? " {" + bodyCtx + "}" : "";
 		return signature + body;
 	}
 

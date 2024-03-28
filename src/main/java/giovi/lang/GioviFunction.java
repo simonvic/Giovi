@@ -10,7 +10,7 @@ public final class GioviFunction extends GioviValue<Function> {
 	}
 
 	public GioviFunction(Function value) {
-		super(value, Function.EMPTY);
+		super(value, new Function(value.signature()));
 	}
 
 	@Override
