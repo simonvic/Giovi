@@ -1,11 +1,15 @@
 package giovi.lang;
 
 import giovi.Function;
+import it.simonvic.giovi.lang.FunctionSignature;
 
 public final class GioviTypeFunction extends GioviType<GioviFunction> {
 
-	public GioviTypeFunction() {
+	private final FunctionSignature signature;
+
+	public GioviTypeFunction(FunctionSignature signature) {
 		super(GioviFunction.class);
+		this.signature = signature;
 	}
 
 	@Override
@@ -15,12 +19,12 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 
 	@Override
 	public GioviValue<?> spawn() {
-		return new GioviFunction(Function.EMPTY);
+		return new GioviFunction(new Function(signature.copy()));
 	}
 
 	@Override
 	public GioviType<GioviFunction> copy() {
-		return new GioviTypeFunction();
+		return new GioviTypeFunction(signature.copy());
 	}
 
 }

@@ -887,6 +887,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @return returned value or GioviVoid
 	 */
 	private GioviValue<?> callFunction(Function func) {
+		if (func.bodyCtx() == null) {
+			if (func.signature().returnType().unbox() != GioviVoid.class) {
+				// returning returnType default value
+				return func.signature().returnType().spawn();
+			}
+			return new GioviVoid();
+		}
 		for (StatementContext statement : func.bodyCtx().statement()) {
 			visit(statement);
 			if (getCurrentScope().shouldReturn()) {
@@ -1059,7 +1066,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTypeFunctionRef(TypeFunctionRefContext ctx) {
-		return new GioviTypeFunction();
+		// TODO: move formal parameters visit to a static method
+		var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
+		if (ctx.formalParameters() != null) {
+			for (var formalParamCtx : ctx.formalParameters().formalParameter()) {
+				var formalParameter = (FunctionSignatureParam) visit(formalParamCtx);
+				parameters.put(formalParameter.identifier(), formalParameter);
+			}
+		}
+
+		GioviType<?> returnType = ctx.returnType != null
+			? visit(ctx.returnType).asGioviType()
+			: new GioviTypeVoid();
+
+		return new GioviTypeFunction(new FunctionSignature("", parameters, returnType));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Literals

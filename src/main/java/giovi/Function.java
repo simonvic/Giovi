@@ -10,6 +10,10 @@ public record Function(
 
 	public static final Function EMPTY = new Function(FunctionSignature.EMPTY, null);
 
+	public Function(FunctionSignature signature) {
+		this(signature, null);
+	}
+
 	public Function copy() {
 		return new Function(signature.copy(), bodyCtx);
 	}

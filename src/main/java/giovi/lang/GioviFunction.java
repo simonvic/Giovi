@@ -15,7 +15,7 @@ public final class GioviFunction extends GioviValue<Function> {
 
 	@Override
 	public GioviType<?> getGioviType() {
-		return new GioviTypeFunction();
+		return new GioviTypeFunction(value.signature().copy());
 	}
 
 	@Override
