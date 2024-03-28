@@ -13,7 +13,7 @@ public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 
 	@Override
 	public GioviTypeVoid copy() {
-		throw new UnsupportedOperationException("Unimplemented method 'copy'");
+		return new GioviTypeVoid();
 	}
 
 	@Override
