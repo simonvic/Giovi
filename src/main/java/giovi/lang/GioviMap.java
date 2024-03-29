@@ -166,7 +166,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		this.value.forEach((key, element) -> v.put(key.copy(), element.copy()));
 
 		var d = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
-		this.defaultValue.forEach((key, element) -> v.put(key.copy(), element.copy()));
+		this.defaultValue.forEach((key, element) -> d.put(key.copy(), element.copy()));
 		return new GioviMap(this.keyType, this.elementType, v, d);
 	}
 
