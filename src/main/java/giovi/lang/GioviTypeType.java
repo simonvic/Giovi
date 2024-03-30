@@ -28,7 +28,7 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 
 	@Override
 	public GioviValue<?> spawn() {
-		throw new UnsupportedOperationException("Can't spawn a GioviType");
+		return new GioviTypeVoid();
 	}
 
 	@Override
