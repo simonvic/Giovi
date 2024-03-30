@@ -166,7 +166,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 			case GioviDefault v -> removeAll(defaultValue);
 			case GioviList v -> removeAll(v.unbox());
 			case GioviValue<?> v -> remove(v);
-			default -> super.redirectionPlus(right);
+			default -> super.redirectionMinus(right);
 		}
 		return this;
 	}
@@ -236,6 +236,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				default -> super.access(right);
 			};
 			default -> super.access(right);
+			// FIXME: inconsistent stackmap frames
 		};
 	}
 
