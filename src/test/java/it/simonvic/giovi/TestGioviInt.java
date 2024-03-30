@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -36,6 +37,13 @@ public class TestGioviInt {
 		@Test
 		void testMaxValue() {
 			assertThat(visitExpression("2147483647").asNativeInt()).isEqualTo(Integer.MAX_VALUE);
+		}
+
+		@Test
+		@Disabled
+		void testMinValue() {
+			// FIXME: requires a complete rewrite of how we handle negative sign
+			assertThat(visitExpression("-2147483648").asNativeInt()).isEqualTo(Integer.MIN_VALUE);
 		}
 
 		@Test
