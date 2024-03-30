@@ -233,7 +233,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 			case GioviDefault v -> removeAll(defaultValue);
 			case GioviMap v -> removeAll(v.unbox());
 			case GioviValue<?> v -> remove(v);
-			default -> super.redirectionPlus(right);
+			default -> super.redirectionMinus(right);
 		}
 		return this;
 	}
