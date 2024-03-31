@@ -50,8 +50,12 @@ public final class GioviText extends GioviPrimitive<String> {
 		return super.as(right);
 	}
 
-	//                                                                                OPERATORATION
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
@@ -82,7 +86,8 @@ public final class GioviText extends GioviPrimitive<String> {
 		return this;
 	}
 
-	//                                                                                   arithmetic
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
@@ -123,8 +128,10 @@ public final class GioviText extends GioviPrimitive<String> {
 		};
 	}
 
-	//                                                                                      boolean
-	//                                                                                   relational
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
+
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
@@ -183,6 +190,8 @@ public final class GioviText extends GioviPrimitive<String> {
 			default -> super.contains(right);
 		};
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {

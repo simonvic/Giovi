@@ -69,5 +69,4 @@ public final class GioviFunction extends GioviValue<Function> {
 		return super.dot(right);
 	}
 
-
 }

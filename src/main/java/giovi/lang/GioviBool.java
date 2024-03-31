@@ -30,9 +30,10 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		return new GioviBool(this.value, this.defaultValue);
 	}
 
-	//                                                                                OPERATORATION
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
-	//                                                                                         cast
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
@@ -41,7 +42,8 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		};
 	}
 
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
@@ -52,8 +54,10 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		return this;
 	}
 
-	//                                                                                   arithmetic
-	//                                                                                      boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+
 	@Override
 	public GioviParserVisitResult not() {
 		return new GioviBool(!value);
@@ -79,7 +83,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		};
 	}
 
-	//                                                                                   relational
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
@@ -96,7 +100,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		return equal(right).not();
 	}
 
-	//                                                                                       access
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
@@ -105,6 +109,5 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		}
 		return super.dot(right);
 	}
-
 
 }

@@ -26,7 +26,7 @@ public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviVoid(); // TODO: emh...
+			return new GioviVoid();
 		}
 		return super.dot(right);
 	}

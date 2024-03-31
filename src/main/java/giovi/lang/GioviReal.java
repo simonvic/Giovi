@@ -54,8 +54,12 @@ public final class GioviReal extends GioviNumber<Double> {
 		return new GioviReal(value);
 	}
 
-	//                                                                                OPERATORATION
-	//                                                                                  redirection
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
@@ -106,7 +110,8 @@ public final class GioviReal extends GioviNumber<Double> {
 		return this;
 	}
 
-	//                                                                                   arithmetic
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 	@Override
 	public GioviParserVisitResult positive() {
 		return new GioviReal(value);
@@ -183,10 +188,10 @@ public final class GioviReal extends GioviNumber<Double> {
 		};
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 
-	//                                                                                      boolean
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
-	//                                                                                   relational
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
@@ -247,7 +252,7 @@ public final class GioviReal extends GioviNumber<Double> {
 		};
 	}
 
-	//                                                                                       access
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
@@ -256,6 +261,5 @@ public final class GioviReal extends GioviNumber<Double> {
 		}
 		return super.dot(right);
 	}
-
 
 }
