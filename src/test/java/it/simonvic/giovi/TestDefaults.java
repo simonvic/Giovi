@@ -19,6 +19,8 @@ import it.simonvic.giovi.util.GioviTypes;
 
 public class TestDefaults {
 
+	// TODO(test): structs
+
 	@Nested
 	class TestDefaultOverride {
 

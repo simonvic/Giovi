@@ -38,6 +38,18 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return value.containsField(field);
 	}
 
+	// TODO: everywhere, clean up redirections, which should copy lhs and
+	// invoke low level setters, which should directly assign to the internal
+	// value
+
+	@Override
+	public void setDefaultValue(GioviValue<?> defaultValue) {
+		// TODO: temporary
+		if (defaultValue instanceof GioviStruct s) {
+			this.defaultValue = s.unbox();
+		}
+	}
+
 	@Override
 	public void box(GioviValue<?> gioviValue) {
 		switch (gioviValue) {
