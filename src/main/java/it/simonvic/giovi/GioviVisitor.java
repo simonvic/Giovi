@@ -358,7 +358,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (defaultDefinitionCtx != null) {
 			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
 			value.setDefaultValue(defaultValue);
-			value.boxDefault();
+			value.box(defaultValue.copy());
 		}
 		return value;
 	}
