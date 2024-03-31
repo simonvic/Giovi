@@ -267,5 +267,15 @@ public final class GioviReal extends GioviNumber<Double> {
 
 	//                                                                                       access
 
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviReal(defaultValue);
+		}
+		return super.dot(right);
+	}
+
+
+
 
 }

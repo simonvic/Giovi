@@ -201,6 +201,14 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviText(defaultValue);
+		}
+		return super.dot(right);
+	}
+
+	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {
@@ -210,6 +218,7 @@ public final class GioviText extends GioviPrimitive<String> {
 					GioviTypes.of(GioviText.class),
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
 			};
+			// FIXME: inconsistent stackmap frames
 			case Range<?> range -> switch (range) {
 				case Range(Integer start, Integer end, Integer step, var strategy) -> {
 					var sb = new StringBuilder();

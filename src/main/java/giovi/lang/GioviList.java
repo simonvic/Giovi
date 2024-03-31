@@ -227,6 +227,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				case KEYS -> Range.of(0, unbox().size() - 1, 1);
 				case VALUES -> super.access(right);
 			};
+			// FIXME: inconsistent stackmap frames
 			case Range<?> range -> switch (range) {
 				case Range(Integer start, Integer end, var step, var strategy) -> {
 					var gioviList = new GioviList(this.entryType.copy());
@@ -236,8 +237,20 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				default -> super.access(right);
 			};
 			default -> super.access(right);
-			// FIXME: inconsistent stackmap frames
 		};
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			List<GioviValue<?>> d = new ArrayList<>();
+			for (var gioviValue : defaultValue) {
+				d.add(gioviValue.copy());
+			}
+			return new GioviList(entryType, d);
+		}
+		return super.dot(right);
+	}
+
 
 }

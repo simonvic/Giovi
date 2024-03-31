@@ -10,7 +10,12 @@ public final class GioviFunction extends GioviValue<Function> {
 	}
 
 	public GioviFunction(Function value) {
-		super(value, new Function(value.signature()));
+		// TODO: check other default value in constructors
+		super(value, Function.EMPTY);
+	}
+
+	public GioviFunction() {
+		super(Function.EMPTY, Function.EMPTY);
 	}
 
 	@Override
@@ -56,6 +61,14 @@ public final class GioviFunction extends GioviValue<Function> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviFunction(defaultValue.copy());
+		}
+		return super.dot(right);
+	}
 
 
 }

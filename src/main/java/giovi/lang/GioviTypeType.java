@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 
 	public GioviTypeType() {
@@ -35,6 +37,15 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 	public GioviTypeType copy() {
 		return new GioviTypeType();
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviTypeVoid(); // TODO: emh...
+		}
+		return super.dot(right);
+	}
+
 
 }
 

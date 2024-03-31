@@ -153,6 +153,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault __ -> new GioviStruct(defaultValue.copy());
 			case FieldKey(var identifier) -> value.getField(identifier);
 			default -> super.dot(right);
 		};

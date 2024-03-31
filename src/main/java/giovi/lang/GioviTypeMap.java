@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeMap extends GioviType<GioviMap> {
 
 	private final GioviType<?> keyType;
@@ -65,6 +67,14 @@ public final class GioviTypeMap extends GioviType<GioviMap> {
 	@Override
 	public GioviTypeMap copy() {
 		return new GioviTypeMap(this.keyType.copy(), this.elementType.copy());
+	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviMap(keyType, elementType);
+		}
+		return super.dot(right);
 	}
 
 

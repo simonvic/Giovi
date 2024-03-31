@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeBool extends GioviTypePrimitive<GioviBool> {
 
 	public GioviTypeBool() {
@@ -20,5 +22,14 @@ public final class GioviTypeBool extends GioviTypePrimitive<GioviBool> {
 	public GioviTypeBool copy() {
 		return new GioviTypeBool();
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviBool();
+		}
+		return super.dot(right);
+	}
+
 
 }

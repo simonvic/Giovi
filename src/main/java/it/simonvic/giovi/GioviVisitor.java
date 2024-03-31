@@ -523,6 +523,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.anyIdentifier() != null) {
 			return lhs.dot(new FieldKey(ctx.anyIdentifier().getText()));
 		}
+		if (ctx.DEFAULT() != null) {
+			return lhs.dot(new GioviDefault());
+		}
 		return null;
 		// TODO: struct functions
 	}

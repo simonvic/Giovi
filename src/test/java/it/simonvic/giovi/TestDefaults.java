@@ -1,17 +1,20 @@
 package it.simonvic.giovi;
 
 import static it.simonvic.giovi.GioviVisitorUtils.visit;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestDefaults {
@@ -20,69 +23,82 @@ public class TestDefaults {
 	class TestDefaultOverride {
 
 		@Test
-		void testNatural() {
-			assertEquals(new Natural(69), visit("x Natural default 69")
+		void testDefaultOverrideNatural() {
+			assertThat(visit("""
+				x Natural default 69
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue());
+				.getDefaultValue())
+					.isEqualTo(new Natural(69));
 		}
 
 		@Test
-		void testInt() {
-			assertEquals(69, visit("x Int default 69")
+		void testDefaultOverrideInt() {
+			assertThat(visit("""
+				x Int default 69
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue());
+				.getDefaultValue())
+					.isEqualTo(69);
 		}
 
 		@Test
-		void testReal() {
-			assertEquals(6.9, visit("x Real default 6.9")
+		void testDefaultOverrideReal() {
+			assertThat(visit("""
+				x Real default 6.9
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue());
+				.getDefaultValue())
+					.isEqualTo(6.9);
 		}
 
 		@Test
-		void testBool() {
-			assertEquals(true, visit("x Bool default true")
+		void testDefaultOverrideBool() {
+			assertThat(visit("""
+				x Bool default true
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue());
+				.getDefaultValue())
+					.isEqualTo(true);
 		}
 
 		@Test
-		void testText() {
-			assertEquals("hello", visit("x Text default 'hello'")
+		void testDefaultOverrideText() {
+			assertThat(visit("""
+				x Text default "foo"
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue());
+				.getDefaultValue())
+					.isEqualTo("foo");
 		}
 
 		@Test
-		void testList() {
-			var expected = List.of(
-				GioviValue.of("a"),
-				GioviValue.of("b"),
-				GioviValue.of("c"));
-			var actual = visit("x [Text] default ['a' 'b' 'c']")
+		void testDefaultOverrideList() {
+			assertThat(visit("""
+				x [Int] default [1 2 3]
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue();
-			assertEquals(expected, actual);
+				.getDefaultValue())
+					.isEqualTo(List.of(new GioviInt(1), new GioviInt(2), new GioviInt(3)));
 		}
 
 		@Test
-		void testMaps() {
-			var expected = new LinkedHashMap<GioviInt, GioviText>();
-			expected.put(new GioviInt(0), new GioviText("a"));
-			expected.put(new GioviInt(1), new GioviText("b"));
-			expected.put(new GioviInt(2), new GioviText("c"));
-			var actual = visit("x [Int:Text] default [0:'a' 1:'b' 2:'c']")
+		void testDefaultOverrideMap() {
+			assertThat(visit("""
+				x [Int:Bool] default [1:true 2:false]
+				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue();
-			assertEquals(expected, actual);
+				.getDefaultValue())
+					.isEqualTo(Map.of(
+						new GioviInt(1), new GioviBool(true),
+						new GioviInt(2), new GioviBool(false)));
 		}
 	}
 
@@ -90,89 +106,238 @@ public class TestDefaults {
 	class TestDefaultReset {
 
 		@Test
-		void testNatural() {
-			assertEquals(new GioviNatural(new Natural(69)), visit("""
+		void testDefaultResetNatural() {
+			assertThat(visit("""
 				x Natural default 69
 				420 -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"));
+				.getVariableValue("x"))
+					.isEqualTo(new GioviNatural(new Natural(69)));
 		}
 
 		@Test
-		void testInt() {
-			assertEquals(new GioviInt(69), visit("""
+		void testDefaultResetInt() {
+			assertThat(visit("""
 				x Int default 69
 				420 -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"));
+				.getVariableValue("x"))
+					.isEqualTo(new GioviInt(69));
 		}
 
 		@Test
-		void testReal() {
-			assertEquals(new GioviReal(6.9), visit("""
+		void testDefaultResetReal() {
+			assertThat(visit("""
 				x Real default 6.9
-				4.20 -> x
+				420 -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"));
+				.getVariableValue("x"))
+					.isEqualTo(new GioviReal(6.9));
 		}
 
 		@Test
-		void testBool() {
-			assertEquals(new GioviBool(true), visit("""
+		void testDefaultResetBool() {
+			assertThat(visit("""
 				x Bool default true
 				false -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"));
+				.getVariableValue("x"))
+					.isEqualTo(new GioviBool(true));
 		}
 
 		@Test
-		void testText() {
-			assertEquals(new GioviText("foo"), visit("""
+		void testDefaultResetText() {
+			assertThat(visit("""
 				x Text default "foo"
 				"bar" -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"));
+				.getVariableValue("x"))
+					.isEqualTo(new GioviText("foo"));
 		}
 
 		@Test
-		void testList() {
-			var expected = GioviLists.of("a", "b", "c");
-			var actual = visit("""
-				x [Text] default ['a' 'b' 'c']
-				['z'] -> x
+		void testDefaultResetList() {
+			assertThat(visit("""
+				x [Int] default [1 2 3]
+				[69 420] -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x");
-			assertEquals(expected, actual);
+				.getVariableValue("x"))
+					.isEqualTo(GioviLists.of(1, 2, 3));
 		}
 
 		@Test
-		void testMaps() {
-			var expected = new GioviMap(
-				GioviTypes.of(GioviInt.class),
-				GioviTypes.of(GioviText.class));
-			expected.put(new GioviInt(0), new GioviText("a"));
-			expected.put(new GioviInt(1), new GioviText("b"));
-			expected.put(new GioviInt(2), new GioviText("c"));
-			var actual = visit("""
-				x [Int:Text] default [0:'a' 1:'b' 2:'c']
-				[69:'z'] -> x
+		void testDefaultResetMap() {
+			assertThat(visit("""
+				x [Int:Bool] default [1:true 2:false]
+				[69:true 420:true] -> x
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x");
-			assertEquals(expected, actual);
+				.getVariableValue("x"))
+					.isEqualTo(GioviMaps.of(
+						1, true,
+						2, false));
+		}
+
+	}
+
+	@Nested
+	class TestDotDefault {
+
+		@Test
+		void testDotDefaultNatural() {
+			var visitor = visit("""
+				x Natural default 69
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(new GioviNatural(new Natural(69)));
+		}
+
+		@Test
+		void testDotDefaultInt() {
+			var visitor = visit("""
+				x Int default 69
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(new GioviInt(69));
+		}
+
+		@Test
+		void testDotDefaultReal() {
+			var visitor = visit("""
+				x Real default 6.9
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(new GioviReal(6.9));
+		}
+
+		@Test
+		void testDotDefaultBool() {
+			var visitor = visit("""
+				x Bool default true
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(new GioviBool(true));
+		}
+
+		@Test
+		void testDotDefaultText() {
+			var visitor = visit("""
+				x Text default 'hello'
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(new GioviText("hello"));
+		}
+
+		@Test
+		void testDotDefaultList() {
+			var visitor = visit("""
+				x [Int] default [1 2 3]
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(GioviLists.of(1, 2, 3));
+		}
+
+		@Test
+		void testDotDefaultMaps() {
+			var visitor = visit("""
+				x [Int:Bool] default [1:true 2:false]
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(GioviMaps.of(1, true, 2, false));
+		}
+
+	}
+
+	@Nested
+	class TestTypesDefault {
+
+		@Test
+		void testTypeDefaultNatural() {
+			assertThat(visitExpression("""
+				Natural.default
+				"""))
+				.isEqualTo(new GioviNatural());
+		}
+
+		@Test
+		void testTypeDefaultInt() {
+			assertThat(visitExpression("""
+				Int.default
+				"""))
+				.isEqualTo(new GioviInt());
+		}
+
+		@Test
+		void testTypeDefaultReal() {
+			assertThat(visitExpression("""
+				Real.default
+				"""))
+				.isEqualTo(new GioviReal());
+		}
+
+		@Test
+		void testTypeDefaultBool() {
+			assertThat(visitExpression("""
+				Bool.default
+				"""))
+				.isEqualTo(new GioviBool());
+		}
+
+		@Test
+		void testTypeDefaultText() {
+			assertThat(visitExpression("""
+				Text.default
+				"""))
+				.isEqualTo(new GioviText());
+		}
+
+		// FIXME: [Int] not parsed as list Type, but as a list of Types
+
+		@Test
+		@Disabled
+		void testTypeDefaultList() {
+			assertThat(visitExpression("""
+				[Int].default
+				"""))
+				.isEqualTo(new GioviList(GioviTypes.of(GioviInt.class)));
+		}
+
+		@Test
+		@Disabled
+		void testTypeDefaultMaps() {
+			assertThat(visitExpression("""
+				[Text:Int].default
+				"""))
+				.isEqualTo(new GioviMap(
+					GioviTypes.of(GioviText.class),
+					GioviTypes.of(GioviInt.class)));
 		}
 
 	}

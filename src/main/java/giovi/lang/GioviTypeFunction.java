@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import giovi.Function;
+import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.lang.FunctionSignature;
 
 public final class GioviTypeFunction extends GioviType<GioviFunction> {
@@ -26,5 +27,14 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 	public GioviType<GioviFunction> copy() {
 		return new GioviTypeFunction(signature.copy());
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviFunction();
+		}
+		return super.dot(right);
+	}
+
 
 }

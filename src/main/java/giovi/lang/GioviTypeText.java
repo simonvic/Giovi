@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeText extends GioviTypePrimitive<GioviText> {
 
 	public GioviTypeText() {
@@ -20,5 +22,14 @@ public final class GioviTypeText extends GioviTypePrimitive<GioviText> {
 	public GioviTypeText copy() {
 		return new GioviTypeText();
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviText();
+		}
+		return super.dot(right);
+	}
+
 
 }

@@ -116,5 +116,13 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 
 	//                                                                                       access
 
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviBool(defaultValue);
+		}
+		return super.dot(right);
+	}
+
 
 }

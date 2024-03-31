@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 
+import giovi.GioviParserVisitResult;
 import giovi.Tuple;
 
 public final class GioviTypeTuple extends GioviType<GioviTuple> {
@@ -165,6 +166,15 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 	public GioviTypeTuple copy() {
 		return new GioviTypeTuple(fieldTypes);
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviTuple();
+		}
+		return super.dot(right);
+	}
+
 
 
 }

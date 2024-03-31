@@ -1,5 +1,6 @@
 package giovi.lang;
 
+// TODO: what if we make Void the variadic netrual element for all operations?
 public final class GioviVoid extends GioviPrimitive<Void> {
 
 	public GioviVoid() {

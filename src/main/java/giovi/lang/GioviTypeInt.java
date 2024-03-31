@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
 
 	public GioviTypeInt() {
@@ -24,6 +26,15 @@ public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
 	public GioviTypeInt copy() {
 		return new GioviTypeInt();
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviInt();
+		}
+		return super.dot(right);
+	}
+
 
 }
 

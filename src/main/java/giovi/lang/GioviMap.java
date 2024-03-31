@@ -308,4 +308,15 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		};
 	}
 
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			var d = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
+			this.defaultValue.forEach((key, element) -> d.put(key.copy(), element.copy()));
+			return new GioviMap(keyType, elementType, d);
+		}
+		return super.dot(right);
+	}
+
+
 }

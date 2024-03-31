@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeReal extends GioviTypeNumber<GioviReal> {
 
 	public GioviTypeReal() {
@@ -20,6 +22,15 @@ public final class GioviTypeReal extends GioviTypeNumber<GioviReal> {
 	public GioviTypeReal copy() {
 		return new GioviTypeReal();
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviReal();
+		}
+		return super.dot(right);
+	}
+
 
 
 }

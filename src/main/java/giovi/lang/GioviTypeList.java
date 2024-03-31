@@ -2,6 +2,8 @@ package giovi.lang;
 
 import java.util.Objects;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeList extends GioviType<GioviList> {
 
 	private final GioviType<?> entryType;
@@ -69,5 +71,14 @@ public final class GioviTypeList extends GioviType<GioviList> {
 		}
 		return list;
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviList(entryType);
+		}
+		return super.dot(right);
+	}
+
 
 }

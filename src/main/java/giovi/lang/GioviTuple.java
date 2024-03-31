@@ -13,7 +13,11 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	}
 
 	public GioviTuple(Tuple value) {
-		super(value, value.copy());
+		super(value, new Tuple());
+	}
+
+	public GioviTuple() {
+		super(new Tuple(), new Tuple());
 	}
 
 	@Override
@@ -141,6 +145,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault __ -> new GioviTuple(defaultValue.copy());
 			case FieldKey(var identifier) -> switch (value) {
 				case TupleNamed named -> named.getField(identifier);
 				default -> super.dot(right);

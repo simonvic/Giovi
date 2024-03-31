@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 
 	public GioviTypeVoid() {
@@ -20,6 +22,15 @@ public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 	public GioviVoid spawn() {
 		throw new UnsupportedOperationException("Unimplemented method 'spawn'");
 	}
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviVoid(); // TODO: emh...
+		}
+		return super.dot(right);
+	}
+
 
 }
 

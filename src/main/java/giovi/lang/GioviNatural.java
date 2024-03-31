@@ -273,5 +273,13 @@ public final class GioviNatural extends GioviNumber<Natural> {
 
 	//                                                                                       access
 
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return new GioviNatural(new Natural(defaultValue.intValue()));
+		}
+		return super.dot(right);
+	}
+
 
 }
