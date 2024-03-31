@@ -357,8 +357,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var value = type.spawn();
 		if (defaultDefinitionCtx != null) {
 			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
-			value.setDefaultValue(defaultValue);
-			value.box(defaultValue.copy());
+			// we need to copy to ensure we don't pass an existing reference
+			// (e.g. foobar Foobar default someMap@someKey) which might change
+			// TODO: eventually the copy should be done within GioviValues,
+			// where they know if it's necessary
+			try {
+				value.boxDefault(defaultValue.copy());
+			} catch (ClassCastException ex) {
+				throw new GioviException("Incompatible default value type");
+			}
+			value.redirection(defaultValue.copy());
 		}
 		return value;
 	}

@@ -30,24 +30,6 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		return new GioviBool(this.value, this.defaultValue);
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue.unbox()) {
-			case Boolean v -> box(v);
-			// case Integer v -> set(v > 0);
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Boolean v -> setDefaultValue(v);
-			// case Integer v -> setDefaultValue(v > 0);
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
 	//                                                                                OPERATORATION
 
 	//                                                                                         cast
@@ -63,7 +45,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue;
 			case GioviBool v -> value = v.unbox();
 			default -> super.redirection(content);
 		}

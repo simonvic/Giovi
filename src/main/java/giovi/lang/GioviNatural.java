@@ -48,35 +48,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 		return new GioviReal(value.doubleValue());
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue.unbox()) {
-			case Natural v -> box(v);
-			case Number v -> box(new Natural(v.intValue()));
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Natural v -> setDefaultValue(new Natural(v.intValue()));
-			case Number v -> setDefaultValue(new Natural(v.intValue()));
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
-	@Override
-	public void boxDefault() {
-		value = new Natural(defaultValue.intValue());
-	}
-
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = new Natural(defaultValue.intValue());
 			case GioviNumber<?> v -> value = v.naturalValue().unbox();
 			default -> super.redirection(content);
 		}

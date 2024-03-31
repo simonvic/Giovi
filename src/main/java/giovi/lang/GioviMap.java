@@ -7,6 +7,7 @@ import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
+import it.simonvic.giovi.util.GioviMaps;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
@@ -45,12 +46,6 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public void put(GioviValue<?> key, GioviValue<?> element) {
 		key = key.as(keyType).asGioviValue();
 		element = element.as(elementType).asGioviValue();
-		for (GioviValue<?> k : value.keySet()) {
-			if (k.equals(key)) {
-				value.get(k).box(element);
-				return;
-			}
-		}
 		value.put(key, element);
 	}
 
@@ -59,6 +54,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	public GioviValue<?> get(GioviValue<?> key) {
+		// TODO: is it really needed? Maybe I fucked up the equals method in the past
+		// or should we keep this but use the `equal` (not `equals`) method ?
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key)) {
 				return value.get(k);
@@ -180,34 +177,13 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		return super.as(right);
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue) {
-			case GioviMap v -> value = v.unbox();
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue) {
-			case GioviMap v -> setDefaultValue(v.unbox());
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
-	@Override
-	public void boxDefault() {
-		this.init(defaultValue);
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = GioviMaps.copyOf(defaultValue);
 			case GioviMap v -> init(v.unbox());
 			default -> super.redirection(content);
 		}

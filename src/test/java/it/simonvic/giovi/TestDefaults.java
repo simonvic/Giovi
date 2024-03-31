@@ -27,11 +27,11 @@ public class TestDefaults {
 		@Test
 		void testDefaultOverrideNatural() {
 			assertThat(visit("""
-				x Natural default 69
+				x Natural default 69n
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(new Natural(69));
 		}
 
@@ -42,7 +42,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(69);
 		}
 
@@ -53,7 +53,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(6.9);
 		}
 
@@ -64,7 +64,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(true);
 		}
 
@@ -75,7 +75,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo("foo");
 		}
 
@@ -86,7 +86,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(List.of(new GioviInt(1), new GioviInt(2), new GioviInt(3)));
 		}
 
@@ -97,7 +97,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.getDefaultValue())
+				.unboxDefault())
 					.isEqualTo(Map.of(
 						new GioviInt(1), new GioviBool(true),
 						new GioviInt(2), new GioviBool(false)));
@@ -110,7 +110,7 @@ public class TestDefaults {
 		@Test
 		void testDefaultResetNatural() {
 			assertThat(visit("""
-				x Natural default 69
+				x Natural default 69n
 				420 -> x
 				default -> x
 				""")
@@ -201,7 +201,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultNatural() {
 			var visitor = visit("""
-				x Natural default 69
+				x Natural default 69n
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default

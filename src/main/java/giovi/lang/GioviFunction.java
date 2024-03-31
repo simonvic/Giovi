@@ -10,7 +10,6 @@ public final class GioviFunction extends GioviValue<Function> {
 	}
 
 	public GioviFunction(Function value) {
-		// TODO: check other default value in constructors
 		super(value, Function.EMPTY);
 	}
 
@@ -46,7 +45,7 @@ public final class GioviFunction extends GioviValue<Function> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue.copy();
 			// TODO: check if signatures are equal
 			case GioviFunction v -> this.value = v.unbox().copy();
 			default -> super.redirection(content);

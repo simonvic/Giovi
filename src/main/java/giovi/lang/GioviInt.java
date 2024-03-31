@@ -54,30 +54,15 @@ public final class GioviInt extends GioviNumber<Integer> {
 		return new GioviReal(value.doubleValue());
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue.unbox()) {
-			case Integer v -> box(v);
-			case Number v -> box(v.intValue());
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Integer v -> setDefaultValue(v);
-			case Number v -> setDefaultValue(v.intValue());
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
+
+	// FIXME: we should not automatically cast when redirecting (unless we can widen)
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue;
 			case GioviNumber<?> v -> value = v.intValue().unbox();
 			default -> super.redirection(content);
 		}

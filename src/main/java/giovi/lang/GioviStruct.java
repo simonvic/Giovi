@@ -27,11 +27,11 @@ public final class GioviStruct extends GioviValue<Struct> {
 	}
 
 	public void boxField(int index, GioviValue<?> fieldValue) {
-		value.getField(index).box(fieldValue);
+		value.getField(index).redirection(fieldValue);
 	}
 
 	public void boxField(String field, GioviValue<?> fieldValue) {
-		value.getField(field).box(fieldValue);
+		value.getField(field).redirection(fieldValue);
 	}
 
 	public boolean containsField(String field) {
@@ -43,39 +43,6 @@ public final class GioviStruct extends GioviValue<Struct> {
 	// value
 
 	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		// TODO: temporary
-		if (defaultValue instanceof GioviStruct s) {
-			this.defaultValue = s.unbox();
-		}
-	}
-
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue) {
-			case GioviStruct s -> this.value = s.unbox();
-			case GioviTuple gioviTuple -> {
-				if (!gioviTuple.value.isSubset(this.value)) {
-					super.box(gioviValue);
-					return;
-				}
-				switch (gioviTuple.unbox()) {
-					case TupleNamed t -> t.forEach(
-						(identifier, fieldValue) -> this.boxField(identifier, fieldValue.copy()));
-					case Tuple t -> {
-						if (t.getFieldsCount() != this.value.getFieldsCount()) {
-							super.box(gioviValue);
-							return;
-						}
-						t.forEachIndexed((i, fieldValue) -> this.boxField(i, fieldValue.copy()));
-					}
-				}
-			}
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
 	public GioviTypeStruct getGioviType() {
 		var fields = new LinkedHashMap<String, GioviFieldDefinition>();
 		this.value.forEach((identifier, fieldValue) -> fields.put(
@@ -83,7 +50,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 			new GioviFieldDefinition(
 				identifier,
 				fieldValue.getGioviType(),
-				GioviValue.of(fieldValue.getDefaultValue()))));
+				GioviValue.of(fieldValue.unboxDefault()))));
 		return new GioviTypeStruct(new GioviStructDefinition(this.value.getTypename(), fields));
 	}
 

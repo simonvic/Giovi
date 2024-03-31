@@ -38,28 +38,6 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		return new GioviTuple(value.copy(), defaultValue.copy());
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		if (gioviValue instanceof GioviTuple tuple) {
-			this.value = tuple.unbox();
-		} else {
-			super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Tuple v -> setDefaultValue(v);
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
-	@Override
-	public void boxDefault() {
-		value = defaultValue.copy();
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
@@ -78,10 +56,10 @@ public final class GioviTuple extends GioviValue<Tuple> {
 					&& this.value instanceof TupleNamed thisTuple) {
 					thisTuple.forEach((identifier, fieldValue) -> named
 						.getField(identifier)
-						.box(fieldValue.copy()));
+						.redirection(fieldValue));
 				} else {
 					for (int i = 0; i < this.value.getFieldsCount(); i++) {
-						castedTuple.unbox().getField(i).box(this.value.getField(i).copy());
+						castedTuple.unbox().getField(i).redirection(this.value.getField(i));
 					}
 				}
 				yield castedTuple;
@@ -95,7 +73,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue.copy();
 			default -> super.redirection(content);
 		}
 		return this;

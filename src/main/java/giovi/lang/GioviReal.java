@@ -54,30 +54,12 @@ public final class GioviReal extends GioviNumber<Double> {
 		return new GioviReal(value);
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue.unbox()) {
-			case Double v -> box(v);
-			case Number v -> box(v.doubleValue());
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case Double v -> setDefaultValue(v);
-			case Number v -> setDefaultValue(v.doubleValue());
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue;
 			case GioviNumber<?> v -> value = v.realValue().unbox();
 			default -> super.redirection(content);
 		}
@@ -274,8 +256,6 @@ public final class GioviReal extends GioviNumber<Double> {
 		}
 		return super.dot(right);
 	}
-
-
 
 
 }

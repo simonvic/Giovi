@@ -83,4 +83,11 @@ public class GioviMaps {
 			k6, v6));
 	}
 
+	public static LinkedHashMap<GioviValue<?>, GioviValue<?>> copyOf(
+		LinkedHashMap<GioviValue<?>, GioviValue<?>> map) {
+		var copied = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
+		map.forEach((k, v) -> copied.put(k.copy(), v.copy()));
+		return copied;
+	}
+
 }

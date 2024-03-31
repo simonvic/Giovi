@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviLists.copyOf;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,27 +102,6 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return new GioviList(this.entryType, v, d);
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue) {
-			case GioviList v -> value = v.unbox();
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue) {
-			case GioviList v -> setDefaultValue(v.unbox());
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
-	@Override
-	public void boxDefault() {
-		this.init(defaultValue);
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
@@ -140,7 +121,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = copyOf(defaultValue);
 			case GioviList v -> this.init(v.unbox());
 			default -> super.redirection(content);
 		}

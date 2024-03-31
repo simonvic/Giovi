@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import giovi.*;
+import giovi.Natural;
+import giovi.Struct;
+import giovi.Tuple;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.IncompatibleTypes;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 
@@ -50,25 +51,23 @@ public abstract sealed class GioviValue<T>
 		this.value = value;
 	}
 
-	// TODO: remove this
-	public void box(GioviValue<?> gioviValue) {
-		throw new IncompatibleTypes(this.getGioviType(), gioviValue.getGioviType());
-	}
-
-	public void boxDefault() {
-		box(defaultValue);
-	}
-
-	public T getDefaultValue() {
+	public T unboxDefault() {
 		return defaultValue;
 	}
 
-	public void setDefaultValue(T defaultValue) {
+	public void boxDefault(T defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		throw new IncompatibleTypes(this.getGioviType(), defaultValue.getGioviType());
+	@SuppressWarnings("unchecked")
+	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException {
+		if (!defaultValue.getClass().isInstance(gioviValue.unbox())) {
+			throw new ClassCastException();
+		}
+		if (gioviValue.getGioviType().canWidenTo(this.getGioviType())) {
+			gioviValue = gioviValue.as(this.getGioviType()).asGioviValue();
+		}
+		defaultValue = (T) gioviValue.unbox();
 	}
 
 	public abstract GioviType<?> getGioviType();

@@ -50,28 +50,12 @@ public final class GioviText extends GioviPrimitive<String> {
 		return super.as(right);
 	}
 
-	@Override
-	public void box(GioviValue<?> gioviValue) {
-		switch (gioviValue.unbox()) {
-			case String v -> box(v);
-			default -> super.box(gioviValue);
-		}
-	}
-
-	@Override
-	public void setDefaultValue(GioviValue<?> defaultValue) {
-		switch (defaultValue.unbox()) {
-			case String v -> setDefaultValue(v);
-			default -> super.setDefaultValue(defaultValue);
-		}
-	}
-
 	//                                                                                OPERATORATION
 	//                                                                                  redirection
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> boxDefault();
+			case GioviDefault v -> value = defaultValue;
 			case GioviText v -> value = v.unbox();
 			default -> super.redirection(content);
 		}
