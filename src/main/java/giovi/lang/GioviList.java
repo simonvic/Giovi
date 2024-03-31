@@ -227,15 +227,11 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 				case KEYS -> Range.of(0, unbox().size() - 1, 1);
 				case VALUES -> super.access(right);
 			};
-			// FIXME: inconsistent stackmap frames
-			case Range<?> range -> switch (range) {
-				case Range(Integer start, Integer end, var step, var strategy) -> {
-					var gioviList = new GioviList(this.entryType.copy());
-					range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
-					yield gioviList;
-				}
-				default -> super.access(right);
-			};
+			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {
+				var gioviList = new GioviList(this.entryType.copy());
+				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
+				yield gioviList;
+			}
 			default -> super.access(right);
 		};
 	}

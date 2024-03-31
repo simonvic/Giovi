@@ -218,15 +218,11 @@ public final class GioviText extends GioviPrimitive<String> {
 					GioviTypes.of(GioviText.class),
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
 			};
-			// FIXME: inconsistent stackmap frames
-			case Range<?> range -> switch (range) {
-				case Range(Integer start, Integer end, Integer step, var strategy) -> {
-					var sb = new StringBuilder();
-					range.iterate(index -> sb.append(this.value.charAt((int) index)));
-					yield new GioviText(sb.toString());
-				}
-				default -> super.access(right);
-			};
+			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {
+				var sb = new StringBuilder();
+				range.iterate(index -> sb.append(this.value.charAt((int) index)));
+				yield new GioviText(sb.toString());
+			}
 			case GioviInt i -> {
 				int index = i.unbox();
 				index = index >= 0 ? index : value.length() + index;
