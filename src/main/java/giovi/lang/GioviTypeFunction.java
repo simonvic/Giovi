@@ -15,7 +15,7 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
-		return this.equals(to);
+		return to instanceof GioviTypeFunction f && this.signature.equals(f.signature);
 	}
 
 	@Override
