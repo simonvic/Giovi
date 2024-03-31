@@ -60,13 +60,12 @@ public final class GioviInt extends GioviNumber<Integer> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
-	// FIXME: we should not automatically cast when redirecting (unless we can widen)
-
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = defaultValue;
-			case GioviNumber<?> v -> value = v.intValue().unbox();
+			case GioviNatural v -> value = v.value.intValue();
+			case GioviInt v -> value = v.value;
 			default -> super.redirection(content);
 		}
 		return this;
@@ -76,7 +75,8 @@ public final class GioviInt extends GioviNumber<Integer> {
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value += defaultValue;
-			case GioviNumber<?> v -> value += v.intValue().unbox();
+			case GioviNatural v -> value += v.value.intValue();
+			case GioviInt v -> value += v.value;
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -86,7 +86,8 @@ public final class GioviInt extends GioviNumber<Integer> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value -= defaultValue;
-			case GioviNumber<?> v -> value -= v.intValue().unbox();
+			case GioviNatural v -> value -= v.value.intValue();
+			case GioviInt v -> value -= v.value;
 			default -> super.redirectionMinus(right);
 		}
 		return this;
@@ -96,7 +97,8 @@ public final class GioviInt extends GioviNumber<Integer> {
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value *= defaultValue;
-			case GioviNumber<?> v -> value *= v.intValue().unbox();
+			case GioviNatural v -> value *= v.value.intValue();
+			case GioviInt v -> value *= v.value;
 			default -> super.redirectionMultiply(right);
 		}
 		return this;
@@ -106,7 +108,8 @@ public final class GioviInt extends GioviNumber<Integer> {
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value /= defaultValue;
-			case GioviNumber<?> v -> value /= v.intValue().unbox();
+			case GioviNatural v -> value /= v.value.intValue();
+			case GioviInt v -> value /= v.value;
 			default -> super.redirectionDivide(right);
 		}
 		return this;

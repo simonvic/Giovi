@@ -58,7 +58,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = new Natural(defaultValue.intValue());
-			case GioviNumber<?> v -> value = v.naturalValue().unbox();
+			case GioviNatural v -> value = v.value;
 			default -> super.redirection(content);
 		}
 		return this;
@@ -68,7 +68,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value = value.plus(defaultValue);
-			case GioviNumber<?> v -> value = value.plus(v.naturalValue().unbox());
+			case GioviNatural v -> value = value.plus(v.value);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -78,7 +78,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value = value.minus(defaultValue);
-			case GioviNumber<?> v -> value = value.minus(v.naturalValue().unbox());
+			case GioviNatural v -> value = value.minus(v.value);
 			default -> super.redirectionMinus(right);
 		}
 		return this;
@@ -88,7 +88,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value = value.multiply(defaultValue);
-			case GioviNumber<?> v -> value = value.multiply(v.naturalValue().unbox());
+			case GioviNatural v -> value = value.multiply(v.value);
 			default -> super.redirectionMultiply(right);
 		}
 		return this;
@@ -98,7 +98,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value = value.divide(defaultValue);
-			case GioviNumber<?> v -> value = value.divide(v.naturalValue().unbox());
+			case GioviNatural v -> value = value.divide(v.value);
 			default -> super.redirectionDivide(right);
 		}
 		return this;

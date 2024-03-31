@@ -64,7 +64,9 @@ public final class GioviReal extends GioviNumber<Double> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = defaultValue;
-			case GioviNumber<?> v -> value = v.realValue().unbox();
+			case GioviNatural v -> value = v.value.doubleValue();
+			case GioviInt v -> value = v.value.doubleValue();
+			case GioviReal v -> value = v.value.doubleValue();
 			default -> super.redirection(content);
 		}
 		return this;
@@ -74,7 +76,9 @@ public final class GioviReal extends GioviNumber<Double> {
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value += defaultValue;
-			case GioviNumber<?> v -> value += v.realValue().unbox();
+			case GioviNatural v -> value += v.value.doubleValue();
+			case GioviInt v -> value += v.value.doubleValue();
+			case GioviReal v -> value += v.value.doubleValue();
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -84,7 +88,9 @@ public final class GioviReal extends GioviNumber<Double> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value -= defaultValue;
-			case GioviNumber<?> v -> value -= v.realValue().unbox();
+			case GioviNatural v -> value -= v.value.doubleValue();
+			case GioviInt v -> value -= v.value.doubleValue();
+			case GioviReal v -> value -= v.value.doubleValue();
 			default -> super.redirectionMinus(right);
 		}
 		return this;
@@ -94,7 +100,9 @@ public final class GioviReal extends GioviNumber<Double> {
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value *= defaultValue;
-			case GioviNumber<?> v -> value *= v.realValue().unbox();
+			case GioviNatural v -> value *= v.value.doubleValue();
+			case GioviInt v -> value *= v.value.doubleValue();
+			case GioviReal v -> value *= v.value.doubleValue();
 			default -> super.redirectionMultiply(right);
 		}
 		return this;
@@ -104,7 +112,9 @@ public final class GioviReal extends GioviNumber<Double> {
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> value /= defaultValue;
-			case GioviNumber<?> v -> value /= v.realValue().unbox();
+			case GioviNatural v -> value /= v.value.doubleValue();
+			case GioviInt v -> value /= v.value.doubleValue();
+			case GioviReal v -> value /= v.value.doubleValue();
 			default -> super.redirectionDivide(right);
 		}
 		return this;

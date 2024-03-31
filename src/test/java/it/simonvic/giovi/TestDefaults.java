@@ -111,7 +111,7 @@ public class TestDefaults {
 		void testDefaultResetNatural() {
 			assertThat(visit("""
 				x Natural default 69n
-				420 -> x
+				420n -> x
 				default -> x
 				""")
 				.getCurrentScope()

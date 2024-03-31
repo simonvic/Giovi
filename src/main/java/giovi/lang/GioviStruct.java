@@ -38,10 +38,6 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return value.containsField(field);
 	}
 
-	// TODO: everywhere, clean up redirections, which should copy lhs and
-	// invoke low level setters, which should directly assign to the internal
-	// value
-
 	@Override
 	public GioviTypeStruct getGioviType() {
 		var fields = new LinkedHashMap<String, GioviFieldDefinition>();
