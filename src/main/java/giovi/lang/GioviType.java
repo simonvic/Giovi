@@ -35,7 +35,9 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 
 	@Override
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		// TODO: should a Type be wideneable? Update when Type type is implemented
+		if (type.equals(this)) {
+			return this;
+		}
 		throw new NonWideneable(this, type);
 	}
 
