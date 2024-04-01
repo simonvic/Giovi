@@ -349,7 +349,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private GioviValue<?> spawnType(
 		TypeContext typeCtx,
 		DefaultDefinitionContext defaultDefinitionCtx) {
-		var type = visit(typeCtx).asGioviType();
+		return spawnType(visit(typeCtx).asGioviType(), defaultDefinitionCtx);
+	}
+
+	private GioviValue<?> spawnType(
+		GioviType<?> type,
+		DefaultDefinitionContext defaultDefinitionCtx) {
 		var value = type.spawn();
 		if (defaultDefinitionCtx != null) {
 			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
@@ -950,10 +955,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
 			String identifier = fieldCtx.identifier().getText();
 			var fieldType = visit(fieldCtx.type()).asGioviType();
-			GioviFieldDefinition fieldDefinition = fieldCtx.defaultDefinition() == null
+			var fieldDefinition = fieldCtx.defaultDefinition() == null
 				? new GioviFieldDefinition(identifier, fieldType)
 				: new GioviFieldDefinition(identifier, fieldType,
-					visit(fieldCtx.defaultDefinition()).asGioviValue());
+					spawnType(fieldType, fieldCtx.defaultDefinition()));
 			fieldDefinitions.put(identifier, fieldDefinition);
 		}
 
