@@ -20,7 +20,7 @@ public final class GioviTypeVoid extends GioviTypePrimitive<GioviVoid> {
 
 	@Override
 	public GioviVoid spawn() {
-		throw new UnsupportedOperationException("Unimplemented method 'spawn'");
+		return new GioviVoid();
 	}
 
 	@Override
