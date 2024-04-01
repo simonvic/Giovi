@@ -333,13 +333,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		// TODO: improve this. Declare variable with value already set
-		var bop = GioviToken.of(ctx.bop.getText());
 		var variable = visit(ctx.varDeclaration());
-		switch (bop) {
-			case REDIR -> variable.redirection(visit(ctx.redirectionContent()));
-			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
-		}
+		var content = visit(ctx.redirectionContent());
+		variable.redirection(content);
 		return null;
 	}
 
@@ -405,13 +401,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		// TODO: improve this. Declare variable with value already set
-		var bop = GioviToken.of(ctx.bop.getText());
 		var variable = visit(ctx.varDeclaration());
-		switch (bop) {
-			case REDIR_RTL -> variable.redirection(visit(ctx.redirectionContent()));
-			default -> throw new RedirectionException("Unknown redirection operator: " + bop);
-		}
+		var content = visit(ctx.redirectionContent());
+		variable.redirection(content);
 		return null;
 	}
 

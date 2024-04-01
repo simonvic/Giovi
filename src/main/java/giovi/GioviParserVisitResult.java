@@ -16,7 +16,6 @@ public interface GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
-	// TODO: make return type of GioviValue and remove unnecessary casts
 	default GioviParserVisitResult as(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.AS); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
@@ -56,9 +55,8 @@ public interface GioviParserVisitResult {
 	default GioviParserVisitResult contains(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.CONTAINS); }
 	default GioviParserVisitResult isContained(GioviParserVisitResult right) { return right.contains(this); }
 
-	// TODO: not contain
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
+
 	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.AT); }
 	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.DOT); }
 

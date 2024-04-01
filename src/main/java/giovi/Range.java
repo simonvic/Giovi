@@ -28,7 +28,6 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		return expansion;
 	}
 
-	// TODO: move in util class?
 	public List<? extends GioviValue<?>> expandAsGioviValues() {
 		return expand().stream().map(GioviValue::of).toList();
 	}
