@@ -363,7 +363,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			// where they know if it's necessary
 			try {
 				value.boxDefault(defaultValue.copy());
-			} catch (ClassCastException ex) {
+			} catch (ClassCastException | NonWideneable ex) {
 				throw new GioviException("Incompatible default value type");
 			}
 			value.redirection(defaultValue.copy());

@@ -61,14 +61,12 @@ public abstract sealed class GioviValue<T>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException {
-		if (!defaultValue.getClass().isInstance(gioviValue.unbox())) {
-			throw new ClassCastException();
+	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException, NonWideneable {
+		if (defaultValue.getClass().isInstance(gioviValue.value)) {
+			defaultValue = (T) gioviValue.value;
+		} else {
+			defaultValue = (T) gioviValue.widenTo(this.getGioviType());
 		}
-		if (gioviValue.getGioviType().canWidenTo(this.getGioviType())) {
-			gioviValue = gioviValue.as(this.getGioviType()).asGioviValue();
-		}
-		defaultValue = (T) gioviValue.unbox();
 	}
 
 	public abstract GioviType<?> getGioviType();
@@ -81,9 +79,11 @@ public abstract sealed class GioviValue<T>
 	 */
 	public abstract GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
 
+	/**
+	 * Perform a <b>deep copy</b>
+	 * @return copy of the object
+	 */
 	public abstract GioviValue<T> copy();
-
-	// TODO: add widenTo(Type) to avoid getGioviType and canWiden test
 
 	@Override
 	public String toString() {
