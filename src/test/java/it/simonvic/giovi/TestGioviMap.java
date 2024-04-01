@@ -19,6 +19,7 @@ import giovi.lang.GioviText;
 import giovi.lang.GioviTypeList;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.GioviTypes;
@@ -43,7 +44,7 @@ public class TestGioviMap {
 		}
 
 		@Test
-		void mapOfMixedKeyType_shouldInferHighestKeyType() {
+		void mapOfMixedKeyType_shouldInferWidestKeyType() {
 			assertThat(visitExpression("""
 				[ 1i:"a" 2n:"b" 3r:"c" ]
 				""").asGioviMap()
@@ -52,7 +53,7 @@ public class TestGioviMap {
 		}
 
 		@Test
-		void mapOfMixedElementType_shouldInferHighestElementType() {
+		void mapOfMixedElementType_shouldInferWidestElementType() {
 			assertThat(visitExpression("""
 				[ 1:1n 2:2i 3:3r ]
 				""").asGioviMap()
@@ -61,7 +62,7 @@ public class TestGioviMap {
 		}
 
 		@Test
-		void mapOfMixedKeyElementType_shouldInferHighestKeyElementType() {
+		void mapOfMixedKeyElementType_shouldInferWidestKeyElementType() {
 			var map = visitExpression("""
 				[ 1n:1n 2i:2i 3r:3r ]
 				""").asGioviMap();
@@ -75,7 +76,7 @@ public class TestGioviMap {
 		}
 
 		@Test
-		void mapOfMixedKeyElementType_shouldCastEntriesToTypeOfHighestOrder() {
+		void mapOfMixedKeyElementType_shouldCastEntriesToWidest() {
 			assertThat(visitExpression("""
 				[ 1n:1n 2i:2i 3r:3r ]
 				""").asGioviMap().unbox())
@@ -129,7 +130,7 @@ public class TestGioviMap {
 		}
 
 		@Test
-		void mapWithElementOfListOfDifferentButCompatibleTypes_shouldInferHighestElementType() {
+		void mapWithElementOfListOfDifferentButCompatibleTypes_shouldInferWidestElementType() {
 			assertThat(visitExpression("""
 				[
 					1 : [1n 2n]
@@ -217,6 +218,25 @@ public class TestGioviMap {
 			}
 
 			@Test
+			void redir_wideneableMap_shouldWiden() {
+				assertThat(visit("""
+					[1r:1r 2r:2r 3r:3r] -> x [Real:Real]
+					[1:10 2:20 3:30] -> x
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviMaps.of(1d, 10d, 2d, 20d, 3d, 30d));
+			}
+
+			@Test
+			void redir_nonWideneableMap_shouldThrow() {
+				assertThatExceptionOfType(OperatorNotSupported.class)
+					.isThrownBy(() -> visit("""
+						x [Int:Int]
+						[1r:1r] -> x
+						"""));
+			}
+
+			@Test
 			void redirPlus_pair_shouldPutPair() {
 				assertThat(visit("""
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
@@ -244,6 +264,25 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "foo", 69, "bar", 42, "foobar"));
+			}
+
+			@Test
+			void redirPlus_wideneableMap_shouldWiden() {
+				assertThat(visit("""
+					[1r:1r 2r:2r 3r:3r] -> x [Real:Real]
+					[1:69 2:420] ->+ x
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviMaps.of(1d, 69d, 2d, 420d, 3d, 3d));
+			}
+
+			@Test
+			void redirPlus_nonWideneableMap_shouldThrow() {
+				assertThatExceptionOfType(OperatorNotSupported.class)
+					.isThrownBy(() -> visit("""
+						[1:1 2:2 3:3] -> x [Int:Int]
+						[1r:69r 2r:420r] ->+ x
+						"""));
 			}
 
 			@Test

@@ -74,6 +74,8 @@ public abstract sealed class GioviValue<T>
 
 	public abstract GioviValue<T> copy();
 
+	// TODO: add widenTo(Type) to avoid getGioviType and canWiden test
+
 	@Override
 	public String toString() {
 		return value.toString();

@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Range;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTypes;
 
@@ -73,7 +74,7 @@ public class TestGioviList {
 		}
 
 		@Test
-		void listOfMixedButCompatibleTypes_shouldInferTypeOfHighestOrder() {
+		void listOfMixedButCompatibleTypes_shouldInferWidestType() {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList()
@@ -82,17 +83,7 @@ public class TestGioviList {
 		}
 
 		@Test
-		void listOfMixedButCompatibleTypes_shouldCastAllEntriesToTypeOfHighestOrder() {
-			assertThat(visitExpression("""
-				[1n 1i 1r]
-				""").asGioviList().unbox())
-				.allSatisfy(entry -> assertThat(entry
-					.getGioviType())
-						.isEqualTo(GioviTypes.of(GioviReal.class)));
-		}
-
-		@Test
-		void listOfMixedButCompatibleTypes_shouldHaveAllValuesCastedToHighestOrderType() {
+		void listOfMixedButCompatibleTypes_shouldHaveAllValuesCastedToWidestType() {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList().unbox())
@@ -111,7 +102,7 @@ public class TestGioviList {
 		}
 
 		@Test
-		void listOfMixedButCompatibleListOfPrimitive_shouldHaveGioviTypeOfListOfHighestType() {
+		void listOfMixedButCompatibleListOfPrimitive_shouldHaveGioviTypeOfListOfWidestType() {
 			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList()
@@ -124,7 +115,7 @@ public class TestGioviList {
 		// When accessing a Real list, we know all entries are Real
 		// or at least can be widened to Real (Int, Natural)
 		// When is it wiser to widen the entry? What about a very deep tuple?
-		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToHighestType() {
+		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToWidestType() {
 			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList().unbox())
@@ -164,6 +155,25 @@ public class TestGioviList {
 			}
 
 			@Test
+			void redir_wideneableList_shouldWidenEntries() {
+				assertThat(visit("""
+					x [Real]
+					[1 2 3] -> x
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviLists.of(1d, 2d, 3d));
+			}
+
+			@Test
+			void redir_nonWideneableList_shouldThrow() {
+				assertThatExceptionOfType(OperatorNotSupported.class)
+					.isThrownBy(() -> visit("""
+						x [Int]
+						[1r 2r 3r] -> x
+						"""));
+			}
+
+			@Test
 			void redirPlusValue_shouldInsert() {
 				assertThat(visit("""
 					[1 2] -> x [Int]
@@ -171,6 +181,25 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviLists.of(1, 2, 3));
+			}
+
+			@Test
+			void redirPlus_wideneableValue_shouldWiden() {
+				assertThat(visit("""
+					[1r 2r] -> x [Real]
+					3 ->+ x
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviLists.of(1d, 2d, 3d));
+			}
+
+			@Test
+			void redirPlus_nonWideneableValue_shouldThrow() {
+				assertThatExceptionOfType(OperatorNotSupported.class)
+					.isThrownBy(() -> visit("""
+						x [Int]
+						1r ->+ x
+						"""));
 			}
 
 			@Test

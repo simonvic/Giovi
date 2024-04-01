@@ -44,34 +44,33 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	// TODO: move map logic to native implementation
 
 	public void put(GioviValue<?> key, GioviValue<?> element) {
-		key = key.as(keyType).asGioviValue();
-		element = element.as(elementType).asGioviValue();
-		value.put(key, element);
+		if (!key.getGioviType().canWidenTo(keyType)
+			|| !element.getGioviType().canWidenTo(elementType)) {
+			throw new IllegalArgumentException();
+		}
+		value.put(
+			key.as(keyType).asGioviValue(),
+			element.as(elementType).asGioviValue());
 	}
 
-	public void putAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
-		defaultValue.forEach(this::put);
+	public void putAll(Map<GioviValue<?>, GioviValue<?>> map) {
+		map.forEach(this::put);
 	}
 
 	public GioviValue<?> get(GioviValue<?> key) {
-		// TODO: is it really needed? Maybe I fucked up the equals method in the past
-		// or should we keep this but use the `equal` (not `equals`) method ?
-		for (GioviValue<?> k : value.keySet()) {
-			if (k.equals(key)) {
-				return value.get(k);
-			}
+		if (!value.containsKey(key)) {
+			throw new KeyNotPresent(this, key);
 		}
-		throw new KeyNotPresent(this, key);
+		return value.get(key);
 	}
 
 
 	public void remove(GioviValue<?> key, GioviValue<?> element) {
 		key = key.as(keyType).asGioviValue();
-		element = element.as(elementType).asGioviValue();
-		for (GioviValue<?> k : value.keySet()) {
-			if (k.equals(key) && element.equals(value.get(k))) {
-				value.remove(k);
-				return;
+		if (value.containsKey(key)) {
+			element = element.as(elementType).asGioviValue();
+			if (value.get(key).equals(element)) {
+				value.remove(key);
 			}
 		}
 	}
@@ -185,7 +184,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = GioviMaps.copyOf(defaultValue);
-			case GioviMap v -> init(v.unbox());
+			case GioviMap v when v.keyType.canWidenTo(this.keyType)
+				&& v.elementType.canWidenTo(this.elementType) -> init(GioviMaps.copyOf(v.value));
 			default -> super.redirection(content);
 		}
 		return this;
@@ -197,8 +197,8 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> putAll(defaultValue);
-			case GioviMap v -> putAll(v.unbox());
-			//			case GioviValue<?> v -> this.put((K) v, defaultValue);
+			case GioviMap v when v.keyType.canWidenTo(this.keyType)
+				&& v.elementType.canWidenTo(this.elementType) -> putAll(v.value);
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -208,7 +208,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> removeAll(defaultValue);
-			case GioviMap v -> removeAll(v.unbox());
+			case GioviMap v -> removeAll(v.value);
 			case GioviValue<?> v -> remove(v);
 			default -> super.redirectionMinus(right);
 		}

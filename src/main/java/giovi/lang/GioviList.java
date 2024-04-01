@@ -2,6 +2,7 @@ package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviLists.copyOf;
 
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,11 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	public void add(GioviValue<?> entry) {
-		value.add(entry.as(entryType).asGioviValue());
+		if (entry.getGioviType().canWidenTo(entryType)) {
+			value.add(entry.as(entryType).asGioviValue());
+		} else {
+			throw new IllegalArgumentException();
+		}
 	}
 
 	public void addAll(List<? extends GioviValue<?>> entries) {
@@ -124,7 +129,8 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = copyOf(defaultValue);
-			case GioviList v -> this.init(v.unbox());
+			case GioviList v when v.entryType.equals(this.entryType) -> value = copyOf(v.value);
+			case GioviList v when v.entryType.canWidenTo(this.entryType) -> init(copyOf(v.value));
 			default -> super.redirection(content);
 		}
 		return this;
@@ -135,9 +141,9 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> addAll(defaultValue);
-			case GioviList v -> addAll(v.unbox());
-			case GioviValue<?> v -> add(v);
+			case GioviDefault v -> addAll(copyOf(defaultValue));
+			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
+			case GioviValue<?> v when v.getGioviType().canWidenTo(this.entryType) -> add(v.copy());
 			default -> super.redirectionPlus(right);
 		}
 		return this;
@@ -147,7 +153,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> removeAll(defaultValue);
-			case GioviList v -> removeAll(v.unbox());
+			case GioviList v -> removeAll(v.value);
 			case GioviValue<?> v -> remove(v);
 			default -> super.redirectionMinus(right);
 		}
