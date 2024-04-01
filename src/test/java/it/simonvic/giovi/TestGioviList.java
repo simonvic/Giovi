@@ -83,7 +83,7 @@ public class TestGioviList {
 		}
 
 		@Test
-		void listOfMixedButCompatibleTypes_shouldHaveAllValuesCastedToWidestType() {
+		void listOfMixedButCompatibleTypes_shouldHaveAllValuesWidened() {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList().unbox())
