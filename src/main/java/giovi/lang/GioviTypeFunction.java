@@ -13,6 +13,10 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 		this.signature = signature;
 	}
 
+	public FunctionSignature getSignature() {
+		return signature;
+	}
+
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return to instanceof GioviTypeFunction f && this.signature.equals(f.signature);
@@ -35,6 +39,5 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 		}
 		return super.dot(right);
 	}
-
 
 }

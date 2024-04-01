@@ -2,6 +2,7 @@ package giovi.lang;
 
 import giovi.Function;
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class GioviFunction extends GioviValue<Function> {
 
@@ -20,6 +21,15 @@ public final class GioviFunction extends GioviValue<Function> {
 	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypeFunction(value.signature().copy());
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		if (type instanceof GioviTypeFunction t
+			&& t.getSignature().equals(this.value.signature())) {
+			return this;
+		}
+		throw new NonWideneable(this, type);
 	}
 
 	@Override

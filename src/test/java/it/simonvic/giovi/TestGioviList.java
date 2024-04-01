@@ -454,13 +454,31 @@ public class TestGioviList {
 		class Casts {
 
 			@Test
-			void upcastingListToCompatibleList_shouldCastAllEntries() {
+			void testUpcasting() {
 				assertThat(visitExpression("""
-					[1n 2i 3r] as [Real]
+					[1 2 3] as [Real]
 					""").asGioviList().unbox())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
 							.isEqualTo(GioviTypes.of(GioviReal.class)));
+			}
+
+			@Test
+			void testDowncasting() {
+				assertThat(visitExpression("""
+					[1.69 2.69 3.69] as [Int]
+					""").asGioviList().unbox())
+					.allSatisfy(entry -> assertThat(entry
+						.getGioviType())
+							.isEqualTo(GioviTypes.of(GioviInt.class)));
+			}
+
+			@Test
+			void downcasting_shouldDowncastAllValues() {
+				assertThat(visitExpression("""
+					[1.69 2.69 3.69] as [Int]
+					""")).isEqualTo(GioviLists.of(
+					1, 2, 3));
 
 			}
 

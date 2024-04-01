@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import it.simonvic.giovi.exceptions.NonWideneable;
+
 // TODO: what if we make Void the variadic netrual element for all operations?
 public final class GioviVoid extends GioviPrimitive<Void> {
 
@@ -8,8 +10,8 @@ public final class GioviVoid extends GioviPrimitive<Void> {
 	}
 
 	@Override
-	public GioviTypeVoid getGioviType() {
-		return new GioviTypeVoid();
+	public String toString() {
+		return "void";
 	}
 
 	@Override
@@ -18,8 +20,14 @@ public final class GioviVoid extends GioviPrimitive<Void> {
 	}
 
 	@Override
-	public String toString() {
-		return "void";
+	public GioviTypeVoid getGioviType() {
+		return new GioviTypeVoid();
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		// TODO: eventually just do type.spawn()
+		throw new NonWideneable(this, type);
 	}
 
 	@Override

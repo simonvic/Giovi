@@ -7,6 +7,7 @@ import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviMaps;
 
 public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
@@ -41,16 +42,19 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 			e.as(elementType).asGioviValue()));
 	}
 
-	// TODO: move map logic to native implementation
-
+	/**
+	 * Put key-value pair. They will be widened if necessary.
+	 * @param key
+	 * @param element
+	 */
 	public void put(GioviValue<?> key, GioviValue<?> element) {
-		if (!key.getGioviType().canWidenTo(keyType)
-			|| !element.getGioviType().canWidenTo(elementType)) {
-			throw new IllegalArgumentException();
+		try {
+			value.put(
+				key.widenTo(keyType),
+				element.widenTo(elementType));
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
 		}
-		value.put(
-			key.as(keyType).asGioviValue(),
-			element.as(elementType).asGioviValue());
 	}
 
 	public void putAll(Map<GioviValue<?>, GioviValue<?>> map) {
@@ -157,6 +161,16 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		if (type instanceof GioviTypeMap t) {
+			var map = new GioviMap(t.getKeyType(), t.getElementType());
+			this.value.forEach(map::put);
+			return map;
+		}
+		throw new NonWideneable(this, type);
+	}
+
+	@Override
 	public GioviMap copy() {
 		var v = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
 		this.value.forEach((key, element) -> v.put(key.copy(), element.copy()));
@@ -166,17 +180,21 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		return new GioviMap(this.keyType, this.elementType, v, d);
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(t.getKeyType(), t.getElementType());
-			this.value.forEach(map::put);
+			this.value.forEach((k, e) -> map.put(
+				k.as(t.getKeyType()).asGioviValue(),
+				e.as(t.getElementType()).asGioviValue()));
 			return map;
 		}
 		return super.as(right);
 	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 

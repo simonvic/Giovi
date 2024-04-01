@@ -18,7 +18,7 @@ public abstract sealed class GioviNumber<T extends Number>
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		if (right instanceof GioviTypePrimitive<?> t) {
+		if (right instanceof GioviTypeNumber<?> t) {
 			var typeClass = t.unbox();
 			if (typeClass == GioviInt.class) return intValue();
 			if (typeClass == GioviReal.class) return realValue();

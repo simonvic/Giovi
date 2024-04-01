@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import it.simonvic.giovi.exceptions.NonWideneable;
+
 public abstract sealed class GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<T>>
 	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeStruct,
@@ -29,6 +31,12 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypeType();
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		// TODO: should a Type be wideneable? Update when Type type is implemented
+		throw new NonWideneable(this, type);
 	}
 
 	public abstract boolean canWidenTo(GioviType<?> to);

@@ -2,13 +2,13 @@ package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviLists.copyOf;
 
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.List;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
@@ -58,11 +58,15 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		return true;
 	}
 
+	/**
+	 * Add entry to list. The entry will be widened if necessary
+	 * @param entry
+	 */
 	public void add(GioviValue<?> entry) {
-		if (entry.getGioviType().canWidenTo(entryType)) {
-			value.add(entry.as(entryType).asGioviValue());
-		} else {
-			throw new IllegalArgumentException();
+		try {
+			value.add(entry.widenTo(entryType));
+		} catch (NonWideneable e) {
+			throw new IllegalArgumentException(e);
 		}
 	}
 
@@ -97,6 +101,16 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		if (type instanceof GioviTypeList t) {
+			var widened = t.spawn();
+			this.value.forEach(widened::add);
+			return widened;
+		}
+		throw new NonWideneable(this, type);
+	}
+
+	@Override
 	public GioviList copy() {
 		var v = new ArrayList<GioviValue<?>>();
 		this.value.forEach(value -> v.add(value.copy()));
@@ -109,15 +123,13 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
-	// FIXME: we should not automatically cast when redirecting (unless we can widen)
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeList t) {
 			var newGioviList = t.spawn();
-			this.value.forEach(newGioviList::add);
+			this.value.forEach(v -> newGioviList.add(v.as(t.getEntryType()).asGioviValue()));
 			return newGioviList;
 		}
 		return super.as(right);
@@ -143,7 +155,13 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		switch (right) {
 			case GioviDefault v -> addAll(copyOf(defaultValue));
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
-			case GioviValue<?> v when v.getGioviType().canWidenTo(this.entryType) -> add(v.copy());
+			case GioviValue<?> v -> {
+				try {
+					add(v.copy());
+				} catch (IllegalArgumentException ex) {
+					super.redirectionPlus(right);
+				}
+			}
 			default -> super.redirectionPlus(right);
 		}
 		return this;

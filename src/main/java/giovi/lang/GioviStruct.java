@@ -3,6 +3,7 @@ package giovi.lang;
 import java.util.LinkedHashMap;
 
 import giovi.*;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.GioviFieldDefinition;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.util.GioviLists;
@@ -48,6 +49,12 @@ public final class GioviStruct extends GioviValue<Struct> {
 				fieldValue.getGioviType(),
 				GioviValue.of(fieldValue.unboxDefault()))));
 		return new GioviTypeStruct(new GioviStructDefinition(this.value.getTypename(), fields));
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		// TODO: the heavylifting goes here
+		throw new NonWideneable(this, type);
 	}
 
 	@Override

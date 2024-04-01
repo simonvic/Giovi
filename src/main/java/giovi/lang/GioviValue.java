@@ -8,6 +8,7 @@ import giovi.Natural;
 import giovi.Struct;
 import giovi.Tuple;
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 
@@ -71,6 +72,14 @@ public abstract sealed class GioviValue<T>
 	}
 
 	public abstract GioviType<?> getGioviType();
+
+	/**
+	 * Widen the value to the specified type if it's wider (e.g. Natural < Int < Real)
+	 * @param type
+	 * @return widened value
+	 * @throws NonWideneable
+	 */
+	public abstract GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
 
 	public abstract GioviValue<T> copy();
 

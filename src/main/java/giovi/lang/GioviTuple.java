@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import giovi.*;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviTuple extends GioviValue<Tuple> {
@@ -31,6 +32,12 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		var typesList = new ArrayList<GioviType<?>>();
 		this.value.forEach(value -> typesList.add(value.getGioviType()));
 		return new GioviTypeTuple(typesList);
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		// TODO: the heavylifting goes here
+		throw new NonWideneable(this, type);
 	}
 
 	@Override
