@@ -56,8 +56,8 @@ public final class GioviFunction extends GioviValue<Function> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault v -> value = defaultValue.copy();
-			// TODO: check if signatures are equal
-			case GioviFunction v -> this.value = v.unbox().copy();
+			case GioviFunction v when v.value.signature()
+				.equals(this.value.signature()) -> this.value = v.unbox().copy();
 			default -> super.redirection(content);
 		}
 		return this;
