@@ -31,4 +31,8 @@ public record FunctionSignatureParam(
 		return new FunctionSignatureParam(identifier, type.copy(), param.copy(), isOptional);
 	}
 
+	public GioviValue<?> spawn() {
+		return param.copy();
+	}
+
 }

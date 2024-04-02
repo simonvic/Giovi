@@ -764,6 +764,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			throw new GioviException(
 				"Expecting at most " + formalParamsCount + " but instead got " + actualParamsCount);
 		}
+
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
@@ -779,7 +780,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					}
 					getCurrentScope().declare(
 						formalParamIdentifier,
-						formalParam.param());
+						formalParam.spawn());
 				}
 				break;
 			}
@@ -788,7 +789,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(
 					formalParamIdentifier,
-					formalParam.param());
+					formalParam.spawn());
 				continue;
 			}
 
@@ -841,7 +842,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.get(formalParamIdentifier)
 				.expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(formalParamIdentifier, formalParam.param());
+				getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
 			} else {
 				var actualParamValue = actualParamExpression.asGioviValue();
 				var actualParamType = actualParamValue.getGioviType();
@@ -868,7 +869,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				throw new GioviException(
 					"Required parameter not specified: " + formalParamIdentifier);
 			}
-			getCurrentScope().declare(formalParamIdentifier, formalParam.param());
+			getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
 		});
 
 	}
