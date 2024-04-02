@@ -47,8 +47,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		setCurrentScope(getCurrentScope().getParent());
 	}
 
-	// TODO: change return type and invoke appropriate method instead of generic visit() and casting
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// STATEMENTS
 
 	@Override
@@ -358,6 +356,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var value = type.spawn();
 		if (defaultDefinitionCtx != null) {
 			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
+			// TODO: check if type instanceof GioviDefault/GioviPlaceholder/GioviVoid
 			// we need to copy to ensure we don't pass an existing reference
 			// (e.g. foobar Foobar default someMap@someKey) which might change
 			// TODO: eventually the copy should be done within GioviValues,
@@ -703,24 +702,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitFormalParameter(FormalParameterContext ctx) {
 		String identifier = ctx.identifier().getText();
 		var type = visit(ctx.type()).asGioviType();
-		if (ctx.defaultDefinition() == null) {
-			return new FunctionSignatureParam(identifier, type);
-		}
-		var defaultExpression = visit(ctx.defaultDefinition().expression());
-		if (defaultExpression instanceof GioviDefault) { // TODO use GioviPlaceholder (underscore) instead
-			return new FunctionSignatureParam(identifier, type, type.spawn(), true);
-		}
-		var defaultValue = defaultExpression.asGioviValue();
-		var defaultValueType = defaultValue.getGioviType();
-		if (defaultValueType.equals(type)) {
-			return new FunctionSignatureParam(identifier, type, defaultValue);
-		}
-		if (defaultValueType.canWidenTo(type)) {
-			return new FunctionSignatureParam(identifier, type,
-				defaultValue.as(type).asGioviValue());
-		}
-		throw new GioviException("Incompatible default value. Expecting a " + type
-			+ " but instead got " + defaultValueType);
+		var param = spawnType(type, ctx.defaultDefinition());
+		boolean isOptional = ctx.defaultDefinition() != null;
+		return new FunctionSignatureParam(identifier, type, param, isOptional);
 	}
 
 	@Override
@@ -795,7 +779,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					}
 					getCurrentScope().declare(
 						formalParamIdentifier,
-						formalParam.defaultValue());
+						formalParam.param());
 				}
 				break;
 			}
@@ -804,7 +788,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(
 					formalParamIdentifier,
-					formalParam.defaultValue());
+					formalParam.param());
 				continue;
 			}
 
@@ -857,7 +841,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.get(formalParamIdentifier)
 				.expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(formalParamIdentifier, formalParam.defaultValue());
+				getCurrentScope().declare(formalParamIdentifier, formalParam.param());
 			} else {
 				var actualParamValue = actualParamExpression.asGioviValue();
 				var actualParamType = actualParamValue.getGioviType();
@@ -884,7 +868,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				throw new GioviException(
 					"Required parameter not specified: " + formalParamIdentifier);
 			}
-			getCurrentScope().declare(formalParamIdentifier, formalParam.defaultValue());
+			getCurrentScope().declare(formalParamIdentifier, formalParam.param());
 		});
 
 	}
@@ -1161,7 +1145,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitLiteralPlaceholder(LiteralPlaceholderContext ctx) {
-		return new GioviDefault();
+		return new GioviVoid();
 	}
 
 }

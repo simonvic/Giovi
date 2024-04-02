@@ -7,7 +7,7 @@ import giovi.lang.GioviValue;
 public record FunctionSignatureParam(
 	String identifier,
 	GioviType<?> type,
-	GioviValue<?> defaultValue,
+	GioviValue<?> param,
 	boolean isOptional)
 	implements GioviParserVisitResult {
 
@@ -22,15 +22,13 @@ public record FunctionSignatureParam(
 		this(identifier, type, type.spawn(), false);
 	}
 
-
 	@Override
 	public String toString() {
-		return String.format("%s %s%s", identifier, type, isOptional ? "?" + defaultValue : "");
+		return String.format("%s %s%s", identifier, type, isOptional ? "?" + param : "");
 	}
 
 	public FunctionSignatureParam copy() {
-		return new FunctionSignatureParam(
-			identifier, type.copy(), defaultValue.copy(), isOptional);
+		return new FunctionSignatureParam(identifier, type.copy(), param.copy(), isOptional);
 	}
 
 }

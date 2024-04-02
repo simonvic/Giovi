@@ -109,6 +109,19 @@ public class TestFunctions {
 		}
 
 		@Test
+		@Disabled("Not implemented yet")
+		void testFunctionDeclaration_withOptionalParameter_withDefaultPlaceholder() {
+			assertThat(visitFunctionDeclaration("""
+				someFunction(
+					a Int default _,
+				) {}
+				"""))
+				.isEqualTo(signatureOf(
+					"someFunction",
+					paramOf("a", GioviInt.class, new GioviInt())));
+		}
+
+		@Test
 		void functionDeclaration_withOptionalParameterOfWrongType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				someFunction(
