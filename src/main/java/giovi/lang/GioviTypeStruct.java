@@ -120,9 +120,9 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 	@Override
 	public GioviStruct spawn() {
 		var values = new LinkedHashMap<String, GioviValue<?>>();
-		definition.fields().forEach((identifier, field) -> values.put(
+		definition.fields().forEach((identifier, fieldDefinition) -> values.put(
 			identifier,
-			field.defaultValue().copy()));
+			fieldDefinition.field().copy()));
 		return new GioviStruct(new Struct(definition.typename(), values));
 	}
 
@@ -134,7 +134,7 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return definition.spawn(); // TODO: check this
+			return definition.spawn();
 		}
 		return super.dot(right);
 	}

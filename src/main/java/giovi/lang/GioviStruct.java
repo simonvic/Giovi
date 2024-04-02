@@ -47,7 +47,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 			new GioviFieldDefinition(
 				identifier,
 				fieldValue.getGioviType(),
-				GioviValue.of(fieldValue.unboxDefault()))));
+				fieldValue.copy())));
 		return new GioviTypeStruct(new GioviStructDefinition(this.value.getTypename(), fields));
 	}
 
