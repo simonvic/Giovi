@@ -13,13 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
 import giovi.lang.*;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.GioviTypes;
+import it.simonvic.giovi.util.*;
 
 public class TestDefaults {
-
-	// TODO(test): structs
 
 	@Nested
 	class TestDefaultOverride {
@@ -102,6 +98,37 @@ public class TestDefaults {
 						new GioviInt(1), new GioviBool(true),
 						new GioviInt(2), new GioviBool(false)));
 		}
+
+		@Test
+		void testDefaultOverrideStruct() {
+			assertThat(visit("""
+				Bar <
+					baz Text
+					foobar [Int]
+				>
+				Foo <
+					foo Text
+					bar Bar
+				>
+				x Foo default Foo.<
+					foo: "foo"
+					bar: Bar.<
+						baz: "baz"
+						foobar: [1 2 3]
+					>
+				>
+				""")
+				.getCurrentScope()
+				.getVariableValue("x")
+				.unboxDefault())
+					.isEqualTo(Structs.of(
+						"Foo",
+						"foo", "foo",
+						"bar", Structs.of("Bar",
+							"baz", "baz",
+							"foobar", List.of(1, 2, 3))));
+		}
+
 	}
 
 	@Nested
@@ -193,6 +220,43 @@ public class TestDefaults {
 						2, false));
 		}
 
+		@Test
+		void testDefaultResetStruct() {
+			assertThat(visit("""
+				Bar <
+					baz Text
+					foobar [Int]
+				>
+				Foo <
+					foo Text
+					bar Bar
+				>
+				x Foo default Foo.<
+					foo: "foo"
+					bar: Bar.<
+						baz: "baz"
+						foobar: [1 2 3]
+					>
+				>
+				x <- Foo.<
+					foo: "hello"
+					bar: Bar.<
+						baz: "world"
+						foobar: [69 420]
+					>
+				>
+				default -> x
+				""")
+				.getCurrentScope()
+				.getVariableValue("x"))
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"foo", "foo",
+						"bar", Structs.of("Bar",
+							"baz", "baz",
+							"foobar", List.of(1, 2, 3))));
+		}
+
 	}
 
 	@Nested
@@ -275,6 +339,36 @@ public class TestDefaults {
 				.isEqualTo(GioviMaps.of(1, true, 2, false));
 		}
 
+		@Test
+		void testDotDefaultStruct() {
+			var visitor = visit("""
+				Bar <
+					baz Text
+					foobar [Int]
+				>
+				Foo <
+					foo Text
+					bar Bar
+				>
+				x Foo default Foo.<
+					foo: "foo"
+					bar: Bar.<
+						baz: "baz"
+						foobar: [1 2 3]
+					>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				x.default
+				"""))
+				.isEqualTo(GioviStructs.of(
+					"Foo",
+					"foo", "foo",
+					"bar", Structs.of("Bar",
+						"baz", "baz",
+						"foobar", List.of(1, 2, 3))));
+		}
+
 	}
 
 	@Nested
@@ -341,6 +435,37 @@ public class TestDefaults {
 					GioviTypes.of(GioviText.class),
 					GioviTypes.of(GioviInt.class)));
 		}
+
+		@Test
+		void testTypeDefaultStruct() {
+			var visitor = visit("""
+				Bar <
+					baz Text default "baz"
+					foobar [Int] default [1 2 3]
+				>
+				Foo <
+					foo Text default "foo"
+					bar Bar
+					foobar Bar default Bar.<
+						baz: "BAZ"
+						foobar: [69 420]
+					>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				Foo.default
+				"""))
+				.isEqualTo(GioviStructs.of(
+					"Foo",
+					"foo", "foo",
+					"bar", Structs.of("Bar",
+						"baz", "baz",
+						"foobar", List.of(1, 2, 3)),
+					"foobar", Structs.of("Bar",
+						"baz", "BAZ",
+						"foobar", List.of(69, 420))));
+		}
+
 
 	}
 
