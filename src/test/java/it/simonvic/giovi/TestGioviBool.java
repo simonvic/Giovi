@@ -1,11 +1,15 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import giovi.lang.GioviBool;
 
 public class TestGioviBool {
 
@@ -23,18 +27,34 @@ public class TestGioviBool {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
-			// TODO(test): ...
+
+			@Test
+			void testRedirection() {
+				assertThat(visit("""
+					x Bool
+					true -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(true);
+			}
+
 		}
 
-		//                                                                                          arithmetic
-		//                                                                                          boolean
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+
 		@Nested
 		class Boolean {
 
@@ -84,8 +104,24 @@ public class TestGioviBool {
 			}
 		}
 
-		//                                                                                          relational
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
+		@Nested
+		class Access {
+
+			@Test
+			void testAccessDefault() {
+				assertThat(visitExpression(visit("""
+					x Bool default true
+					"""), """
+					x.default
+					"""))
+					.isEqualTo(new GioviBool(true));
+			}
+
+		}
 
 	}
 
