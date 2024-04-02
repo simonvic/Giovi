@@ -8,7 +8,7 @@ public class GioviException extends RuntimeException {
 		super(message);
 	}
 
-	public GioviException(String message, Throwable cause) {
+	public GioviException(Throwable cause, String message) {
 		super(message, cause);
 	}
 
@@ -16,7 +16,8 @@ public class GioviException extends RuntimeException {
 		super(cause);
 	}
 
-	public GioviException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+	public GioviException(String message, Throwable cause, boolean enableSuppression,
+		boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 	}
 }

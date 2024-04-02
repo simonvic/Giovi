@@ -93,6 +93,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				&& typeCheckCtx.identifier() != null) {
 				getCurrentScope().declare(
 					typeCheckCtx.identifier().getText(),
+					// TODO: widen here too?
 					subject.as(visit(typeCheckCtx.type())).asGioviValue());
 			}
 			visit(matchedLabelCtx.body);
@@ -718,7 +719,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (reference instanceof GioviFunction gioviFunction) {
 				function = gioviFunction.unbox();
 			} else {
-				throw new GioviException("Can't call " + identifier, e);
+				throw new GioviException(e, "Can't call " + identifier);
 			}
 		}
 		enterFunctionScope();
@@ -792,21 +793,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					formalParam.spawn());
 				continue;
 			}
-
 			var actualParamValue = actualParamExpression.asGioviValue();
-			var actualParamType = actualParamValue.getGioviType();
-			var formalParamType = formalParam.type();
-			if (actualParamType.equals(formalParamType)) {
+			try {
 				getCurrentScope().declare(
 					formalParamIdentifier,
-					actualParamValue);
-			} else if (actualParamType.canWidenTo(formalParamType)) {
-				getCurrentScope().declare(
-					formalParamIdentifier,
-					actualParamValue.as(formalParamType).asGioviValue());
-			} else {
-				throw new GioviException("Wrong parameter type. Expecting " + formalParamType
-					+ " but instead got " + actualParamType);
+					actualParamValue.widenTo(formalParam.type()));
+			} catch (NonWideneable ex) {
+				throw new GioviException(ex, "Wrong parameter type. Expecting " + formalParam.type()
+					+ " but instead got " + actualParamValue.getGioviType());
 			}
 		}
 
@@ -838,26 +832,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 			var formalParam = signature.parameters().get(actualParamIdentifier);
 			var formalParamIdentifier = formalParam.identifier();
-			var actualParamExpression = visit(actualParams
-				.get(formalParamIdentifier)
-				.expression());
+			var actualParamExpression = visit(actualParams.get(formalParamIdentifier).expression());
+
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
 			} else {
 				var actualParamValue = actualParamExpression.asGioviValue();
-				var actualParamType = actualParamValue.getGioviType();
-				var formalParamType = formalParam.type();
-				if (actualParamType.equals(formalParamType)) {
+				try {
 					getCurrentScope().declare(
 						formalParamIdentifier,
-						actualParamValue);
-				} else if (actualParamType.canWidenTo(formalParamType)) {
-					getCurrentScope().declare(
-						formalParamIdentifier,
-						actualParamValue.as(formalParamType).asGioviValue());
-				} else {
-					throw new GioviException("Wrong parameter type. Expecting "
-						+ formalParamType + " but instead got " + actualParamType);
+						actualParamValue.widenTo(formalParam.type()));
+				} catch (NonWideneable ex) {
+					throw new GioviException(ex, "Wrong parameter type. Expecting "
+						+ formalParam.type() + " but instead got "
+						+ actualParamValue.getGioviType());
 				}
 			}
 			undeclaredParameters.remove(formalParamIdentifier);
@@ -892,20 +880,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.signature().returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
-				var returnedType = returnedValue.getGioviType();
-				if (returnType.unbox() == GioviVoid.class
-					&& returnedType.unbox() != GioviVoid.class) {
+				if (returnType.unbox() == GioviVoid.class) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
-				if (returnedType.equals(returnType)) {
-					return returnedValue;
+				try {
+					return returnedValue.widenTo(returnType);
+				} catch (NonWideneable ex) {
+					throw new GioviException(ex, "Wrong return type, expecting " + returnType
+						+ " but got " + returnedValue.getGioviType());
 				}
-				if (returnedType.canWidenTo(returnType)) {
-					return returnedValue.as(returnType).asGioviValue();
-				}
-				throw new GioviException(
-					"Wrong return type, expecting " + returnType + " but got " + returnedType);
 			}
 		}
 		if (func.signature().returnType().unbox() != GioviVoid.class) {
