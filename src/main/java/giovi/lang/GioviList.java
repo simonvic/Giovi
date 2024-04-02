@@ -120,7 +120,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		this.value.forEach(value -> v.add(value.copy()));
 
 		var d = new ArrayList<GioviValue<?>>();
-		this.defaultValue.forEach(value -> v.add(value.copy()));
+		this.defaultValue.forEach(value -> d.add(value.copy()));
 
 		return new GioviList(this.entryType, v, d);
 	}
