@@ -34,13 +34,20 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		super(new LinkedHashMap<>(), new LinkedHashMap<>());
 		this.keyType = keyType;
 		this.elementType = elementType;
-		// TODO: same as lists, we should be widening, not casting
-		value.forEach((k, e) -> this.value.put(
-			k.as(keyType).asGioviValue(),
-			e.as(elementType).asGioviValue()));
-		defaultValue.forEach((k, e) -> this.defaultValue.put(
-			k.as(keyType).asGioviValue(),
-			e.as(elementType).asGioviValue()));
+		try {
+			for (var entry : value.entrySet()) {
+				this.value.put(
+					entry.getKey().widenTo(this.keyType),
+					entry.getValue().widenTo(this.elementType));
+			}
+			for (var entry : defaultValue.entrySet()) {
+				this.defaultValue.put(
+					entry.getKey().widenTo(this.keyType),
+					entry.getValue().widenTo(this.elementType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	/**

@@ -20,14 +20,16 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		List<GioviValue<?>> defaultValue) {
 		super(new ArrayList<>(), new ArrayList<>());
 		this.entryType = entryType;
-		// TODO: we should be widening rather than casting.
-		// For now it's safe as we can assume the entryType is correct lol
-		value.stream()
-			.map(entry -> entry.as(this.entryType).asGioviValue())
-			.forEach(this.value::add);
-		defaultValue.stream()
-			.map(entry -> entry.as(this.entryType).asGioviValue())
-			.forEach(this.defaultValue::add);
+		try {
+			for (var entry : value) {
+				this.value.add(entry.widenTo(this.entryType));
+			}
+			for (var entry : defaultValue) {
+				this.defaultValue.add(entry.widenTo(this.entryType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	public GioviList(
