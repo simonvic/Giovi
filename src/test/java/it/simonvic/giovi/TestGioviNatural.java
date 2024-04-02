@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import giovi.Natural;
+import giovi.lang.GioviNatural;
 
 public class TestGioviNatural {
 
@@ -49,33 +51,111 @@ public class TestGioviNatural {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
+
+			@Test
+			void testRedirection() {
+				assertThat(visit("""
+					x Natural
+					69n -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(new Natural(69));
+			}
+
+			@Test
+			void testRedirectionPlus() {
+				assertThat(visit("""
+					60n -> x Natural
+					9n ->+ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(new Natural(69));
+			}
+
+			@Test
+			void testRedirectionMinus() {
+				assertThat(visit("""
+					79n -> x Natural
+					10n ->- x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(new Natural(69));
+			}
+
+			@Test
+			void testRedirectionMultiply() {
+				assertThat(visit("""
+					42n -> x Natural
+					10n ->* x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(new Natural(420));
+			}
+
+			@Test
+			void testRedirectionDivide() {
+				assertThat(visit("""
+					690n -> x Natural
+					10n ->/ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(new Natural(69));
+			}
+
 		}
 
-		//                                                                                          arithmetic
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 		@Nested
 		class Arithmetic {
 		}
 
-		//                                                                                          boolean
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+
 		@Nested
 		class Boolean {
 		}
 
-		//                                                                                          relational
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
 		@Nested
 		class Relational {
 		}
 
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
 		@Nested
 		class Access {
+
+			@Test
+			void testAccessDefault() {
+				assertThat(visitExpression(visit("""
+					x Natural default 69n
+					"""), """
+					x.default
+					"""))
+					.isEqualTo(new GioviNatural(new Natural(69)));
+			}
+
 		}
 
 	}

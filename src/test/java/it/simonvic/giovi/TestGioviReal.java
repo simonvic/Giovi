@@ -9,9 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import giovi.lang.GioviReal;
+
 public class TestGioviReal {
 
-	//                                                                                              Creation
+	//////////////////////////////////////////////////////////////////////////////////////////////// Creation
+
 	@Nested
 	class Creation {
 
@@ -46,11 +49,13 @@ public class TestGioviReal {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
 
@@ -124,26 +129,42 @@ public class TestGioviReal {
 					.unbox())
 						.isEqualTo(69d);
 			}
+
 		}
 
-		//                                                                                          arithmetic
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 		@Nested
 		class Arithmetic {
 		}
 
-		//                                                                                          boolean
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+
 		@Nested
 		class Boolean {
 		}
 
-		//                                                                                          relational
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
 		@Nested
 		class Relational {
 		}
 
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
 		@Nested
 		class Access {
+
+			@Test
+			void testAccessDefault() {
+				assertThat(visitExpression(visit("""
+					x Real default 69r
+					"""), """
+					x.default
+					"""))
+					.isEqualTo(new GioviReal(69d));
+			}
+
 		}
 
 	}

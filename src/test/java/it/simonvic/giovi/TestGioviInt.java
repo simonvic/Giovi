@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -11,9 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import giovi.lang.GioviInt;
+
 public class TestGioviInt {
 
-	//                                                                                              Creation
+	//////////////////////////////////////////////////////////////////////////////////////////////// Creation
+
 	@Nested
 	class Creation {
 
@@ -54,17 +58,80 @@ public class TestGioviInt {
 
 	}
 
-	//                                                                                              Operations
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
 	@Nested
 	class Operations {
 
-		//                                                                                          redirection
+		//////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 		@Nested
 		class Redirection {
-			// TODO(test): ...
+
+			@Test
+			void testRedirection() {
+				assertThat(visit("""
+					x Int
+					69 -> x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69);
+			}
+
+			@Test
+			void testRedirectionPlus() {
+				assertThat(visit("""
+					60 -> x Int
+					9 ->+ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69);
+			}
+
+			@Test
+			void testRedirectionMinus() {
+				assertThat(visit("""
+					79 -> x Int
+					10 ->- x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69);
+			}
+
+			@Test
+			void testRedirectionMultiply() {
+				assertThat(visit("""
+					42 -> x Int
+					10 ->* x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(420);
+			}
+
+			@Test
+			void testRedirectionDivide() {
+				assertThat(visit("""
+					690 -> x Int
+					10 ->/ x
+					""")
+					.getCurrentScope()
+					.getVariableValue("x")
+					.unbox())
+						.isEqualTo(69);
+			}
+
 		}
 
-		//                                                                                          arithmetic
+		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 		@Nested
 		class Arithmetic {
 
@@ -128,13 +195,30 @@ public class TestGioviInt {
 
 		}
 
-		//                                                                                          boolean
-		//                                                                                          relational
+		//////////////////////////////////////////////////////////////////////////////////////////// boolean
+
+		//////////////////////////////////////////////////////////////////////////////////////////// relational
+
 		@Nested
 		class Relational {
 		}
 
-		//                                                                                          access
+		//////////////////////////////////////////////////////////////////////////////////////////// access
+
+		@Nested
+		class Access {
+
+			@Test
+			void testAccessDefault() {
+				assertThat(visitExpression(visit("""
+					x Int default 69
+					"""), """
+					x.default
+					"""))
+					.isEqualTo(new GioviInt(69));
+			}
+
+		}
 
 	}
 
