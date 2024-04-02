@@ -89,6 +89,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
+			case GioviDefault v -> this.value = defaultValue.copy();
 			case GioviStruct gioviStruct -> {
 				if (!gioviStruct.value.isSubset(this.value)) {
 					return super.redirection(content);
