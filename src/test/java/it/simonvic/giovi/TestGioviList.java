@@ -355,6 +355,14 @@ public class TestGioviList {
 					.isTrue();
 			}
 
+			@Test
+			void checkingIfContainsEqualEntries_shouldReturnTrue() {
+				assertThat(visitExpression("""
+					[1 2 3] =~ [1 3]
+					""").asGioviBool().unbox())
+					.isTrue();
+			}
+
 		}
 
 		@Nested
