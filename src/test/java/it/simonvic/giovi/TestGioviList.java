@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -250,6 +251,41 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviLists.of(1, 2, 3));
+			}
+
+			@Test
+			void redirMinusValueOfMatrix_shouldRemoveFirstOccurence() {
+				assertThat(visit("""
+					x [[Int]] <- [
+						[1 0 0]
+						[1 1 1]
+						[0 1 0]
+						[0 0 1]
+					]
+					x -<- [1 1 1]
+					""").getCurrentScope().getVariableValue("x"))
+					.isEqualTo(GioviLists.of(
+						List.of(1, 0, 0),
+						List.of(0, 1, 0),
+						List.of(0, 0, 1)));
+			}
+
+			@Test
+			void redirMinusMatrix_shouldRemoveAllOccurences() {
+				assertThat(visit("""
+					x [[Int]] <- [
+						[1 0 0]
+						[1 1 1]
+						[0 1 0]
+						[2 2 2]
+						[0 0 1]
+					]
+					x -<- [[1 1 1] [2 2 2]]
+					""").getCurrentScope().getVariableValue("x"))
+					.isEqualTo(GioviLists.of(
+						List.of(1, 0, 0),
+						List.of(0, 1, 0),
+						List.of(0, 0, 1)));
 			}
 
 			@Test

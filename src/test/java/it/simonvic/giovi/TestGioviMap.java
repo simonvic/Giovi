@@ -356,6 +356,33 @@ public class TestGioviMap {
 						.isEqualTo(GioviMaps.of(1, "a"));
 			}
 
+			@Test
+			void redirMinus_mapAsKey() {
+				assertThat(visit("""
+					 x [[Int:Text]:Text] <- [
+						[1:"a"] : "A"
+						[2:"b"] : "B"
+						[3:"c"] : "C"
+					]
+					x -<- [3:"c"]
+					""").getCurrentScope().getVariableValue("x"))
+					.isEqualTo(GioviMaps.of(
+						Map.of(1, "a"), "A",
+						Map.of(2, "b"), "B"));
+			}
+
+			@Test
+			void redirMinus_mapButDifferentFromKeyType_shouldThrow() {
+				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+					 x [[Int:Text]:Text] <- [
+						[1:"a"] : "A"
+						[2:"b"] : "B"
+						[3:"c"] : "C"
+					]
+					x -<- [3:69]
+					"""));
+			}
+
 			// TODO(test): map with map as key or element
 		}
 

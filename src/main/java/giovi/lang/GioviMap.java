@@ -226,8 +226,15 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault v -> removeAll(defaultValue);
-			case GioviMap v -> removeAll(v.value);
-			case GioviValue<?> v -> remove(v);
+			case GioviMap v when v.keyType.canWidenTo(this.keyType)
+				&& v.elementType.canWidenTo(this.elementType) -> removeAll(v.value);
+			case GioviValue<?> v -> {
+				try {
+					remove(v.widenTo(this.keyType));
+				} catch (IllegalArgumentException | NonWideneable e) {
+					return super.redirectionMinus(right);
+				}
+			}
 			default -> super.redirectionMinus(right);
 		}
 		return this;
