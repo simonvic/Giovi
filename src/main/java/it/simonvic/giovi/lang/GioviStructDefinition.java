@@ -63,9 +63,11 @@ public record GioviStructDefinition(
 
 	public GioviStruct spawn() {
 		var values = new LinkedHashMap<String, GioviValue<?>>();
-		fields.forEach((identifier, definition) -> values.put(
-			identifier,
-			definition.field().copy()));
+		for (var fieldEntry : fields.entrySet()) {
+			values.put(
+				fieldEntry.getKey(),
+				fieldEntry.getValue().field().copy());
+		}
 		return new GioviStruct(new Struct(typename, values));
 	}
 
