@@ -105,7 +105,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, GioviValue.of(69))));
+					paramOf("a", GioviInt.class, new GioviInt(69, 69))));
 		}
 
 		@Test
@@ -149,8 +149,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, GioviValue.of(69)),
-					paramOf("b", GioviReal.class, GioviValue.of(6.9))));
+					paramOf("a", GioviInt.class, new GioviInt(69, 69)),
+					paramOf("b", GioviReal.class, new GioviReal(6.9, 6.9))));
 		}
 
 		@Test
@@ -166,7 +166,7 @@ public class TestFunctions {
 					"someFunction",
 					paramOf("a", GioviInt.class),
 					paramOf("b", GioviReal.class),
-					paramOf("c", GioviBool.class, GioviValue.of(true))));
+					paramOf("c", GioviBool.class, new GioviBool(true, true))));
 		}
 
 		@Test
@@ -180,9 +180,9 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, GioviValue.of(69)),
+					paramOf("a", GioviInt.class, new GioviInt(69, 69)),
 					paramOf("b", GioviReal.class),
-					paramOf("c", GioviBool.class, GioviValue.of(true))));
+					paramOf("c", GioviBool.class, new GioviBool(true, true))));
 		}
 
 		@Disabled("Function overload not implemented yet")

@@ -93,7 +93,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				&& typeCheckCtx.identifier() != null) {
 				getCurrentScope().declare(
 					typeCheckCtx.identifier().getText(),
-					// TODO: widen here too?
+					// TODO: clafiry requirements. Should a type check a type = type or a widening check?
+					// A widening check could be useful for struct/tuple matching and destructing
 					subject.as(visit(typeCheckCtx.type())).asGioviValue());
 			}
 			visit(matchedLabelCtx.body);

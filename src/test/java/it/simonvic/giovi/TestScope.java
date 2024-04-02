@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.*;
 
-import giovi.lang.GioviInt;
-import giovi.lang.GioviValue;
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.VariableAlreadyDeclared;
 import it.simonvic.giovi.exceptions.VariableNotDeclared;
@@ -29,57 +28,57 @@ public class TestScope {
 	class TestDeclaration {
 		@Test
 		void testDeclaration_string() {
-			scope.declare("aString", GioviValue.of("hello world"));
+			scope.declare("aString", new GioviText("hello world"));
 			assertTrue(scope.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void testDeclaration_bool() {
-			scope.declare("aBoolean", GioviValue.of(true));
+			scope.declare("aBoolean", new GioviBool(true));
 			assertTrue(scope.isDeclaredVariable("aBoolean"));
 		}
 
 		@Test
 		void testDeclaration_real() {
-			scope.declare("aReal", GioviValue.of(0.69));
+			scope.declare("aReal", new GioviReal(0.69));
 			assertTrue(scope.isDeclaredVariable("aReal"));
 		}
 
 		@Test
 		void testDeclaration_int() {
-			scope.declare("anInteger", GioviValue.of(69));
+			scope.declare("anInteger", new GioviInt(69));
 			assertTrue(scope.isDeclaredVariable("anInteger"));
 		}
 
 		@Test
 		void testDeclarationVariableType_string() {
-			scope.declare("aString", GioviValue.of("hello world"));
+			scope.declare("aString", new GioviText("hello world"));
 			assertEquals(String.class, scope.getVariableValue("aString").unbox().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_bool() {
-			scope.declare("aBoolean", GioviValue.of(true));
+			scope.declare("aBoolean", new GioviBool(true));
 			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").unbox().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_real() {
-			scope.declare("aReal", GioviValue.of(0.69));
+			scope.declare("aReal", new GioviReal(0.69));
 			assertEquals(Double.class, scope.getVariableValue("aReal").unbox().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_int() {
-			scope.declare("anInteger", GioviValue.of(69));
+			scope.declare("anInteger", new GioviInt(69));
 			assertEquals(Integer.class, scope.getVariableValue("anInteger").unbox().getClass());
 		}
 
 		@Test
 		void declare_shouldThrow_VariableAlreadyDefined() {
-			scope.declare("someVar", GioviValue.of(69));
+			scope.declare("someVar", new GioviInt(69));
 			assertThrows(VariableAlreadyDeclared.class,
-				() -> scope.declare("someVar", GioviValue.of(69)));
+				() -> scope.declare("someVar", new GioviInt(69)));
 		}
 
 		@Test
@@ -91,12 +90,12 @@ public class TestScope {
 		@Test
 		void update_shouldThrow_VariableNotDefined() {
 			assertThrows(VariableNotDeclared.class,
-				() -> scope.setVariableValue("someUndefinedVariable", GioviValue.of(69)));
+				() -> scope.setVariableValue("someUndefinedVariable", new GioviInt(69)));
 		}
 
 		@Test
 		void declare_shouldDeclareVariable() {
-			scope.declare("aString", GioviValue.of("hello world"));
+			scope.declare("aString", new GioviText("hello world"));
 			assertTrue(scope.isDeclaredVariable("aString"));
 		}
 	}
@@ -106,7 +105,7 @@ public class TestScope {
 	void update_shouldUpdateVariableValue() {
 		GioviInt value = new GioviInt();
 		scope.declare("anInt", value);
-		scope.setVariableValue("anInt", GioviValue.of(69));
+		scope.setVariableValue("anInt", new GioviInt(69));
 		assertEquals(69, value.unbox());
 	}
 
@@ -136,13 +135,13 @@ public class TestScope {
 
 		@Test
 		void test_declareVariable() {
-			global.declare("aString", GioviValue.of("hello world"));
+			global.declare("aString", new GioviText("hello world"));
 			assertTrue(global.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void test_getVariableValue() {
-			global.declare("aString", GioviValue.of("hello world"));
+			global.declare("aString", new GioviText("hello world"));
 			assertEquals("hello world", global.getVariableValue("aString").unbox());
 		}
 
@@ -153,46 +152,46 @@ public class TestScope {
 
 		@Test
 		void nestedBlocksShouldSeeParentsVariables() {
-			global.declare("aString", GioviValue.of("Hello world"));
+			global.declare("aString", new GioviText("Hello world"));
 			assertTrue(scope1.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void nestedBlocksShouldSeeParentsVariables2() {
-			global.declare("aString", GioviValue.of("Hello world"));
+			global.declare("aString", new GioviText("Hello world"));
 			assertTrue(scope111.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void nonNestedBlocksShouldSeeParentsVariables() {
-			scope1.declare("aString", GioviValue.of("Hello world"));
+			scope1.declare("aString", new GioviText("Hello world"));
 			assertFalse(scope2.isDeclaredVariable("aString"));
 		}
 
 		@Test
 		void sameBlockShouldThrow_VariableAlreadyDeclared() {
-			scope1.declare("aString", GioviValue.of("Hello world"));
+			scope1.declare("aString", new GioviText("Hello world"));
 			assertThrows(VariableAlreadyDeclared.class,
-				() -> scope1.declare("aString", GioviValue.of("hello_world")));
+				() -> scope1.declare("aString", new GioviText("hello_world")));
 		}
 
 		@Test
 		void nestedBlockShouldNotThrow_VariableAlreadyDeclared() {
-			scope11.declare("aString", GioviValue.of("Hello world"));
+			scope11.declare("aString", new GioviText("Hello world"));
 			assertThatNoException()
-				.isThrownBy(() -> scope111.declare("aString", GioviValue.of("hello_world")));
+				.isThrownBy(() -> scope111.declare("aString", new GioviText("hello_world")));
 		}
 
 		@Test
 		void nestedBlockShouldAccessVariablesValue() {
-			global.declare("aString", GioviValue.of("Hello world"));
+			global.declare("aString", new GioviText("Hello world"));
 			assertEquals("Hello world", scope11.getVariableValue("aString").unbox());
 		}
 
 		@Test
 		void nestedBlockShouldBeAbleToChangeVariablesValue() {
-			global.declare("aString", GioviValue.of("Hello world"));
-			scope2.setVariableValue("aString", GioviValue.of("ciao mondo"));
+			global.declare("aString", new GioviText("Hello world"));
+			scope2.setVariableValue("aString", new GioviText("ciao mondo"));
 			assertEquals("ciao mondo", global.getVariableValue("aString").unbox());
 		}
 	}

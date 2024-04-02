@@ -66,11 +66,11 @@ public class TestGioviStruct {
 				""")).isEqualTo(new GioviStructDefinition(
 				"Foo", List.of(
 					new GioviFieldDefinition("foo", GioviTypes.of(GioviInt.class),
-						GioviValue.of(69)),
+						new GioviInt(69, 69)),
 					new GioviFieldDefinition("bar", GioviTypes.of(GioviBool.class),
-						GioviValue.of(true)),
+						new GioviBool(true, true)),
 					new GioviFieldDefinition("foobar", GioviTypes.of(GioviText.class),
-						GioviValue.of("hello")))));
+						new GioviText("hello", "hello")))));
 		}
 
 		@Test
@@ -155,11 +155,11 @@ public class TestGioviStruct {
 				() -> assertThat(argb).isEqualTo(new GioviStructDefinition(
 					"ARGB", List.of(
 						new GioviFieldDefinition(
-							"r", GioviTypes.of(GioviInt.class), GioviValue.of(250)),
+							"r", GioviTypes.of(GioviInt.class), new GioviInt(250, 250)),
 						new GioviFieldDefinition(
-							"g", GioviTypes.of(GioviInt.class), GioviValue.of(200)),
+							"g", GioviTypes.of(GioviInt.class), new GioviInt(200, 200)),
 						new GioviFieldDefinition(
-							"b", GioviTypes.of(GioviInt.class), GioviValue.of(150)),
+							"b", GioviTypes.of(GioviInt.class), new GioviInt(150, 150)),
 						new GioviFieldDefinition(
 							"a", GioviTypes.of(GioviInt.class))))));
 		}
