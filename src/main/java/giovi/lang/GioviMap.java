@@ -34,6 +34,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		super(new LinkedHashMap<>(), new LinkedHashMap<>());
 		this.keyType = keyType;
 		this.elementType = elementType;
+		// TODO: same as lists, we should be widening, not casting
 		value.forEach((k, e) -> this.value.put(
 			k.as(keyType).asGioviValue(),
 			e.as(elementType).asGioviValue()));
@@ -46,8 +47,9 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	 * Put key-value pair. They will be widened if necessary.
 	 * @param key
 	 * @param element
+	 * @throws IllegalArgumentException
 	 */
-	public void put(GioviValue<?> key, GioviValue<?> element) {
+	public void put(GioviValue<?> key, GioviValue<?> element) throws IllegalArgumentException {
 		try {
 			value.put(
 				key.widenTo(keyType),
@@ -57,7 +59,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		}
 	}
 
-	public void putAll(Map<GioviValue<?>, GioviValue<?>> map) {
+	public void putAll(Map<GioviValue<?>, GioviValue<?>> map) throws IllegalArgumentException {
 		map.forEach(this::put);
 	}
 
@@ -70,9 +72,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 
 	public void remove(GioviValue<?> key, GioviValue<?> element) {
-		key = key.as(keyType).asGioviValue();
 		if (value.containsKey(key)) {
-			element = element.as(elementType).asGioviValue();
 			if (value.get(key).equals(element)) {
 				value.remove(key);
 			}
@@ -80,7 +80,6 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	public void remove(GioviValue<?> key) {
-		key = key.as(keyType).asGioviValue();
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key)) {
 				value.remove(k);
