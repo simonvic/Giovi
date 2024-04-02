@@ -61,11 +61,19 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	@Override
-	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
+	public GioviParserVisitResult visitCaseMatchCascade(CaseMatchCascadeContext ctx) {
 		return VisitorUtils.bool(
 			visit(ctx.caseMatch(0)),
 			GioviToken.of(ctx.bop.getText()),
 			() -> visit(ctx.caseMatch(1)));
+	}
+
+	@Override
+	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
+		return VisitorUtils.bool(
+			visit(ctx.caseMatch()),
+			GioviToken.AND,
+			() -> gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
