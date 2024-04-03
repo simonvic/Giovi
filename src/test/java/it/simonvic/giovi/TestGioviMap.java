@@ -421,7 +421,6 @@ public class TestGioviMap {
 			}
 
 			@Test
-			@Disabled("Candidate not implemented yet")
 			void checkingIfContainsExistingSubset_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1 "b":2 "c":3] =~ ["b":2 "c":3]

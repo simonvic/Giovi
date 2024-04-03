@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import giovi.GioviParserVisitResult;
-import giovi.Struct;
 import it.simonvic.giovi.lang.GioviStructDefinition;
 
 public final class GioviTypeStruct extends GioviType<GioviStruct> {

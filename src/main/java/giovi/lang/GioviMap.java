@@ -293,12 +293,27 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
-		for (var key : this.value.keySet()) {
-			if (key.equal(right).asNativeBool()) {
-				return new GioviBool(true);
+		return switch (right) {
+			case GioviMap m when m.keyType.equals(keyType) && m.elementType.equals(elementType) -> {
+				for (var entry : m.value.entrySet()) {
+					var key = entry.getKey();
+					if (!value.containsKey(key)
+						|| !value.get(key).equal(entry.getValue()).asNativeBool()) {
+						yield new GioviBool(false);
+					}
+				}
+				yield new GioviBool(true);
 			}
-		}
-		return new GioviBool(false);
+			case GioviValue<?> v -> {
+				for (var key : value.keySet()) {
+					if (key.equal(v).asNativeBool()) {
+						yield new GioviBool(true);
+					}
+				}
+				yield new GioviBool(false);
+			}
+			default -> super.contains(right);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access

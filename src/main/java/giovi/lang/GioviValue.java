@@ -69,10 +69,14 @@ public abstract sealed class GioviValue<T>
 		}
 	}
 
+	/**
+	 * Get the Type (in Giovi space) of this value
+	 * @return Type
+	 */
 	public abstract GioviType<?> getGioviType();
 
 	/**
-	 * Widen the value to the specified type if it's wider (e.g. Natural < Int < Real)
+	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
 	 * @param type
 	 * @return widened value
 	 * @throws NonWideneable
