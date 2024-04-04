@@ -18,6 +18,7 @@ import giovi.Range;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.util.GioviTuples;
+import it.simonvic.giovi.util.Tuples;
 
 public class TestGioviTuple {
 
@@ -30,7 +31,7 @@ public class TestGioviTuple {
 		void testCreation_emptyTuple() {
 			assertThat(visitExpression("""
 				<>
-				""")).isEqualTo(GioviTuples.of(List.of()));
+				""")).isEqualTo(new GioviTuple());
 		}
 
 		@Test
@@ -39,6 +40,61 @@ public class TestGioviTuple {
 				<69 true "foo">
 				""")).isEqualTo(GioviTuples.of(List.of(
 				69, true, "foo")));
+		}
+
+		@Test
+		void testCreation_namedTuple() {
+			assertThat(visitExpression("""
+				<
+					a: 69
+					b: true
+					c: "foo"
+				>
+				""")).isEqualTo(new GioviTuple(Tuples.of(
+				"a", 69,
+				"b", true,
+				"c", "foo")));
+		}
+
+		@Test
+		void testCreation_withNestedNamedTuple() {
+			assertThat(visitExpression("""
+				<
+					a: 69
+					b: true
+					c: <
+						foo: "foo"
+						bar: "bar"
+					>
+				>
+				""")).isEqualTo(new GioviTuple(Tuples.of(
+				"a", 69,
+				"b", true,
+				"c", Tuples.of(
+					"foo", "foo",
+					"bar", "bar"))));
+		}
+
+		@Test
+		void testCreation_withNestedMixedTuples() {
+			assertThat(visitExpression("""
+				<
+					a: 69
+					b: true
+					c: <
+						foo: "foo"
+						bar: "bar"
+					>
+					d: <1 2 3>
+				>
+				""")).isEqualTo(new GioviTuple(Tuples.of(
+				"a", 69,
+				"b", true,
+				"c", Tuples.of(
+					"foo", "foo",
+					"bar", "bar"),
+				"d", Tuples.of(List.of(
+					1, 2, 3)))));
 		}
 
 	}
@@ -50,7 +106,6 @@ public class TestGioviTuple {
 
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
 
-		@Disabled("Candidate not implemented yet")
 		@Nested
 		class Redirection {
 
