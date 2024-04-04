@@ -146,7 +146,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
-				case KEYS -> Range.of(0, value.getFieldsCount(), 1);
+				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> switch (value) {
 					case TupleNamed named -> GioviLists.of(named.getFieldNames());
 					default -> super.access(right);

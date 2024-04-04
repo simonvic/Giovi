@@ -149,7 +149,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
-				case KEYS -> Range.of(0, value.getFieldsCount(), 1);
+				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
