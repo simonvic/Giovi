@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import giovi.GioviParserVisitResult;
 import giovi.Tuple;
+import giovi.TupleNamed;
 
 public final class GioviTypeTuple extends GioviType<GioviTuple> {
 
@@ -155,11 +156,19 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 
 	@Override
 	public GioviTuple spawn() {
-		var values = new ArrayList<GioviValue<?>>();
-		for (var fieldType : fieldTypes) {
-			values.add(fieldType.spawn());
+		if (fieldTypes != null) {
+			var fields = new ArrayList<GioviValue<?>>();
+			for (var fieldType : fieldTypes) {
+				fields.add(fieldType.spawn());
+			}
+			return new GioviTuple(new Tuple(fields));
+		} else {
+			var fields = new LinkedHashMap<String, GioviValue<?>>();
+			for (var entry : namedFieldTypes.entrySet()) {
+				fields.put(entry.getKey(), entry.getValue().spawn());
+			}
+			return new GioviTuple(new TupleNamed(fields));
 		}
-		return new GioviTuple(new Tuple(values));
 	}
 
 	@Override
@@ -174,7 +183,6 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 		}
 		return super.dot(right);
 	}
-
 
 
 }
