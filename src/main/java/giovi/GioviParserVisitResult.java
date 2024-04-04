@@ -64,7 +64,8 @@ public interface GioviParserVisitResult {
 
 	default GioviValue<?> asGioviValue() { return (GioviValue<?>) this; }
 	default GioviType<?> asGioviType() { return (GioviType<?>) this; }
-	default GioviTuple asGioviStruct() { return (GioviTuple) this; }
+	default GioviTuple asGioviTuple() { return (GioviTuple) this; }
+	default GioviStruct asGioviStruct() { return (GioviStruct) this; }
 	default GioviList asGioviList() { return (GioviList) this; }
 	default GioviMap asGioviMap() { return (GioviMap) this; }
 	default GioviNumber<?> asGioviNumber() { return (GioviNumber<?>) this; }
