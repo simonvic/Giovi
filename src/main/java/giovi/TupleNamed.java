@@ -12,6 +12,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	private final LinkedHashMap<String, GioviValue<?>> fields;
 
 	public TupleNamed() {
+		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
