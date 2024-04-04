@@ -638,7 +638,7 @@ public class TestGioviStruct {
 				assertThat(visitExpression(visitor, """
 					Foobar.<>@@
 					"""))
-					.isEqualTo(Range.of(0, 5, 1));
+					.isEqualTo(Range.of(0, 4, 1));
 			}
 
 
