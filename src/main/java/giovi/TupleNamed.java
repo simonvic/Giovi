@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
 
@@ -75,9 +76,12 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	public GioviValue<?> getField(String identifier) {
-		// TODO: since we don't allow storing nulls, we should throw in case the key is not present
-		return fields.get(identifier);
+	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
+		var v = fields.get(identifier);
+		if (v == null) {
+			throw new UnknownTupleField(this, identifier);
+		}
+		return v;
 	}
 
 	public List<String> getFieldNames() {

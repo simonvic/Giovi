@@ -228,7 +228,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						throw new GioviException("Can't deconstruct " + gioviValue
 							+ " because a field " + fieldIdentifier + " doesn't exist");
 					}
-					getCurrentScope().declare(fieldIdentifier, tuple.getField(fieldIdentifier));
+					GioviValue<?> field;
+					try {
+						field = tuple.getField(fieldIdentifier);
+					} catch (UnknownTupleField e) {
+						throw new GioviException(e, "Can't iterate over " + gioviList);
+					}
+					getCurrentScope().declare(fieldIdentifier, field);
 				}
 			}
 			visit(statementOrBlockCtx);

@@ -3,6 +3,7 @@ package giovi.lang;
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviTuple extends GioviValue<Tuple> {
@@ -100,7 +101,13 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		return switch (right) {
 			case GioviDefault __ -> new GioviTuple(defaultValue.copy());
 			case FieldKey(var identifier) -> switch (value) {
-				case TupleNamed named -> named.getField(identifier);
+				case TupleNamed named -> {
+					try {
+						yield named.getField(identifier);
+					} catch (UnknownTupleField e) {
+						yield super.dot(right);
+					}
+				}
 				default -> super.dot(right);
 			};
 			default -> super.dot(right);

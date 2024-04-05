@@ -4,6 +4,7 @@ import giovi.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviStruct extends GioviValue<Struct> {
@@ -35,7 +36,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 		return value.getFieldsCount();
 	}
 
-	public GioviValue<?> getField(String identifier) {
+	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
 		return value.getField(identifier);
 	}
 
@@ -50,8 +51,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public void boxField(String field, GioviValue<?> fieldValue) {
 		try {
 			value.getField(field).box(fieldValue);
-			// TODO: remove this crap once missing keys are handled properly
-		} catch (NullPointerException | ClassCastException | NonWideneable e) {
+		} catch (ClassCastException | NonWideneable | UnknownTupleField e) {
 			throw new GioviException(e);
 		}
 	}
@@ -89,10 +89,11 @@ public final class GioviStruct extends GioviValue<Struct> {
 				}
 				for (var entry : value.entrySet()) {
 					String identifier = entry.getKey();
-					if (!v.containsField(identifier)) {
+					try {
+						this.getField(identifier).redirection(v.getField(identifier));
+					} catch (UnknownTupleField e) {
 						return super.redirection(content);
 					}
-					this.getField(identifier).redirection(v.getField(identifier));
 				}
 			}
 			case GioviTuple v when v.value instanceof TupleNamed tn -> {
@@ -101,10 +102,11 @@ public final class GioviStruct extends GioviValue<Struct> {
 				}
 				for (var entry : value.entrySet()) {
 					String identifier = entry.getKey();
-					if (!this.containsField(identifier) || !tn.containsField(identifier)) {
+					try {
+						this.getField(identifier).redirection(tn.getField(identifier));
+					} catch (UnknownTupleField e) {
 						return super.redirection(content);
 					}
-					this.getField(identifier).redirection(tn.getField(identifier));
 				}
 			}
 			case GioviTuple v -> {
@@ -160,7 +162,13 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault __ -> new GioviStruct(defaultValue.copy());
-			case FieldKey(var identifier) -> value.getField(identifier);
+			case FieldKey(var identifier) -> {
+				try {
+					yield value.getField(identifier);
+				} catch (UnknownTupleField e) {
+					yield super.dot(right);
+				}
+			}
 			default -> super.dot(right);
 		};
 	}
