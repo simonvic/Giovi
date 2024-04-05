@@ -8,7 +8,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.util.GioviTypes;
 
 public final class GioviText extends GioviPrimitive<String> {
 
@@ -128,7 +127,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviText v -> new GioviList(
-				GioviTypes.of(GioviText.class),
+				new GioviTypeText(),
 				new ArrayList<>(Stream.of(value
 					.split(v.unbox()))
 					.map(this::toGioviText)
@@ -217,7 +216,7 @@ public final class GioviText extends GioviPrimitive<String> {
 				case COUNT -> new GioviInt(value.length());
 				case KEYS -> Range.of(0, value.length() - 1, 1);
 				case VALUES -> new GioviList(
-					GioviTypes.of(GioviText.class),
+					new GioviTypeText(),
 					new ArrayList<>(value.chars().boxed().map(this::toGioviChar).toList()));
 			};
 			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {

@@ -15,7 +15,6 @@ import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FunctionSignatureParam;
-import it.simonvic.giovi.util.GioviTypes;
 
 public class TestFunctions {
 
@@ -31,15 +30,14 @@ public class TestFunctions {
 
 	private static FunctionSignatureParam paramOf(
 		String identifier,
-		Class<? extends GioviValue<?>> type,
 		GioviValue<?> defaultValue) {
-		return new FunctionSignatureParam(identifier, GioviTypes.of(type), defaultValue);
+		return new FunctionSignatureParam(identifier, defaultValue.getGioviType(), defaultValue);
 	}
 
 	private static FunctionSignatureParam paramOf(
 		String identifier,
-		Class<? extends GioviValue<?>> type) {
-		return new FunctionSignatureParam(identifier, GioviTypes.of(type));
+		GioviType<?> type) {
+		return new FunctionSignatureParam(identifier, type);
 	}
 
 	@Nested
@@ -54,7 +52,7 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.parameters())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(GioviTypes.of(GioviVoid.class)));
+					.isEqualTo(new GioviTypeVoid()));
 		}
 
 		@Test
@@ -66,7 +64,7 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.parameters())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(GioviTypes.of(GioviInt.class)));
+					.isEqualTo(new GioviTypeInt()));
 		}
 
 		@Test
@@ -78,7 +76,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class)));
+					paramOf("a", new GioviTypeInt())));
 
 		}
 
@@ -92,8 +90,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class),
-					paramOf("b", GioviReal.class)));
+					paramOf("a", new GioviTypeInt()),
+					paramOf("b", new GioviTypeReal())));
 		}
 
 		@Test
@@ -105,7 +103,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, new GioviInt(69, 69))));
+					paramOf("a", new GioviInt(69, 69))));
 		}
 
 		@Test
@@ -118,7 +116,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, new GioviInt())));
+					paramOf("a", new GioviInt())));
 		}
 
 		@Test
@@ -149,8 +147,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, new GioviInt(69, 69)),
-					paramOf("b", GioviReal.class, new GioviReal(6.9, 6.9))));
+					paramOf("a", new GioviInt(69, 69)),
+					paramOf("b", new GioviReal(6.9, 6.9))));
 		}
 
 		@Test
@@ -164,9 +162,9 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class),
-					paramOf("b", GioviReal.class),
-					paramOf("c", GioviBool.class, new GioviBool(true, true))));
+					paramOf("a", new GioviTypeInt()),
+					paramOf("b", new GioviTypeReal()),
+					paramOf("c", new GioviBool(true, true))));
 		}
 
 		@Test
@@ -180,9 +178,9 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", GioviInt.class, new GioviInt(69, 69)),
-					paramOf("b", GioviReal.class),
-					paramOf("c", GioviBool.class, new GioviBool(true, true))));
+					paramOf("a", new GioviInt(69, 69)),
+					paramOf("b", new GioviTypeReal()),
+					paramOf("c", new GioviBool(true, true))));
 		}
 
 		@Disabled("Function overload not implemented yet")

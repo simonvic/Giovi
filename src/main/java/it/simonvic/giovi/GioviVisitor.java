@@ -680,7 +680,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		String identifier = ctx.identifier().getText();
 
 		var returnType = ctx.type() == null
-			? GioviTypes.of(GioviVoid.class)
+			? new GioviTypeVoid()
 			: visit(ctx.type()).asGioviType();
 
 		if (ctx.formalParameters() == null) {
@@ -1001,12 +1001,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitTypeIdentifier(TypeIdentifierContext ctx) {
 		return switch (ctx.getText()) {
-			case "Natural" -> GioviTypes.of(GioviNatural.class);
-			case "Int" -> GioviTypes.of(GioviInt.class);
-			case "Real" -> GioviTypes.of(GioviReal.class);
-			case "Bool" -> GioviTypes.of(GioviBool.class);
-			case "Text" -> GioviTypes.of(GioviText.class);
-			default -> GioviTypes.of(getDefinitionStruct(ctx.getText()));
+			case "Natural" -> new GioviTypeNatural();
+			case "Int" -> new GioviTypeInt();
+			case "Real" -> new GioviTypeReal();
+			case "Bool" -> new GioviTypeBool();
+			case "Text" -> new GioviTypeText();
+			default -> new GioviTypeStruct(getDefinitionStruct(ctx.getText()));
 		};
 	}
 

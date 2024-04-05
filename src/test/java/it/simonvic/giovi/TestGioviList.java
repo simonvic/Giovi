@@ -22,7 +22,6 @@ import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviTypes;
 
 public class TestGioviList {
 
@@ -90,7 +89,7 @@ public class TestGioviList {
 				""").asGioviList().unbox())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
-						.isEqualTo(GioviTypes.of(GioviReal.class)));
+						.isEqualTo(new GioviTypeReal()));
 		}
 
 		@Test
@@ -99,7 +98,7 @@ public class TestGioviList {
 				[ [1 2 3] [1 2 3] ]
 				""").asGioviList()
 				.getEntryType())
-					.isEqualTo(new GioviTypeList(GioviTypes.of(GioviInt.class)));
+					.isEqualTo(new GioviTypeList(new GioviTypeInt()));
 		}
 
 		@Test
@@ -108,7 +107,7 @@ public class TestGioviList {
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList()
 				.getEntryType())
-					.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class)));
+					.isEqualTo(new GioviTypeList(new GioviTypeReal()));
 		}
 
 		@Test
@@ -122,7 +121,7 @@ public class TestGioviList {
 				""").asGioviList().unbox())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
-						.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class))));
+						.isEqualTo(new GioviTypeList(new GioviTypeReal())));
 		}
 
 		@Test
@@ -504,7 +503,7 @@ public class TestGioviList {
 					""").asGioviList().unbox())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
-							.isEqualTo(GioviTypes.of(GioviReal.class)));
+							.isEqualTo(new GioviTypeReal()));
 			}
 
 			@Test
@@ -514,7 +513,7 @@ public class TestGioviList {
 					""").asGioviList().unbox())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
-							.isEqualTo(GioviTypes.of(GioviInt.class)));
+							.isEqualTo(new GioviTypeInt()));
 			}
 
 			@Test

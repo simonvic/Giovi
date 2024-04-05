@@ -13,16 +13,12 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import giovi.lang.GioviInt;
-import giovi.lang.GioviReal;
-import giovi.lang.GioviText;
-import giovi.lang.GioviTypeList;
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.GioviTypes;
 
 public class TestGioviMap {
 
@@ -81,8 +77,8 @@ public class TestGioviMap {
 				[ 1n:1n 2i:2i 3r:3r ]
 				""").asGioviMap().unbox())
 				.allSatisfy((k, e) -> assertAll(
-					() -> assertThat(k.getGioviType()).isEqualTo(GioviTypes.of(GioviReal.class)),
-					() -> assertThat(e.getGioviType()).isEqualTo(GioviTypes.of(GioviReal.class))));
+					() -> assertThat(k.getGioviType()).isEqualTo(new GioviTypeReal()),
+					() -> assertThat(e.getGioviType()).isEqualTo(new GioviTypeReal())));
 
 		}
 
@@ -139,7 +135,7 @@ public class TestGioviMap {
 				]
 				""").asGioviMap()
 				.getElementType())
-					.isEqualTo(new GioviTypeList(GioviTypes.of(GioviReal.class)));
+					.isEqualTo(new GioviTypeList(new GioviTypeReal()));
 		}
 
 		@Test

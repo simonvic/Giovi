@@ -12,9 +12,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
-import giovi.Struct;
 import giovi.lang.*;
-import it.simonvic.giovi.util.*;
+import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviMaps;
+import it.simonvic.giovi.util.GioviStructs;
+import it.simonvic.giovi.util.Structs;
 
 public class TestDefaults {
 
@@ -423,7 +425,7 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				[Int].default
 				"""))
-				.isEqualTo(new GioviList(GioviTypes.of(GioviInt.class)));
+				.isEqualTo(new GioviList(new GioviTypeInt()));
 		}
 
 		@Test
@@ -433,8 +435,8 @@ public class TestDefaults {
 				[Text:Int].default
 				"""))
 				.isEqualTo(new GioviMap(
-					GioviTypes.of(GioviText.class),
-					GioviTypes.of(GioviInt.class)));
+					new GioviTypeText(),
+					new GioviTypeInt()));
 		}
 
 		@Test
