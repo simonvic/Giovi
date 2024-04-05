@@ -4,11 +4,11 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.GioviParserVisitResult;
+import giovi.lang.GioviStruct;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.GioviStructDefinition;
 
 public class GioviVisitorUtils {
 
@@ -66,14 +66,5 @@ public class GioviVisitorUtils {
 		String code) {
 		return (FunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
 	}
-
-	public static GioviStructDefinition visitStructDefinition(String code) {
-		return visitStructDefinition(new GioviVisitor(), code);
-	}
-
-	public static GioviStructDefinition visitStructDefinition(GioviVisitor visitor, String code) {
-		return (GioviStructDefinition) visitor.visit(parserOf(code).structDefinition());
-	}
-
 
 }

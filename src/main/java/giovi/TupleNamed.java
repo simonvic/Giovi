@@ -3,6 +3,8 @@ package giovi;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
@@ -69,33 +71,12 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return new TupleNamed(a);
 	}
 
-	@Override
-	public boolean isSubset(Tuple tuple) {
-		if (tuple instanceof TupleNamed other) {
-			if (this.getFieldsCount() > other.getFieldsCount()) return false;
-			for (var fieldEntry : fields.entrySet()) {
-				String fieldName = fieldEntry.getKey();
-				var fieldValue = fieldEntry.getValue();
-				var thisGioviType = fieldValue.getGioviType();
-				if (!other.containsField(fieldName)) {
-					return false;
-				}
-				var otherGioviType = other.getField(fieldName).getGioviType();
-				if (!thisGioviType.equals(otherGioviType)
-					&& !thisGioviType.canWidenTo(otherGioviType))
-					return false;
-
-			}
-			return true;
-		}
-		return super.isSubset(tuple);
-	}
-
 	public boolean containsField(String identifier) {
 		return fields.containsKey(identifier);
 	}
 
 	public GioviValue<?> getField(String identifier) {
+		// TODO: since we don't allow storing nulls, we should throw in case the key is not present
 		return fields.get(identifier);
 	}
 
@@ -105,6 +86,10 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	public GioviValue<?> get(String identifier) {
 		return fields.get(identifier);
+	}
+
+	public Set<Entry<String, GioviValue<?>>> entrySet() {
+		return fields.entrySet();
 	}
 
 	public void forEach(BiConsumer<String, GioviValue<?>> valueConsumer) {

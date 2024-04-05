@@ -65,23 +65,6 @@ public sealed class Tuple permits TupleNamed {
 		return new Tuple(list);
 	}
 
-	/**
-	 * Check if it's a subset of another tuple.
-	 * @param tuple
-	 * @return
-	 */
-	public boolean isSubset(Tuple tuple) {
-		if (this.getFieldsCount() > tuple.getFieldsCount()) return false;
-		for (int i = 0; i < this.getFieldsCount(); i++) {
-			var thisType = this.getField(i).getGioviType();
-			var otherType = tuple.getField(i).getGioviType();
-			if (!thisType.equals(otherType) && !thisType.canWidenTo(otherType)) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	public int getFieldsCount() {
 		return fields.size();
 	}

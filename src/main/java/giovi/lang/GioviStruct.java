@@ -1,11 +1,9 @@
 package giovi.lang;
 
-import java.util.LinkedHashMap;
-
 import giovi.*;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.lang.GioviFieldDefinition;
-import it.simonvic.giovi.lang.GioviStructDefinition;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviStruct extends GioviValue<Struct> {
@@ -18,6 +16,20 @@ public final class GioviStruct extends GioviValue<Struct> {
 		super(value, value.copy());
 	}
 
+	@Override
+	public GioviTypeStruct getGioviType() {
+		return new GioviTypeStruct(value.copy());
+	}
+
+	@Override
+	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
+		throw new NonWideneable(this, type);
+	}
+
+	@Override
+	public GioviStruct copy() {
+		return new GioviStruct(value.copy(), defaultValue.copy());
+	}
 
 	public int getFieldsCount() {
 		return value.getFieldsCount();
@@ -28,38 +40,28 @@ public final class GioviStruct extends GioviValue<Struct> {
 	}
 
 	public void boxField(int index, GioviValue<?> fieldValue) {
-		value.getField(index).redirection(fieldValue);
+		try {
+			value.getField(index).box(fieldValue);
+		} catch (ClassCastException | NonWideneable e) {
+			throw new GioviException(e);
+		}
 	}
 
 	public void boxField(String field, GioviValue<?> fieldValue) {
-		value.getField(field).redirection(fieldValue);
+		try {
+			value.getField(field).box(fieldValue);
+			// TODO: remove this crap once missing keys are handled properly
+		} catch (NullPointerException | ClassCastException | NonWideneable e) {
+			throw new GioviException(e);
+		}
 	}
 
 	public boolean containsField(String field) {
 		return value.containsField(field);
 	}
 
-	@Override
-	public GioviTypeStruct getGioviType() {
-		var fields = new LinkedHashMap<String, GioviFieldDefinition>();
-		this.value.forEach((identifier, fieldValue) -> fields.put(
-			identifier,
-			new GioviFieldDefinition(
-				identifier,
-				fieldValue.getGioviType(),
-				fieldValue.copy())));
-		return new GioviTypeStruct(new GioviStructDefinition(this.value.getTypename(), fields));
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		// TODO: the heavylifting goes here
-		throw new NonWideneable(this, type);
-	}
-
-	@Override
-	public GioviStruct copy() {
-		return new GioviStruct(value.copy(), defaultValue.copy());
+	public String getTypename() {
+		return value.getTypename();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -68,19 +70,10 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		if (!(right instanceof GioviType<?> type)) return super.as(right);
-		var thisType = this.getGioviType();
-		if (!thisType.canWidenTo(type)) {
-			return super.as(type);
-		}
-		return switch (type) {
-			case GioviTypeStruct otherType -> {
-				var castedTuple = otherType.spawn();
-				this.value.forEach((identifier, fieldValue) -> castedTuple
-					.boxField(identifier, fieldValue.copy()));
-				yield castedTuple;
-			}
-			default -> super.as(type);
+		return switch (right) {
+			// TODO: can we assume equal typename means equal definition?
+			case GioviTypeStruct t when t.getTypename().equals(this.getTypename()) -> this;
+			default -> super.as(right);
 		};
 	}
 
@@ -89,27 +82,37 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> this.value = defaultValue.copy();
-			case GioviStruct gioviStruct -> {
-				if (!gioviStruct.value.isSubset(this.value)) {
+			case GioviDefault v -> value = defaultValue.copy();
+			case GioviStruct v -> {
+				if (this.getFieldsCount() != v.getFieldsCount()) {
 					return super.redirection(content);
 				}
-				gioviStruct.unbox().forEach((identifier, fieldValue) -> this.boxField(identifier,
-					fieldValue.copy()));
-			}
-			case GioviTuple gioviTuple -> {
-				if (!gioviTuple.value.isSubset(this.value)) {
-					return super.redirection(content);
-				}
-				switch (gioviTuple.unbox()) {
-					case TupleNamed t -> t.forEach(
-						(identifier, fieldValue) -> this.boxField(identifier, fieldValue.copy()));
-					case Tuple t -> {
-						if (t.getFieldsCount() != this.value.getFieldsCount()) {
-							return super.redirection(content);
-						}
-						t.forEachIndexed((i, fieldValue) -> this.boxField(i, fieldValue.copy()));
+				for (var entry : value.entrySet()) {
+					String identifier = entry.getKey();
+					if (!v.containsField(identifier)) {
+						return super.redirection(content);
 					}
+					this.getField(identifier).redirection(v.getField(identifier));
+				}
+			}
+			case GioviTuple v when v.value instanceof TupleNamed tn -> {
+				if (this.getFieldsCount() != v.getFieldsCount()) {
+					return super.redirection(content);
+				}
+				for (var entry : value.entrySet()) {
+					String identifier = entry.getKey();
+					if (!this.containsField(identifier) || !tn.containsField(identifier)) {
+						return super.redirection(content);
+					}
+					this.getField(identifier).redirection(tn.getField(identifier));
+				}
+			}
+			case GioviTuple v -> {
+				if (this.getFieldsCount() != v.getFieldsCount()) {
+					return super.redirection(content);
+				}
+				for (int i = 0; i < getFieldsCount(); i++) {
+					value.getField(i).redirection(v.value.getField(i));
 				}
 			}
 			default -> super.redirection(content);
@@ -125,7 +128,25 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
-		return super.equal(right);
+		return switch (right) {
+			case GioviTuple t -> {
+				if (this.getFieldsCount() != t.getFieldsCount()) {
+					yield new GioviBool(false);
+				}
+				for (int i = 0; i < getFieldsCount(); i++) {
+					try {
+						if (!value.getField(i).equal(t.value.getField(i)).asNativeBool()) {
+							yield new GioviBool(false);
+						}
+					} catch (OperatorNotSupported ex) {
+						yield new GioviBool(false);
+					}
+
+				}
+				yield new GioviBool(true);
+			}
+			default -> super.equal(right);
+		};
 	}
 
 	@Override

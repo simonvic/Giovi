@@ -3,7 +3,6 @@ package it.simonvic.giovi;
 import static it.simonvic.giovi.GioviVisitorUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -38,8 +37,8 @@ public class TestGioviTuple {
 		void testCreation_tupleWithMultipleFields() {
 			assertThat(visitExpression("""
 				<69 true "foo">
-				""")).isEqualTo(GioviTuples.of(List.of(
-				69, true, "foo")));
+				""")).isEqualTo(GioviTuples.of(
+				69, true, "foo"));
 		}
 
 		@Test
@@ -50,10 +49,10 @@ public class TestGioviTuple {
 					b: true
 					c: "foo"
 				>
-				""")).isEqualTo(new GioviTuple(Tuples.of(
+				""")).isEqualTo(GioviTuples.ofNamed(
 				"a", 69,
 				"b", true,
-				"c", "foo")));
+				"c", "foo"));
 		}
 
 		@Test
@@ -67,12 +66,12 @@ public class TestGioviTuple {
 						bar: "bar"
 					>
 				>
-				""")).isEqualTo(new GioviTuple(Tuples.of(
+				""")).isEqualTo(GioviTuples.ofNamed(
 				"a", 69,
 				"b", true,
-				"c", Tuples.of(
+				"c", Tuples.ofNamed(
 					"foo", "foo",
-					"bar", "bar"))));
+					"bar", "bar")));
 		}
 
 		@Test
@@ -87,14 +86,13 @@ public class TestGioviTuple {
 					>
 					d: <1 2 3>
 				>
-				""")).isEqualTo(new GioviTuple(Tuples.of(
+				""")).isEqualTo(GioviTuples.ofNamed(
 				"a", 69,
 				"b", true,
-				"c", Tuples.of(
+				"c", Tuples.ofNamed(
 					"foo", "foo",
 					"bar", "bar"),
-				"d", Tuples.of(List.of(
-					1, 2, 3)))));
+				"d", Tuples.of(1, 2, 3)));
 		}
 
 	}
@@ -103,6 +101,13 @@ public class TestGioviTuple {
 
 	@Nested
 	class Operations {
+
+		//////////////////////////////////////////////////////////////////////////////////////////// casting
+
+		@Nested
+		@Disabled("not implemented yet")
+		class Casting {
+		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
 

@@ -2,9 +2,9 @@ package it.simonvic.giovi.util;
 
 import java.util.Collection;
 
+import giovi.Struct;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviStructDefinition;
 
 public class GioviTypes {
 
@@ -25,7 +25,8 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
-			throw new GioviException("Impossible to infer list type. Expecting\n\t" + inferred + " but got\n\t" + next);
+			throw new GioviException(
+				"Impossible to infer list type. Expecting\n\t" + inferred + " but got\n\t" + next);
 		}
 		if (inferred == null) {
 			throw new GioviException("Impossible to infer list type");
@@ -43,7 +44,7 @@ public class GioviTypes {
 		throw new GioviException("Unknown type for class " + clazz);
 	}
 
-	public static GioviType<?> of(GioviStructDefinition structDefinition) {
+	public static GioviType<?> of(Struct structDefinition) {
 		return new GioviTypeStruct(structDefinition);
 	}
 

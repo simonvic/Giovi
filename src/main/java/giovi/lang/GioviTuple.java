@@ -1,10 +1,8 @@
 package giovi.lang;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
 
 public final class GioviTuple extends GioviValue<Tuple> {
@@ -23,15 +21,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		if (value instanceof TupleNamed named) {
-			var typesMap = new LinkedHashMap<String, GioviType<?>>();
-			named.forEach(
-				(identifier, fieldValue) -> typesMap.put(identifier, fieldValue.getGioviType()));
-			return new GioviTypeTuple(typesMap);
-		}
-		var typesList = new ArrayList<GioviType<?>>();
-		this.value.forEach(value -> typesList.add(value.getGioviType()));
-		return new GioviTypeTuple(typesList);
+		return new GioviTypeTuple();
 	}
 
 	@Override
@@ -45,34 +35,17 @@ public final class GioviTuple extends GioviValue<Tuple> {
 		return new GioviTuple(value.copy(), defaultValue.copy());
 	}
 
+	public int getFieldsCount() {
+		return value.getFieldsCount();
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		if (!(right instanceof GioviType<?> type)) return super.as(right);
-		var thisType = this.getGioviType();
-		if (!thisType.canWidenTo(type)) {
-			return super.as(type);
-		}
-		return switch (type) {
-			case GioviTypeTuple otherType -> {
-				var castedTuple = otherType.spawn();
-				if (castedTuple.unbox() instanceof TupleNamed named
-					&& this.value instanceof TupleNamed thisTuple) {
-					thisTuple.forEach((identifier, fieldValue) -> named
-						.getField(identifier)
-						.redirection(fieldValue));
-				} else {
-					for (int i = 0; i < this.value.getFieldsCount(); i++) {
-						castedTuple.unbox().getField(i).redirection(this.value.getField(i));
-					}
-				}
-				yield castedTuple;
-			}
-			default -> super.as(type);
-		};
+		return super.as(right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
@@ -95,30 +68,23 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviTuple r -> {
-				if (this.value.getFieldsCount() != r.value.getFieldsCount()) {
+			case GioviTuple t -> {
+				if (this.getFieldsCount() != t.getFieldsCount()) {
 					yield new GioviBool(false);
 				}
-				for (int i = 0; i < value.getFieldsCount(); i++) {
-					var thisField = this.value.getField(i);
-					var otherField = r.value.getField(i);
-					var thisFieldType = thisField.getGioviType();
-					var otherFieldType = otherField.getGioviType();
-					if (!thisFieldType.equals(otherFieldType)) {
-						if (!thisFieldType.canWidenTo(otherFieldType)) {
+				for (int i = 0; i < getFieldsCount(); i++) {
+					try {
+						if (!value.getField(i).equal(t.value.getField(i)).asNativeBool()) {
 							yield new GioviBool(false);
 						}
-						if (!thisField.equal(otherField.as(thisFieldType)).asNativeBool()) {
-							yield new GioviBool(false);
-						}
-					}
-					if (!thisField.equal(otherField).asNativeBool()) {
+					} catch (OperatorNotSupported ex) {
 						yield new GioviBool(false);
 					}
+
 				}
 				yield new GioviBool(true);
 			}
-			default -> new GioviBool(false);
+			default -> super.equal(right);
 		};
 	}
 

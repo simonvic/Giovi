@@ -6,12 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import giovi.Struct;
 import giovi.lang.*;
-import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.util.GioviTypes;
 
 public class TestExpressionTypeCheck {
+
+	// TODO: remove unnecessary GioviTypes::of
 
 	GioviVisitor visitor;
 	Scope scope;
@@ -54,9 +56,9 @@ public class TestExpressionTypeCheck {
 
 	@Test
 	void testStruct() {
-		var definition = new GioviStructDefinition("Foobar");
+		var definition = new Struct("Foobar");
 		scope.define(definition);
-		scope.declare("x", definition.spawn());
+		scope.declare("x", new GioviStruct(definition.copy()));
 		assertTrue(visitExpression(visitor, "x is Foobar").asGioviBool().unbox());
 	}
 
@@ -91,11 +93,9 @@ public class TestExpressionTypeCheck {
 
 	@Test
 	void testMapOfStruct() {
-		var definition = new GioviStructDefinition("Foobar");
+		var definition = new Struct("Foobar");
 		scope.define(definition);
-		scope.declare("x", new GioviMap(
-			GioviTypes.of(GioviText.class),
-			GioviTypes.of(definition)));
+		scope.declare("x", new GioviMap(new GioviTypeText(), new GioviTypeStruct(definition)));
 		assertTrue(visitExpression(visitor, "x is [Text : Foobar]").asGioviBool().unbox());
 	}
 

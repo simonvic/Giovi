@@ -61,6 +61,15 @@ public abstract sealed class GioviValue<T>
 	}
 
 	@SuppressWarnings("unchecked")
+	public void box(GioviValue<?> gioviValue) throws ClassCastException, NonWideneable {
+		if (value.getClass().isInstance(gioviValue.value)) {
+			value = (T) gioviValue.value;
+		} else {
+			value = (T) gioviValue.widenTo(this.getGioviType());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException, NonWideneable {
 		if (defaultValue.getClass().isInstance(gioviValue.value)) {
 			defaultValue = (T) gioviValue.value;
@@ -82,6 +91,8 @@ public abstract sealed class GioviValue<T>
 	 * @throws NonWideneable
 	 */
 	public abstract GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
+
+	// TODO: add shrinkTo(type) which should be used along the widenTo(type) inside the as(type)
 
 	/**
 	 * Perform a <b>deep copy</b>

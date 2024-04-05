@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
+import giovi.Struct;
 import giovi.lang.*;
 import it.simonvic.giovi.util.*;
 
@@ -121,10 +122,10 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariableValue("x")
 				.unboxDefault())
-					.isEqualTo(Structs.of(
+					.isEqualTo(Structs.ofNative(
 						"Foo",
 						"foo", "foo",
-						"bar", Structs.of("Bar",
+						"bar", Structs.ofNative("Bar",
 							"baz", "baz",
 							"foobar", List.of(1, 2, 3))));
 		}
@@ -249,10 +250,10 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(GioviStructs.of(
+					.isEqualTo(GioviStructs.ofNative(
 						"Foo",
 						"foo", "foo",
-						"bar", Structs.of("Bar",
+						"bar", Structs.ofNative("Bar",
 							"baz", "baz",
 							"foobar", List.of(1, 2, 3))));
 		}
@@ -361,10 +362,10 @@ public class TestDefaults {
 			assertThat(visitExpression(visitor, """
 				x.default
 				"""))
-				.isEqualTo(GioviStructs.of(
+				.isEqualTo(GioviStructs.ofNative(
 					"Foo",
 					"foo", "foo",
-					"bar", Structs.of("Bar",
+					"bar", Structs.ofNative("Bar",
 						"baz", "baz",
 						"foobar", List.of(1, 2, 3))));
 		}
@@ -455,13 +456,13 @@ public class TestDefaults {
 			assertThat(visitExpression(visitor, """
 				Foo.default
 				"""))
-				.isEqualTo(GioviStructs.of(
+				.isEqualTo(GioviStructs.ofNative(
 					"Foo",
 					"foo", "foo",
-					"bar", Structs.of("Bar",
+					"bar", Structs.ofNative("Bar",
 						"baz", "baz",
 						"foobar", List.of(1, 2, 3)),
-					"foobar", Structs.of("Bar",
+					"foobar", Structs.ofNative("Bar",
 						"baz", "BAZ",
 						"foobar", List.of(69, 420))));
 		}

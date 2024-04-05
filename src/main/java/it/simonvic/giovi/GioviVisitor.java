@@ -368,6 +368,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			} catch (ClassCastException | NonWideneable ex) {
 				throw new GioviException("Incompatible default value type");
 			}
+			// TODO: replace with box(GioviValue) ???
 			value.redirection(defaultValue.copy());
 		}
 		return value;
@@ -914,27 +915,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitStructDefinition(StructDefinitionContext ctx) {
-		String typename = ctx.structName.getText();
 
-		var fieldDefinitions = new LinkedHashMap<String, GioviFieldDefinition>();
+		var fieldDefinitions = new LinkedHashMap<String, GioviValue<?>>();
+
 		if (ctx.parentName != null) {
 			var parentDefinition = getDefinitionStruct(ctx.parentName.getText());
-			fieldDefinitions.putAll(parentDefinition.fields());
+			parentDefinition
+				.forEach((identifier, field) -> fieldDefinitions.put(identifier, field.copy()));
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
-			String identifier = fieldCtx.identifier().getText();
-			var fieldType = visit(fieldCtx.type()).asGioviType();
-			var fieldDefinition = fieldCtx.defaultDefinition() == null
-				? new GioviFieldDefinition(identifier, fieldType)
-				: new GioviFieldDefinition(identifier, fieldType,
-					spawnType(fieldType, fieldCtx.defaultDefinition()));
-			fieldDefinitions.put(identifier, fieldDefinition);
+			fieldDefinitions.put(
+				fieldCtx.identifier().getText(),
+				spawnType(fieldCtx.type(), fieldCtx.defaultDefinition()));
 		}
 
-		var definition = new GioviStructDefinition(typename, fieldDefinitions);
-		getCurrentScope().define(definition);
-		return definition;
+		getCurrentScope().define(new Struct(ctx.structName.getText(), fieldDefinitions));
+
+		return null;
 	}
 
 	@Override
@@ -946,7 +944,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	private GioviStruct createStruct(String typename, StructFieldsContext ctx) {
-		var gioviStruct = getDefinitionStruct(typename).spawn();
+		var gioviStruct = new GioviStruct(getDefinitionStruct(typename).copy());
 		if (ctx == null) {
 			return gioviStruct;
 		}
@@ -961,10 +959,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void initStructNamed(GioviStruct gioviStruct, List<NamedStructFieldContext> fieldsCtx) {
 		for (var fieldCtx : fieldsCtx) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
-			if (!gioviStruct.containsField(fieldIdentifier)) {
-				throw new GioviException("Unexpected field " + fieldIdentifier + " for type "
-					+ gioviStruct.getGioviType().getSimpleName());
-			}
 			gioviStruct.boxField(
 				fieldIdentifier,
 				visit(fieldCtx.expression()).asGioviValue());
@@ -1035,7 +1029,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(ctx.mapValueType).asGioviType());
 	}
 
-	private GioviStructDefinition getDefinitionStruct(String structType) {
+	private Struct getDefinitionStruct(String structType) {
 		if (!getCurrentScope().isDefinedStruct(structType)) {
 			throw new TypeNotFound(structType);
 		}

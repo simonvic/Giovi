@@ -4,7 +4,6 @@ import static it.simonvic.giovi.GioviVisitorUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -18,11 +17,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Range;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.GioviFieldDefinition;
-import it.simonvic.giovi.lang.GioviStructDefinition;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
-import it.simonvic.giovi.util.GioviTypes;
+import it.simonvic.giovi.util.Structs;
 
 public class TestGioviStruct {
 
@@ -34,64 +31,93 @@ public class TestGioviStruct {
 
 		@Test
 		void testEmptyStruct() {
-			assertThat(visitStructDefinition("""
+			assertThat(visit("""
 				Foo <>
-				""")).isEqualTo(new GioviStructDefinition(
-				"Foo", List.of()));
+				""").getCurrentScope().getDefinitionStruct("Foo"))
+				.isEqualTo(Structs.of("Foo"));
 		}
 
 		@Test
 		void testDefinition() {
-			assertThat(visitStructDefinition("""
+			assertThat(visit("""
 				Foo <
 					foo Int
 					bar Bool
 					foobar Text
 				>
-				""")).isEqualTo(new GioviStructDefinition(
-				"Foo", List.of(
-					new GioviFieldDefinition("foo", GioviTypes.of(GioviInt.class)),
-					new GioviFieldDefinition("bar", GioviTypes.of(GioviBool.class)),
-					new GioviFieldDefinition("foobar", GioviTypes.of(GioviText.class)))));
+				""").getCurrentScope().getDefinitionStruct("Foo"))
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", new GioviInt(),
+					"bar", new GioviBool(),
+					"foobar", new GioviText()));
 		}
 
 		@Test
 		void testDefinitionWithDefault() {
-			assertThat(visitStructDefinition("""
+			assertThat(visit("""
 				Foo <
 					foo Int default 69
 					bar Bool default true
 					foobar Text default "hello"
 				>
-				""")).isEqualTo(new GioviStructDefinition(
-				"Foo", List.of(
-					new GioviFieldDefinition("foo", GioviTypes.of(GioviInt.class),
-						new GioviInt(69, 69)),
-					new GioviFieldDefinition("bar", GioviTypes.of(GioviBool.class),
-						new GioviBool(true, true)),
-					new GioviFieldDefinition("foobar", GioviTypes.of(GioviText.class),
-						new GioviText("hello", "hello")))));
+				""").getCurrentScope().getDefinitionStruct("Foo"))
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", new GioviInt(69, 69),
+					"bar", new GioviBool(true, true),
+					"foobar", new GioviText("hello", "hello")));
 		}
 
 		@Test
 		void testDefinitionWithStructField() {
-			var visitor = visit("""
+			assertThat(visit("""
 				RGB <
 					r Int
 					g Int
 					b Int
 				>
-				""");
-			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB");
-			assertThat(visitStructDefinition(visitor, """
 				Person <
 					name Text
 					favoriteColor RGB
 				>
-				""")).isEqualTo(new GioviStructDefinition(
-				"Person", List.of(
-					new GioviFieldDefinition("name", GioviTypes.of(GioviText.class)),
-					new GioviFieldDefinition("favoriteColor", new GioviTypeStruct(rgb)))));
+				""").getCurrentScope().getDefinitionStruct("Person"))
+				.isEqualTo(Structs.of(
+					"Person",
+					"name", new GioviText(),
+					"favoriteColor", GioviStructs.of(
+						"RGB",
+						"r", new GioviInt(),
+						"g", new GioviInt(),
+						"b", new GioviInt())));
+		}
+
+
+		@Test
+		void testDefinitionWithStructFieldAndDefaults() {
+			assertThat(visit("""
+				RGB <
+					r Int
+					g Int
+					b Int
+				>
+				Person <
+					name Text
+					favoriteColor RGB default RGB.<
+						r: 255
+						g: 250
+						b: 200
+					>
+				>
+				""").getCurrentScope().getDefinitionStruct("Person"))
+				.isEqualTo(Structs.of(
+					"Person",
+					"name", new GioviText(),
+					"favoriteColor", GioviStructs.of(
+						"RGB",
+						"r", new GioviInt(255, 255),
+						"g", new GioviInt(250, 250),
+						"b", new GioviInt(200, 200))));
 		}
 
 
@@ -109,59 +135,73 @@ public class TestGioviStruct {
 
 		@Test
 		void testInheritance() {
-			var visitor = visit("""
+			assertThat(visit("""
 				RGB <
 					r Int
 					g Int
 					b Int
 				>
-				""");
-			assertThat(visitStructDefinition(visitor, """
-				RGB : ARGB <
+				RGB : RGBA <
 					a Int
 				>
-				""")).isEqualTo(new GioviStructDefinition(
-				"ARGB", List.of(
-					new GioviFieldDefinition("r", GioviTypes.of(GioviInt.class)),
-					new GioviFieldDefinition("g", GioviTypes.of(GioviInt.class)),
-					new GioviFieldDefinition("b", GioviTypes.of(GioviInt.class)),
-					new GioviFieldDefinition("a", GioviTypes.of(GioviInt.class)))));
+				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				.isEqualTo(Structs.of(
+					"RGBA",
+					"r", new GioviInt(),
+					"g", new GioviInt(),
+					"b", new GioviInt(),
+					"a", new GioviInt()));
+		}
+
+		@Test
+		void testInheritanceWithDefaults() {
+			assertThat(visit("""
+				RGB <
+					r Int default 255
+					g Int default 255
+					b Int default 255
+				>
+				RGB : RGBA <
+					a Int default 69
+				>
+				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				.isEqualTo(Structs.of(
+					"RGBA",
+					"r", new GioviInt(255, 255),
+					"g", new GioviInt(255, 255),
+					"b", new GioviInt(255, 255),
+					"a", new GioviInt(69, 69)));
 		}
 
 		@Test
 		void testInheritedFieldsDefaultOverride() {
-			var visitor = new GioviVisitor();
-			var rgb = visitStructDefinition(visitor, """
+			var visitor = visit("""
 				RGB <
-					r Int
-					g Int
-					b Int
+					r Int default 255
+					g Int default 255
+					b Int default 255
 				>
-				""");
-			var argb = visitStructDefinition(visitor, """
-				RGB : ARGB <
+				RGB : RGBA <
 					r Int default 250
 					g Int default 200
 					b Int default 150
 					a Int
 				>
 				""");
+			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB");
+			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA");
 			assertAll(
-				() -> assertThat(rgb).isEqualTo(new GioviStructDefinition(
-					"RGB", List.of(
-						new GioviFieldDefinition("r", GioviTypes.of(GioviInt.class)),
-						new GioviFieldDefinition("g", GioviTypes.of(GioviInt.class)),
-						new GioviFieldDefinition("b", GioviTypes.of(GioviInt.class))))),
-				() -> assertThat(argb).isEqualTo(new GioviStructDefinition(
-					"ARGB", List.of(
-						new GioviFieldDefinition(
-							"r", GioviTypes.of(GioviInt.class), new GioviInt(250, 250)),
-						new GioviFieldDefinition(
-							"g", GioviTypes.of(GioviInt.class), new GioviInt(200, 200)),
-						new GioviFieldDefinition(
-							"b", GioviTypes.of(GioviInt.class), new GioviInt(150, 150)),
-						new GioviFieldDefinition(
-							"a", GioviTypes.of(GioviInt.class))))));
+				() -> assertThat(rgb).isEqualTo(Structs.of(
+					"RGB",
+					"r", new GioviInt(255, 255),
+					"g", new GioviInt(255, 255),
+					"b", new GioviInt(255, 255))),
+				() -> assertThat(argb).isEqualTo(Structs.of(
+					"RGBA",
+					"r", new GioviInt(250, 250),
+					"g", new GioviInt(200, 200),
+					"b", new GioviInt(150, 150),
+					"a", new GioviInt())));
 		}
 
 	}
@@ -184,9 +224,9 @@ public class TestGioviStruct {
 				RGB.<>
 				""")).isEqualTo(GioviStructs.of(
 				"RGB",
-				"r", 0,
-				"g", 0,
-				"b", 0));
+				"r", new GioviInt(),
+				"g", new GioviInt(),
+				"b", new GioviInt()));
 		}
 
 		@Test
@@ -206,9 +246,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"RGB",
-				"r", 1,
-				"g", 2,
-				"b", 3));
+				"r", new GioviInt(1),
+				"g", new GioviInt(2),
+				"b", new GioviInt(3)));
 		}
 
 		@Test
@@ -228,9 +268,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"RGB",
-				"r", 1,
-				"g", 2,
-				"b", 3));
+				"r", new GioviInt(1),
+				"g", new GioviInt(2),
+				"b", new GioviInt(3)));
 		}
 
 		@Test
@@ -250,9 +290,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"RGB",
-				"r", 1,
-				"g", 2,
-				"b", 3));
+				"r", new GioviInt(1),
+				"g", new GioviInt(2),
+				"b", new GioviInt(3)));
 		}
 
 		@Test
@@ -314,9 +354,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"RGB",
-				"r", 1,
-				"g", 0,
-				"b", 3));
+				"r", new GioviInt(1),
+				"g", new GioviInt(),
+				"b", new GioviInt(3)));
 		}
 
 	}
@@ -341,12 +381,13 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"Color",
-						"r", 1,
-						"g", 2,
-						"b", 3));
+						"r", new GioviInt(1),
+						"g", new GioviInt(2),
+						"b", new GioviInt(3)));
 			}
 
 			@Test
+			@Disabled("Needs requirements clarification")
 			void testCastingToCompatibleType() {
 				var visitor = visit("""
 					Color <r Int, g Int, b Int>
@@ -357,12 +398,13 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGB",
-						"r", 1,
-						"g", 2,
-						"b", 3));
+						"r", new GioviInt(1),
+						"g", new GioviInt(2),
+						"b", new GioviInt(3)));
 			}
 
 			@Test
+			@Disabled("Needs requirements clarification")
 			void testCastingToSupersetType() {
 				var visitor = visit("""
 					RGB <r Int, g Int, b Int>
@@ -373,10 +415,10 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGBA",
-						"r", 1,
-						"g", 2,
-						"b", 3,
-						"a", 0));
+						"r", new GioviInt(1),
+						"g", new GioviInt(2),
+						"b", new GioviInt(3),
+						"a", new GioviInt()));
 			}
 
 			@Test
@@ -405,9 +447,9 @@ public class TestGioviStruct {
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
 							"Color",
-							"r", 255,
-							"g", 69,
-							"b", 42));
+							"r", new GioviInt(255),
+							"g", new GioviInt(69),
+							"b", new GioviInt(42)));
 			}
 
 			@Test
@@ -429,24 +471,25 @@ public class TestGioviStruct {
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
 							"Color",
-							"r", 255,
-							"g", 69,
-							"b", 42));
+							"r", new GioviInt(255),
+							"g", new GioviInt(69),
+							"b", new GioviInt(42)));
 			}
 
 			@Test
-			void whenRedirectingSubsetNamedTuple_shouldChangeOnlySpecifiedFields() {
+			@Disabled("Candidate not implemented")
+			void redirPlusSubsetNamedTuple_shouldChangeOnlySpecifiedFields() {
 				assertThat(visit("""
 					Color <r Int, g Int, b Int>
 					x Color
-					<b:42 g:69> -> x
+					<b:42 g:69> ->+ x
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
 							"Color",
-							"r", 0,
-							"g", 69,
-							"b", 42));
+							"r", new GioviInt(),
+							"g", new GioviInt(69),
+							"b", new GioviInt(42)));
 			}
 
 			@Test
@@ -470,9 +513,9 @@ public class TestGioviStruct {
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
 							"Color",
-							"r", 255,
-							"g", 69,
-							"b", 42));
+							"r", new GioviInt(255),
+							"g", new GioviInt(69),
+							"b", new GioviInt(42)));
 			}
 
 

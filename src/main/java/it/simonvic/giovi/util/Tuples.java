@@ -2,7 +2,6 @@ package it.simonvic.giovi.util;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 import giovi.Tuple;
 import giovi.TupleNamed;
@@ -10,26 +9,22 @@ import giovi.lang.GioviValue;
 
 public class Tuples {
 
-	public static <T> Tuple of(List<T> list) {
+	public static Tuple of(Object... fields) {
 		var l = new ArrayList<GioviValue<?>>();
-		for (T v : list) {
-			l.add(GioviValue.of(v));
+		for (int i = 0; i < fields.length; i++) {
+			l.add(GioviValue.of(fields[i]));
 		}
 		return new Tuple(l);
 	}
 
-	public static TupleNamed of() {
-		return new TupleNamed();
-	}
-
-	public static <T> TupleNamed of(
+	public static <T> TupleNamed ofNamed(
 		String f1, T v1) {
 		var s = new LinkedHashMap<String, GioviValue<?>>();
 		s.put(f1, GioviValue.of(v1));
 		return new TupleNamed(s);
 	}
 
-	public static <T> TupleNamed of(
+	public static <T> TupleNamed ofNamed(
 		String f1, T v1,
 		String f2, T v2) {
 		var s = new LinkedHashMap<String, GioviValue<?>>();
@@ -38,7 +33,7 @@ public class Tuples {
 		return new TupleNamed(s);
 	}
 
-	public static <T> TupleNamed of(
+	public static <T> TupleNamed ofNamed(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3) {
@@ -49,7 +44,7 @@ public class Tuples {
 		return new TupleNamed(s);
 	}
 
-	public static <T> TupleNamed of(
+	public static <T> TupleNamed ofNamed(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3,
@@ -62,7 +57,7 @@ public class Tuples {
 		return new TupleNamed(s);
 	}
 
-	public static <T> TupleNamed of(
+	public static <T> TupleNamed ofNamed(
 		String f1, T v1,
 		String f2, T v2,
 		String f3, T v3,

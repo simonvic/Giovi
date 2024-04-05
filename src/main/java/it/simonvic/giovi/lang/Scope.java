@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import giovi.Function;
+import giovi.Struct;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.*;
 
@@ -161,13 +162,13 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
-	private final Map<String, GioviStructDefinition> structDefinitions = new HashMap<>();
+	private final Map<String, Struct> structDefinitions = new HashMap<>();
 
-	public void define(GioviStructDefinition definition) {
-		if (structDefinitions.containsKey(definition.typename())) {
-			throw new StructAlreadyDefined(definition.typename());
+	public void define(Struct definition) {
+		if (structDefinitions.containsKey(definition.getTypename())) {
+			throw new StructAlreadyDefined(definition.getTypename());
 		}
-		structDefinitions.put(definition.typename(), definition);
+		structDefinitions.put(definition.getTypename(), definition);
 	}
 
 	public boolean isDefinedStruct(String identifier) {
@@ -175,7 +176,7 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public GioviStructDefinition getDefinitionStruct(String identifier) {
+	public Struct getDefinitionStruct(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
 			return structDefinitions.get(identifier);
 		}

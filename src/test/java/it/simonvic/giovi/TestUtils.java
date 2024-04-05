@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Natural;
+import giovi.Tuple;
 import giovi.TupleNamed;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
@@ -55,7 +56,8 @@ public class TestUtils {
 				Arguments.of(String.class, GioviValue.of("hello")),
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.of("a", "a"))));
+				Arguments.of(Tuple.class, GioviValue.of(Tuples.of("a", "a"))),
+				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.ofNamed("a", "a"))));
 		}
 
 		@ParameterizedTest
@@ -282,12 +284,12 @@ public class TestUtils {
 		@Test
 		void structs_withSameName_sameFields_equalValues_shouldBeEquals() {
 			assertEquals(
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", true,
 					"foobar", "hello"),
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", true,
@@ -297,11 +299,11 @@ public class TestUtils {
 		@Test
 		void structs_withDifferentValues_shoudNotBeEquals() {
 			assertNotEquals(
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", true),
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69));
 		}
@@ -309,11 +311,11 @@ public class TestUtils {
 		@Test
 		void structs_withDifferentValues_shouldNotBeEquals() {
 			assertNotEquals(
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", true),
-				GioviStructs.of(
+				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", 420));
