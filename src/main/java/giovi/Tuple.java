@@ -83,4 +83,19 @@ public sealed class Tuple permits TupleNamed {
 		}
 	}
 
+	public boolean canWidenTo(Tuple to) {
+		// TODO: clarify requirements
+		if (this.fields.size() != to.fields.size()) {
+			return false;
+		}
+		for (int i = 0; i < fields.size(); i++) {
+			var thisFieldType = this.fields.get(i).getGioviType();
+			var otherFieldType = to.fields.get(i).getGioviType();
+			if (!thisFieldType.canWidenTo(otherFieldType)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

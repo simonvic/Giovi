@@ -1,28 +1,33 @@
 package giovi.lang;
 
+import giovi.Tuple;
+
 public final class GioviTypeTuple extends GioviType<GioviTuple> {
 
-	// TODO: add signature?
+	private final Tuple definition;
 
-	public GioviTypeTuple() {
+	public GioviTypeTuple(Tuple definition) {
 		super(GioviTuple.class);
+		this.definition = definition;
 	}
 
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'canWidenTo'");
+		return switch (to) {
+			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
+			case GioviTypeStruct t -> this.definition.canWidenTo(t.getDefinition());
+			default -> false;
+		};
 	}
 
 	@Override
 	public GioviValue<?> spawn() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("Unimplemented method 'spawn'");
+		return new GioviTuple(definition.copy());
 	}
 
 	@Override
 	public GioviType<GioviTuple> copy() {
-		return new GioviTypeTuple();
+		return new GioviTypeTuple(definition.copy());
 	}
 
 }
