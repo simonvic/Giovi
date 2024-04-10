@@ -17,5 +17,9 @@ public class NonWideneable extends Exception {
 		super("Can't widen " + value + " to " + type, cause);
 	}
 
+	public NonWideneable(Exception cause) {
+		super(cause);
+	}
+
 }
 

@@ -8,11 +8,12 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
 
-	private final LinkedHashMap<String, GioviValue<?>> fields;
+	protected final LinkedHashMap<String, GioviValue<?>> fields;
 
 	public TupleNamed() {
 		super();
@@ -70,6 +71,23 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		var a = new LinkedHashMap<String, GioviValue<?>>();
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new TupleNamed(a);
+	}
+
+	@Override
+	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
+		var widened = new LinkedHashMap<String, GioviValue<?>>();
+		for (var entry : to.fields.entrySet()) {
+			GioviValue<?> thisField;
+			try {
+				thisField = getField(entry.getKey());
+			} catch (UnknownTupleField e) {
+				throw new NonWideneable(e);
+			}
+			widened.put(
+				entry.getKey(),
+				thisField.widenTo(entry.getValue().getGioviType()));
+		}
+		return new TupleNamed(widened);
 	}
 
 	public boolean containsField(String identifier) {

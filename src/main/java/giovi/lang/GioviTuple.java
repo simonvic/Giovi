@@ -35,7 +35,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 				}
 				case GioviTypeStruct t -> {
 					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviTuple(widened);
+					yield new GioviStruct(widened);
 				}
 				default -> throw new NonWideneable(this, type);
 			};

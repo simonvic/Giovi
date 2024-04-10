@@ -1,6 +1,7 @@
 package giovi;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -101,14 +102,44 @@ public sealed class Tuple permits TupleNamed {
 	}
 
 	public Tuple widenTo(Tuple to) throws NonWideneable {
-		var widened = new ArrayList<GioviValue<?>>();
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
+		var widenedFields = new ArrayList<GioviValue<?>>();
 		for (int i = 0; i < fields.size(); i++) {
-			widened.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
+			widenedFields.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
 		}
-		return new Tuple(widened);
+		return new Tuple(widenedFields);
+	}
+
+	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
+		if (this.fields.size() != to.fields.size()) {
+			throw new NonWideneable("Tuples have different fields count");
+		}
+		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		int i = 0;
+		for (var entry : to.fields.entrySet()) {
+			widenedFields.put(
+				entry.getKey(),
+				this.getField(i).widenTo(entry.getValue().getGioviType()));
+			i++;
+		}
+		return new TupleNamed(widenedFields);
+	}
+
+	public Struct widenTo(Struct to) throws NonWideneable {
+		if (this.fields.size() != to.fields.size()) {
+			throw new NonWideneable("Tuples have different fields count");
+		}
+		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		int i = 0;
+		for (var entry : to.fields.entrySet()) {
+			widenedFields.put(
+				entry.getKey(),
+				this.getField(i).widenTo(entry.getValue().getGioviType()));
+			i++;
+		}
+		return new Struct(to.getTypename(), widenedFields);
 	}
 
 }

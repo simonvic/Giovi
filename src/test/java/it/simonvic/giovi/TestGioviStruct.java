@@ -518,6 +518,20 @@ public class TestGioviStruct {
 							"b", new GioviBool(true)));
 			}
 
+			@Test
+			void redir_struct_shouldChangeFields() {
+				assertThat(visit("""
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- Foo.<i:69 t:"hello" b:true>
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviStructs.of(
+							"Foo",
+							"i", new GioviInt(69),
+							"t", new GioviText("hello"),
+							"b", new GioviBool(true)));
+			}
 
 		}
 

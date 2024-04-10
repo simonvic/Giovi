@@ -3,6 +3,8 @@ package giovi;
 import java.util.LinkedHashMap;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public final class Struct extends TupleNamed {
 
@@ -15,6 +17,10 @@ public final class Struct extends TupleNamed {
 
 	public Struct(String typename) {
 		this.typename = typename;
+	}
+
+	public String getTypename() {
+		return typename;
 	}
 
 	@Override
@@ -42,7 +48,6 @@ public final class Struct extends TupleNamed {
 		return true;
 	}
 
-
 	@Override
 	public Struct copy() {
 		var a = new LinkedHashMap<String, GioviValue<?>>();
@@ -50,8 +55,21 @@ public final class Struct extends TupleNamed {
 		return new Struct(typename, a);
 	}
 
-	public String getTypename() {
-		return typename;
+	@Override
+	public Struct widenTo(Struct to) throws NonWideneable {
+		var widened = new LinkedHashMap<String, GioviValue<?>>();
+		for (var entry : to.fields.entrySet()) {
+			GioviValue<?> thisField;
+			try {
+				thisField = getField(entry.getKey());
+			} catch (UnknownTupleField e) {
+				throw new NonWideneable(e);
+			}
+			widened.put(
+				entry.getKey(),
+				thisField.widenTo(entry.getValue().getGioviType()));
+		}
+		return new Struct(typename, widened);
 	}
 
 }
