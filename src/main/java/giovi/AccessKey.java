@@ -23,7 +23,7 @@ public enum AccessKey implements GioviParserVisitResult {
 
 	public final String label;
 
-	private AccessKey(String label) {
+	AccessKey(String label) {
 		this.label = label;
 	}
 
