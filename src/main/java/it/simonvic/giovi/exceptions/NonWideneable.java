@@ -1,5 +1,6 @@
 package it.simonvic.giovi.exceptions;
 
+import giovi.lang.GioviTuple;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 
@@ -7,6 +8,14 @@ public class NonWideneable extends Exception {
 
 	public NonWideneable(GioviValue<?> value, GioviType<?> type) {
 		super("Can't widen " + value + " to " + type);
+	}
+
+	public NonWideneable(String message) {
+		super(message);
+	}
+
+	public NonWideneable(GioviTuple value, GioviType<?> type, NonWideneable cause) {
+		super("Can't widen " + value + " to " + type, cause);
 	}
 
 }

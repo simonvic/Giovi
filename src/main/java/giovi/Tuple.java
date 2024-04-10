@@ -6,6 +6,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public sealed class Tuple permits TupleNamed {
 
@@ -83,8 +84,9 @@ public sealed class Tuple permits TupleNamed {
 		}
 	}
 
+	// TODO: clarify widening requirements
+
 	public boolean canWidenTo(Tuple to) {
-		// TODO: clarify requirements
 		if (this.fields.size() != to.fields.size()) {
 			return false;
 		}
@@ -96,6 +98,17 @@ public sealed class Tuple permits TupleNamed {
 			}
 		}
 		return true;
+	}
+
+	public Tuple widenTo(Tuple to) throws NonWideneable {
+		var widened = new ArrayList<GioviValue<?>>();
+		if (this.fields.size() != to.fields.size()) {
+			throw new NonWideneable("Tuples have different fields count");
+		}
+		for (int i = 0; i < fields.size(); i++) {
+			widened.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
+		}
+		return new Tuple(widened);
 	}
 
 }

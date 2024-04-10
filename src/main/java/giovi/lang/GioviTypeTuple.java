@@ -11,6 +11,10 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 		this.definition = definition;
 	}
 
+	public Tuple getDefinition() {
+		return definition;
+	}
+
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {

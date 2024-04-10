@@ -27,8 +27,21 @@ public final class GioviTuple extends GioviValue<Tuple> {
 
 	@Override
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		// TODO: the heavylifting goes here
-		throw new NonWideneable(this, type);
+		try {
+			return switch (type) {
+				case GioviTypeTuple t -> {
+					var widened = this.value.widenTo(t.getDefinition());
+					yield new GioviTuple(widened);
+				}
+				case GioviTypeStruct t -> {
+					var widened = this.value.widenTo(t.getDefinition());
+					yield new GioviTuple(widened);
+				}
+				default -> throw new NonWideneable(this, type);
+			};
+		} catch (NonWideneable ex) {
+			throw new NonWideneable(this, type, ex);
+		}
 	}
 
 	@Override
