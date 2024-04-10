@@ -57,20 +57,20 @@ public class TestGioviStruct {
 		void testDefinitionWithDefault() {
 			assertThat(visit("""
 				Foo <
-					foo Int default 69
-					bar Bool default true
-					foobar Text default "hello"
+					i Int default 69
+					b Bool default true
+					t Text default "hello"
 				>
 				""").getCurrentScope().getDefinitionStruct("Foo"))
 				.isEqualTo(Structs.of(
 					"Foo",
-					"foo", new GioviInt(69, 69),
-					"bar", new GioviBool(true, true),
-					"foobar", new GioviText("hello", "hello")));
+					"i", new GioviInt(69, 69),
+					"b", new GioviBool(true, true),
+					"t", new GioviText("hello", "hello")));
 		}
 
 		@Test
-		void testDefinitionWithStructField() {
+		void testDefinitionWithNestedStructField() {
 			assertThat(visit("""
 				RGB <
 					r Int
@@ -94,7 +94,7 @@ public class TestGioviStruct {
 
 
 		@Test
-		void testDefinitionWithStructFieldAndDefaults() {
+		void testDefinitionWithNestedStructFieldAndDefaults() {
 			assertThat(visit("""
 				RGB <
 					r Int
@@ -214,149 +214,149 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withNoFields_shouldCreateStructWithDefaultValues() {
 			var visitor = visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
 				""");
 			assertThat(visitExpression(visitor, """
-				RGB.<>
+				Foo.<>
 				""")).isEqualTo(GioviStructs.of(
-				"RGB",
-				"r", new GioviInt(),
-				"g", new GioviInt(),
-				"b", new GioviInt()));
+				"Foo",
+				"i", new GioviInt(),
+				"t", new GioviText(),
+				"b", new GioviBool()));
 		}
 
 		@Test
-		void whenCreatingStruct_withUnnamedFields_shouldCreateStructWithSpecifiedValues() {
+		void whenCreatingStruct_withPositionalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
 				""");
 			assertThat(visitExpression(visitor, """
-				RGB.<
-					1
-					2
-					3
+				Foo.<
+					69
+					"hello"
+					true
 				>
 				""")).isEqualTo(GioviStructs.of(
-				"RGB",
-				"r", new GioviInt(1),
-				"g", new GioviInt(2),
-				"b", new GioviInt(3)));
+				"Foo",
+				"i", new GioviInt(69),
+				"t", new GioviText("hello"),
+				"b", new GioviBool(true)));
 		}
 
 		@Test
 		void whenCreatingStruct_withNamedFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
 				""");
 			assertThat(visitExpression(visitor, """
-				RGB.<
-					r: 1
-					g: 2
-					b: 3
+				Foo.<
+					i: 69
+					t: "hello"
+					b: true
 				>
 				""")).isEqualTo(GioviStructs.of(
-				"RGB",
-				"r", new GioviInt(1),
-				"g", new GioviInt(2),
-				"b", new GioviInt(3)));
+				"Foo",
+				"i", new GioviInt(69),
+				"t", new GioviText("hello"),
+				"b", new GioviBool(true)));
 		}
 
 		@Test
 		void whenCreatingStruct_withUnorderedNamedFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
 				""");
 			assertThat(visitExpression(visitor, """
-				RGB.<
-					g: 2
-					b: 3
-					r: 1
+				Foo.<
+					b: true
+					i: 69
+					t: "hello"
 				>
 				""")).isEqualTo(GioviStructs.of(
-				"RGB",
-				"r", new GioviInt(1),
-				"g", new GioviInt(2),
-				"b", new GioviInt(3)));
+				"Foo",
+				"i", new GioviInt(69),
+				"t", new GioviText("hello"),
+				"b", new GioviBool(true)));
 		}
 
 		@Test
 		void whenCreatingStructOfUndefinedType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visitExpression("""
-				Foo.<69 420 "lol">
+				Foo.<69 "hello" true>
 				"""));
 		}
 
 		@Test
 		void whenCreatingStruct_withWrongFieldsCount_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
-				RGB.<1 2 3 4>
+				Foo.<69 "hello" true 420>
 				"""));
 		}
 
 		@Test
 		void whenCreatingStruct_withWrongFieldsName_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
-				RGB.<red:1 g:2 b:3>
+				Foo.<x:1 y:"hello" z:true>
 				"""));
 		}
 
 		@Test
 		void whenCreatingStruct_withSubsetOfFields_shouldNotThrow() {
 			assertThatNoException().isThrownBy(() -> visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
-				RGB.<r:1 g:2>
+				Foo.<i:69 b:true>
 				"""));
 		}
 
 		@Test
 		void whenCreatingStruct_withSubsetOfFields_shouldOnlyChangeSpecifiedFields() {
 			var visitor = visit("""
-				RGB <
-					r Int
-					g Int
-					b Int
+				Foo <
+					i Int
+					t Text
+					b Bool
 				>
 				""");
 			assertThat(visitExpression(visitor, """
-				RGB.<
-					r: 1
-					b: 3
+				Foo.<
+					i: 69
+					b: true
 				>
 				""")).isEqualTo(GioviStructs.of(
-				"RGB",
-				"r", new GioviInt(1),
-				"g", new GioviInt(),
-				"b", new GioviInt(3)));
+				"Foo",
+				"i", new GioviInt(69),
+				"t", new GioviText(),
+				"b", new GioviBool(true)));
 		}
 
 	}
@@ -438,84 +438,84 @@ public class TestGioviStruct {
 		class Redirection {
 
 			@Test
-			void whenRedirectingCompatibleTuple_shouldChangeField() {
+			void redir_compatibleTuple_shouldChangeField() {
 				assertThat(visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					<255 69 42> -> x
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <69 "hello" true>
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
-							"Color",
-							"r", new GioviInt(255),
-							"g", new GioviInt(69),
-							"b", new GioviInt(42)));
+							"Foo",
+							"i", new GioviInt(69),
+							"t", new GioviText("hello"),
+							"b", new GioviBool(true)));
 			}
 
 			@Test
-			void whenRedirectingSubsetTuple_shouldThrow() {
+			void redir_narrowerTuple_shouldThrow() {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					<69 42> -> x
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <69 "hello">
 					"""));
 			}
 
 			@Test
-			void whenRedirectingCompatibleNamedTuple_shouldChangeFields() {
+			void redir_compatibleNamedTuple_shouldChangeFields() {
 				assertThat(visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					<b:42 r:255 g:69> -> x
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <i:69 t:"hello" b:true>
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
-							"Color",
-							"r", new GioviInt(255),
-							"g", new GioviInt(69),
-							"b", new GioviInt(42)));
+							"Foo",
+							"i", new GioviInt(69),
+							"t", new GioviText("hello"),
+							"b", new GioviBool(true)));
 			}
 
 			@Test
 			@Disabled("Candidate not implemented")
-			void redirPlusSubsetNamedTuple_shouldChangeOnlySpecifiedFields() {
+			void redirPlus_narrowerNamedTuple_shouldChangeFields() {
 				assertThat(visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					<b:42 g:69> ->+ x
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x +<- <i:69 t:true>
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
-							"Color",
-							"r", new GioviInt(),
-							"g", new GioviInt(69),
-							"b", new GioviInt(42)));
+							"Foo",
+							"i", new GioviInt(69),
+							"t", new GioviText(),
+							"b", new GioviBool(true)));
 			}
 
 			@Test
-			void whenRedirectingIncompatibleNamedTuple_shouldThrow() {
+			void redir_namedTuple_withDifferentNames_shouldThrow() {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					<red:255 b:42 g:69> -> x
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <foo:69 t:"hello" b:true>
 					"""));
 			}
 
 			@Test
 			void redir_toField_shouldChangeValue() {
 				assertThat(visit("""
-					Color <r Int, g Int, b Int>
-					x Color
-					x.r <- 255
-					x.g <- 69
-					x.b <- 42
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x.i <- 69
+					x.t <- "hello"
+					x.b <- true
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviStructs.of(
-							"Color",
-							"r", new GioviInt(255),
-							"g", new GioviInt(69),
-							"b", new GioviInt(42)));
+							"Foo",
+							"i", new GioviInt(69),
+							"t", new GioviText("hello"),
+							"b", new GioviBool(true)));
 			}
 
 
