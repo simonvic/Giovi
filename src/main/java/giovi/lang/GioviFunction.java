@@ -57,7 +57,14 @@ public final class GioviFunction extends GioviValue<Function> {
 		switch (content) {
 			case GioviDefault _ -> value = defaultValue.copy();
 			case GioviFunction v when v.value.signature()
-				.equals(this.value.signature()) -> this.value = v.unbox().copy();
+				.equals(this.value.signature()) -> this.value = v.value.copy();
+
+			// equal parameters and return type
+			case GioviFunction v when v.value.signature().parameters()
+				.equals(value.signature().parameters())
+				&& v.value.signature().returnType()
+					.equals(value.signature().returnType()) -> this.value = v.value.copy();
+
 			default -> super.redirection(content);
 		}
 		return this;
