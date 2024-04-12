@@ -16,6 +16,26 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 	}
 
 	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (!super.equals(obj)) return false;
+		if (getClass() != obj.getClass()) return false;
+		GioviTypeTuple other = (GioviTypeTuple) obj;
+		if (definition == null) {
+			if (other.definition != null) return false;
+		} else if (!definition.equals(other.definition)) return false;
+		return true;
+	}
+
+	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
 			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
