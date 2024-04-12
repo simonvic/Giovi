@@ -86,6 +86,7 @@ public abstract sealed class GioviValue<T>
 
 	/**
 	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
+	 * Lossless conversion
 	 * @param type
 	 * @return widened value
 	 * @throws NonWideneable

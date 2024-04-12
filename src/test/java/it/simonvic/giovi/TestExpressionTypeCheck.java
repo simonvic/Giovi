@@ -4,6 +4,7 @@ import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class TestExpressionTypeCheck {
@@ -117,6 +118,41 @@ public class TestExpressionTypeCheck {
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [Text : Foo]
+			""").asNativeBool());
+	}
+
+	@Test
+	@Disabled("Needs requirements clarification")
+	void testTupleIsStruct() {
+		var visitor = visit("""
+			Foo <i Int, t Text, b Bool>
+			""");
+		assertTrue(visitExpression(visitor, """
+			<69 "hello" true> is Foo
+			""").asNativeBool());
+	}
+
+	@Test
+	@Disabled("Needs requirements clarification")
+	void testEqualStructs() {
+		var visitor = visit("""
+			Foo <i Int, t Text, b Bool>
+			Bar <i Int, t Text, b Bool>
+			""");
+		assertTrue(visitExpression(visitor, """
+			Bar.<> is Foo
+			""").asNativeBool());
+	}
+
+	@Test
+	@Disabled("Needs requirements clarification")
+	void testStructIsTuple() {
+		var visitor = visit("""
+			Foo <i Int, t Text, b Bool>
+			x Foo
+			""");
+		assertTrue(visitExpression(visitor, """
+			x is <Int, Text, Bool>
 			""").asNativeBool());
 	}
 
