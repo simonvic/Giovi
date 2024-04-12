@@ -72,7 +72,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault _ -> value = defaultValue;
 			case GioviNatural v -> value = v.value.doubleValue();
 			case GioviInt v -> value = v.value.doubleValue();
 			case GioviReal v -> value = v.value.doubleValue();
@@ -84,7 +84,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value += defaultValue;
+			case GioviDefault _ -> value += defaultValue;
 			case GioviNatural v -> value += v.value.doubleValue();
 			case GioviInt v -> value += v.value.doubleValue();
 			case GioviReal v -> value += v.value.doubleValue();
@@ -96,7 +96,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value -= defaultValue;
+			case GioviDefault _ -> value -= defaultValue;
 			case GioviNatural v -> value -= v.value.doubleValue();
 			case GioviInt v -> value -= v.value.doubleValue();
 			case GioviReal v -> value -= v.value.doubleValue();
@@ -108,7 +108,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value *= defaultValue;
+			case GioviDefault _ -> value *= defaultValue;
 			case GioviNatural v -> value *= v.value.doubleValue();
 			case GioviInt v -> value *= v.value.doubleValue();
 			case GioviReal v -> value *= v.value.doubleValue();
@@ -120,7 +120,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value /= defaultValue;
+			case GioviDefault _ -> value /= defaultValue;
 			case GioviNatural v -> value /= v.value.doubleValue();
 			case GioviInt v -> value /= v.value.doubleValue();
 			case GioviReal v -> value /= v.value.doubleValue();
@@ -144,7 +144,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(value + defaultValue);
+			case GioviDefault _ -> new GioviReal(value + defaultValue);
 			case GioviNatural v -> new GioviReal(value + v.unbox().doubleValue());
 			case GioviInt v -> new GioviReal(value + v.unbox());
 			case GioviReal v -> new GioviReal(value + v.unbox());
@@ -155,7 +155,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(value - defaultValue);
+			case GioviDefault _ -> new GioviReal(value - defaultValue);
 			case GioviNatural v -> new GioviReal(value - v.unbox().intValue());
 			case GioviInt v -> new GioviReal(value - v.unbox());
 			case GioviReal v -> new GioviReal(value - v.unbox());
@@ -166,7 +166,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(value * defaultValue);
+			case GioviDefault _ -> new GioviReal(value * defaultValue);
 			case GioviNatural v -> new GioviReal(value * v.unbox().doubleValue());
 			case GioviInt v -> new GioviReal(value * v.unbox());
 			case GioviReal v -> new GioviReal(value * v.unbox());
@@ -177,7 +177,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(value / defaultValue);
+			case GioviDefault _ -> new GioviReal(value / defaultValue);
 			case GioviNatural v -> new GioviReal(value / v.unbox().doubleValue());
 			case GioviInt v -> new GioviReal(value / v.unbox());
 			case GioviReal v -> new GioviReal(value / v.unbox());
@@ -188,7 +188,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(value % defaultValue);
+			case GioviDefault _ -> new GioviReal(value % defaultValue);
 			case GioviNatural v -> new GioviReal(value % v.unbox().doubleValue());
 			case GioviInt v -> new GioviReal(value % v.unbox());
 			case GioviReal v -> new GioviReal(value % v.unbox());
@@ -199,7 +199,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviReal(Math.pow(value, defaultValue));
+			case GioviDefault _ -> new GioviReal(Math.pow(value, defaultValue));
 			case GioviNatural v -> new GioviReal(Math.pow(value, v.unbox().doubleValue()));
 			case GioviInt v -> new GioviReal(Math.pow(value, v.unbox()));
 			case GioviReal v -> new GioviReal(Math.pow(value, v.unbox()));
@@ -214,7 +214,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
 			case GioviNatural v -> new GioviBool(value == v.unbox().doubleValue());
 			case GioviInt v -> new GioviBool(value == v.unbox().doubleValue());
 			case GioviReal v -> new GioviBool(value.equals(v.unbox()));
@@ -230,7 +230,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value < defaultValue);
+			case GioviDefault _ -> new GioviBool(value < defaultValue);
 			case GioviNatural v -> new GioviBool(value < v.unbox().doubleValue());
 			case GioviInt v -> new GioviBool(value < v.unbox());
 			case GioviReal v -> new GioviBool(value < v.unbox());
@@ -241,7 +241,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value <= defaultValue);
+			case GioviDefault _ -> new GioviBool(value <= defaultValue);
 			case GioviNatural v -> new GioviBool(value <= v.unbox().doubleValue());
 			case GioviInt v -> new GioviBool(value <= v.unbox());
 			case GioviReal v -> new GioviBool(value <= v.unbox());
@@ -252,7 +252,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value > defaultValue);
+			case GioviDefault _ -> new GioviBool(value > defaultValue);
 			case GioviNatural v -> new GioviBool(value > v.unbox().doubleValue());
 			case GioviInt v -> new GioviBool(value > v.unbox());
 			case GioviReal v -> new GioviBool(value > v.unbox());
@@ -263,7 +263,7 @@ public final class GioviReal extends GioviNumber<Double> {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value >= defaultValue);
+			case GioviDefault _ -> new GioviBool(value >= defaultValue);
 			case GioviNatural v -> new GioviBool(value >= v.unbox().doubleValue());
 			case GioviInt v -> new GioviBool(value >= v.unbox());
 			case GioviReal v -> new GioviBool(value >= v.unbox());

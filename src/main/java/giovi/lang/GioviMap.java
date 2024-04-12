@@ -207,7 +207,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> value = GioviMaps.copyOf(defaultValue);
+			case GioviDefault _ -> value = GioviMaps.copyOf(defaultValue);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> init(GioviMaps.copyOf(v.value));
 			default -> super.redirection(content);
@@ -218,7 +218,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> putAll(defaultValue);
+			case GioviDefault _ -> putAll(defaultValue);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> putAll(v.value);
 			default -> super.redirectionPlus(right);
@@ -229,7 +229,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> removeAll(defaultValue);
+			case GioviDefault _ -> removeAll(defaultValue);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> removeAll(v.value);
 			case GioviValue<?> v -> {
@@ -253,7 +253,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
 			case GioviMap v -> {
 				// NOTE: we need to check if the key and element is **equal** instead of **equals**
 				var thisEntrySet = this.value.entrySet();

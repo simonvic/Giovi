@@ -67,7 +67,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault _ -> value = defaultValue;
 			case GioviText v -> value = v.unbox();
 			default -> super.redirection(content);
 		}
@@ -77,7 +77,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value += defaultValue;
+			case GioviDefault _ -> value += defaultValue;
 			case GioviText v -> value += v.unbox();
 			default -> super.redirectionPlus(right);
 		}
@@ -87,7 +87,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault v -> value = value.replace(defaultValue, "");
+			case GioviDefault _ -> value = value.replace(defaultValue, "");
 			case GioviText v -> value = value.replace(v.unbox(), "");
 			default -> super.redirectionMinus(right);
 		}
@@ -99,7 +99,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviText(value + defaultValue);
+			case GioviDefault _ -> new GioviText(value + defaultValue);
 			//			case GioviText v -> new GioviText(value + v.unbox());
 			case GioviValue<?> v -> new GioviText(value + v);
 			default -> super.plus(right);
@@ -109,7 +109,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviText(value.replace(defaultValue, ""));
+			case GioviDefault _ -> new GioviText(value.replace(defaultValue, ""));
 			case GioviText v -> new GioviText(value.replace(v.unbox(), ""));
 			default -> super.minus(right);
 		};
@@ -143,7 +143,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) == 0);
+			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) == 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) == 0);
 			default -> super.equal(right);
 		};
@@ -157,7 +157,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) < 0);
+			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) < 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
 			default -> super.less(right);
 		};
@@ -166,7 +166,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) <= 0);
+			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) <= 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
 			default -> super.lessEqual(right);
 		};
@@ -175,7 +175,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) > 0);
+			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) > 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
 			default -> super.greater(right);
 		};
@@ -184,7 +184,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.compareTo(defaultValue) >= 0);
+			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) >= 0);
 			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
 			default -> super.greaterEqual(right);
 		};
@@ -193,7 +193,7 @@ public final class GioviText extends GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.contains(defaultValue));
+			case GioviDefault _ -> new GioviBool(value.contains(defaultValue));
 			case GioviText v -> new GioviBool(value.contains(v.unbox()));
 			default -> super.contains(right);
 		};

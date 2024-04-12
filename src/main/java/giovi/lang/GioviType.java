@@ -44,7 +44,7 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 
 	public abstract boolean canWidenTo(GioviType<?> to);
 
-	// TODO: add canShrinkTo(type)
+	// TODO: add canNarrowTo(type)
 
 	public abstract GioviValue<?> spawn();
 

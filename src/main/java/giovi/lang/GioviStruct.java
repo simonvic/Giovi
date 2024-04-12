@@ -96,7 +96,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue.copy();
+			case GioviDefault _ -> value = defaultValue.copy();
 			case GioviStruct v -> {
 				if (this.getFieldsCount() != v.getFieldsCount()) {
 					return super.redirection(content);
@@ -175,7 +175,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault __ -> new GioviStruct(defaultValue.copy());
+			case GioviDefault _ -> new GioviStruct(defaultValue.copy());
 			case FieldKey(var identifier) -> {
 				try {
 					yield value.getField(identifier);

@@ -92,7 +92,7 @@ public abstract sealed class GioviValue<T>
 	 */
 	public abstract GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
 
-	// TODO: add shrinkTo(type) which should be used along the widenTo(type) inside the as(type)
+	// TODO: add narrowTo(type) which should be used along the widenTo(type) inside the as(type)
 
 	/**
 	 * Perform a <b>deep copy</b>

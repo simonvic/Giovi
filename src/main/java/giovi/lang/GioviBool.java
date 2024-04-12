@@ -46,7 +46,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviTypeBool __ -> new GioviBool(this.value);
+			case GioviTypeBool _ -> new GioviBool(this.value);
 			default -> super.as(right);
 		};
 	}
@@ -56,7 +56,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		switch (content) {
-			case GioviDefault v -> value = defaultValue;
+			case GioviDefault _ -> value = defaultValue;
 			case GioviBool v -> value = v.unbox();
 			default -> super.redirection(content);
 		}
@@ -75,7 +75,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value && defaultValue);
+			case GioviDefault _ -> new GioviBool(value && defaultValue);
 			case GioviBool v -> new GioviBool(value && v.unbox());
 			// case IntValue v -> new BoolValue(value && v.asBool());
 			default -> super.and(right);
@@ -85,7 +85,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value || defaultValue);
+			case GioviDefault _ -> new GioviBool(value || defaultValue);
 			case GioviBool v -> new GioviBool(value || v.unbox());
 			// case IntValue v -> new BoolValue(value || v.asBool());
 			default -> super.or(right);
@@ -97,7 +97,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault v -> new GioviBool(value.equals(defaultValue));
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
 			// case IntValue v -> new BoolValue(value == v.asBool());
 			default -> super.equal(right);

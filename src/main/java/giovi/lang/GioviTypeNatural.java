@@ -11,9 +11,9 @@ public final class GioviTypeNatural extends GioviTypeNumber<GioviNatural> {
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeNatural __ -> true;
-			case GioviTypeInt __ -> true;
-			case GioviTypeReal __ -> true;
+			case GioviTypeNatural _ -> true;
+			case GioviTypeInt _ -> true;
+			case GioviTypeReal _ -> true;
 			default -> false;
 		};
 	}
