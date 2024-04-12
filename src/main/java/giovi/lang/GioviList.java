@@ -108,7 +108,9 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		if (type instanceof GioviTypeList t) {
 			var widened = t.spawn();
-			this.value.forEach(widened::add);
+			for (var entry : value) {
+				widened.add(entry.widenTo(t.getEntryType()));
+			}
 			return widened;
 		}
 		throw new NonWideneable(this, type);
