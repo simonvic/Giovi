@@ -25,7 +25,7 @@ public final class Struct extends TupleNamed {
 
 	@Override
 	public String toString() {
-		return typename + super.toString();
+		return typename + "." + super.toString();
 	}
 
 	@Override
