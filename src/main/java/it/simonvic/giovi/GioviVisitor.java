@@ -339,8 +339,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		var variable = visit(ctx.varDeclaration());
 		var content = visit(ctx.redirectionContent());
+		var variable = visit(ctx.varDeclaration());
 		variable.redirection(content);
 		return null;
 	}
@@ -413,8 +413,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		var variable = visit(ctx.varDeclaration());
 		var content = visit(ctx.redirectionContent());
+		var variable = visit(ctx.varDeclaration());
 		variable.redirection(content);
 		return null;
 	}
