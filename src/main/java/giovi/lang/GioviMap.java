@@ -169,13 +169,15 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	@Override
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		if (type instanceof GioviTypeMap t) {
-			var map = new GioviMap(t.getKeyType(), t.getElementType());
+			var widerKeyType = t.getKeyType();
+			var widerElementType = t.getElementType();
+			var widened = new GioviMap(widerKeyType, widerElementType);
 			for (var entry : this.value.entrySet()) {
-				map.put(
-					entry.getKey().widenTo(t.getKeyType()),
-					entry.getValue().widenTo(t.getElementType()));
+				widened.value.put(
+					entry.getKey().widenTo(widerKeyType),
+					entry.getValue().widenTo(widerElementType));
 			}
-			return map;
+			return widened;
 		}
 		throw new NonWideneable(this, type);
 	}
