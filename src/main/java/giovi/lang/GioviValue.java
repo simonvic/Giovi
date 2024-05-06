@@ -61,21 +61,13 @@ public abstract sealed class GioviValue<T>
 	}
 
 	@SuppressWarnings("unchecked")
-	public void box(GioviValue<?> gioviValue) throws ClassCastException, NonWideneable {
-		if (value.getClass().isInstance(gioviValue.value)) {
-			value = (T) gioviValue.value;
-		} else {
-			value = (T) gioviValue.widenTo(this.getGioviType());
-		}
+	public void box(GioviValue<?> gioviValue) throws ClassCastException {
+		value = (T) gioviValue.value;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException, NonWideneable {
-		if (defaultValue.getClass().isInstance(gioviValue.value)) {
-			defaultValue = (T) gioviValue.value;
-		} else {
-			defaultValue = (T) gioviValue.widenTo(this.getGioviType());
-		}
+	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException {
+		defaultValue = (T) gioviValue.value;
 	}
 
 	/**

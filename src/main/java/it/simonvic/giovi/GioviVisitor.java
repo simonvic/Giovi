@@ -363,13 +363,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		DefaultDefinitionContext defaultDefinitionCtx) {
 		var value = type.spawn();
 		if (defaultDefinitionCtx != null) {
-			var defaultValue = visit(defaultDefinitionCtx).asGioviValue();
 			// TODO: check if type instanceof GioviDefault/GioviPlaceholder/GioviVoid
 			// we need to copy to ensure we don't pass an existing reference
 			// (e.g. foobar Foobar default someMap@someKey) which might change
 			// TODO: eventually the copy should be done within GioviValues,
 			// where they know if it's necessary
 			try {
+				// TODO: widen here or inside the boxing method?
+				// We would need to override boxing methods in composite types though
+				var defaultValue = visit(defaultDefinitionCtx).asGioviValue().widenTo(type);
 				value.boxDefault(defaultValue.copy());
 				value.box(defaultValue.copy());
 			} catch (ClassCastException | NonWideneable ex) {

@@ -57,7 +57,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public void boxField(int index, GioviValue<?> fieldValue) {
 		try {
 			value.getField(index).box(fieldValue);
-		} catch (ClassCastException | NonWideneable e) {
+		} catch (ClassCastException e) {
 			throw new GioviException(e);
 		}
 	}
@@ -65,7 +65,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 	public void boxField(String field, GioviValue<?> fieldValue) {
 		try {
 			value.getField(field).box(fieldValue);
-		} catch (ClassCastException | NonWideneable | UnknownTupleField e) {
+		} catch (ClassCastException | UnknownTupleField e) {
 			throw new GioviException(e);
 		}
 	}
