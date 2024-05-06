@@ -1,5 +1,6 @@
 package giovi.lang;
 
+import giovi.FieldKey;
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
 
@@ -60,10 +61,11 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviStruct(definition.copy());
-		}
-		return super.dot(right);
+		return switch (right) {
+			case GioviDefault _ -> new GioviStruct(definition.copy());
+			case FieldKey(var identifier) -> definition.get(identifier).copy();
+			default -> super.dot(right);
+		};
 	}
 
 }
