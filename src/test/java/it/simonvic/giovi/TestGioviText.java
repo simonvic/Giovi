@@ -306,9 +306,9 @@ public class TestGioviText {
 			}
 
 			@Test
-			void multiply_shouldRepeat() {
+			void power_shouldRepeat() {
 				assertThat(visitExpression("""
-					"Hello" * 3
+					"Hello" ^ 3
 					""").asGioviText().unbox()).isEqualTo(
 					"HelloHelloHello");
 			}

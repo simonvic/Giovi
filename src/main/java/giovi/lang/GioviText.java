@@ -116,10 +116,10 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
-	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
+	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviNumber<?> v -> new GioviText(value.repeat(v.intValue().unbox()));
-			default -> super.multiply(right);
+			default -> super.power(right);
 		};
 	}
 
