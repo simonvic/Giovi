@@ -19,7 +19,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviTypeStruct getGioviType() {
-		return new GioviTypeStruct(value.copy());
+		return new GioviTypeStruct(defaultValue.copy());
 	}
 
 	@Override
