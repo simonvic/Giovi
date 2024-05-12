@@ -19,6 +19,7 @@ public final class GioviStruct extends GioviValue<Struct> {
 
 	@Override
 	public GioviTypeStruct getGioviType() {
+		// FIXME: this would produce two different types as their structs would likely have different value
 		return new GioviTypeStruct(defaultValue.copy());
 	}
 
