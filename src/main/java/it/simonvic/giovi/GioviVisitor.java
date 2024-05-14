@@ -224,84 +224,89 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		StatementOrBlockContext bodyCtx,
 		IteratorContext keyIteratorCtx,
 		IteratorContext valueIteratorCtx) {
-		TriConsumer<StatementOrBlockContext, GioviValue<?>, GioviValue<?>> iterationBody = switch (keyIteratorCtx) {
+		TriConsumer<StatementOrBlockContext, GioviValue<?>, GioviValue<?>> iterationBody;
+		try {
+			iterationBody = switch (keyIteratorCtx) {
 
-			case IteratorPlaceholderContext _ -> switch ( valueIteratorCtx) {
+				case IteratorPlaceholderContext _ -> switch ( valueIteratorCtx) {
 
-				case IteratorPlaceholderContext _ -> ( body, _, _) -> visit(body);
+					case IteratorPlaceholderContext _ -> ( body, _, _) -> visit(body);
 
-				case IteratorUnaryContext valueCtx -> (body, _, v) -> {
-					String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
-					getCurrentScope().declare(valueIdentifier, v.copy());
-					visit(body);
+					case IteratorUnaryContext valueCtx -> (body, _, v) -> {
+						String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
+						getCurrentScope().declare(valueIdentifier, v.copy());
+						visit(body);
+					};
+
+					case IteratorAggregateContext valueCtx -> (body, _, v) -> {
+						deconstruct(v.copy(), valueCtx);
+						visit(body);
+					};
+
+					default -> throw new GioviException("Unsupported map value");
 				};
 
-				case IteratorAggregateContext valueCtx -> (body, _, v) -> {
-					deconstruct(v.copy(), valueCtx);
-					visit(body);
-				};
+				case IteratorUnaryContext keyCtx -> {
+					String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
 
-				default -> throw new GioviException("Can't iterate over unsupported map value");
-			};
+					yield switch (valueIteratorCtx) {
+						case IteratorPlaceholderContext _ -> ( body, k, _) -> {
+							getCurrentScope().declare(keyIdentifier, k.copy());
+							visit(body);
+						};
 
-			case IteratorUnaryContext keyCtx -> {
-				String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
+						case IteratorUnaryContext valueCtx -> (body, k, v) -> {
+							getCurrentScope().declare(keyIdentifier, k.copy());
+							getCurrentScope().declare(
+								valueCtx.unaryIterator().identifier().getText(),
+								v.copy());
+							visit(body);
+						};
 
-				yield switch (valueIteratorCtx) {
+						case IteratorAggregateContext valueCtx -> (body, k, v) -> {
+							getCurrentScope().declare(keyIdentifier, k.copy());
+							deconstruct(v.copy(), valueCtx);
+							visit(body);
+						};
+
+						case IteratorMapContext valueCtx -> (body, k, v) -> {
+							getCurrentScope().declare(keyIdentifier, k.copy());
+							if (v instanceof GioviMap nestedMap) {
+								iterate(nestedMap, body, valueCtx.key, valueCtx.value);
+							}
+						};
+
+						default -> throw new GioviException("Unsupported map value");
+					};
+				}
+
+				case IteratorAggregateContext keyCtx -> switch (valueIteratorCtx) {
 
 					case IteratorPlaceholderContext _ -> ( body, k, _) -> {
-						getCurrentScope().declare(keyIdentifier, k.copy());
+						deconstruct(k.copy(), keyCtx);
 						visit(body);
 					};
 
 					case IteratorUnaryContext valueCtx -> (body, k, v) -> {
-						getCurrentScope().declare(keyIdentifier, k.copy());
+						deconstruct(k.copy(), keyCtx);
 						String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(valueIdentifier, v.copy());
 						visit(body);
 					};
 
 					case IteratorAggregateContext valueCtx -> (body, k, v) -> {
-						getCurrentScope().declare(keyIdentifier, k.copy());
+						deconstruct(k.copy(), keyCtx);
 						deconstruct(v.copy(), valueCtx);
 						visit(body);
 					};
 
-					case IteratorMapContext valueCtx -> (body, k, v) -> {
-						getCurrentScope().declare(keyIdentifier, k.copy());
-						if (v instanceof GioviMap nestedMap) {
-							iterate(nestedMap, body, valueCtx.key, valueCtx.value);
-						}
-					};
-
-					default -> throw new GioviException("Can't iterate over unsupported map value");
+					default -> throw new GioviException("Unsupported map value");
 				};
-			}
-
-			case IteratorAggregateContext keyCtx -> switch (valueIteratorCtx) {
-
-				case IteratorPlaceholderContext _ -> ( body, k, _) -> {
-					deconstruct(k.copy(), keyCtx);
-					visit(body);
-				};
-
-				case IteratorUnaryContext valueCtx -> (body, k, v) -> {
-					deconstruct(k.copy(), keyCtx);
-					String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
-					getCurrentScope().declare(valueIdentifier, v.copy());
-					visit(body);
-				};
-
-				case IteratorAggregateContext valueCtx -> (body, k, v) -> {
-					deconstruct(k.copy(), keyCtx);
-					deconstruct(v.copy(), valueCtx);
-					visit(body);
-				};
-
-				default -> throw new GioviException("Can't iterate over unsupported map value");
+				default -> throw new GioviException("Unsupported map key");
 			};
-			default -> throw new GioviException("Can't iterate over unsupported map key");
-		};
+		} catch (GioviException e) {
+			throw new GioviException(e, "Can't iterate over map");
+		}
 
 		iterate(map, bodyCtx, iterationBody);
 	}
