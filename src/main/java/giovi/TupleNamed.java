@@ -9,6 +9,7 @@ import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
@@ -71,6 +72,21 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		var a = new LinkedHashMap<String, GioviValue<?>>();
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new TupleNamed(a);
+	}
+
+	public boolean equal(TupleNamed other) {
+		if (this.fields.size() != other.fields.size()) return false;
+		for (var entry : this.fields.entrySet()) {
+			try {
+				GioviValue<?> otherField = other.getField(entry.getKey());
+				if (!entry.getValue().equal(otherField).asNativeBool()) {
+					return false;
+				}
+			} catch (UnknownTupleField | OperatorNotSupported e) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override

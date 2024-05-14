@@ -3,7 +3,6 @@ package giovi.lang;
 import giovi.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 
@@ -146,22 +145,9 @@ public final class GioviStruct extends GioviValue<Struct> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviTuple t -> {
-				if (this.getFieldsCount() != t.getFieldsCount()) {
-					yield new GioviBool(false);
-				}
-				for (int i = 0; i < getFieldsCount(); i++) {
-					try {
-						if (!value.getField(i).equal(t.value.getField(i)).asNativeBool()) {
-							yield new GioviBool(false);
-						}
-					} catch (OperatorNotSupported ex) {
-						yield new GioviBool(false);
-					}
-
-				}
-				yield new GioviBool(true);
-			}
+			case GioviDefault _ -> new GioviBool(value.equal(defaultValue));
+			case GioviStruct t -> new GioviBool(this.value.equal(t.value));
+			case GioviTuple t -> new GioviBool(this.value.equal(t.value));
 			default -> super.equal(right);
 		};
 	}

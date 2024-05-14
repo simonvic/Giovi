@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class Tuple permits TupleNamed {
 
@@ -83,6 +84,22 @@ public sealed class Tuple permits TupleNamed {
 		for (int i = 0; i < fields.size(); i++) {
 			valueConsumer.accept(i, fields.get(i));
 		}
+	}
+
+	public boolean equal(Tuple other) {
+		if (this.fields.size() != other.fields.size()) return false;
+		for (int i = 0; i < fields.size(); i++) {
+			var thisField = this.fields.get(i);
+			var otherField = other.fields.get(i);
+			try {
+				if (!thisField.equal(otherField).asNativeBool()) {
+					return false;
+				}
+			} catch (OperatorNotSupported e) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	// TODO: clarify widening requirements
