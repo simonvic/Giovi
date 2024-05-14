@@ -161,7 +161,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 							entry.copy());
 					});
 
-					default -> new GioviException(
+					default -> throw new GioviException(
 						"Can't iterate over " + range + " with iterator " + iterator.getText());
 				}
 			}
