@@ -243,6 +243,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						visit(body);
 					};
 
+					case IteratorMapContext valueCtx -> (body, k, v) -> {
+						if (v instanceof GioviMap nestedMap) {
+							iterate(nestedMap, body, valueCtx.key, valueCtx.value);
+						}
+					};
+
 					default -> throw new GioviException("Unsupported map value");
 				};
 
