@@ -22,7 +22,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		return new GioviTypeTuple(value.copy());
+		return new GioviTypeTuple(defaultValue.copy());
 	}
 
 	@Override
