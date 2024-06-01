@@ -220,6 +220,11 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		return equal(right).not();
+	}
+
+	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviList v -> {
