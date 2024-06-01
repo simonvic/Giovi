@@ -36,6 +36,20 @@ public sealed class Tuple permits TupleNamed {
 		return sb.toString();
 	}
 
+	// TODO: eventually remove this
+	public String toStringDefinition() {
+		var i = fields.iterator();
+		if (!i.hasNext()) return "<>";
+		StringBuilder sb = new StringBuilder();
+		sb.append('<');
+		while (i.hasNext()) {
+			sb.append(i.next().getGioviType());
+			sb.append(i.hasNext() ? ", " : ">");
+		}
+		return sb.toString();
+	}
+
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

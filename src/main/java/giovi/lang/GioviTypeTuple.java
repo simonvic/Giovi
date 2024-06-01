@@ -16,6 +16,11 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 	}
 
 	@Override
+	public String toString() {
+		return definition.toStringDefinition();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();

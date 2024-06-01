@@ -29,6 +29,22 @@ public final class Struct extends TupleNamed {
 	}
 
 	@Override
+	public String toStringDefinition() {
+		var i = this.entrySet().iterator();
+		if (!i.hasNext()) return "<>";
+		StringBuilder sb = new StringBuilder(typename);
+		sb.append('<');
+		while (i.hasNext()) {
+			var next = i.next();
+			sb.append(next.getKey());
+			sb.append(" ");
+			sb.append(next.getValue().getGioviType());
+			sb.append(i.hasNext() ? ", " : ">");
+		}
+		return sb.toString();
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
