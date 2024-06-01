@@ -327,8 +327,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			getCurrentScope().declare(aggregateCtx.whole.identifier().getText(), aggregate);
 		}
 		switch (aggregate) {
-			case GioviTuple tuple -> deconstruct(tuple, aggregateCtx);
 			case GioviStruct struct -> deconstruct(struct, aggregateCtx);
+			case GioviTupleNamed tuple -> deconstruct(tuple, aggregateCtx);
+			case GioviTuple tuple -> deconstruct(tuple, aggregateCtx);
 			default -> throw new GioviException("Can't deconstruct " + aggregate);
 		}
 	}
@@ -340,6 +341,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private void deconstruct(GioviTuple tuple, IteratorAggregateContext aggregateCtx) {
 		throw new GioviException("Tuple deconstruct not implemented yet");
+	}
+
+	/**
+	 * Deconstruct a tuple and declare the variables
+	 * @param tuple
+	 * @param aggregateCtx
+	 */
+	private void deconstruct(GioviTupleNamed tuple, IteratorAggregateContext aggregateCtx) {
+		throw new GioviException("TupleNamed deconstruct not implemented yet");
 	}
 
 	/**
@@ -1134,7 +1144,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					namedStructFieldCtx.identifier().getText(),
 					visit(namedStructFieldCtx.expression()).asGioviValue());
 			}
-			return new GioviTuple(new TupleNamed(fields));
+			return new GioviTupleNamed(new TupleNamed(fields));
 		}
 	}
 

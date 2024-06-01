@@ -2,10 +2,9 @@ package giovi.lang;
 
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 
-public final class GioviTuple extends GioviValue<Tuple> {
+public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed {
 
 	public GioviTuple(Tuple value, Tuple defaultValue) {
 		super(value, defaultValue);
@@ -28,13 +27,17 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeTuple t -> {
-					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviTuple(widened);
-				}
 				case GioviTypeStruct t -> {
 					var widened = this.value.widenTo(t.getDefinition());
 					yield new GioviStruct(widened);
+				}
+				case GioviTypeTupleNamed t -> {
+					var widened = this.value.widenTo(t.getDefinition());
+					yield new GioviTupleNamed(widened);
+				}
+				case GioviTypeTuple t -> {
+					var widened = this.value.widenTo(t.getDefinition());
+					yield new GioviTuple(widened);
 				}
 				default -> throw new NonWideneable(this, type);
 			};
@@ -77,7 +80,6 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue));
-			case GioviStruct t -> new GioviBool(this.value.equal(t.value));
 			case GioviTuple t -> new GioviBool(this.value.equal(t.value));
 			default -> super.equal(right);
 		};
@@ -94,16 +96,6 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviTuple(defaultValue.copy());
-			case FieldKey(var identifier) -> switch (value) {
-				case TupleNamed named -> {
-					try {
-						yield named.getField(identifier);
-					} catch (UnknownTupleField e) {
-						yield super.dot(right);
-					}
-				}
-				default -> super.dot(right);
-			};
 			default -> super.dot(right);
 		};
 	}

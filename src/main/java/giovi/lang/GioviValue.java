@@ -7,6 +7,7 @@ import java.util.Objects;
 import giovi.Natural;
 import giovi.Struct;
 import giovi.Tuple;
+import giovi.TupleNamed;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
@@ -14,7 +15,7 @@ import it.simonvic.giovi.util.GioviMaps;
 
 public abstract sealed class GioviValue<T>
 	extends GioviObject
-	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviStruct, GioviFunction {
+	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviFunction {
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
@@ -26,6 +27,7 @@ public abstract sealed class GioviValue<T>
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
 			case Struct v -> new GioviStruct(v);
+			case TupleNamed v -> new GioviTupleNamed(v);
 			case Tuple v -> new GioviTuple(v);
 			default -> throw new GioviException(
 				"Unknown type " + value + " (" + value.getClass() + ")");

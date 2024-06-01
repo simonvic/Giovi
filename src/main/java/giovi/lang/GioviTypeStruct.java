@@ -4,15 +4,16 @@ import giovi.FieldKey;
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
 
-public final class GioviTypeStruct extends GioviType<GioviStruct> {
+public final class GioviTypeStruct extends GioviTypeTupleNamed {
 
 	private final Struct definition;
 
 	public GioviTypeStruct(Struct definition) {
-		super(GioviStruct.class);
+		super(GioviStruct.class, definition);
 		this.definition = definition;
 	}
 
+	@Override
 	public Struct getDefinition() {
 		return definition;
 	}
@@ -55,7 +56,7 @@ public final class GioviTypeStruct extends GioviType<GioviStruct> {
 	}
 
 	@Override
-	public GioviType<GioviStruct> copy() {
+	public GioviTypeStruct copy() {
 		return new GioviTypeStruct(definition.copy());
 	}
 

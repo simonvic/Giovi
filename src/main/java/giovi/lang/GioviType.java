@@ -5,8 +5,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 // TODO: is generic needed? Why not just extends GioviPrimitive<Class<? extends GioviValue<?>>>
 public abstract sealed class GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<? extends T>>
-	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeStruct,
-	GioviTypeFunction {
+	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeFunction {
 
 	public GioviType(Class<? extends T> value, Class<? extends T> defaultValue) {
 		super(value, defaultValue);

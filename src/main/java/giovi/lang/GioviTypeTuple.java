@@ -2,12 +2,17 @@ package giovi.lang;
 
 import giovi.Tuple;
 
-public final class GioviTypeTuple extends GioviType<GioviTuple> {
+public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTypeTupleNamed {
 
 	private final Tuple definition;
 
 	public GioviTypeTuple(Tuple definition) {
 		super(GioviTuple.class);
+		this.definition = definition;
+	}
+
+	protected GioviTypeTuple(Class<? extends GioviTuple> clazz, Tuple definition) {
+		super(clazz);
 		this.definition = definition;
 	}
 
@@ -43,8 +48,9 @@ public final class GioviTypeTuple extends GioviType<GioviTuple> {
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
 			case GioviTypeStruct t -> this.definition.canWidenTo(t.getDefinition());
+			case GioviTypeTupleNamed t -> this.definition.canWidenTo(t.getDefinition());
+			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
 			default -> false;
 		};
 	}

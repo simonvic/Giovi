@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 
 import giovi.TupleNamed;
 import giovi.lang.GioviTuple;
+import giovi.lang.GioviTupleNamed;
 import giovi.lang.GioviValue;
 
 public class GioviTuples {
@@ -19,16 +20,16 @@ public class GioviTuples {
 		return new GioviTuple(new TupleNamed(s));
 	}
 
-	public static <T> GioviTuple ofNamed(
+	public static <T> GioviTupleNamed ofNamed(
 		String i1, T v1,
 		String i2, T v2) {
 		var s = new LinkedHashMap<String, GioviValue<?>>();
 		s.put(i1, GioviValue.of(v1));
 		s.put(i2, GioviValue.of(v2));
-		return new GioviTuple(new TupleNamed(s));
+		return new GioviTupleNamed(new TupleNamed(s));
 	}
 
-	public static <T> GioviTuple ofNamed(
+	public static <T> GioviTupleNamed ofNamed(
 		String i1, T v1,
 		String i2, T v2,
 		String i3, T v3) {
@@ -36,10 +37,10 @@ public class GioviTuples {
 		s.put(i1, GioviValue.of(v1));
 		s.put(i2, GioviValue.of(v2));
 		s.put(i3, GioviValue.of(v3));
-		return new GioviTuple(new TupleNamed(s));
+		return new GioviTupleNamed(new TupleNamed(s));
 	}
 
-	public static <T> GioviTuple ofNamed(
+	public static <T> GioviTupleNamed ofNamed(
 		String i1, T v1,
 		String i2, T v2,
 		String i3, T v3,
@@ -49,7 +50,7 @@ public class GioviTuples {
 		s.put(i2, GioviValue.of(v2));
 		s.put(i3, GioviValue.of(v3));
 		s.put(i4, GioviValue.of(v4));
-		return new GioviTuple(new TupleNamed(s));
+		return new GioviTupleNamed(new TupleNamed(s));
 	}
 
 
