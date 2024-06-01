@@ -123,6 +123,23 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return new TupleNamed(widened);
 	}
 
+	@Override
+	public Struct widenTo(Struct to) throws NonWideneable {
+		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		for (var entry : to.fields.entrySet()) {
+			GioviValue<?> thisField;
+			try {
+				thisField = getField(entry.getKey());
+			} catch (UnknownTupleField e) {
+				throw new NonWideneable(e);
+			}
+			widenedFields.put(
+				entry.getKey(),
+				thisField.widenTo(entry.getValue().getGioviType()));
+		}
+		return new Struct(to.getTypename(), widenedFields);
+	}
+
 	public boolean containsField(String identifier) {
 		return fields.containsKey(identifier);
 	}
