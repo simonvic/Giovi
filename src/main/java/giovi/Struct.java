@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public final class Struct extends TupleNamed {
 
@@ -73,19 +72,10 @@ public final class Struct extends TupleNamed {
 
 	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
-		var widened = new LinkedHashMap<String, GioviValue<?>>();
-		for (var entry : to.fields.entrySet()) {
-			GioviValue<?> thisField;
-			try {
-				thisField = getField(entry.getKey());
-			} catch (UnknownTupleField e) {
-				throw new NonWideneable(e);
-			}
-			widened.put(
-				entry.getKey(),
-				thisField.widenTo(entry.getValue().getGioviType()));
+		if (!to.typename.equals(this.typename)) {
+			throw new NonWideneable("Can't widen " + this.typename + " to " + to.typename);
 		}
-		return new Struct(typename, widened);
+		return this;
 	}
 
 }
