@@ -80,7 +80,11 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue));
-			case GioviTuple t -> new GioviBool(this.value.equal(t.value));
+			case GioviTuple t -> switch (t.value) {
+				case Struct v -> new GioviBool(this.value.equal(v));
+				case TupleNamed v -> new GioviBool(this.value.equal(v));
+				case Tuple v -> new GioviBool(this.value.equal(v));
+			};
 			default -> super.equal(right);
 		};
 	}

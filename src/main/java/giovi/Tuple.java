@@ -100,6 +100,14 @@ public sealed class Tuple permits TupleNamed {
 		}
 	}
 
+	public boolean equal(Struct other) {
+		return this.equal((Tuple) other);
+	}
+
+	public boolean equal(TupleNamed other) {
+		return this.equal((Tuple) other);
+	}
+
 	public boolean equal(Tuple other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (int i = 0; i < fields.size(); i++) {

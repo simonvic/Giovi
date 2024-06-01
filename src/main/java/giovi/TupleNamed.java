@@ -91,6 +91,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return new TupleNamed(a);
 	}
 
+	@Override
 	public boolean equal(TupleNamed other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
