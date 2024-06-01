@@ -12,7 +12,7 @@ public final class GioviTuple extends GioviValue<Tuple> {
 	}
 
 	public GioviTuple(Tuple value) {
-		super(value, new Tuple());
+		super(value, value.copy());
 	}
 
 	public GioviTuple() {
