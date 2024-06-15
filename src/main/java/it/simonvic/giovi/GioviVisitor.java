@@ -527,7 +527,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
-		var constant = visit(ctx.expression()).asGioviValue();
+		var constant = spawnType(ctx.type(), null);
+		constant.redirection(visit(ctx.expression()));
 		getCurrentScope().declareConstant(ctx.constantIdentifier().getText(), constant);
 		return constant;
 	}
