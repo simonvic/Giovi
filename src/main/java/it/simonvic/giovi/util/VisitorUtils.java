@@ -105,7 +105,7 @@ public class VisitorUtils {
 		GioviToken operator,
 		GioviParserVisitResult right) {
 		return switch (operator) {
-			case CONTAINED -> left.isContained(right);
+			case CONTAINED, IN -> left.isContained(right);
 			case CONTAINS -> left.contains(right);
 			default -> throw new OperatorNotSupported(operator);
 		};
