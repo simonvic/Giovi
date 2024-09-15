@@ -744,13 +744,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitAccess(AccessContext ctx) {
-		return getCurrentScope()
-			.getVariableValue(ctx.anyIdentifier().getText())
-			.access(visit(ctx.accessKey()));
-	}
-
-	@Override
 	public GioviParserVisitResult visitAccessKeySpecial(AccessKeySpecialContext ctx) {
 		return AccessKey.of(ctx.key.getText());
 	}
