@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 public class TestExpressionTypeCheck {
 
+	// TODO(test): negated type check
+
 	@Test
 	void testNatural() {
 		var visitor = visit("""

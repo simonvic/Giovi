@@ -740,7 +740,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionTypeCheck(ExpressionTypeCheckContext ctx) {
 		var expression = visit(ctx.expression()).asGioviValue();
 		var type = visit(ctx.type()).asGioviType();
-		return new GioviBool(expression.getGioviType().equals(type));
+		boolean equals = expression.getGioviType().equals(type);
+		if (ctx.NOT() != null) {
+			return new GioviBool(!equals);
+		}
+		return new GioviBool(equals);
 	}
 
 	@Override
@@ -1083,6 +1087,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		var structFieldsCtx = ctx.structFields();
+		// TODO: Struct.<field: _> field is null
 		return ctx.structType != null
 			? createStruct(ctx.structType.getText(), structFieldsCtx)
 			: createTuple(structFieldsCtx);

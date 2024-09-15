@@ -96,7 +96,11 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchTypeCheck(CaseMatchTypeCheckContext ctx) {
 		var valueType = subject.asGioviValue().getGioviType();
 		var checkType = gioviVisitor.visit(ctx.type());
-		return new GioviBool(valueType.equals(checkType));
+		boolean equals = valueType.equals(checkType);
+		if (ctx.NOT() != null) {
+			return new GioviBool(!equals);
+		}
+		return new GioviBool(equals);
 	}
 
 }
