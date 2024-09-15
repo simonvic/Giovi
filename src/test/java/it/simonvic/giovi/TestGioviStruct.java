@@ -15,7 +15,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
-import giovi.lang.*;
+import giovi.lang.GioviBool;
+import giovi.lang.GioviInt;
+import giovi.lang.GioviText;
+import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
@@ -310,7 +313,7 @@ public class TestGioviStruct {
 					t Text
 					b Bool
 				>
-				Foo.<69 "hello" true 420>
+				Foo.<69 "hello" true 420> -> foo Foo
 				"""));
 		}
 
@@ -322,7 +325,7 @@ public class TestGioviStruct {
 					t Text
 					b Bool
 				>
-				Foo.<x:1 y:"hello" z:true>
+				Foo.<x:1 y:"hello" z:true> -> foo Foo
 				"""));
 		}
 
@@ -334,7 +337,7 @@ public class TestGioviStruct {
 					t Text
 					b Bool
 				>
-				Foo.<i:69 b:true>
+				Foo.<i:69 b:true> -> foo Foo
 				"""));
 		}
 
@@ -426,7 +429,7 @@ public class TestGioviStruct {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 					RGB <r Int, g Int, b Int>
 					RGBA <r Int, g Int, b Int, a Int>
-					RGBA.<> as RGB
+					RGBA.<> as RGB -> rgb RGB
 					"""));
 			}
 
