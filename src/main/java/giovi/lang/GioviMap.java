@@ -312,9 +312,9 @@ public record GioviMap(
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(gioviValue);
 			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(unbox().size());
-				case KEYS -> new GioviList(keyType, unbox().keySet().stream().toList());
-				case VALUES -> new GioviList(elementType, unbox().values().stream().toList());
+				case COUNT -> new GioviInt(value().size());
+				case KEYS -> new GioviList(keyType, value().keySet().stream().toList());
+				case VALUES -> new GioviList(elementType, value().values().stream().toList());
 			};
 			default -> throw new GioviException("Invalid access key: " + right);
 		};

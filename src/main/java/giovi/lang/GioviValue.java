@@ -35,15 +35,7 @@ public sealed interface GioviValue<T>
 	}
 
 	default Class<?> getValueType() {
-		return unbox().getClass();
-	}
-
-	default T unbox() {
-		return value();
-	}
-
-	default T unboxDefault() {
-		return defaultValue();
+		return value().getClass();
 	}
 
 	T value();

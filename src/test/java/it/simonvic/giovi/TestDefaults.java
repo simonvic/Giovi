@@ -30,7 +30,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(new Natural(69));
 		}
 
@@ -41,7 +41,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(69);
 		}
 
@@ -52,7 +52,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(6.9);
 		}
 
@@ -63,7 +63,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(true);
 		}
 
@@ -74,7 +74,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo("foo");
 		}
 
@@ -85,7 +85,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(List.of(new GioviInt(1), new GioviInt(2), new GioviInt(3)));
 		}
 
@@ -96,7 +96,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
+				.defaultValue())
 					.isEqualTo(Map.of(
 						new GioviInt(1), new GioviBool(true),
 						new GioviInt(2), new GioviBool(false)));
@@ -123,7 +123,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault();
+				.defaultValue();
 			assertThat(def)
 				.isEqualTo(Structs.ofNative(
 					"Foo",
@@ -207,8 +207,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unbox())
-					.isEqualTo(GioviLists.of(1, 2, 3).unbox());
+				.value())
+					.isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
 
 		@Test

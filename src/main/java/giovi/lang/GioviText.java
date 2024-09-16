@@ -45,7 +45,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypePrimitive<?> t) {
-			var typeClass = t.unbox();
+			var typeClass = t.value();
 			if (typeClass == GioviText.class) return new GioviText(this.value);
 			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
 			try {
@@ -87,7 +87,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviText(value.replace(defaultValue, ""), defaultValue);
-			case GioviText v -> new GioviText(value.replace(v.unbox(), ""), defaultValue);
+			case GioviText v -> new GioviText(value.replace(v.value(), ""), defaultValue);
 			default -> GioviPrimitive.super.redirectionMinus(right);
 		};
 	}
@@ -108,7 +108,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviText(value.replace(defaultValue, ""));
-			case GioviText v -> new GioviText(value.replace(v.unbox(), ""));
+			case GioviText v -> new GioviText(value.replace(v.value(), ""));
 			default -> GioviPrimitive.super.minus(right);
 		};
 	}
@@ -116,7 +116,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	@Override
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNumber<?> v -> new GioviText(value.repeat(v.intValue().unbox()));
+			case GioviNumber<?> v -> new GioviText(value.repeat(v.intValue().value()));
 			default -> GioviPrimitive.super.power(right);
 		};
 	}
@@ -127,7 +127,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 			case GioviText v -> new GioviList(
 				new GioviTypeText(),
 				new ArrayList<>(Stream.of(value
-					.split(v.unbox()))
+					.split(v.value()))
 					.map(this::toGioviText)
 					.toList()));
 			default -> GioviPrimitive.super.divide(right);
@@ -142,7 +142,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) == 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) == 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.value()) == 0);
 			default -> GioviPrimitive.super.equal(right);
 		};
 	}
@@ -156,7 +156,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) < 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) < 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.value()) < 0);
 			default -> GioviPrimitive.super.less(right);
 		};
 	}
@@ -165,7 +165,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) <= 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) <= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.value()) <= 0);
 			default -> GioviPrimitive.super.lessEqual(right);
 		};
 	}
@@ -174,7 +174,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) > 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) > 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.value()) > 0);
 			default -> GioviPrimitive.super.greater(right);
 		};
 	}
@@ -183,7 +183,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue) >= 0);
-			case GioviText v -> new GioviBool(value.compareTo(v.unbox()) >= 0);
+			case GioviText v -> new GioviBool(value.compareTo(v.value()) >= 0);
 			default -> GioviPrimitive.super.greaterEqual(right);
 		};
 	}
@@ -192,7 +192,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.contains(defaultValue));
-			case GioviText v -> new GioviBool(value.contains(v.unbox()));
+			case GioviText v -> new GioviBool(value.contains(v.value()));
 			default -> GioviPrimitive.super.contains(right);
 		};
 	}
@@ -223,7 +223,7 @@ public record GioviText(String value, String defaultValue) implements GioviPrimi
 				yield new GioviText(sb.toString());
 			}
 			case GioviInt i -> {
-				int index = i.unbox();
+				int index = i.value();
 				index = index >= 0 ? index : value.length() + index;
 				yield new GioviText(String.valueOf(value.charAt(index)));
 			}

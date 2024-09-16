@@ -66,7 +66,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 
@@ -78,7 +78,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 
@@ -90,7 +90,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 
@@ -102,7 +102,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 
@@ -114,7 +114,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 
@@ -126,7 +126,7 @@ public class TestGioviReal {
 					""")
 					.getCurrentScope()
 					.getVariableValue("x")
-					.unbox())
+					.value())
 						.isEqualTo(69d);
 			}
 

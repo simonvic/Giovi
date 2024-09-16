@@ -38,11 +38,11 @@ public class GioviVisitorUtils {
 	}
 
 	public static Object visitNativeValue(String code) {
-		return visitValue(code).unbox();
+		return visitValue(code).value();
 	}
 
 	public static Object visitNativeValue(GioviVisitor visitor, String code) {
-		return visitValue(visitor, code).unbox();
+		return visitValue(visitor, code).value();
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {

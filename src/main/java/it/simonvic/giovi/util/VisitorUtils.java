@@ -74,12 +74,12 @@ public class VisitorUtils {
 		if (lhs instanceof GioviBool b) {
 			switch (operator) {
 				case AND, AND_SYM -> {
-					if (!b.unbox()) {
+					if (!b.value()) {
 						return new GioviBool(false);
 					}
 				}
 				case OR, OR_SYM -> {
-					if (b.unbox()) {
+					if (b.value()) {
 						return new GioviBool(true);
 					}
 				}

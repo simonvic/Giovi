@@ -111,7 +111,7 @@ public record GioviTupleNamed(TupleNamed value, TupleNamed defaultValue)
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
 			case GioviInt i -> {
-				int index = i.unbox();
+				int index = i.value();
 				index = index >= 0 ? index : value.getFieldsCount() + index;
 				yield value.getField(index);
 			}

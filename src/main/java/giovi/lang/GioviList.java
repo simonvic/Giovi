@@ -191,7 +191,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 					yield new GioviBool(false);
 				}
 				for (int i = 0; i < this.value.size(); i++) {
-					if (!this.value.get(i).equal(v.value.get(i)).asGioviBool().unbox()) {
+					if (!this.value.get(i).equal(v.value.get(i)).asGioviBool().value()) {
 						yield new GioviBool(false);
 					}
 				}
@@ -236,15 +236,15 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt i -> {
-					int index = i.unbox();
+					int index = i.value();
 					index = index >= 0 ? index : value.size() + index;
 					yield value.get(index);
 				}
 				default -> GioviValue.super.access(right);
 			};
 			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(unbox().size());
-				case KEYS -> Range.of(0, unbox().size() - 1, 1);
+				case COUNT -> new GioviInt(value().size());
+				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> GioviValue.super.access(right);
 			};
 			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {

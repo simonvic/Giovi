@@ -53,25 +53,25 @@ public class TestScope {
 		@Test
 		void testDeclarationVariableType_string() {
 			scope.declare("aString", new GioviText("hello world"));
-			assertEquals(String.class, scope.getVariableValue("aString").unbox().getClass());
+			assertEquals(String.class, scope.getVariableValue("aString").value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_bool() {
 			scope.declare("aBoolean", new GioviBool(true));
-			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").unbox().getClass());
+			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_real() {
 			scope.declare("aReal", new GioviReal(0.69));
-			assertEquals(Double.class, scope.getVariableValue("aReal").unbox().getClass());
+			assertEquals(Double.class, scope.getVariableValue("aReal").value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_int() {
 			scope.declare("anInteger", new GioviInt(69));
-			assertEquals(Integer.class, scope.getVariableValue("anInteger").unbox().getClass());
+			assertEquals(Integer.class, scope.getVariableValue("anInteger").value().getClass());
 		}
 
 		@Test
@@ -106,14 +106,14 @@ public class TestScope {
 		GioviInt value = new GioviInt();
 		scope.declare("anInt", value);
 		scope.setVariableValue("anInt", new GioviInt(69));
-		assertEquals(69, value.unbox());
+		assertEquals(69, value.value());
 	}
 
 	@Test
 	void testValueUnbox() {
 		GioviInt value = new GioviInt(69);
 		scope.declare("anInt", value);
-		assertEquals(69, scope.getVariableValue("anInt").unbox());
+		assertEquals(69, scope.getVariableValue("anInt").value());
 	}
 
 	@Nested
@@ -142,7 +142,7 @@ public class TestScope {
 		@Test
 		void test_getVariableValue() {
 			global.declare("aString", new GioviText("hello world"));
-			assertEquals("hello world", global.getVariableValue("aString").unbox());
+			assertEquals("hello world", global.getVariableValue("aString").value());
 		}
 
 		@Test
@@ -185,14 +185,14 @@ public class TestScope {
 		@Test
 		void nestedBlockShouldAccessVariablesValue() {
 			global.declare("aString", new GioviText("Hello world"));
-			assertEquals("Hello world", scope11.getVariableValue("aString").unbox());
+			assertEquals("Hello world", scope11.getVariableValue("aString").value());
 		}
 
 		@Test
 		void nestedBlockShouldBeAbleToChangeVariablesValue() {
 			global.declare("aString", new GioviText("Hello world"));
 			scope2.setVariableValue("aString", new GioviText("ciao mondo"));
-			assertEquals("ciao mondo", global.getVariableValue("aString").unbox());
+			assertEquals("ciao mondo", global.getVariableValue("aString").value());
 		}
 	}
 

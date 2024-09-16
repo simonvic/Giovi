@@ -76,14 +76,14 @@ public interface GioviParserVisitResult {
 	default GioviBool asGioviBool() { return (GioviBool) this; }
 	default GioviText asGioviText() { return (GioviText) this; }
 	default GioviFunction asGioviFunction() { return (GioviFunction) this; }
-	default Number asNativeNumber() { return asGioviNumber().unbox(); }
-	default Natural asNativeNatural() { return asGioviNatural().unbox(); }
-	default Integer asNativeInt() { return asGioviInt().unbox(); }
-	default Double asNativeReal() { return asGioviReal().unbox(); }
-	default Boolean asNativeBool() { return asGioviBool().unbox(); }
-	default String asNativeText() { return asGioviText().unbox(); }
-	default List<?> asNativeList() { return asGioviList().unbox(); }
-	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().unbox(); }
+	default Number asNativeNumber() { return asGioviNumber().value(); }
+	default Natural asNativeNatural() { return asGioviNatural().value(); }
+	default Integer asNativeInt() { return asGioviInt().value(); }
+	default Double asNativeReal() { return asGioviReal().value(); }
+	default Boolean asNativeBool() { return asGioviBool().value(); }
+	default String asNativeText() { return asGioviText().value(); }
+	default List<?> asNativeList() { return asGioviList().value(); }
+	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return (Function) this; }
 
 	// @formatter:on

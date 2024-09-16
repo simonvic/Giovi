@@ -405,7 +405,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviList list,
 		StatementOrBlockContext statementOrBlockCtx,
 		Consumer<GioviValue<?>> preamble) {
-		for (var entry : list.unbox()) {
+		for (var entry : list.value()) {
 			enterLoopScope();
 			preamble.accept(entry);
 			visit(statementOrBlockCtx);
@@ -430,7 +430,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
 		BiConsumer<GioviValue<?>, GioviValue<?>> preamble) {
-		for (var entry : map.unbox().entrySet()) {
+		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
 			preamble.accept(entry.getKey(), entry.getValue());
 			visit(statementOrBlockCtx);
@@ -455,7 +455,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
 		TriConsumer<StatementOrBlockContext, GioviValue<?>, GioviValue<?>> loopBody) {
-		for (var entry : map.unbox().entrySet()) {
+		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
 			loopBody.accept(statementOrBlockCtx, entry.getKey(), entry.getValue());
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
@@ -855,7 +855,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		} catch (FunctionNotDeclared e) {
 			var reference = getCurrentScope().getVariableValue(identifier);
 			if (reference instanceof GioviFunction gioviFunction) {
-				function = gioviFunction.unbox();
+				function = gioviFunction.value();
 			} else {
 				throw new GioviException(e, "Can't call " + identifier);
 			}
@@ -1007,7 +1007,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private GioviValue<?> callFunction(Function func) {
 		if (func.bodyCtx() == null) {
-			if (func.signature().returnType().unbox() != GioviVoid.class) {
+			if (func.signature().returnType().value() != GioviVoid.class) {
 				// returning returnType default value
 				return func.signature().returnType().spawn();
 			}
@@ -1018,7 +1018,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.signature().returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
-				if (returnType.unbox() == GioviVoid.class) {
+				if (returnType.value() == GioviVoid.class) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
@@ -1030,7 +1030,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 			}
 		}
-		if (func.signature().returnType().unbox() != GioviVoid.class) {
+		if (func.signature().returnType().value() != GioviVoid.class) {
 			throw new GioviException("Missing return statement in function");
 		}
 		return new GioviVoid();
@@ -1161,8 +1161,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var entryType = visit(ctx.type()).asGioviType();
 		if (ctx.initSize == null) return new GioviTypeList(entryType);
 		return switch (visit(ctx.initSize)) {
-			case GioviInt i -> new GioviTypeList(entryType, i.unbox());
-			case GioviNatural i -> new GioviTypeList(entryType, i.unbox().intValue());
+			case GioviInt i -> new GioviTypeList(entryType, i.value());
+			case GioviNatural i -> new GioviTypeList(entryType, i.value().intValue());
 			default -> throw new GioviException("Invalid list init size");
 		};
 	}

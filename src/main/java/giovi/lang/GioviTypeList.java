@@ -49,7 +49,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	@Override
 	public GioviList spawn() {
 		var list = new GioviList(this.entryType);
-		var rawList = list.unbox();
+		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
 			rawList.add(this.entryType.spawn());
 		}

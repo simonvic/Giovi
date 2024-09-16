@@ -9,11 +9,11 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	GioviTypeStruct, GioviTypeFunction {
 
 	default String getFullyQualifiedName() {
-		return unbox().getName().replace("Giovi", "");
+		return value().getName().replace("Giovi", "");
 	}
 
 	default String getSimpleName() {
-		return unbox().getSimpleName().replace("Giovi", "");
+		return value().getSimpleName().replace("Giovi", "");
 	}
 
 	@Override

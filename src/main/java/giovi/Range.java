@@ -54,15 +54,15 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 
 		int stepInt = step == null ? 1 : stepNumber.intValue();
 		if (start instanceof GioviInt s && end instanceof GioviInt e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		if (start instanceof GioviNatural s && end instanceof GioviNatural e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		if (start instanceof GioviText s && end instanceof GioviText e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		throw new GioviException("Invalid range: %s .. %s .. %s".formatted(start, end, step));
