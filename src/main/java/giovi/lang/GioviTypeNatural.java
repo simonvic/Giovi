@@ -1,11 +1,18 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import giovi.Natural;
 
-public final class GioviTypeNatural extends GioviTypeNumber<GioviNatural> {
+public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 
-	public GioviTypeNatural() {
-		super(GioviNatural.class);
+	@Override
+	public Class<? extends GioviNatural> value() {
+		return GioviNatural.class;
+	}
+
+	@Override
+	public Class<? extends GioviNatural> defaultValue() {
+		return GioviNatural.class;
 	}
 
 	@Override
@@ -18,9 +25,14 @@ public final class GioviTypeNatural extends GioviTypeNumber<GioviNatural> {
 		};
 	}
 
-	@Override
+	@ Override
 	public GioviNatural spawn() {
 		return new GioviNatural();
+	}
+
+	@Override
+	public GioviNatural spawn(GioviNatural gioviValue) {
+		return new GioviNatural(gioviValue.value(), new Natural(gioviValue.value().intValue()));
 	}
 
 	@Override
@@ -33,7 +45,7 @@ public final class GioviTypeNatural extends GioviTypeNumber<GioviNatural> {
 		if (right instanceof GioviDefault) {
 			return new GioviNatural();
 		}
-		return super.dot(right);
+		return GioviTypeNumber.super.dot(right);
 	}
 
 

@@ -90,6 +90,10 @@ public sealed class Tuple permits TupleNamed {
 		return fields.get(index);
 	}
 
+	public void boxField(int i, GioviValue<?> gioviValue) {
+		fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
+	}
+
 	public void forEach(Consumer<GioviValue<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}

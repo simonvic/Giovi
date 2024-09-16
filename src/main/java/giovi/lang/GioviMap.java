@@ -10,10 +10,12 @@ import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviMaps;
 
-public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
-
-	private final GioviType<?> keyType;
-	private final GioviType<?> elementType;
+public record GioviMap(
+	GioviType<?> keyType,
+	GioviType<?> elementType,
+	LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
+	LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue)
+	implements GioviValue<LinkedHashMap<GioviValue<?>, GioviValue<?>>> {
 
 	public GioviMap(
 		GioviType<?> keyType,
@@ -31,9 +33,10 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		GioviType<?> elementType,
 		LinkedHashMap<GioviValue<?>, GioviValue<?>> value,
 		LinkedHashMap<GioviValue<?>, GioviValue<?>> defaultValue) {
-		super(new LinkedHashMap<>(), new LinkedHashMap<>());
 		this.keyType = keyType;
 		this.elementType = elementType;
+		this.value = new LinkedHashMap<>();
+		this.defaultValue = new LinkedHashMap<>();
 		try {
 			for (var entry : value.entrySet()) {
 				this.value.put(
@@ -138,30 +141,6 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((keyType == null) ? 0 : keyType.hashCode());
-		result = prime * result + ((elementType == null) ? 0 : elementType.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviMap other = (GioviMap) obj;
-		if (keyType == null) {
-			if (other.keyType != null) return false;
-		} else if (!keyType.equals(other.keyType)) return false;
-		if (elementType == null) {
-			if (other.elementType != null) return false;
-		} else if (!elementType.equals(other.elementType)) return false;
-		return true;
-	}
-
-	@Override
 	public GioviType<?> getGioviType() {
 		return new GioviTypeMap(keyType, elementType);
 	}
@@ -205,20 +184,24 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				e.as(t.getElementType()).asGioviValue()));
 			return map;
 		}
-		return super.as(right);
+		return GioviValue.super.as(right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = GioviMaps.copyOf(defaultValue);
+		return switch (content) {
+			case GioviDefault _ -> new GioviMap(keyType, elementType,
+				GioviMaps.copyOf(defaultValue), defaultValue);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
-				&& v.elementType.canWidenTo(this.elementType) -> init(GioviMaps.copyOf(v.value));
-			default -> super.redirection(content);
-		}
-		return this;
+				&& v.elementType.canWidenTo(this.elementType) -> {
+				var newGioviMap = new GioviMap(keyType, elementType, new LinkedHashMap<>(), defaultValue);
+				putAll(GioviMaps.copyOf(v.value));
+				yield newGioviMap;
+			}
+			default -> GioviValue.super.redirection(content);
+		};
 	}
 
 	@Override
@@ -227,7 +210,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 			case GioviDefault _ -> putAll(defaultValue);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> putAll(v.value);
-			default -> super.redirectionPlus(right);
+			default -> GioviValue.super.redirectionPlus(right);
 		}
 		return this;
 	}
@@ -242,10 +225,10 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				try {
 					remove(v.widenTo(this.keyType));
 				} catch (IllegalArgumentException | NonWideneable e) {
-					return super.redirectionMinus(right);
+					return GioviValue.super.redirectionMinus(right);
 				}
 			}
-			default -> super.redirectionMinus(right);
+			default -> GioviValue.super.redirectionMinus(right);
 		}
 		return this;
 	}
@@ -293,7 +276,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				}
 				yield new GioviBool(true);
 			}
-			default -> super.equal(right);
+			default -> GioviValue.super.equal(right);
 		};
 	}
 
@@ -318,7 +301,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 				}
 				yield new GioviBool(false);
 			}
-			default -> super.contains(right);
+			default -> GioviValue.super.contains(right);
 		};
 	}
 
@@ -344,7 +327,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 			this.defaultValue.forEach((key, element) -> d.put(key.copy(), element.copy()));
 			return new GioviMap(keyType, elementType, d);
 		}
-		return super.dot(right);
+		return GioviValue.super.dot(right);
 	}
 
 }

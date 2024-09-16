@@ -2,10 +2,16 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
+public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 
-	public GioviTypeType() {
-		super(null);
+	@Override
+	public Class<? extends GioviType<?>> value() {
+		return null; // TODO: lol
+	}
+
+	@Override
+	public Class<? extends GioviType<?>> defaultValue() {
+		return null; // TODO: lol
 	}
 
 	@Override
@@ -29,7 +35,12 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviTypeVoid spawn() {
+		return new GioviTypeVoid();
+	}
+
+	@Override
+	public GioviTypeVoid spawn(GioviType<?> gioviValue) {
 		return new GioviTypeVoid();
 	}
 
@@ -43,7 +54,7 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 		if (right instanceof GioviDefault) {
 			return new GioviTypeVoid(); // TODO: emh...
 		}
-		return super.dot(right);
+		return GioviTypePrimitive.super.dot(right);
 	}
 
 

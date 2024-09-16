@@ -3,19 +3,16 @@ package giovi.lang;
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviTuples;
 
-public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed {
-
-	public GioviTuple(Tuple value, Tuple defaultValue) {
-		super(value, defaultValue);
-	}
+public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<Tuple> {
 
 	public GioviTuple(Tuple value) {
-		super(value, value.copy());
+		this(value, value.copy());
 	}
 
 	public GioviTuple() {
-		super(new Tuple(), new Tuple());
+		this(new Tuple(), new Tuple());
 	}
 
 	@Override
@@ -63,11 +60,13 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = defaultValue.copy();
-			default -> super.redirection(content);
-		}
-		return this;
+		return switch (content) {
+			case GioviDefault _ -> new GioviTuple(defaultValue.copy(), defaultValue);
+			case GioviTuple v -> GioviTuples.redirection(this, v);
+			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
+			case GioviStruct v -> GioviTuples.redirection(this, v);
+			default -> GioviValue.super.redirection(content);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -85,7 +84,7 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 				case TupleNamed v -> new GioviBool(this.value.equal(v));
 				case Tuple v -> new GioviBool(this.value.equal(v));
 			};
-			default -> super.equal(right);
+			default -> GioviValue.super.equal(right);
 		};
 	}
 
@@ -100,7 +99,7 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviTuple(defaultValue.copy());
-			default -> super.dot(right);
+			default -> GioviValue.super.dot(right);
 		};
 	}
 
@@ -112,7 +111,7 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> switch (value) {
 					case TupleNamed named -> GioviLists.of(named.getFieldNames());
-					default -> super.access(right);
+					default -> GioviValue.super.access(right);
 				};
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
@@ -122,7 +121,7 @@ public sealed class GioviTuple extends GioviValue<Tuple> permits GioviTupleNamed
 				index = index >= 0 ? index : value.getFieldsCount() + index;
 				yield value.getField(index);
 			}
-			default -> super.access(right);
+			default -> GioviValue.super.access(right);
 		};
 	}
 

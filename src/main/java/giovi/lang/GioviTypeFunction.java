@@ -4,17 +4,20 @@ import giovi.Function;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.lang.FunctionSignature;
 
-public final class GioviTypeFunction extends GioviType<GioviFunction> {
-
-	private final FunctionSignature signature;
-
-	public GioviTypeFunction(FunctionSignature signature) {
-		super(GioviFunction.class);
-		this.signature = signature;
-	}
+public record GioviTypeFunction(FunctionSignature signature) implements GioviType<GioviFunction> {
 
 	public FunctionSignature getSignature() {
 		return signature;
+	}
+
+	@Override
+	public Class<? extends GioviFunction> value() {
+		return GioviFunction.class;
+	}
+
+	@Override
+	public Class<? extends GioviFunction> defaultValue() {
+		return GioviFunction.class;
 	}
 
 	@Override
@@ -23,8 +26,13 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviFunction spawn() {
 		return new GioviFunction(new Function(signature.copy()));
+	}
+
+	@Override
+	public GioviFunction spawn(GioviFunction gioviValue) {
+		return new GioviFunction(gioviValue.value(), gioviValue.value().copy());
 	}
 
 	@Override
@@ -37,7 +45,7 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 		if (right instanceof GioviDefault) {
 			return new GioviFunction();
 		}
-		return super.dot(right);
+		return GioviType.super.dot(right);
 	}
 
 }

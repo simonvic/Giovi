@@ -92,7 +92,7 @@ public class Scope {
 
 	public void setVariableValue(String identifier, GioviValue<?> value) {
 		if (variables.containsKey(identifier)) {
-			variables.get(identifier).redirection(value);
+			variables.put(identifier, variables.get(identifier).redirection(value).asGioviValue());
 		} else {
 			if (parent == null) {
 				throw new VariableNotDeclared(identifier);

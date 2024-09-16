@@ -4,16 +4,8 @@ import giovi.FieldKey;
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
 
-public final class GioviTypeStruct extends GioviTypeTupleNamed {
+public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruct> {
 
-	private final Struct definition;
-
-	public GioviTypeStruct(Struct definition) {
-		super(GioviStruct.class, definition);
-		this.definition = definition;
-	}
-
-	@Override
 	public Struct getDefinition() {
 		return definition;
 	}
@@ -23,23 +15,13 @@ public final class GioviTypeStruct extends GioviTypeTupleNamed {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
-		return result;
+	public Class<? extends GioviStruct> value() {
+		return GioviStruct.class;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviTypeStruct other = (GioviTypeStruct) obj;
-		if (definition == null) {
-			if (other.definition != null) return false;
-		} else if (!definition.equals(other.definition)) return false;
-		return true;
+	public Class<? extends GioviStruct> defaultValue() {
+		return GioviStruct.class;
 	}
 
 	@Override
@@ -51,8 +33,13 @@ public final class GioviTypeStruct extends GioviTypeTupleNamed {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviStruct spawn() {
 		return new GioviStruct(definition.copy());
+	}
+
+	@Override
+	public GioviStruct spawn(GioviStruct gioviValue) {
+		return new GioviStruct(gioviValue.value(), gioviValue.value().copy());
 	}
 
 	@Override
@@ -65,7 +52,7 @@ public final class GioviTypeStruct extends GioviTypeTupleNamed {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(definition.copy());
 			case FieldKey(var identifier) -> definition.get(identifier).copy();
-			default -> super.dot(right);
+			default -> GioviType.super.dot(right);
 		};
 	}
 

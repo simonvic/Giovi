@@ -3,10 +3,16 @@ package giovi.lang;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 // TODO: what if we make Void the variadic netrual element for all operations?
-public final class GioviVoid extends GioviPrimitive<Void> {
+public final record GioviVoid() implements GioviPrimitive<Void> {
 
-	public GioviVoid() {
-		super(null, null);
+	@Override
+	public Void value() {
+		return null;
+	}
+
+	@Override
+	public Void defaultValue() {
+		return null;
 	}
 
 	@Override

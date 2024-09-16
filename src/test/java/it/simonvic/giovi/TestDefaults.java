@@ -104,7 +104,7 @@ public class TestDefaults {
 
 		@Test
 		void testDefaultOverrideStruct() {
-			assertThat(visit("""
+			var def = visit("""
 				Bar <
 					baz Text
 					foobar [Int]
@@ -123,13 +123,14 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x")
-				.unboxDefault())
-					.isEqualTo(Structs.ofNative(
-						"Foo",
-						"foo", "foo",
-						"bar", Structs.ofNative("Bar",
-							"baz", "baz",
-							"foobar", List.of(1, 2, 3))));
+				.unboxDefault();
+			assertThat(def)
+				.isEqualTo(Structs.ofNative(
+					"Foo",
+					"foo", "foo",
+					"bar", Structs.ofNative("Bar",
+						"baz", "baz",
+						"foobar", List.of(1, 2, 3))));
 		}
 
 	}
@@ -146,7 +147,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(new GioviNatural(new Natural(69)));
+					.isEqualTo(new GioviNatural(new Natural(69), new Natural(69)));
 		}
 
 		@Test
@@ -158,7 +159,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(new GioviInt(69));
+					.isEqualTo(new GioviInt(69, 69));
 		}
 
 		@Test
@@ -170,7 +171,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(new GioviReal(6.9));
+					.isEqualTo(new GioviReal(6.9, 6.9));
 		}
 
 		@Test
@@ -182,7 +183,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(new GioviBool(true));
+					.isEqualTo(new GioviBool(true, true));
 		}
 
 		@Test
@@ -194,7 +195,7 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariableValue("x"))
-					.isEqualTo(new GioviText("foo"));
+					.isEqualTo(new GioviText("foo", "foo"));
 		}
 
 		@Test
@@ -205,8 +206,9 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				.getVariableValue("x")
+				.unbox())
+					.isEqualTo(GioviLists.of(1, 2, 3).unbox());
 		}
 
 		@Test

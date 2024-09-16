@@ -2,20 +2,16 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
-import giovi.TupleNamed;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
+import it.simonvic.giovi.util.GioviTuples;
 
-public final class GioviStruct extends GioviTupleNamed {
+public record GioviStruct(Struct value, Struct defaultValue) implements GioviValue<Struct> {
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
-	public GioviStruct(Struct value, Struct defaultValue) {
-		super(value, defaultValue);
-	}
-
 	public GioviStruct(Struct value) {
-		super(value, value.copy());
+		this(value, value.copy());
 	}
 
 	@Override
@@ -48,6 +44,15 @@ public final class GioviStruct extends GioviTupleNamed {
 		return ((Struct) value).getTypename();
 	}
 
+	public int getFieldsCount() {
+		return value.getFieldsCount();
+	}
+
+	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
+		return value.getField(identifier);
+	}
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
@@ -57,7 +62,7 @@ public final class GioviStruct extends GioviTupleNamed {
 		return switch (right) {
 			// TODO: can we assume equal typename means equal definition?
 			case GioviTypeStruct t when t.getTypename().equals(this.getTypename()) -> this;
-			default -> super.as(right);
+			default -> GioviValue.super.as(right);
 		};
 	}
 
@@ -65,44 +70,13 @@ public final class GioviStruct extends GioviTupleNamed {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviStruct v -> {
-				if (this.getFieldsCount() != v.getFieldsCount()) {
-					return super.redirection(content);
-				}
-				for (var entry : ((Struct) value).entrySet()) {
-					String identifier = entry.getKey();
-					try {
-						this.getField(identifier).redirection(v.getField(identifier));
-					} catch (UnknownTupleField e) {
-						return super.redirection(content);
-					}
-				}
-			}
-			case GioviTuple v when v.value instanceof TupleNamed tn -> {
-				if (this.getFieldsCount() != v.getFieldsCount()) {
-					return super.redirection(content);
-				}
-				for (var entry : ((Struct) value).entrySet()) {
-					String identifier = entry.getKey();
-					try {
-						this.getField(identifier).redirection(tn.getField(identifier));
-					} catch (UnknownTupleField e) {
-						return super.redirection(content);
-					}
-				}
-			}
-			case GioviTuple v -> {
-				if (this.getFieldsCount() != v.getFieldsCount()) {
-					return super.redirection(content);
-				}
-				for (int i = 0; i < getFieldsCount(); i++) {
-					value.getField(i).redirection(v.value.getField(i));
-				}
-			}
-			default -> super.redirection(content);
-		}
-		return this;
+		return switch (content) {
+			case GioviDefault _ -> new GioviTupleNamed(defaultValue.copy(), defaultValue);
+			case GioviTuple v -> GioviTuples.redirection(this, v);
+			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
+			case GioviStruct v -> GioviTuples.redirection(this, v);
+			default -> GioviValue.super.redirection(content);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -117,7 +91,7 @@ public final class GioviStruct extends GioviTupleNamed {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct((Struct) defaultValue.copy());
-			default -> super.dot(right);
+			default -> GioviValue.super.dot(right);
 		};
 	}
 

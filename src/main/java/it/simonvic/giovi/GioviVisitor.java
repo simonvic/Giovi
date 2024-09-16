@@ -482,9 +482,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		var content = visit(ctx.redirectionContent());
-		var variable = visit(ctx.varDeclaration());
-		variable.redirection(content);
+		visit(ctx.varDeclaration()).asGioviValue();
+		getCurrentScope().setVariableValue(
+			ctx.varDeclaration().identifier().getText(),
+			visit(ctx.redirectionContent()).asGioviValue());
 		return null;
 	}
 
@@ -504,25 +505,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private GioviValue<?> spawnType(
 		GioviType<?> type,
 		DefaultDefinitionContext defaultDefinitionCtx) {
-		var value = type.spawn();
-		if (defaultDefinitionCtx != null) {
-			// TODO: check if type instanceof GioviDefault/GioviPlaceholder/GioviVoid
-			// we need to copy to ensure we don't pass an existing reference
-			// (e.g. foobar Foobar default someMap@someKey) which might change
-			// TODO: eventually the copy should be done within GioviValues,
-			// where they know if it's necessary
-			try {
-				// TODO: widen here or inside the boxing method?
-				// We would need to override boxing methods in composite types though
-				var defaultValue = visit(defaultDefinitionCtx).asGioviValue().widenTo(type);
-				value.boxDefault(defaultValue.copy());
-				// TODO: boxing an empty list (which will have type Void) will fucks up everything
-				value.box(defaultValue.copy());
-			} catch (ClassCastException | NonWideneable ex) {
-				throw new GioviException("Incompatible default value type");
-			}
+		if (defaultDefinitionCtx == null) {
+			return type.spawn();
 		}
-		return value;
+		return type.spawnFunky(visit(defaultDefinitionCtx).asGioviValue());
 	}
 
 	@Override
@@ -535,11 +521,31 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
-		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
+		doVisitRedirection(
+			ctx.redirectionContent(),
 			GioviToken.of(ctx.redirectionOperator().getText()),
-			visit(ctx.identifier()));
+			ctx.identifier());
 		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
+		RedirectionToIdentifierRTLContext ctx) {
+		doVisitRedirection(
+			ctx.redirectionContent(),
+			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
+			ctx.identifier());
+		return null;
+	}
+
+	private void doVisitRedirection(
+		RedirectionContentContext contentCtx,
+		GioviToken gioviToken,
+		IdentifierContext destinationCtx) {
+		getCurrentScope().setVariableValue(
+			destinationCtx.getText(),
+			VisitorUtils.redirection(visit(contentCtx), gioviToken, visit(destinationCtx))
+				.asGioviValue());
 	}
 
 	@Override
@@ -554,25 +560,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.redirectionOperator().getText()),
 			visit(ctx.expression()));
-		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
-		RedirectionToVarDeclarationRTLContext ctx) {
-		var content = visit(ctx.redirectionContent());
-		var variable = visit(ctx.varDeclaration());
-		variable.redirection(content);
-		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
-		RedirectionToIdentifierRTLContext ctx) {
-		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
-			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
-			visit(ctx.identifier()));
 		return null;
 	}
 
@@ -1088,9 +1075,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		var structFieldsCtx = ctx.structFields();
 		// TODO: Struct.<field: _> field is null
-		return ctx.structType != null
-			? createStruct(ctx.structType.getText(), structFieldsCtx)
-			: createTuple(structFieldsCtx);
+		if (ctx.structType != null) {
+			return createStruct(ctx.structType.getText(), structFieldsCtx);
+		}
+		if (!structFieldsCtx.namedStructField().isEmpty()) {
+			return createTupleNamed(structFieldsCtx);
+		}
+		return createTuple(structFieldsCtx);
 	}
 
 	private GioviStruct createStruct(String typename, StructFieldsContext ctx) {
@@ -1109,7 +1100,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void initStructNamed(GioviStruct gioviStruct, List<NamedStructFieldContext> fieldsCtx) {
 		for (var fieldCtx : fieldsCtx) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
-			gioviStruct.boxField(
+			gioviStruct.value().boxField(
 				fieldIdentifier,
 				visit(fieldCtx.expression()).asGioviValue());
 		}
@@ -1122,7 +1113,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				+ " but instead got " + expressionsCount);
 		}
 		for (int i = 0; i < expressionsCount; i++) {
-			gioviStruct.boxField(i, visit(expressions.get(i)).asGioviValue());
+			gioviStruct.value().boxField(i, visit(expressions.get(i)).asGioviValue());
 		}
 	}
 
@@ -1130,21 +1121,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx == null) {
 			return new GioviTuple(new Tuple());
 		}
-		if (ctx.namedStructField().isEmpty()) {
-			var fields = new ArrayList<GioviValue<?>>();
-			for (var expressionCtx : ctx.expression()) {
-				fields.add(visit(expressionCtx).asGioviValue());
-			}
-			return new GioviTuple(new Tuple(fields));
-		} else {
-			var fields = new LinkedHashMap<String, GioviValue<?>>();
-			for (var namedStructFieldCtx : ctx.namedStructField()) {
-				fields.put(
-					namedStructFieldCtx.identifier().getText(),
-					visit(namedStructFieldCtx.expression()).asGioviValue());
-			}
-			return new GioviTupleNamed(new TupleNamed(fields));
+		var fields = new ArrayList<GioviValue<?>>();
+		for (var expressionCtx : ctx.expression()) {
+			fields.add(visit(expressionCtx).asGioviValue());
 		}
+		return new GioviTuple(new Tuple(fields));
+
+	}
+
+	private GioviTupleNamed createTupleNamed(StructFieldsContext ctx) {
+		if (ctx == null) {
+			return new GioviTupleNamed(new TupleNamed());
+		}
+		var fields = new LinkedHashMap<String, GioviValue<?>>();
+		for (var namedStructFieldCtx : ctx.namedStructField()) {
+			fields.put(
+				namedStructFieldCtx.identifier().getText(),
+				visit(namedStructFieldCtx.expression()).asGioviValue());
+		}
+		return new GioviTupleNamed(new TupleNamed(fields));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type

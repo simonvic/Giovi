@@ -2,10 +2,16 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
+public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 
-	public GioviTypeInt() {
-		super(GioviInt.class);
+	@Override
+	public Class<? extends GioviInt> value() {
+		return GioviInt.class;
+	}
+
+	@Override
+	public Class<? extends GioviInt> defaultValue() {
+		return GioviInt.class;
 	}
 
 	@Override
@@ -23,6 +29,11 @@ public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
 	}
 
 	@Override
+	public GioviInt spawn(GioviInt gioviValue) {
+		return new GioviInt(gioviValue.value(), gioviValue.value());
+	}
+
+	@Override
 	public GioviTypeInt copy() {
 		return new GioviTypeInt();
 	}
@@ -32,7 +43,7 @@ public final class GioviTypeInt extends GioviTypeNumber<GioviInt> {
 		if (right instanceof GioviDefault) {
 			return new GioviInt();
 		}
-		return super.dot(right);
+		return GioviTypeNumber.super.dot(right);
 	}
 
 

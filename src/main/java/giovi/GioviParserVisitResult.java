@@ -20,6 +20,7 @@ public interface GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
+	// Redirection methods will produce a new value based on the assignement
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR); }
 	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_PLUS); }
 	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_MINUS); }

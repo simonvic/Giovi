@@ -2,7 +2,6 @@ package giovi.lang;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import giovi.Natural;
 import giovi.Struct;
@@ -13,9 +12,10 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 
-public abstract sealed class GioviValue<T>
+public sealed interface GioviValue<T>
 	extends GioviObject
-	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviFunction {
+	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviTupleNamed, GioviStruct,
+	GioviFunction {
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
@@ -34,43 +34,20 @@ public abstract sealed class GioviValue<T>
 		};
 	}
 
-	protected T value;
-	protected T defaultValue;
-
-	public GioviValue(T value, T defaultValue) {
-		this.value = value;
-		this.defaultValue = defaultValue;
+	default Class<?> getValueType() {
+		return unbox().getClass();
 	}
 
-	public Class<?> getValueType() {
-		return value.getClass();
+	default T unbox() {
+		return value();
 	}
 
-	public T unbox() {
-		return value;
+	default T unboxDefault() {
+		return defaultValue();
 	}
 
-	public void box(T value) {
-		this.value = value;
-	}
-
-	public T unboxDefault() {
-		return defaultValue;
-	}
-
-	public void boxDefault(T defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void box(GioviValue<?> gioviValue) throws ClassCastException {
-		value = (T) gioviValue.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void boxDefault(GioviValue<?> gioviValue) throws ClassCastException {
-		defaultValue = (T) gioviValue.value;
-	}
+	T value();
+	T defaultValue();
 
 	/**
 	 * Get the Type (in Giovi space) of this value
@@ -94,27 +71,5 @@ public abstract sealed class GioviValue<T>
 	 * @return copy of the object
 	 */
 	public abstract GioviValue<T> copy();
-
-	@Override
-	public String toString() {
-		return value.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviValue<?> other = (GioviValue<?>) obj;
-		return Objects.equals(this.value, other.value);
-	}
 
 }

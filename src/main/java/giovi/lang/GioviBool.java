@@ -3,22 +3,18 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class GioviBool extends GioviPrimitive<Boolean> {
+public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPrimitive<Boolean> {
 
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
 	}
 
-	public GioviBool(Boolean value, Boolean defaultValue) {
-		super(value, defaultValue);
-	}
-
 	public GioviBool(Boolean value) {
-		super(value, false);
+		this(value, false);
 	}
 
 	public GioviBool() {
-		super(false, false);
+		this(false, false);
 	}
 
 	@Override
@@ -47,7 +43,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviTypeBool _ -> new GioviBool(this.value);
-			default -> super.as(right);
+			default -> GioviPrimitive.super.as(right);
 		};
 	}
 
@@ -55,12 +51,11 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = defaultValue;
-			case GioviBool v -> value = v.unbox();
-			default -> super.redirection(content);
-		}
-		return this;
+		return switch (content) {
+			case GioviDefault _ -> new GioviBool(defaultValue, defaultValue);
+			case GioviBool v -> new GioviBool(v.value(), defaultValue);
+			default -> GioviPrimitive.super.redirection(content);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -78,7 +73,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value && defaultValue);
 			case GioviBool v -> new GioviBool(value && v.unbox());
 			// case IntValue v -> new BoolValue(value && v.asBool());
-			default -> super.and(right);
+			default -> GioviPrimitive.super.and(right);
 		};
 	}
 
@@ -88,7 +83,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value || defaultValue);
 			case GioviBool v -> new GioviBool(value || v.unbox());
 			// case IntValue v -> new BoolValue(value || v.asBool());
-			default -> super.or(right);
+			default -> GioviPrimitive.super.or(right);
 		};
 	}
 
@@ -100,7 +95,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
 			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
 			// case IntValue v -> new BoolValue(value == v.asBool());
-			default -> super.equal(right);
+			default -> GioviPrimitive.super.equal(right);
 		};
 	}
 
@@ -116,7 +111,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 		if (right instanceof GioviDefault) {
 			return new GioviBool(defaultValue);
 		}
-		return super.dot(right);
+		return GioviPrimitive.super.dot(right);
 	}
 
 }

@@ -2,47 +2,25 @@ package giovi.lang;
 
 import giovi.Tuple;
 
-public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTypeTupleNamed {
-
-	private final Tuple definition;
-
-	public GioviTypeTuple(Tuple definition) {
-		super(GioviTuple.class);
-		this.definition = definition;
-	}
-
-	protected GioviTypeTuple(Class<? extends GioviTuple> clazz, Tuple definition) {
-		super(clazz);
-		this.definition = definition;
-	}
+public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> {
 
 	public Tuple getDefinition() {
 		return definition;
 	}
 
 	@Override
+	public Class<? extends GioviTuple> value() {
+		return GioviTuple.class;
+	}
+
+	@Override
+	public Class<? extends GioviTuple> defaultValue() {
+		return GioviTuple.class;
+	}
+
+	@Override
 	public String toString() {
 		return definition.toStringDefinition();
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviTypeTuple other = (GioviTypeTuple) obj;
-		if (definition == null) {
-			if (other.definition != null) return false;
-		} else if (!definition.equals(other.definition)) return false;
-		return true;
 	}
 
 	@Override
@@ -56,8 +34,13 @@ public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTy
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviTuple spawn() {
 		return new GioviTuple(definition.copy());
+	}
+
+	@Override
+	public GioviTuple spawn(GioviTuple gioviValue) {
+		return new GioviTuple(gioviValue.value(), gioviValue.value().copy());
 	}
 
 	@Override

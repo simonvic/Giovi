@@ -11,9 +11,12 @@ public class TestSandbox {
 
 	@Test
 	void sandbox() {
-		// visit("""
-		// 	[<r:1 g:2 b:3>] -> \\out
-		// 	""");
+		visit("""
+			x [Int:Bool] default [1:true 2:false]
+			x -> \\out
+			#[69:true 420:true] -> x
+			#default -> x
+			""");
 	}
 
 }

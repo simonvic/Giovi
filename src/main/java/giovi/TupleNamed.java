@@ -165,6 +165,11 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.entrySet();
 	}
 
+	public void boxField(String fieldIdentifier, GioviValue<?> gioviValue) {
+		GioviValue<?> asGioviValue = fields.get(fieldIdentifier).redirection(gioviValue).asGioviValue();
+		fields.put(fieldIdentifier, asGioviValue);
+	}
+
 	public void forEach(BiConsumer<String, GioviValue<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
