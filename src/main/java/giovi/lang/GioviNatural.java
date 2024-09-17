@@ -65,7 +65,7 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviDefault _ -> new GioviNatural(defaultValue, defaultValue);
-			case GioviNatural v -> new GioviNatural(v.value(), defaultValue);
+			case GioviNatural(var v, _) -> new GioviNatural(v, defaultValue);
 			default -> GioviNumber.super.redirection(content);
 		};
 	}
@@ -74,7 +74,7 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(value.plus(defaultValue), defaultValue);
-			case GioviNatural v -> new GioviNatural(value.plus(v.value()), defaultValue);
+			case GioviNatural(var v, _) -> new GioviNatural(value.plus(v), defaultValue);
 			default -> GioviNumber.super.redirectionPlus(right);
 		};
 	}
@@ -83,7 +83,7 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(value.minus(defaultValue), defaultValue);
-			case GioviNatural v -> new GioviNatural(value.minus(v.value()), defaultValue);
+			case GioviNatural(var v, _) -> new GioviNatural(value.minus(v), defaultValue);
 			default -> GioviNumber.super.redirectionMinus(right);
 		};
 	}
@@ -92,7 +92,7 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(value.multiply(defaultValue), defaultValue);
-			case GioviNatural v -> new GioviNatural(value.multiply(v.value()), defaultValue);
+			case GioviNatural(var v, _) -> new GioviNatural(value.multiply(v), defaultValue);
 			default -> GioviNumber.super.redirectionMultiply(right);
 		};
 	}
@@ -101,7 +101,7 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(value.divide(defaultValue), defaultValue);
-			case GioviNatural v -> new GioviNatural(value.divide(v.value()), defaultValue);
+			case GioviNatural(var v, _) -> new GioviNatural(value.divide(v), defaultValue);
 			default -> GioviNumber.super.redirectionDivide(right);
 		};
 	}
@@ -118,10 +118,10 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural(value.intValue() + defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() + v.value().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() + v.value());
-			case GioviReal v -> new GioviReal(value.doubleValue() + v.value());
+			case GioviNatural(var v, _) -> new GioviNatural(
+				new Natural(value.intValue() + v.intValue()));
+			case GioviInt(var v, _) -> new GioviInt(value.intValue() + v);
+			case GioviReal(var v, _) -> new GioviReal(value.doubleValue() + v);
 			default -> GioviNumber.super.plus(right);
 		};
 	}
@@ -131,10 +131,10 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural(value.intValue() - defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() - v.value().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() - v.value());
-			case GioviReal v -> new GioviReal(value.doubleValue() - v.value());
+			case GioviNatural(var v, _) -> new GioviNatural(
+				new Natural(value.intValue() - v.intValue()));
+			case GioviInt(var v, _) -> new GioviInt(value.intValue() - v);
+			case GioviReal(var v, _) -> new GioviReal(value.doubleValue() - v);
 			default -> GioviNumber.super.minus(right);
 		};
 	}
@@ -144,10 +144,10 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural(value.intValue() * defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() * v.value().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() * v.value());
-			case GioviReal v -> new GioviReal(value.doubleValue() * v.value());
+			case GioviNatural(var v, _) -> new GioviNatural(
+				new Natural(value.intValue() * v.intValue()));
+			case GioviInt(var v, _) -> new GioviInt(value.intValue() * v);
+			case GioviReal(var v, _) -> new GioviReal(value.doubleValue() * v);
 			default -> GioviNumber.super.multiply(right);
 		};
 	}
@@ -157,9 +157,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural(value.intValue() / defaultValue.intValue()));
-			case GioviNatural v -> new GioviReal(value.doubleValue() / v.value().doubleValue());
-			case GioviInt v -> new GioviReal(value.doubleValue() / v.value());
-			case GioviReal v -> new GioviReal(value.doubleValue() / v.value());
+			case GioviNatural(var v, _) -> new GioviReal(value.doubleValue() / v.doubleValue());
+			case GioviInt(var v, _) -> new GioviReal(value.doubleValue() / v);
+			case GioviReal(var v, _) -> new GioviReal(value.doubleValue() / v);
 			default -> GioviNumber.super.divide(right);
 		};
 	}
@@ -169,10 +169,10 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural(value.intValue() % defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() % v.value().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() % v.value());
-			case GioviReal v -> new GioviReal(value.doubleValue() % v.value());
+			case GioviNatural(var v, _) -> new GioviNatural(
+				new Natural(value.intValue() % v.intValue()));
+			case GioviInt(var v, _) -> new GioviInt(value.intValue() % v);
+			case GioviReal(var v, _) -> new GioviReal(value.doubleValue() % v);
 			default -> GioviNumber.super.modulo(right);
 		};
 	}
@@ -182,10 +182,10 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
 				new Natural((int) Math.pow(value.intValue(), defaultValue.intValue())));
-			case GioviNatural v -> new GioviNatural(
-				new Natural((int) Math.pow(value.intValue(), v.value().intValue())));
-			case GioviInt v -> new GioviInt((int) Math.pow(value.intValue(), v.value()));
-			case GioviReal v -> new GioviReal(Math.pow(value.doubleValue(), v.value()));
+			case GioviNatural(var v, _) -> new GioviNatural(
+				new Natural((int) Math.pow(value.intValue(), v.intValue())));
+			case GioviInt(var v, _) -> new GioviInt((int) Math.pow(value.intValue(), v));
+			case GioviReal(var v, _) -> new GioviReal(Math.pow(value.doubleValue(), v));
 			default -> GioviNumber.super.power(right);
 		};
 	}
@@ -198,9 +198,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() == defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() == v.value().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() == v.value());
-			case GioviReal v -> new GioviBool(value.doubleValue() == v.value());
+			case GioviNatural(var v, _) -> new GioviBool(value.intValue() == v.intValue());
+			case GioviInt(var v, _) -> new GioviBool(value.intValue() == v);
+			case GioviReal(var v, _) -> new GioviBool(value.doubleValue() == v);
 			default -> GioviNumber.super.equal(right);
 		};
 	}
@@ -215,9 +215,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() < defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() < v.value().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() < v.value());
-			case GioviReal v -> new GioviBool(value.doubleValue() < v.value());
+			case GioviNatural(var v, _) -> new GioviBool(value.intValue() < v.intValue());
+			case GioviInt(var v, _) -> new GioviBool(value.intValue() < v);
+			case GioviReal(var v, _) -> new GioviBool(value.doubleValue() < v);
 			default -> GioviNumber.super.less(right);
 		};
 	}
@@ -226,9 +226,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() <= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() <= v.value().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() <= v.value());
-			case GioviReal v -> new GioviBool(value.doubleValue() <= v.value());
+			case GioviNatural(var v, _) -> new GioviBool(value.intValue() <= v.intValue());
+			case GioviInt(var v, _) -> new GioviBool(value.intValue() <= v);
+			case GioviReal(var v, _) -> new GioviBool(value.doubleValue() <= v);
 			default -> GioviNumber.super.lessEqual(right);
 		};
 	}
@@ -237,9 +237,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() > defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() > v.value().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() > v.value());
-			case GioviReal v -> new GioviBool(value.doubleValue() > v.value());
+			case GioviNatural(var v, _) -> new GioviBool(value.intValue() > v.intValue());
+			case GioviInt(var v, _) -> new GioviBool(value.intValue() > v);
+			case GioviReal(var v, _) -> new GioviBool(value.doubleValue() > v);
 			default -> GioviNumber.super.greater(right);
 		};
 	}
@@ -248,9 +248,9 @@ public record GioviNatural(Natural value, Natural defaultValue) implements Giovi
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() >= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() >= v.value().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() >= v.value());
-			case GioviReal v -> new GioviBool(value.doubleValue() >= v.value());
+			case GioviNatural(var v, _) -> new GioviBool(value.intValue() >= v.intValue());
+			case GioviInt(var v, _) -> new GioviBool(value.intValue() >= v);
+			case GioviReal(var v, _) -> new GioviBool(value.doubleValue() >= v);
 			default -> GioviNumber.super.greaterEqual(right);
 		};
 	}

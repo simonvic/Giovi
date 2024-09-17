@@ -53,7 +53,7 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviDefault _ -> new GioviBool(defaultValue, defaultValue);
-			case GioviBool v -> new GioviBool(v.value(), defaultValue);
+			case GioviBool(var v, _) -> new GioviBool(v, defaultValue);
 			default -> GioviPrimitive.super.redirection(content);
 		};
 	}
@@ -71,8 +71,8 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value && defaultValue);
-			case GioviBool v -> new GioviBool(value && v.value());
-			// case IntValue v -> new BoolValue(value && v.asBool());
+			case GioviBool(var v, _) -> new GioviBool(value && v);
+			// case IntValue(var v, _) -> new BoolValue(value && v.asBool());
 			default -> GioviPrimitive.super.and(right);
 		};
 	}
@@ -81,8 +81,8 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value || defaultValue);
-			case GioviBool v -> new GioviBool(value || v.value());
-			// case IntValue v -> new BoolValue(value || v.asBool());
+			case GioviBool(var v, _) -> new GioviBool(value || v);
+			// case IntValue(var v, _) -> new BoolValue(value || v.asBool());
 			default -> GioviPrimitive.super.or(right);
 		};
 	}
@@ -93,8 +93,8 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
-			case GioviBool v -> new GioviBool(value.equals(v.value()));
-			// case IntValue v -> new BoolValue(value == v.asBool());
+			case GioviBool(var v, _) -> new GioviBool(value.equals(v));
+			// case IntValue(var v, _) -> new BoolValue(value == v.asBool());
 			default -> GioviPrimitive.super.equal(right);
 		};
 	}

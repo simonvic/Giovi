@@ -490,6 +490,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
+		RedirectionToVarDeclarationRTLContext ctx) {
+		visit(ctx.varDeclaration()).asGioviValue();
+		getCurrentScope().setVariableValue(
+			ctx.varDeclaration().identifier().getText(),
+			visit(ctx.redirectionContent()).asGioviValue());
+		return null;
+	}
+
+	@Override
 	public GioviParserVisitResult visitVarDeclaration(VarDeclarationContext ctx) {
 		var variable = spawnType(ctx.type(), ctx.defaultDefinition());
 		getCurrentScope().declare(ctx.identifier().getText(), variable);
@@ -1159,7 +1169,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitTypeList(TypeListContext ctx) {
 		var entryType = visit(ctx.type()).asGioviType();
-		if (ctx.initSize == null) return new GioviTypeList(entryType);
+		if (ctx.initSize == null)
+			return new GioviTypeList(entryType);
 		return switch (visit(ctx.initSize)) {
 			case GioviInt i -> new GioviTypeList(entryType, i.value());
 			case GioviNatural i -> new GioviTypeList(entryType, i.value().intValue());

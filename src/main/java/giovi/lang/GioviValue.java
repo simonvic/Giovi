@@ -38,14 +38,21 @@ public sealed interface GioviValue<T>
 		return value().getClass();
 	}
 
+	/**
+	 * @return
+	 */
 	T value();
+
+	/**
+	 * @return
+	 */
 	T defaultValue();
 
 	/**
 	 * Get the Type (in Giovi space) of this value
 	 * @return Type
 	 */
-	public abstract GioviType<?> getGioviType();
+	GioviType<?> getGioviType();
 
 	/**
 	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
@@ -54,7 +61,7 @@ public sealed interface GioviValue<T>
 	 * @return widened value
 	 * @throws NonWideneable
 	 */
-	public abstract GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
+	GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
 
 	// TODO: add narrowTo(type) which should be used along the widenTo(type) inside the as(type)
 
@@ -62,6 +69,6 @@ public sealed interface GioviValue<T>
 	 * Perform a <b>deep copy</b>
 	 * @return copy of the object
 	 */
-	public abstract GioviValue<T> copy();
+	GioviValue<T> copy();
 
 }

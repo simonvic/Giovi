@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+
 public sealed interface GioviNumber<T extends Number>
 	extends GioviPrimitive<T>
 	permits GioviNatural, GioviInt, GioviReal {
@@ -10,15 +12,14 @@ public sealed interface GioviNumber<T extends Number>
 
 	GioviReal realValue();
 
-	// @Override
-	// public GioviParserVisitResult as(GioviParserVisitResult right) {
-	// 	if (right instanceof GioviTypeNumber<?> t) {
-	// 		var typeClass = t.unbox();
-	// 		if (typeClass == GioviInt.class) return intValue();
-	// 		if (typeClass == GioviReal.class) return realValue();
-	// 		if (typeClass == GioviNatural.class) return naturalValue();
-	// 	}
-	// 	return super.as(right);
-	// }
-	//
+	@Override
+	default public GioviParserVisitResult as(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviTypeReal _ -> realValue();
+			case GioviTypeInt _ -> intValue();
+			case GioviTypeNatural _ -> naturalValue();
+			default -> GioviPrimitive.super.as(right);
+		};
+	}
+
 }

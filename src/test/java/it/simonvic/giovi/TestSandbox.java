@@ -12,10 +12,15 @@ public class TestSandbox {
 	@Test
 	void sandbox() {
 		visit("""
-			x [Int:Bool] default [1:true 2:false]
+			x [[Int]] <- [
+				[1 0 0]
+				[1 1 1]
+				[0 1 0]
+				[0 0 1]
+			]
 			x -> \\out
-			#[69:true 420:true] -> x
-			#default -> x
+			x -<- [1 1 1]
+			x -> \\out
 			""");
 	}
 

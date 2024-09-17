@@ -79,11 +79,9 @@ public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue));
-			case GioviTuple t -> switch (t.value) {
-				case Struct v -> new GioviBool(this.value.equal(v));
-				case TupleNamed v -> new GioviBool(this.value.equal(v));
-				case Tuple v -> new GioviBool(this.value.equal(v));
-			};
+			case GioviStruct(var v, _) -> new GioviBool(this.value.equal(v));
+			case GioviTupleNamed(var v, _) -> new GioviBool(this.value.equal(v));
+			case GioviTuple(var v, _) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
 	}
