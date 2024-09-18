@@ -40,7 +40,7 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 
 	@Override
 	public GioviTuple spawn(GioviTuple gioviValue) {
-		return new GioviTuple(gioviValue.value(), gioviValue.value().copy());
+		return new GioviTuple(gioviValue.value());
 	}
 
 	@Override

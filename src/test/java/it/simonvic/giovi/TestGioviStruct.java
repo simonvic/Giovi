@@ -15,9 +15,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
-import giovi.lang.GioviBool;
-import giovi.lang.GioviInt;
-import giovi.lang.GioviText;
+import giovi.VarD;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviStructs;
@@ -51,9 +49,9 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("Foo"))
 				.isEqualTo(Structs.of(
 					"Foo",
-					"foo", new GioviInt(),
-					"bar", new GioviBool(),
-					"foobar", new GioviText()));
+					"foo", VarD.of(0),
+					"bar", VarD.of(false),
+					"foobar", VarD.of("")));
 		}
 
 		@Test
@@ -67,9 +65,9 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("Foo"))
 				.isEqualTo(Structs.of(
 					"Foo",
-					"i", new GioviInt(69, 69),
-					"b", new GioviBool(true, true),
-					"t", new GioviText("hello", "hello")));
+					"i", VarD.of(69, 69),
+					"b", VarD.of(true, true),
+					"t", VarD.of("hello", "hello")));
 		}
 
 		@Test
@@ -87,12 +85,12 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("Person"))
 				.isEqualTo(Structs.of(
 					"Person",
-					"name", new GioviText(),
-					"favoriteColor", GioviStructs.of(
+					"name", VarD.of(""),
+					"favoriteColor", VarD.of(GioviStructs.of(
 						"RGB",
-						"r", new GioviInt(),
-						"g", new GioviInt(),
-						"b", new GioviInt())));
+						"r", VarD.of(0),
+						"g", VarD.of(0),
+						"b", VarD.of(0)))));
 		}
 
 
@@ -115,12 +113,12 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("Person"))
 				.isEqualTo(Structs.of(
 					"Person",
-					"name", new GioviText(),
-					"favoriteColor", GioviStructs.of(
+					"name", VarD.of(""),
+					"favoriteColor", VarD.of(GioviStructs.of(
 						"RGB",
-						"r", new GioviInt(255, 255),
-						"g", new GioviInt(250, 250),
-						"b", new GioviInt(200, 200))));
+						"r", VarD.of(255, 255),
+						"g", VarD.of(250, 250),
+						"b", VarD.of(200, 200)))));
 		}
 
 
@@ -150,10 +148,10 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("RGBA"))
 				.isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(),
-					"g", new GioviInt(),
-					"b", new GioviInt(),
-					"a", new GioviInt()));
+					"r", VarD.of(0),
+					"g", VarD.of(0),
+					"b", VarD.of(0),
+					"a", VarD.of(0)));
 		}
 
 		@Test
@@ -170,10 +168,10 @@ public class TestGioviStruct {
 				""").getCurrentScope().getDefinitionStruct("RGBA"))
 				.isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(255, 255),
-					"g", new GioviInt(255, 255),
-					"b", new GioviInt(255, 255),
-					"a", new GioviInt(69, 69)));
+					"r", VarD.of(255, 255),
+					"g", VarD.of(255, 255),
+					"b", VarD.of(255, 255),
+					"a", VarD.of(69, 69)));
 		}
 
 		@Test
@@ -196,15 +194,15 @@ public class TestGioviStruct {
 			assertAll(
 				() -> assertThat(rgb).isEqualTo(Structs.of(
 					"RGB",
-					"r", new GioviInt(255, 255),
-					"g", new GioviInt(255, 255),
-					"b", new GioviInt(255, 255))),
+					"r", VarD.of(255, 255),
+					"g", VarD.of(255, 255),
+					"b", VarD.of(255, 255))),
 				() -> assertThat(argb).isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(250, 250),
-					"g", new GioviInt(200, 200),
-					"b", new GioviInt(150, 150),
-					"a", new GioviInt())));
+					"r", VarD.of(250, 250),
+					"g", VarD.of(200, 200),
+					"b", VarD.of(150, 150),
+					"a", VarD.of(0))));
 		}
 
 	}
@@ -227,9 +225,9 @@ public class TestGioviStruct {
 				Foo.<>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(),
-				"t", new GioviText(),
-				"b", new GioviBool()));
+				"i", VarD.of(0),
+				"t", VarD.of(""),
+				"b", VarD.of(false)));
 		}
 
 		@Test
@@ -249,9 +247,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -271,9 +269,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -293,9 +291,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -357,9 +355,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText(),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of(""),
+				"b", VarD.of(true)));
 		}
 
 	}
@@ -384,9 +382,9 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"Color",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3)));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3)));
 			}
 
 			@Test
@@ -401,9 +399,9 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGB",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3)));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3)));
 			}
 
 			@Test
@@ -418,10 +416,10 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGBA",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3),
-						"a", new GioviInt()));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3),
+						"a", VarD.of(0)));
 			}
 
 			@Test
@@ -447,12 +445,13 @@ public class TestGioviStruct {
 					x Foo
 					x <- <69 "hello" true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -471,12 +470,13 @@ public class TestGioviStruct {
 					x Foo
 					x <- <i:69 t:"hello" b:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -487,12 +487,13 @@ public class TestGioviStruct {
 					x Foo
 					x +<- <i:69 t:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText(),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of(""),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -513,12 +514,13 @@ public class TestGioviStruct {
 					x.t <- "hello"
 					x.b <- true
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -528,12 +530,13 @@ public class TestGioviStruct {
 					x Foo
 					x <- Foo.<i:69 t:"hello" b:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 		}

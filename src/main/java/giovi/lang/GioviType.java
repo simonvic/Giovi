@@ -17,8 +17,8 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	}
 
 	@Override
-	default GioviType<?> getGioviType() {
-		return new GioviTypeType();
+	default GioviType<? extends GioviValue<Class<? extends T>>> getGioviType() {
+		return null; // TODO: implement this for all Types
 	}
 
 	@Override

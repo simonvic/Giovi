@@ -12,14 +12,21 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class Tuple permits TupleNamed {
 
-	private final List<GioviValue<?>> fields;
+	private final List<VarD<?>> fields;
 
 	public Tuple() {
 		fields = new ArrayList<>();
 	}
 
-	public Tuple(List<GioviValue<?>> fields) {
+	public Tuple(List<VarD<?>> fields) {
 		this.fields = fields;
+	}
+
+	public Tuple(GioviValue<?>... values) { // TODO: remove?
+		this.fields = new ArrayList<>();
+		for (var value : values) {
+			fields.add(new VarD<>(value));
+		}
 	}
 
 	@Override
@@ -71,13 +78,13 @@ public sealed class Tuple permits TupleNamed {
 	}
 
 	public Tuple copy() {
-		var a = new ArrayList<GioviValue<?>>();
+		var a = new ArrayList<VarD<?>>();
 		this.fields.forEach(value -> a.add(value.copy()));
 		return new Tuple(a);
 	}
 
 	public Tuple copy(Range<Integer> range) {
-		var list = new ArrayList<GioviValue<?>>();
+		var list = new ArrayList<VarD<?>>();
 		range.iterate(index -> list.add(getField(index).copy()));
 		return new Tuple(list);
 	}
@@ -86,19 +93,25 @@ public sealed class Tuple permits TupleNamed {
 		return fields.size();
 	}
 
-	public GioviValue<?> getField(int index) {
+	public VarD<?> getField(int index) {
 		return fields.get(index);
 	}
 
 	public void boxField(int i, GioviValue<?> gioviValue) {
-		fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
+		// fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
+		fields.get(i).setValue(gioviValue);
 	}
 
-	public void forEach(Consumer<GioviValue<?>> valueConsumer) {
+	public void boxField(int i, VarD<?> var) {  // TODO: remove?
+		// fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
+		fields.get(i).setValue(var.value());
+	}
+
+	public void forEach(Consumer<VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 
-	public void forEachIndexed(BiConsumer<Integer, GioviValue<?>> valueConsumer) {
+	public void forEachIndexed(BiConsumer<Integer, VarD<?>> valueConsumer) {
 		for (int i = 0; i < fields.size(); i++) {
 			valueConsumer.accept(i, fields.get(i));
 		}
@@ -148,7 +161,7 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new ArrayList<GioviValue<?>>();
+		var widenedFields = new ArrayList<VarD<?>>();
 		for (int i = 0; i < fields.size(); i++) {
 			widenedFields.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
 		}
@@ -159,7 +172,7 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
 			widenedFields.put(
@@ -174,7 +187,7 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
 			widenedFields.put(

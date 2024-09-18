@@ -2,22 +2,24 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
+import giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviStruct(Struct value, Struct defaultValue) implements GioviValue<Struct> {
+public record GioviStruct(Struct value) implements GioviValue<Struct> {
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
-
-	public GioviStruct(Struct value) {
-		this(value, value.copy());
-	}
 
 	@Override
 	public GioviTypeStruct getGioviType() {
 		// FIXME: this would produce two different types as their structs would likely have different value
-		return new GioviTypeStruct((Struct) defaultValue.copy());
+		return new GioviTypeStruct(defaultValue());
+	}
+
+	@Override
+	public Struct defaultValue() {
+		return value.copy(); // TODO: use signature
 	}
 
 	@Override
@@ -37,18 +39,18 @@ public record GioviStruct(Struct value, Struct defaultValue) implements GioviVal
 
 	@Override
 	public GioviStruct copy() {
-		return new GioviStruct((Struct) value.copy(), (Struct) defaultValue.copy());
+		return new GioviStruct(value.copy());
 	}
 
 	public String getTypename() {
-		return ((Struct) value).getTypename();
+		return value.getTypename();
 	}
 
 	public int getFieldsCount() {
 		return value.getFieldsCount();
 	}
 
-	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
+	public VarD<?> getField(String identifier) throws UnknownTupleField {
 		return value.getField(identifier);
 	}
 
@@ -71,7 +73,7 @@ public record GioviStruct(Struct value, Struct defaultValue) implements GioviVal
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTupleNamed(defaultValue.copy(), defaultValue);
+			case GioviDefault _ -> new GioviTupleNamed(defaultValue().copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
 			case GioviStruct v -> GioviTuples.redirection(this, v);
@@ -90,7 +92,7 @@ public record GioviStruct(Struct value, Struct defaultValue) implements GioviVal
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct((Struct) defaultValue.copy());
+			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
 			default -> GioviValue.super.dot(right);
 		};
 	}

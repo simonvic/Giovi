@@ -5,6 +5,8 @@ import java.util.Map;
 
 import giovi.Function;
 import giovi.Struct;
+import giovi.Var;
+import giovi.VarD;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.*;
 
@@ -76,13 +78,22 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Variables
 
-	private final Map<String, GioviValue<?>> variables = new HashMap<>();
+	private final Map<String, VarD<?>> variables = new HashMap<>();
 
-	public void declare(String identifier, GioviValue<?> value) {
+	public void declare(String identifier, VarD<?> var) {
 		if (variables.containsKey(identifier)) {
 			throw new VariableAlreadyDeclared(identifier);
 		}
-		variables.put(identifier, value);
+		variables.put(identifier, var);
+	}
+
+	public Var<?> declare(String identifier, GioviValue<?> value) { // TODO: remove?
+		if (variables.containsKey(identifier)) {
+			throw new VariableAlreadyDeclared(identifier);
+		}
+		var v = new VarD<>(value);
+		variables.put(identifier, v);
+		return v;
 	}
 
 	public boolean isDeclaredVariable(String identifier) {
@@ -92,7 +103,7 @@ public class Scope {
 
 	public void setVariableValue(String identifier, GioviValue<?> value) {
 		if (variables.containsKey(identifier)) {
-			variables.put(identifier, variables.get(identifier).redirection(value).asGioviValue());
+			variables.get(identifier).setValue(value);
 		} else {
 			if (parent == null) {
 				throw new VariableNotDeclared(identifier);
@@ -101,14 +112,14 @@ public class Scope {
 		}
 	}
 
-	public GioviValue<?> getVariableValue(String identifier) {
+	public VarD<?> getVariable(String identifier) {
 		if (variables.containsKey(identifier)) {
 			return variables.get(identifier);
 		}
 		if (parent == null) {
 			throw new VariableNotDeclared(identifier);
 		}
-		return parent.getVariableValue(identifier);
+		return parent.getVariable(identifier);
 	}
 
 

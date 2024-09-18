@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
+import giovi.VarD;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
@@ -29,8 +30,9 @@ public class TestDefaults {
 				x Natural default 69n
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo(new Natural(69));
 		}
 
@@ -40,8 +42,9 @@ public class TestDefaults {
 				x Int default 69
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo(69);
 		}
 
@@ -51,8 +54,9 @@ public class TestDefaults {
 				x Real default 6.9
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo(6.9);
 		}
 
@@ -62,8 +66,9 @@ public class TestDefaults {
 				x Bool default true
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo(true);
 		}
 
@@ -73,8 +78,9 @@ public class TestDefaults {
 				x Text default "foo"
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo("foo");
 		}
 
@@ -84,9 +90,10 @@ public class TestDefaults {
 				x [Int] default [1 2 3]
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
-					.isEqualTo(List.of(new GioviInt(1), new GioviInt(2), new GioviInt(3)));
+				.getVariable("x")
+				.defaultValue()
+				.value())
+					.isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
 
 		@Test
@@ -95,8 +102,9 @@ public class TestDefaults {
 				x [Int:Bool] default [1:true 2:false]
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue())
+				.getVariable("x")
+				.defaultValue()
+				.value())
 					.isEqualTo(Map.of(
 						new GioviInt(1), new GioviBool(true),
 						new GioviInt(2), new GioviBool(false)));
@@ -122,8 +130,9 @@ public class TestDefaults {
 				>
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
-				.defaultValue();
+				.getVariable("x")
+				.defaultValue()
+				.value();
 			assertThat(def)
 				.isEqualTo(Structs.ofNative(
 					"Foo",
@@ -146,8 +155,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(new GioviNatural(new Natural(69), new Natural(69)));
+				.getVariable("x"))
+					.isEqualTo(VarD.of(new Natural(69), new Natural(69)));
 		}
 
 		@Test
@@ -158,8 +167,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(new GioviInt(69, 69));
+				.getVariable("x"))
+					.isEqualTo(VarD.of(69, 69));
 		}
 
 		@Test
@@ -170,8 +179,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(new GioviReal(6.9, 6.9));
+				.getVariable("x"))
+					.isEqualTo(VarD.of(6.9, 6.9));
 		}
 
 		@Test
@@ -182,8 +191,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(new GioviBool(true, true));
+				.getVariable("x"))
+					.isEqualTo(VarD.of(true, true));
 		}
 
 		@Test
@@ -194,8 +203,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
-					.isEqualTo(new GioviText("foo", "foo"));
+				.getVariable("x"))
+					.isEqualTo(VarD.of("foo", "foo"));
 		}
 
 		@Test
@@ -206,7 +215,7 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x")
+				.getVariable("x")
 				.value())
 					.isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
@@ -219,7 +228,7 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
+				.getVariable("x"))
 					.isEqualTo(GioviMaps.of(
 						1, true,
 						2, false));
@@ -253,7 +262,8 @@ public class TestDefaults {
 				default -> x
 				""")
 				.getCurrentScope()
-				.getVariableValue("x"))
+				.getVariable("x")
+				.value())
 					.isEqualTo(GioviStructs.ofNative(
 						"Foo",
 						"foo", "foo",

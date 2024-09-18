@@ -1,7 +1,7 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.util.GioviLists;
+import giovi.Var;
 
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	implements GioviType<GioviList> {
@@ -51,15 +51,14 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		var list = new GioviList(this.entryType);
 		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
-			rawList.add(this.entryType.spawn());
+			rawList.add(new Var<>(this.entryType.spawn()));
 		}
 		return list;
 	}
 
 	@Override
 	public GioviList spawn(GioviList gioviValue) {
-		return new GioviList(this.entryType, gioviValue.value(),
-			GioviLists.copyOf(gioviValue.value()));
+		return new GioviList(this.entryType, gioviValue.value());
 	}
 
 	@Override

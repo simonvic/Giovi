@@ -1,7 +1,6 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import giovi.Natural;
 
 public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 
@@ -32,7 +31,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 
 	@Override
 	public GioviNatural spawn(GioviNatural gioviValue) {
-		return new GioviNatural(gioviValue.value(), new Natural(gioviValue.value().intValue()));
+		return new GioviNatural(gioviValue.value());
 	}
 
 	@Override

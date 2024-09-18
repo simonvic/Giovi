@@ -2,14 +2,13 @@ package giovi;
 
 import java.util.LinkedHashMap;
 
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Struct extends TupleNamed {
 
 	private final String typename;
 
-	public Struct(String typename, LinkedHashMap<String, GioviValue<?>> fields) {
+	public Struct(String typename, LinkedHashMap<String, VarD<?>> fields) {
 		super(fields);
 		this.typename = typename;
 	}
@@ -65,7 +64,7 @@ public final class Struct extends TupleNamed {
 
 	@Override
 	public Struct copy() {
-		var a = new LinkedHashMap<String, GioviValue<?>>();
+		var a = new LinkedHashMap<String, VarD<?>>();
 		forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new Struct(typename, a);
 	}

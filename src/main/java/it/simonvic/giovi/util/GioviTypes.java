@@ -2,18 +2,18 @@ package it.simonvic.giovi.util;
 
 import java.util.Collection;
 
+import giovi.Var;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeVoid;
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
 
 public class GioviTypes {
 
-	public static GioviType<?> inferGioviType(Collection<GioviValue<?>> entries) {
+	public static GioviType<?> inferGioviType(Collection<Var<?>> entries) {
 		if (entries.isEmpty()) return new GioviTypeVoid(); // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
-		for (GioviValue<?> entry : entries) {
+		for (Var<?> entry : entries) {
 			next = entry.getGioviType();
 			if (inferred == null) {
 				inferred = next;

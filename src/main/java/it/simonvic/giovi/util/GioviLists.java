@@ -3,15 +3,15 @@ package it.simonvic.giovi.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import giovi.Var;
 import giovi.lang.GioviList;
-import giovi.lang.GioviValue;
 
 public class GioviLists {
 
 	public static <T> GioviList of(List<T> values) {
-		var entries = new ArrayList<GioviValue<?>>();
+		var entries = new ArrayList<Var<?>>();
 		for (T value : values) {
-			entries.add(GioviValue.of(value));
+			entries.add(Var.of(value));
 		}
 		return new GioviList(GioviTypes.inferGioviType(entries), entries);
 	}
@@ -61,8 +61,8 @@ public class GioviLists {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11));
 	}
 
-	public static List<GioviValue<?>> copyOf(List<GioviValue<?>> list) {
-		var copied = new ArrayList<GioviValue<?>>();
+	public static List<Var<?>> copyOf(List<Var<?>> list) {
+		var copied = new ArrayList<Var<?>>();
 		for (var value : list) {
 			copied.add(value.copy());
 		}

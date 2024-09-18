@@ -67,7 +67,8 @@ public class TextProcessor {
 			.compile("\\$[a-zA-Z]\\w*")
 			.matcher(text)
 			.replaceAll(matchResult -> scope
-				.getVariableValue(matchResult.group().substring(1))
+				.getVariable(matchResult.group().substring(1))
+				.value()
 				.toString());
 	}
 

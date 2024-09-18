@@ -183,10 +183,10 @@ public class TestWidening {
 				69,
 				true,
 				"foo")
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
+				.widenTo(new GioviTypeTuple(new Tuple(
 					new GioviInt(),
 					new GioviBool(),
-					new GioviText())))))
+					new GioviText()))))
 						.isEqualTo(GioviTuples.of(
 							69,
 							true,
@@ -199,10 +199,10 @@ public class TestWidening {
 				new Natural(69),
 				69,
 				List.of(69, 420))
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
+				.widenTo(new GioviTypeTuple(new Tuple(
 					new GioviInt(),
 					new GioviReal(),
-					new GioviList(new GioviTypeReal()))))))
+					new GioviList(new GioviTypeReal())))))
 						.isEqualTo(GioviTuples.of(
 							69,
 							69d,
@@ -215,10 +215,10 @@ public class TestWidening {
 				69,
 				69d,
 				List.of(69d, 420d))
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
+				.widenTo(new GioviTypeTuple(new Tuple(
 					new GioviNatural(),
 					new GioviInt(),
-					new GioviList(new GioviTypeInt()))))));
+					new GioviList(new GioviTypeInt())))));
 		}
 
 		@Test

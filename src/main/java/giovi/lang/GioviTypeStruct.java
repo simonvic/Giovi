@@ -39,7 +39,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 
 	@Override
 	public GioviStruct spawn(GioviStruct gioviValue) {
-		return new GioviStruct(gioviValue.value(), gioviValue.value().copy());
+		return new GioviStruct(gioviValue.value());
 	}
 
 	@Override

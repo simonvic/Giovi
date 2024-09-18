@@ -34,7 +34,7 @@ public record GioviTypeTupleNamed(TupleNamed definition) implements GioviType<Gi
 
 	@Override
 	public GioviTupleNamed spawn(GioviTupleNamed gioviValue) {
-		return new GioviTupleNamed(gioviValue.value(), gioviValue.value().copy());
+		return new GioviTupleNamed(gioviValue.value());
 	}
 
 	@Override

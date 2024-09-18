@@ -53,25 +53,25 @@ public class TestScope {
 		@Test
 		void testDeclarationVariableType_string() {
 			scope.declare("aString", new GioviText("hello world"));
-			assertEquals(String.class, scope.getVariableValue("aString").value().getClass());
+			assertEquals(String.class, scope.getVariable("aString").value().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_bool() {
 			scope.declare("aBoolean", new GioviBool(true));
-			assertEquals(Boolean.class, scope.getVariableValue("aBoolean").value().getClass());
+			assertEquals(Boolean.class, scope.getVariable("aBoolean").value().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_real() {
 			scope.declare("aReal", new GioviReal(0.69));
-			assertEquals(Double.class, scope.getVariableValue("aReal").value().getClass());
+			assertEquals(Double.class, scope.getVariable("aReal").value().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_int() {
 			scope.declare("anInteger", new GioviInt(69));
-			assertEquals(Integer.class, scope.getVariableValue("anInteger").value().getClass());
+			assertEquals(Integer.class, scope.getVariable("anInteger").value().value().getClass());
 		}
 
 		@Test
@@ -84,7 +84,7 @@ public class TestScope {
 		@Test
 		void getVariable_shouldThrow_VariableNotDefined() {
 			assertThrows(VariableNotDeclared.class,
-				() -> scope.getVariableValue("someUndefinedVariable"));
+				() -> scope.getVariable("someUndefinedVariable"));
 		}
 
 		@Test
@@ -113,7 +113,7 @@ public class TestScope {
 	void testValueUnbox() {
 		GioviInt value = new GioviInt(69);
 		scope.declare("anInt", value);
-		assertEquals(69, scope.getVariableValue("anInt").value());
+		assertEquals(69, scope.getVariable("anInt").value().value());
 	}
 
 	@Nested
@@ -142,7 +142,7 @@ public class TestScope {
 		@Test
 		void test_getVariableValue() {
 			global.declare("aString", new GioviText("hello world"));
-			assertEquals("hello world", global.getVariableValue("aString").value());
+			assertEquals("hello world", global.getVariable("aString").value().value());
 		}
 
 		@Test
@@ -185,14 +185,14 @@ public class TestScope {
 		@Test
 		void nestedBlockShouldAccessVariablesValue() {
 			global.declare("aString", new GioviText("Hello world"));
-			assertEquals("Hello world", scope11.getVariableValue("aString").value());
+			assertEquals("Hello world", scope11.getVariable("aString").value().value());
 		}
 
 		@Test
 		void nestedBlockShouldBeAbleToChangeVariablesValue() {
 			global.declare("aString", new GioviText("Hello world"));
 			scope2.setVariableValue("aString", new GioviText("ciao mondo"));
-			assertEquals("ciao mondo", global.getVariableValue("aString").value());
+			assertEquals("ciao mondo", global.getVariable("aString").value().value());
 		}
 	}
 

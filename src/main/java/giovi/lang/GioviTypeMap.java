@@ -1,7 +1,6 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.util.GioviMaps;
 
 public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	implements GioviType<GioviMap> {
@@ -45,8 +44,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 
 	@Override
 	public GioviMap spawn(GioviMap gioviValue) {
-		return new GioviMap(this.keyType, this.elementType, gioviValue.value(),
-			GioviMaps.copyOf(gioviValue.value()));
+		return new GioviMap(this.keyType, this.elementType, gioviValue.value());
 	}
 
 	@Override

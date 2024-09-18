@@ -6,22 +6,23 @@ import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTupleNamed(TupleNamed value, TupleNamed defaultValue)
+public record GioviTupleNamed(TupleNamed value)
 	implements GioviValue<TupleNamed> {
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
-	public GioviTupleNamed(TupleNamed value) {
-		this(value, value.copy());
+	public GioviTupleNamed() {
+		this(new TupleNamed());
 	}
 
-	public GioviTupleNamed() {
-		this(new TupleNamed(), new TupleNamed());
+	@Override
+	public TupleNamed defaultValue() {
+		return new TupleNamed();
 	}
 
 	@Override
 	public GioviTypeTupleNamed getGioviType() {
-		return new GioviTypeTupleNamed(defaultValue.copy());
+		return new GioviTypeTupleNamed(defaultValue().copy());
 	}
 
 	@Override
@@ -45,10 +46,10 @@ public record GioviTupleNamed(TupleNamed value, TupleNamed defaultValue)
 
 	@Override
 	public GioviTupleNamed copy() {
-		return new GioviTupleNamed((TupleNamed) value.copy(), (TupleNamed) defaultValue.copy());
+		return new GioviTupleNamed(value.copy());
 	}
 
-	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
+	public VarD<?> getField(String identifier) throws UnknownTupleField {
 		return value.getField(identifier);
 	}
 
@@ -69,7 +70,7 @@ public record GioviTupleNamed(TupleNamed value, TupleNamed defaultValue)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTupleNamed(defaultValue.copy(), defaultValue);
+			case GioviDefault _ -> new GioviTupleNamed(defaultValue().copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
 			case GioviStruct v -> GioviTuples.redirection(this, v);
@@ -88,7 +89,7 @@ public record GioviTupleNamed(TupleNamed value, TupleNamed defaultValue)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTupleNamed(defaultValue.copy(), defaultValue);
+			case GioviDefault _ -> new GioviTupleNamed();
 			case FieldKey(var identifier) -> {
 				try {
 					yield ((TupleNamed) value).getField(identifier);

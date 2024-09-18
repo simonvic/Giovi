@@ -3,18 +3,19 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPrimitive<Boolean> {
+public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
 	}
 
-	public GioviBool(Boolean value) {
-		this(value, false);
+	public GioviBool() {
+		this(false);
 	}
 
-	public GioviBool() {
-		this(false, false);
+	@Override
+	public Boolean defaultValue() {
+		return false;
 	}
 
 	@Override
@@ -32,7 +33,7 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 
 	@Override
 	public GioviBool copy() {
-		return new GioviBool(this.value, this.defaultValue);
+		return new GioviBool(this.value);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -52,8 +53,8 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviBool(defaultValue, defaultValue);
-			case GioviBool(var v, _) -> new GioviBool(v, defaultValue);
+			case GioviDefault _ -> new GioviBool(defaultValue());
+			case GioviBool(var v) -> new GioviBool(v);
 			default -> GioviPrimitive.super.redirection(content);
 		};
 	}
@@ -70,9 +71,9 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value && defaultValue);
-			case GioviBool(var v, _) -> new GioviBool(value && v);
-			// case IntValue(var v, _) -> new BoolValue(value && v.asBool());
+			case GioviDefault _ -> new GioviBool(value && defaultValue());
+			case GioviBool(var v) -> new GioviBool(value && v);
+			// case IntValue(var v) -> new BoolValue(value && v.asBool());
 			default -> GioviPrimitive.super.and(right);
 		};
 	}
@@ -80,9 +81,9 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value || defaultValue);
-			case GioviBool(var v, _) -> new GioviBool(value || v);
-			// case IntValue(var v, _) -> new BoolValue(value || v.asBool());
+			case GioviDefault _ -> new GioviBool(value || defaultValue());
+			case GioviBool(var v) -> new GioviBool(value || v);
+			// case IntValue(var v) -> new BoolValue(value || v.asBool());
 			default -> GioviPrimitive.super.or(right);
 		};
 	}
@@ -92,9 +93,9 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
-			case GioviBool(var v, _) -> new GioviBool(value.equals(v));
-			// case IntValue(var v, _) -> new BoolValue(value == v.asBool());
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
+			case GioviBool(var v) -> new GioviBool(value.equals(v));
+			// case IntValue(var v) -> new BoolValue(value == v.asBool());
 			default -> GioviPrimitive.super.equal(right);
 		};
 	}
@@ -109,7 +110,7 @@ public record GioviBool(Boolean value, Boolean defaultValue) implements GioviPri
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviBool(defaultValue);
+			return new GioviBool();
 		}
 		return GioviPrimitive.super.dot(right);
 	}

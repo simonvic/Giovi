@@ -14,14 +14,14 @@ import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
 
-	protected final LinkedHashMap<String, GioviValue<?>> fields;
+	protected final LinkedHashMap<String, VarD<?>> fields;
 
 	public TupleNamed() {
 		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
-	public TupleNamed(LinkedHashMap<String, GioviValue<?>> fields) {
+	public TupleNamed(LinkedHashMap<String, VarD<?>> fields) {
 		super(new ArrayList<>(fields.values()));
 		this.fields = fields;
 	}
@@ -86,7 +86,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public TupleNamed copy() {
-		var a = new LinkedHashMap<String, GioviValue<?>>();
+		var a = new LinkedHashMap<String, VarD<?>>();
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new TupleNamed(a);
 	}
@@ -96,7 +96,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
 			try {
-				GioviValue<?> otherField = other.getField(entry.getKey());
+				VarD<?> otherField = other.getField(entry.getKey());
 				if (!entry.getValue().equal(otherField).asNativeBool()) {
 					return false;
 				}
@@ -109,9 +109,9 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
-		var widened = new LinkedHashMap<String, GioviValue<?>>();
+		var widened = new LinkedHashMap<String, VarD<?>>();
 		for (var entry : to.fields.entrySet()) {
-			GioviValue<?> thisField;
+			VarD<?> thisField;
 			try {
 				thisField = getField(entry.getKey());
 			} catch (UnknownTupleField e) {
@@ -126,9 +126,9 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var entry : to.fields.entrySet()) {
-			GioviValue<?> thisField;
+			VarD<?> thisField;
 			try {
 				thisField = getField(entry.getKey());
 			} catch (UnknownTupleField e) {
@@ -145,7 +145,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
+	public VarD<?> getField(String identifier) throws UnknownTupleField {
 		var v = fields.get(identifier);
 		if (v == null) {
 			throw new UnknownTupleField(this, identifier);
@@ -157,20 +157,23 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return new ArrayList<>(fields.keySet());
 	}
 
-	public GioviValue<?> get(String identifier) {
+	public VarD<?> get(String identifier) {
 		return fields.get(identifier);
 	}
 
-	public Set<Entry<String, GioviValue<?>>> entrySet() {
+	public Set<Entry<String, VarD<?>>> entrySet() {
 		return fields.entrySet();
 	}
 
 	public void boxField(String fieldIdentifier, GioviValue<?> gioviValue) {
-		GioviValue<?> asGioviValue = fields.get(fieldIdentifier).redirection(gioviValue).asGioviValue();
-		fields.put(fieldIdentifier, asGioviValue);
+		fields.get(fieldIdentifier).setValue(gioviValue);
 	}
 
-	public void forEach(BiConsumer<String, GioviValue<?>> valueConsumer) {
+	public void boxField(String fieldIdentifier, VarD<?> var) { // TODO: remove?
+		fields.get(fieldIdentifier).setValue(var.value());
+	}
+
+	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 

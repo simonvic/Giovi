@@ -5,19 +5,20 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<Tuple> {
-
-	public GioviTuple(Tuple value) {
-		this(value, value.copy());
-	}
+public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 
 	public GioviTuple() {
-		this(new Tuple(), new Tuple());
+		this(new Tuple());
+	}
+
+	@Override
+	public Tuple defaultValue() {
+		return new Tuple();
 	}
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		return new GioviTypeTuple(defaultValue.copy());
+		return new GioviTypeTuple(defaultValue().copy()); // TODO: replace with signature
 	}
 
 	@Override
@@ -45,7 +46,7 @@ public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<
 
 	@Override
 	public GioviTuple copy() {
-		return new GioviTuple(value.copy(), defaultValue.copy());
+		return new GioviTuple(value.copy());
 	}
 
 	public int getFieldsCount() {
@@ -61,7 +62,7 @@ public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTuple(defaultValue.copy(), defaultValue);
+			case GioviDefault _ -> new GioviTuple(defaultValue().copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
 			case GioviStruct v -> GioviTuples.redirection(this, v);
@@ -78,10 +79,10 @@ public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equal(defaultValue));
-			case GioviStruct(var v, _) -> new GioviBool(this.value.equal(v));
-			case GioviTupleNamed(var v, _) -> new GioviBool(this.value.equal(v));
-			case GioviTuple(var v, _) -> new GioviBool(this.value.equal(v));
+			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
+			case GioviStruct(var v) -> new GioviBool(this.value.equal(v));
+			case GioviTupleNamed(var v) -> new GioviBool(this.value.equal(v));
+			case GioviTuple(var v) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
 	}
@@ -96,7 +97,7 @@ public record GioviTuple(Tuple value, Tuple defaultValue) implements GioviValue<
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTuple(defaultValue.copy());
+			case GioviDefault _ -> new GioviTuple();
 			default -> GioviValue.super.dot(right);
 		};
 	}

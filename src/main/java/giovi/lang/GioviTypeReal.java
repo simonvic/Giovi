@@ -26,7 +26,7 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
 	@Override
 	public GioviReal spawn(GioviReal gioviValue) {
-		return new GioviReal(gioviValue.value(), gioviValue.value());
+		return new GioviReal(gioviValue.value());
 	}
 
 	@Override

@@ -28,16 +28,13 @@ public class TestFunctions {
 		return new FunctionSignature(identifier, params);
 	}
 
-	private static FunctionSignatureParam paramOf(
-		String identifier,
-		GioviValue<?> defaultValue) {
-		return new FunctionSignatureParam(identifier, defaultValue.getGioviType(), defaultValue);
+	private static FunctionSignatureParam paramOf(String identifier, GioviType<?> type) {
+		return new FunctionSignatureParam(identifier, type);
 	}
 
-	private static FunctionSignatureParam paramOf(
-		String identifier,
-		GioviType<?> type) {
-		return new FunctionSignatureParam(identifier, type);
+	private static <T> FunctionSignatureParam paramOf(String identifier, T defaultValue) {
+		var defaultParamValue = GioviValue.of(defaultValue);
+		return new FunctionSignatureParam(identifier, defaultParamValue);
 	}
 
 	@Nested
@@ -103,7 +100,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviInt(69, 69))));
+					paramOf("a", 69)));
 		}
 
 		@Test
@@ -116,7 +113,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviInt())));
+					paramOf("a", 0)));
 		}
 
 		@Test
@@ -147,8 +144,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviInt(69, 69)),
-					paramOf("b", new GioviReal(6.9, 6.9))));
+					paramOf("a", 69),
+					paramOf("b", 6.9)));
 		}
 
 		@Test
@@ -164,7 +161,7 @@ public class TestFunctions {
 					"someFunction",
 					paramOf("a", new GioviTypeInt()),
 					paramOf("b", new GioviTypeReal()),
-					paramOf("c", new GioviBool(true, true))));
+					paramOf("c", true)));
 		}
 
 		@Test
@@ -178,9 +175,9 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviInt(69, 69)),
+					paramOf("a", 69),
 					paramOf("b", new GioviTypeReal()),
-					paramOf("c", new GioviBool(true, true))));
+					paramOf("c", true)));
 		}
 
 		@Disabled("Function overload not implemented yet")

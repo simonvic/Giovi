@@ -32,9 +32,13 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		return expand().stream().map(GioviValue::of).toList();
 	}
 
+	public List<? extends Var<?>> expandAsVar() {
+		return expand().stream().map(Var::of).toList();
+	}
+
 	public GioviList expandAsGioviList() {
-		var gioviList = new ArrayList<GioviValue<?>>(
-			expand().stream().map(GioviValue::of).toList());
+		var gioviList = new ArrayList<Var<?>>(
+			expand().stream().map(Var::of).toList());
 		return new GioviList(GioviTypes.inferGioviType(gioviList), gioviList);
 	}
 

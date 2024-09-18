@@ -12,15 +12,13 @@ public class TestSandbox {
 	@Test
 	void sandbox() {
 		visit("""
-			x [[Int]] <- [
-				[1 0 0]
-				[1 1 1]
-				[0 1 0]
-				[0 0 1]
-			]
-			x -> \\out
-			x -<- [1 1 1]
-			x -> \\out
+			420 -> x Int default 69
+			l [Int] default [1 2 x]
+			l -> \\out
+			l@0 -> \\out
+			for i in l do {
+				i -> \\out
+			}
 			""");
 	}
 

@@ -26,7 +26,7 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 
 	@Override
 	public GioviBool spawn(GioviBool gioviValue) {
-		return new GioviBool(gioviValue.value(), gioviValue.value());
+		return new GioviBool(gioviValue.value());
 	}
 
 	@Override

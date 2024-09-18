@@ -26,7 +26,7 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 
 	@Override
 	public GioviText spawn(GioviText gioviValue) {
-		return new GioviText(gioviValue.value(), gioviValue.value());
+		return new GioviText(gioviValue.value());
 	}
 
 	@Override

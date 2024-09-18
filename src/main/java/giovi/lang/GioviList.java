@@ -8,43 +8,38 @@ import java.util.List;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
+import giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
-	List<GioviValue<?>> defaultValue) implements GioviValue<List<GioviValue<?>>> {
+public record GioviList(GioviType<?> entryType, List<Var<?>> value)
+	implements GioviValue<List<Var<?>>> {
 
-	public GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
-		List<GioviValue<?>> defaultValue) {
+	public GioviList(GioviType<?> entryType, List<Var<?>> value) {
 		this.entryType = entryType;
 		this.value = new ArrayList<>();
-		this.defaultValue = new ArrayList<>();
 		try {
 			for (var entry : value) {
 				this.value.add(entry.widenTo(this.entryType));
-			}
-			for (var entry : defaultValue) {
-				this.defaultValue.add(entry.widenTo(this.entryType));
 			}
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
 		}
 	}
 
-	public GioviList(
-		GioviType<?> entryType,
-		List<GioviValue<?>> value) {
-		this(entryType, value, new ArrayList<>());
+	public GioviList(GioviType<?> entryType) {
+		this(entryType, new ArrayList<>());
 	}
 
-	public GioviList(GioviType<?> entryType) {
-		this(entryType, new ArrayList<>(), new ArrayList<>());
+	@Override
+	public List<Var<?>> defaultValue() {
+		return new ArrayList<>();
 	}
 
 	/**
 	 * Add entry to list. The entry will be widened if necessary
 	 * @param entry
 	 */
-	public void add(GioviValue<?> entry) {
+	public void add(Var<?> entry) {
 		try {
 			value.add(entry.widenTo(entryType));
 		} catch (NonWideneable ex) {
@@ -52,15 +47,15 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 		}
 	}
 
-	public void addAll(List<? extends GioviValue<?>> entries) {
+	public void addAll(List<? extends Var<?>> entries) {
 		entries.forEach(this::add);
 	}
 
-	public void remove(GioviValue<?> entry) {
+	public void remove(Var<?> entry) {
 		value.remove(entry);
 	}
 
-	public void removeAll(List<? extends GioviValue<?>> entries) {
+	public void removeAll(List<? extends Var<?>> entries) {
 		value.removeAll(entries);
 	}
 
@@ -68,7 +63,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 		value.clear();
 	}
 
-	public void init(List<GioviValue<?>> entries) {
+	public void init(List<Var<?>> entries) {
 		clear();
 		addAll(entries);
 	}
@@ -78,7 +73,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
+	public GioviTypeList getGioviType() {
 		return new GioviTypeList(entryType);
 	}
 
@@ -97,13 +92,9 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 
 	@Override
 	public GioviList copy() {
-		var v = new ArrayList<GioviValue<?>>();
+		var v = new ArrayList<Var<?>>();
 		this.value.forEach(value -> v.add(value.copy()));
-
-		var d = new ArrayList<GioviValue<?>>();
-		this.defaultValue.forEach(value -> d.add(value.copy()));
-
-		return new GioviList(this.entryType, v, d);
+		return new GioviList(this.entryType, v);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -114,7 +105,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeList t) {
 			var newGioviList = t.spawn();
-			this.value.forEach(v -> newGioviList.add(v.as(t.getEntryType()).asGioviValue()));
+			this.value.forEach(v -> newGioviList.add(v.as(t.getEntryType()).asVar()));
 			return newGioviList;
 		}
 		return GioviValue.super.as(right);
@@ -125,11 +116,11 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviList(entryType, copyOf(defaultValue), defaultValue);
+			case GioviDefault _ -> new GioviList(entryType, copyOf(defaultValue()));
 			case GioviList v when v.entryType.equals(this.entryType) -> new GioviList(
-				entryType, copyOf(v.value()), defaultValue);
+				entryType, copyOf(v.value()));
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> {
-				var newGioviValue = new GioviList(entryType, new ArrayList<>(), defaultValue);
+				var newGioviValue = new GioviList(entryType);
 				v.value().forEach(entry -> newGioviValue.add(entry.copy()));
 				yield newGioviValue;
 			}
@@ -140,9 +131,9 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> addAll(copyOf(defaultValue));
+			case GioviDefault _ -> addAll(copyOf(defaultValue()));
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
-			case GioviValue<?> v -> {
+			case Var<?> v -> {
 				try {
 					add(v.copy());
 				} catch (IllegalArgumentException ex) {
@@ -157,9 +148,9 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> removeAll(defaultValue);
+			case GioviDefault _ -> removeAll(defaultValue());
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAll(v.value);
-			case GioviValue<?> v -> {
+			case Var<?> v -> {
 				try {
 					remove(v.widenTo(this.entryType));
 				} catch (IllegalArgumentException | NonWideneable e) {
@@ -180,7 +171,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviList v -> {
 				// NOTE: we are checking if entries are **equal** instead of **equals**
 				if (this.value.size() != v.value.size()) {
@@ -217,7 +208,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 				}
 				yield new GioviBool(true);
 			}
-			case GioviValue<?> v -> {
+			case Var<?> v -> {
 				for (var entry : this.value) {
 					if (entry.equal(right).asNativeBool()) {
 						yield new GioviBool(true);
@@ -233,6 +224,9 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
+		if (right instanceof Var<?> v) {
+			right = v.value();
+		}
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt i -> {
@@ -259,11 +253,7 @@ public record GioviList(GioviType<?> entryType, List<GioviValue<?>> value,
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			List<GioviValue<?>> d = new ArrayList<>();
-			for (var gioviValue : defaultValue) {
-				d.add(gioviValue.copy());
-			}
-			return new GioviList(entryType, d);
+			return new GioviList(entryType);
 		}
 		return GioviValue.super.dot(right);
 	}
