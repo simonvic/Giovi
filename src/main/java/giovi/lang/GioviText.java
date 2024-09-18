@@ -75,21 +75,21 @@ public final class GioviText extends GioviPrimitive<String> {
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value += defaultValue;
 			case GioviText v -> value += v.unbox();
-			default -> super.redirectionPlus(right);
+			default -> super.redirectionPlus(content);
 		}
 		return this;
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value = value.replace(defaultValue, "");
 			case GioviText v -> value = value.replace(v.unbox(), "");
-			default -> super.redirectionMinus(right);
+			default -> super.redirectionMinus(content);
 		}
 		return this;
 	}

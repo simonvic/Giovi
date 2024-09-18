@@ -156,35 +156,35 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> addAll(copyOf(defaultValue));
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
 			case GioviValue<?> v -> {
 				try {
 					add(v.copy());
 				} catch (IllegalArgumentException ex) {
-					super.redirectionPlus(right);
+					super.redirectionPlus(content);
 				}
 			}
-			default -> super.redirectionPlus(right);
+			default -> super.redirectionPlus(content);
 		}
 		return this;
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> removeAll(defaultValue);
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAll(v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(v.widenTo(this.entryType));
 				} catch (IllegalArgumentException | NonWideneable e) {
-					return super.redirectionMinus(right);
+					return super.redirectionMinus(content);
 				}
 			}
-			default -> super.redirectionMinus(right);
+			default -> super.redirectionMinus(content);
 		}
 		return this;
 	}

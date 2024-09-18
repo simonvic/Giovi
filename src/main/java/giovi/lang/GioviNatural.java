@@ -76,41 +76,41 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value = value.plus(defaultValue);
 			case GioviNatural v -> value = value.plus(v.value);
-			default -> super.redirectionPlus(right);
+			default -> super.redirectionPlus(content);
 		}
 		return this;
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value = value.minus(defaultValue);
 			case GioviNatural v -> value = value.minus(v.value);
-			default -> super.redirectionMinus(right);
+			default -> super.redirectionMinus(content);
 		}
 		return this;
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value = value.multiply(defaultValue);
 			case GioviNatural v -> value = value.multiply(v.value);
-			default -> super.redirectionMultiply(right);
+			default -> super.redirectionMultiply(content);
 		}
 		return this;
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
-		switch (right) {
+	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
+		switch (content) {
 			case GioviDefault _ -> value = value.divide(defaultValue);
 			case GioviNatural v -> value = value.divide(v.value);
-			default -> super.redirectionDivide(right);
+			default -> super.redirectionDivide(content);
 		}
 		return this;
 	}

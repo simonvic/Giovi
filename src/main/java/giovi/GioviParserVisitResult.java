@@ -21,10 +21,10 @@ public interface GioviParserVisitResult {
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR); }
-	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_PLUS); }
-	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_MINUS); }
-	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_MULT); }
-	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.REDIR_DIV); }
+	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_PLUS); }
+	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_MINUS); }
+	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_MULT); }
+	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_DIV); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
