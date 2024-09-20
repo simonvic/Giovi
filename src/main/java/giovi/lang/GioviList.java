@@ -81,6 +81,16 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		value.removeAll(entries);
 	}
 
+	public void removeAllWidened(List<? extends Var<?>> entries) {
+		try {
+			for (var entry : entries) {
+				value.remove(entry.widenTo(entryType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
+	}
+
 	public void clear() {
 		value.clear();
 	}
@@ -171,7 +181,9 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
-			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAll(v.value);
+			case GioviList v when v.entryType.equals(this.entryType) -> removeAll(v.value);
+			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAllWidened(
+				v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(new Var<>(v.widenTo(this.entryType)));

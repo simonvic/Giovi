@@ -229,6 +229,17 @@ public class TestGioviList {
 			}
 
 			@Test
+			void redirMinus_narrowerValue_shouldRemove() {
+				assertThat(visit("""
+					[1 2 3 4] -> x [Int]
+					4n ->- x
+					""").getCurrentScope()
+					.getVariable("x")
+					.value())
+						.isEqualTo(GioviLists.of(1, 2, 3));
+			}
+
+			@Test
 			void redirPlusList_shouldInsertAll() {
 				assertThat(visit("""
 					[1 2 3] -> x [Int]
@@ -244,6 +255,17 @@ public class TestGioviList {
 				assertThat(visit("""
 					[1 2 3 4 5 6] -> x [Int]
 					x -<- [4 5 6]
+					""").getCurrentScope()
+					.getVariable("x")
+					.value())
+						.isEqualTo(GioviLists.of(1, 2, 3));
+			}
+
+			@Test
+			void redirMinus_narrowerList_shouldRemove() {
+				assertThat(visit("""
+					[1 2 3 4] -> x [Int]
+					[4n] ->- x
 					""").getCurrentScope()
 					.getVariable("x")
 					.value())

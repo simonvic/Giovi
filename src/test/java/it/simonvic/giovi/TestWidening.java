@@ -430,21 +430,21 @@ public class TestWidening {
 
 		@Test
 		void testWidening_toStruct_of_sameType() throws NonWideneable {
-			assertThat(GioviStructs.ofNative(
+			var narrow = GioviStructs.ofNative(
 				"Foo",
 				"a", new Natural(69),
 				"b", 69,
-				"c", List.of(69, 420))
-				.widenTo(new GioviTypeStruct(Structs.ofNative(
-					"Foo",
-					"a", new Natural(0),
-					"b", 0,
-					"c", List.of(0, 0)))))
-						.isEqualTo(GioviStructs.ofNative(
-							"Foo",
-							"a", new Natural(69),
-							"b", 69,
-							"c", List.of(69, 420)));
+				"c", List.of(69, 420));
+			var type = new GioviTypeStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviNatural()),
+				"b", new VarD<>(new GioviInt()),
+				"c", new VarD<>(new GioviList(new GioviTypeInt()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviNatural(new Natural(69))),
+				"b", new VarD<>(new GioviInt(69)),
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
 		}
 
 		// TODO: clarify requirements about widening between different struct types

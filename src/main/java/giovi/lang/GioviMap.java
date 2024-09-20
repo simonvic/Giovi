@@ -6,7 +6,6 @@ import java.util.Map;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Var;
-import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviMaps;
@@ -90,8 +89,20 @@ public record GioviMap(
 		}
 	}
 
-	public void removeAll(Map<Var<?>, Var<?>> defaultValue) {
-		defaultValue.forEach(this::remove);
+	public void removeAll(Map<Var<?>, Var<?>> entries) {
+		entries.forEach(this::remove);
+	}
+
+	public void removeAllWidened(Map<Var<?>, Var<?>> entries) {
+		try {
+			for (var entry : entries.entrySet()) {
+				value.remove(
+					entry.getKey().widenTo(keyType),
+					entry.getValue().widenTo(elementType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	public void clear() {
@@ -210,8 +221,10 @@ public record GioviMap(
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
+			case GioviMap v when v.keyType.equals(this.keyType)
+				&& v.elementType.equals(this.elementType) -> removeAll(v.value);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
-				&& v.elementType.canWidenTo(this.elementType) -> removeAll(v.value);
+				&& v.elementType.canWidenTo(this.elementType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(new Var<>(v.widenTo(this.keyType)));

@@ -140,10 +140,14 @@ public class TestDefaults {
 					"bar", VarD.of(
 						Structs.of("Bar",
 							"baz", VarD.of("baz"),
-							"foobar", VarD.of(List.of(1, 2, 3))),
+							"foobar", new VarD<>(
+								GioviLists.of(1, 2, 3),
+								new GioviList(new GioviTypeInt()))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
-							"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
+							"foobar", new VarD<>(
+								new GioviList(new GioviTypeInt()),
+								new GioviList(new GioviTypeInt()))))));
 		}
 
 		@Test
@@ -318,10 +322,14 @@ public class TestDefaults {
 						"bar", VarD.of(
 							Structs.of("Bar",
 								"baz", VarD.of("baz"),
-								"foobar", VarD.of(List.of(1, 2, 3))),
+								"foobar", new VarD<>(
+									GioviLists.of(1, 2, 3),
+									new GioviList(new GioviTypeInt()))),
 							Structs.of("Bar",
 								"baz", VarD.of(""),
-								"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
+								"foobar", new VarD<>(
+									new GioviList(new GioviTypeInt()),
+									new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
@@ -436,10 +444,14 @@ public class TestDefaults {
 						"bar", VarD.of(
 							Structs.of("Bar",
 								"baz", VarD.of("baz"),
-								"foobar", VarD.of(List.of(1, 2, 3))),
+								"foobar", new VarD<>(
+									GioviLists.of(1, 2, 3),
+									new GioviList(new GioviTypeInt()))),
 							Structs.of("Bar",
 								"baz", VarD.of(""),
-								"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
+								"foobar", new VarD<>(
+									new GioviList(new GioviTypeInt()),
+									new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
