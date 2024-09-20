@@ -8,7 +8,7 @@ import java.util.List;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import giovi.Var;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviList(GioviType<?> entryType, List<Var<?>> value)

@@ -3,10 +3,10 @@ package it.simonvic.giovi.util;
 import java.util.LinkedHashMap;
 
 import giovi.TupleNamed;
-import giovi.VarD;
 import giovi.lang.GioviStruct;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviTupleNamed;
+import it.simonvic.giovi.VarD;
 
 public class GioviTuples {
 

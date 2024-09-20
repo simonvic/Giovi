@@ -1,7 +1,7 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import giovi.Var;
+import it.simonvic.giovi.Var;
 
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	implements GioviType<GioviList> {

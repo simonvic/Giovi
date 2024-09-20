@@ -3,8 +3,8 @@ package it.simonvic.giovi.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import giovi.Var;
 import giovi.lang.GioviList;
+import it.simonvic.giovi.Var;
 
 public class GioviLists {
 

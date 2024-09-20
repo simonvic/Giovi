@@ -3,6 +3,7 @@ package giovi.lang;
 import java.util.ArrayList;
 
 import giovi.*;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;

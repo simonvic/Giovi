@@ -18,7 +18,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Natural;
 import giovi.Tuple;
 import giovi.TupleNamed;
-import giovi.VarD;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;

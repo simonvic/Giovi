@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import giovi.Var;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 

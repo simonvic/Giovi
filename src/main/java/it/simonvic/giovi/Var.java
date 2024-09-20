@@ -1,5 +1,6 @@
-package giovi;
+package it.simonvic.giovi;
 
+import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;

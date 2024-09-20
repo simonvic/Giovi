@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import giovi.*;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;

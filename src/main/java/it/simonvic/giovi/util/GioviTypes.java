@@ -2,9 +2,9 @@ package it.simonvic.giovi.util;
 
 import java.util.Collection;
 
-import giovi.Var;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeVoid;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 
 public class GioviTypes {

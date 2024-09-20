@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 
 import giovi.Tuple;
 import giovi.TupleNamed;
-import giovi.VarD;
+import it.simonvic.giovi.VarD;
 
 public class Tuples {
 

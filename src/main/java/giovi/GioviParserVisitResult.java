@@ -5,6 +5,7 @@ import java.util.List;
 
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public interface GioviParserVisitResult {

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
-import giovi.Var;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviMaps;

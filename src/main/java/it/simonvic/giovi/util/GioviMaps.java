@@ -3,8 +3,8 @@ package it.simonvic.giovi.util;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import giovi.Var;
 import giovi.lang.GioviMap;
+import it.simonvic.giovi.Var;
 
 public class GioviMaps {
 

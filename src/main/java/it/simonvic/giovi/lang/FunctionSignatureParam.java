@@ -1,9 +1,9 @@
 package it.simonvic.giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import giovi.VarD;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.VarD;
 
 public record FunctionSignatureParam(
 	String identifier,

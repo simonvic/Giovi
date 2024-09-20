@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
-import giovi.VarD;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviStructs;

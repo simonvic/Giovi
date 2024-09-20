@@ -5,9 +5,9 @@ import java.util.Map;
 
 import giovi.Function;
 import giovi.Struct;
-import giovi.Var;
-import giovi.VarD;
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
 
 public class Scope {

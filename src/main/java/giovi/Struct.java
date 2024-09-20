@@ -2,6 +2,7 @@ package giovi;
 
 import java.util.LinkedHashMap;
 
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Struct extends TupleNamed {

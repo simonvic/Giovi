@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
