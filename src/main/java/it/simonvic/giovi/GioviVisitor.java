@@ -144,6 +144,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	// TODO: check if necessary to new VarD when deconstructing
 	// TODO: check when declaring if it should be copied (by value) (e.g. iterating over a tuple)
+	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
 
 	@Override
 	public GioviParserVisitResult visitForStatement(ForStatementContext ctx) {
@@ -788,8 +789,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRange(RangeContext ctx) {
 		return Range.of(
-			visit(ctx.start),
-			visit(ctx.end),
+			visit(ctx.start).unwrapAsGioviValue(),
+			visit(ctx.end).unwrapAsGioviValue(),
 			ctx.step == null ? null : visit(ctx.step));
 	}
 

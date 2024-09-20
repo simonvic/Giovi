@@ -42,7 +42,9 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		return new GioviList(GioviTypes.inferGioviType(gioviList), gioviList);
 	}
 
-	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end,
+	public static Range<?> of(
+		GioviParserVisitResult start,
+		GioviParserVisitResult end,
 		GioviParserVisitResult step) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
