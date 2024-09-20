@@ -23,7 +23,7 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		return new GioviTypeTuple(defaultValue().copy()); // TODO: replace with signature
+		return new GioviTypeTuple(value().copy()); // TODO: replace with signature
 	}
 
 	@Override

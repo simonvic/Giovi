@@ -19,7 +19,7 @@ public record GioviStruct(Struct value) implements GioviValue<Struct> {
 	@Override
 	public GioviTypeStruct getGioviType() {
 		// FIXME: this would produce two different types as their structs would likely have different value
-		return new GioviTypeStruct(defaultValue());
+		return new GioviTypeStruct(value.copy());
 	}
 
 	@Override

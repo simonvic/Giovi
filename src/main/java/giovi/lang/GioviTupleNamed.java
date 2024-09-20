@@ -27,7 +27,7 @@ public record GioviTupleNamed(TupleNamed value)
 
 	@Override
 	public GioviTypeTupleNamed getGioviType() {
-		return new GioviTypeTupleNamed(defaultValue().copy());
+		return new GioviTypeTupleNamed(value().copy()); // TODO: replace with signature
 	}
 
 	@Override
