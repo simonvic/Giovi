@@ -308,7 +308,7 @@ public record GioviMap(
 				case KEYS -> new GioviList(keyType, value().keySet().stream().toList());
 				case VALUES -> new GioviList(elementType, value().values().stream().toList());
 			};
-			default -> throw new GioviException("Invalid access key: " + right);
+			default -> GioviValue.super.access(right);
 		};
 	}
 
