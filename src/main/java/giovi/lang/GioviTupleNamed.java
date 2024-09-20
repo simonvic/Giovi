@@ -22,7 +22,7 @@ public record GioviTupleNamed(TupleNamed value)
 
 	@Override
 	public TupleNamed defaultValue() {
-		return new TupleNamed();
+		return value.copy();
 	}
 
 	@Override

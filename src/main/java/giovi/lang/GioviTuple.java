@@ -18,7 +18,7 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 
 	@Override
 	public Tuple defaultValue() {
-		return new Tuple();
+		return value.copy(); // TODO: replace with signature, or eventually build one from the value()
 	}
 
 	@Override
