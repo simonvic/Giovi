@@ -26,6 +26,7 @@ public sealed interface GioviValue<T>
 			case Struct v -> new GioviStruct(v);
 			case TupleNamed v -> new GioviTupleNamed(v);
 			case Tuple v -> new GioviTuple(v);
+			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(
 				"Unknown type " + value + " (" + value.getClass() + ")");
 		};
