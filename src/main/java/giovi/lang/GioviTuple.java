@@ -12,6 +12,11 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 	}
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public Tuple defaultValue() {
 		return new Tuple();
 	}

@@ -16,6 +16,11 @@ public record GioviTupleNamed(TupleNamed value)
 	}
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public TupleNamed defaultValue() {
 		return new TupleNamed();
 	}

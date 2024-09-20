@@ -35,6 +35,26 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		return new ArrayList<>();
 	}
 
+	@Override
+	public String toString() {
+		var i = value.iterator();
+		if (!i.hasNext())
+			return "[" + entryType + "]";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append('[');
+		sb.append(entryType);
+		sb.append(": ");
+		for (;;) {
+			sb.append(i.next());
+			if (!i.hasNext())
+				return sb.append(']').toString();
+			sb.append(',').append(' ');
+		}
+	}
+
+	// TODO: check if Vars or GioviValues should be exposed
+
 	/**
 	 * Add entry to list. The entry will be widened if necessary
 	 * @param entry
@@ -50,6 +70,9 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public void addAll(List<? extends Var<?>> entries) {
 		entries.forEach(this::add);
 	}
+
+
+	// TODO: is wrapping in a var necessary
 
 	public void remove(Var<?> entry) {
 		value.remove(entry);

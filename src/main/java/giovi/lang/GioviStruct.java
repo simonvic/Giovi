@@ -9,6 +9,11 @@ import it.simonvic.giovi.util.GioviTuples;
 
 public record GioviStruct(Struct value) implements GioviValue<Struct> {
 
+	@Override
+	public String toString() {
+		return value.toString();
+	}
+
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
 	@Override

@@ -14,6 +14,11 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	}
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public Boolean defaultValue() {
 		return false;
 	}

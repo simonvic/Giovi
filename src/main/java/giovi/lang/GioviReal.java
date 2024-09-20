@@ -23,6 +23,11 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 	}
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public Double defaultValue() {
 		return 0d;
 	}

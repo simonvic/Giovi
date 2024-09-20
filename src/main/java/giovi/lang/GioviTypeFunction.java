@@ -11,6 +11,11 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 	}
 
 	@Override
+	public String toString() {
+		return signature.toString();
+	}
+
+	@Override
 	public Class<? extends GioviFunction> value() {
 		return GioviFunction.class;
 	}

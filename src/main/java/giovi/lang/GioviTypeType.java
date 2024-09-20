@@ -5,6 +5,11 @@ import giovi.GioviParserVisitResult;
 public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 
 	@Override
+	public String toString() {
+		return "Type";
+	}
+
+	@Override
 	public Class<? extends GioviType<?>> value() {
 		return null; // TODO: lol
 	}
@@ -21,11 +26,6 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 
 	@Override
 	public String getSimpleName() {
-		return "Type";
-	}
-
-	@Override
-	public String toString() {
 		return "Type";
 	}
 

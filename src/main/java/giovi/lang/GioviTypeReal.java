@@ -5,6 +5,11 @@ import giovi.GioviParserVisitResult;
 public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
 	@Override
+	public String toString() {
+		return "Real";
+	}
+
+	@Override
 	public Class<? extends GioviReal> value() {
 		return GioviReal.class;
 	}

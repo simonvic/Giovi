@@ -5,6 +5,11 @@ import giovi.GioviParserVisitResult;
 public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 
 	@Override
+	public String toString() {
+		return "Bool";
+	}
+
+	@Override
 	public Class<? extends GioviBool> value() {
 		return GioviBool.class;
 	}

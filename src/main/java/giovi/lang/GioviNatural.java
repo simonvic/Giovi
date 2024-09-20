@@ -15,6 +15,11 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	}
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public Natural defaultValue() {
 		return new Natural();
 	}

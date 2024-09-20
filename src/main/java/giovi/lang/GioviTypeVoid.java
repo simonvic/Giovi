@@ -5,6 +5,11 @@ import giovi.GioviParserVisitResult;
 public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 
 	@Override
+	public String toString() {
+		return "Void";
+	}
+
+	@Override
 	public Class<? extends GioviVoid> value() {
 		return GioviVoid.class;
 	}

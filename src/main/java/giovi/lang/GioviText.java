@@ -17,13 +17,13 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	}
 
 	@Override
-	public String defaultValue() {
-		return "";
+	public String toString() {
+		return value.toString();
 	}
 
 	@Override
-	public String toString() {
-		return value.toString();
+	public String defaultValue() {
+		return "";
 	}
 
 	@Override

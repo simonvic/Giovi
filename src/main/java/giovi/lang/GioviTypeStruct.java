@@ -15,6 +15,11 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	}
 
 	@Override
+	public String toString() {
+		return definition.toStringDefinition();
+	}
+
+	@Override
 	public Class<? extends GioviStruct> value() {
 		return GioviStruct.class;
 	}

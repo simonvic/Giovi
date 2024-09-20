@@ -5,6 +5,11 @@ import giovi.TupleNamed;
 public record GioviTypeTupleNamed(TupleNamed definition) implements GioviType<GioviTupleNamed> {
 
 	@Override
+	public String toString() {
+		return definition.toString();
+	}
+
+	@Override
 	public Class<? extends GioviTupleNamed> value() {
 		return GioviTupleNamed.class;
 	}
