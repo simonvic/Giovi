@@ -46,7 +46,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 
 	@Override
 	public String toString() {
-		return "" + value + " default " + defaultValue + "";
+		return value.toString();
+		// return "" + value + " default " + defaultValue + "";
 		// return "Var [value=" + value + ", defaultValue=" + defaultValue + ", value()=" + value()
 		// 	+ ", defaultValue()=" + defaultValue() + "]";
 	}
@@ -76,8 +77,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return new VarD<>(value.copy(), defaultValue.copy());
 	}
 
-	@Override
-	public VarD<?> widenTo(GioviType<? extends GioviValue<?>> gioviType) throws NonWideneable {
+	public VarD<?> widenTo(GioviType<? extends GioviValue<?>> gioviType, GioviValue<?> defaultValue) throws NonWideneable {
 		return new VarD<>(value.widenTo(gioviType), defaultValue.widenTo(gioviType));
 	}
 

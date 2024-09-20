@@ -110,34 +110,36 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
-		var widened = new LinkedHashMap<String, VarD<?>>();
-		for (var entry : to.fields.entrySet()) {
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		for (var widerEntry : to.fields.entrySet()) {
 			VarD<?> thisField;
 			try {
-				thisField = getField(entry.getKey());
+				thisField = getField(widerEntry.getKey());
 			} catch (UnknownTupleField e) {
 				throw new NonWideneable(e);
 			}
-			widened.put(
-				entry.getKey(),
-				thisField.widenTo(entry.getValue().getGioviType()));
+			var widerField = widerEntry.getValue();
+			widenedFields.put(
+				widerEntry.getKey(),
+				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
-		return new TupleNamed(widened);
+		return new TupleNamed(widenedFields);
 	}
 
 	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		for (var entry : to.fields.entrySet()) {
+		for (var widerEntry : to.fields.entrySet()) {
 			VarD<?> thisField;
 			try {
-				thisField = getField(entry.getKey());
+				thisField = getField(widerEntry.getKey());
 			} catch (UnknownTupleField e) {
 				throw new NonWideneable(e);
 			}
+			var widerField = widerEntry.getValue();
 			widenedFields.put(
-				entry.getKey(),
-				thisField.widenTo(entry.getValue().getGioviType()));
+				widerEntry.getKey(),
+				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
 		return new Struct(to.getTypename(), widenedFields);
 	}

@@ -100,7 +100,7 @@ public sealed class Tuple permits TupleNamed {
 		fields.get(i).setValue(gioviValue);
 	}
 
-	public void boxField(int i, VarD<?> var) {  // TODO: remove?
+	public void boxField(int i, VarD<?> var) { // TODO: remove?
 		// fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
 		fields.get(i).setValue(var.value());
 	}
@@ -161,7 +161,11 @@ public sealed class Tuple permits TupleNamed {
 		}
 		var widenedFields = new ArrayList<VarD<?>>();
 		for (int i = 0; i < fields.size(); i++) {
-			widenedFields.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
+			var narrowField = this.fields.get(i);
+			var widerField = to.fields.get(i);
+			// we widen the field, but use the default value of the wider field
+			widenedFields.add(
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
 		return new Tuple(widenedFields);
 	}
@@ -173,9 +177,11 @@ public sealed class Tuple permits TupleNamed {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
+			var narrowField = this.getField(i);
+			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),
-				this.getField(i).widenTo(entry.getValue().getGioviType()));
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 			i++;
 		}
 		return new TupleNamed(widenedFields);
@@ -188,9 +194,11 @@ public sealed class Tuple permits TupleNamed {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
+			var narrowField = this.getField(i);
+			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),
-				this.getField(i).widenTo(entry.getValue().getGioviType()));
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 			i++;
 		}
 		return new Struct(to.getTypename(), widenedFields);
