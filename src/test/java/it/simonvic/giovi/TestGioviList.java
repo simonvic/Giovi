@@ -429,7 +429,11 @@ public class TestGioviList {
 				[0 1 2 3 4]@4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
-				assertEquals(expected, visitExpression(expression).asGioviInt().value());
+				assertThat(visitExpression(expression)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -443,7 +447,11 @@ public class TestGioviList {
 			void accessWithNegativeInt_shouldReturnElementAtRearIndex(
 				String expression,
 				Integer expected) {
-				assertEquals(expected, visitExpression(expression).asGioviInt().value());
+				assertThat(visitExpression(expression)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 			static Stream<Arguments> produceEqualGioviLists_range() {

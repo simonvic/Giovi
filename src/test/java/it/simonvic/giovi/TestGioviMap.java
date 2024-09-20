@@ -375,9 +375,9 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.value())
-					.isEqualTo(GioviMaps.of(
-						Map.of(1, "a"), "A",
-						Map.of(2, "b"), "B"));
+						.isEqualTo(GioviMaps.of(
+							Map.of(1, "a"), "A",
+							Map.of(2, "b"), "B"));
 			}
 
 			@Test
@@ -535,8 +535,11 @@ public class TestGioviMap {
 			void accessWithValueKey_shouldReturnMappedElement() {
 				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@2
-					""").asGioviText().value())
-					.isEqualTo("b");
+					""")
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo("b");
 			}
 
 			@Test

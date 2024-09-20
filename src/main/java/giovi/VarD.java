@@ -5,7 +5,6 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-@SuppressWarnings("unchecked")
 public class VarD<T extends GioviValue<?>> extends Var<T> {
 
 	public static <T> VarD<? extends GioviValue<?>> of(T value) {
@@ -27,11 +26,14 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		this.defaultValue = defaultValue;
 	}
 
+	// TODO: eventually offer this constructor only for primitive values
 	/**
 	 * @param value
 	 */
 	public VarD(T value) {
 		super(value);
+		// TODO: this would return an incompatible default value for List,Maps,Tuples and Structs
+		// e.g. a list default value would be a list of void
 		this.defaultValue = (T) GioviValue.of(value.defaultValue());
 	}
 
@@ -39,12 +41,12 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	 * @return the defaultValue
 	 */
 	public T defaultValue() {
-		return defaultValue;
+		return (T) defaultValue.copy(); // return copy to ensure immutability
 	}
 
 	@Override
 	public String toString() {
-		return "VarD {" + value + " default " + defaultValue + "}";
+		return "" + value + " default " + defaultValue + "";
 		// return "Var [value=" + value + ", defaultValue=" + defaultValue + ", value()=" + value()
 		// 	+ ", defaultValue()=" + defaultValue() + "]";
 	}
@@ -93,7 +95,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
 			case GioviDefault _ -> this. value.redirection(defaultValue);
-			default -> this.value.redirection(content);
+			default -> super.redirection(content);
 		};
 		return this.value;
 	}
@@ -102,7 +104,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
 			case GioviDefault _ -> this. value.redirectionPlus(defaultValue);
-			default -> this.value.redirectionPlus(content);
+			default -> super.redirectionPlus(content);
 		};
 		return this.value;
 	}
@@ -111,7 +113,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
 			case GioviDefault _ -> this. value.redirectionMinus(defaultValue);
-			default -> this.value.redirectionMinus(content);
+			default -> super.redirectionMinus(content);
 		};
 		return this.value;
 	}
@@ -120,7 +122,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
 			case GioviDefault _ -> this. value.redirectionMultiply(defaultValue);
-			default -> this.value.redirectionMultiply(content);
+			default -> super.redirectionMultiply(content);
 		};
 		return this.value;
 	}
@@ -129,7 +131,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
 			case GioviDefault _ -> this. value.redirectionDivide(defaultValue);
-			default -> this.value.redirectionDivide(content);
+			default -> super.redirectionDivide(content);
 		};
 		return this.value;
 	}

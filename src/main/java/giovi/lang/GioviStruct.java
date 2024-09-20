@@ -1,12 +1,12 @@
 package giovi.lang;
 
-import giovi.GioviParserVisitResult;
-import giovi.Struct;
-import giovi.VarD;
+import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
+import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
+// TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
 public record GioviStruct(Struct value) implements GioviValue<Struct> {
 
 	@Override
@@ -98,7 +98,33 @@ public record GioviStruct(Struct value) implements GioviValue<Struct> {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
+			case FieldKey(var identifier) -> {
+				try {
+					yield value.getField(identifier);
+				} catch (UnknownTupleField e) {
+					yield GioviValue.super.dot(right);
+				}
+			}
 			default -> GioviValue.super.dot(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult access(GioviParserVisitResult right) {
+		return switch (right) {
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(value.getFieldsCount());
+				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
+				case VALUES -> GioviLists.of(((TupleNamed) value).getFieldNames());
+			};
+			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
+				this.value.copy(Range.of(start, end, step)));
+			case GioviInt i -> {
+				int index = i.value();
+				index = index >= 0 ? index : value.getFieldsCount() + index;
+				yield value.getField(index);
+			}
+			default -> GioviValue.super.access(right);
 		};
 	}
 

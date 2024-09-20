@@ -186,12 +186,14 @@ public record GioviMap(
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> {
 				var newGioviMap = new GioviMap(keyType, elementType);
-				putAll(GioviMaps.copyOf(v.value));
+				newGioviMap.putAll(GioviMaps.copyOf(v.value));
 				yield newGioviMap;
 			}
 			default -> GioviValue.super.redirection(content);
 		};
 	}
+
+	// FIXME: redirection for maps and list
 
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
@@ -210,9 +212,9 @@ public record GioviMap(
 			case GioviDefault _ -> removeAll(defaultValue());
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> removeAll(v.value);
-			case Var<?> v -> {
+			case GioviValue<?> v -> {
 				try {
-					remove(v.widenTo(this.keyType));
+					remove(new Var<>(v.widenTo(this.keyType)));
 				} catch (IllegalArgumentException | NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}
@@ -282,8 +284,9 @@ public record GioviMap(
 				}
 				yield new GioviBool(true);
 			}
-			case Var<?> v -> {
+			case GioviValue<?> v -> {
 				for (var key : value.keySet()) {
+					// TODO: we can finally remove this crap!
 					if (key.equal(v).asNativeBool()) {
 						yield new GioviBool(true);
 					}
@@ -299,7 +302,7 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> gioviValue -> get(gioviValue);
+			case GioviValue<?> gioviValue -> get(new Var<>(gioviValue));
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value().size());
 				case KEYS -> new GioviList(keyType, value().keySet().stream().toList());

@@ -39,12 +39,15 @@ public sealed interface GioviValue<T>
 	}
 
 	/**
+	 * TODO: maybe rename to unbox() or native() to avoid confusion from the Var.value()
 	 * @return
 	 */
 	T value();
 
 	/**
-	 * @return
+	 * TODO: remove this and move it to the Type hierarchy (when eventually it
+	 * gets cached in a Var)
+	 * @return default value of the type
 	 */
 	T defaultValue();
 

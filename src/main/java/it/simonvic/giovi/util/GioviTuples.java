@@ -11,7 +11,7 @@ import giovi.lang.GioviTupleNamed;
 public class GioviTuples {
 
 	public static GioviTuple of(Object... fields) {
-		return new GioviTuple(Tuples.of(fields));
+		return new GioviTuple(Tuples.ofNative(fields));
 	}
 
 	public static <T> GioviTuple ofNamed(
@@ -92,6 +92,7 @@ public class GioviTuples {
 
 	public static GioviStruct redirection(GioviStruct dest, GioviTuple content) {
 		var newStruct = dest.value().copy();
+		// TODO: if (content.getFieldsCount() != dest.getFieldsCount()) throw new GioviException("awfawf");
 		content.value().forEachIndexed((i, f) -> newStruct.boxField(i, f));
 		return new GioviStruct(newStruct);
 	}

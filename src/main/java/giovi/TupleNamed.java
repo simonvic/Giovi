@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
@@ -145,6 +146,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
+	// TODO: use optional
 	public VarD<?> getField(String identifier) throws UnknownTupleField {
 		var v = fields.get(identifier);
 		if (v == null) {
@@ -166,11 +168,15 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	}
 
 	public void boxField(String fieldIdentifier, GioviValue<?> gioviValue) {
-		fields.get(fieldIdentifier).setValue(gioviValue);
+		try {
+			getField(fieldIdentifier).setValue(gioviValue);
+		} catch (UnknownTupleField e) {
+			throw new GioviException(e);
+		}
 	}
 
 	public void boxField(String fieldIdentifier, VarD<?> var) { // TODO: remove?
-		fields.get(fieldIdentifier).setValue(var.value());
+		boxField(fieldIdentifier, var.value());
 	}
 
 	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {

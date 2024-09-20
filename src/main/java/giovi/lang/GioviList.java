@@ -40,7 +40,6 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		var i = value.iterator();
 		if (!i.hasNext())
 			return "[" + entryType + "]";
-
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		sb.append(entryType);
@@ -156,9 +155,9 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		switch (right) {
 			case GioviDefault _ -> addAll(copyOf(defaultValue()));
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
-			case Var<?> v -> {
+			case GioviValue<?> v -> {
 				try {
-					add(v.copy());
+					add(new Var<>(v.copy()));
 				} catch (IllegalArgumentException ex) {
 					GioviValue.super.redirectionPlus(right);
 				}
@@ -173,9 +172,9 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
 			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAll(v.value);
-			case Var<?> v -> {
+			case GioviValue<?> v -> {
 				try {
-					remove(v.widenTo(this.entryType));
+					remove(new Var<>(v.widenTo(this.entryType)));
 				} catch (IllegalArgumentException | NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}
@@ -225,15 +224,15 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		return switch (right) {
 			case GioviList v -> {
 				for (var entry : v.value) {
-					if (!contains(entry).asNativeBool()) {
+					if (!contains(entry.value()).asNativeBool()) {
 						yield new GioviBool(false);
 					}
 				}
 				yield new GioviBool(true);
 			}
-			case Var<?> v -> {
+			case GioviValue<?> v -> {
 				for (var entry : this.value) {
-					if (entry.equal(right).asNativeBool()) {
+					if (entry.value().equal(right).asNativeBool()) {
 						yield new GioviBool(true);
 					}
 				}

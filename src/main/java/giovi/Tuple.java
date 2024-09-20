@@ -1,6 +1,7 @@
 package giovi;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -22,11 +23,8 @@ public sealed class Tuple permits TupleNamed {
 		this.fields = fields;
 	}
 
-	public Tuple(GioviValue<?>... values) { // TODO: remove?
-		this.fields = new ArrayList<>();
-		for (var value : values) {
-			fields.add(new VarD<>(value));
-		}
+	public Tuple(VarD<?>... fields) {
+		this.fields = new ArrayList<>(Arrays.asList(fields));
 	}
 
 	@Override

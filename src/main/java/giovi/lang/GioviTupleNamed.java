@@ -97,7 +97,7 @@ public record GioviTupleNamed(TupleNamed value)
 			case GioviDefault _ -> new GioviTupleNamed();
 			case FieldKey(var identifier) -> {
 				try {
-					yield ((TupleNamed) value).getField(identifier);
+					yield value.getField(identifier);
 				} catch (UnknownTupleField e) {
 					yield GioviValue.super.dot(right);
 				}

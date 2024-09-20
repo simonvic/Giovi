@@ -32,7 +32,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeStruct t -> t.definition.equals(this.definition);
+			case GioviTypeStruct t -> t.definition.canWidenTo(this.definition);
 			default -> false;
 		};
 	}

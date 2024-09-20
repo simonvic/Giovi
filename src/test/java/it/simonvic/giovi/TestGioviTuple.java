@@ -14,8 +14,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
+import giovi.VarD;
 import giovi.lang.GioviTuple;
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.Tuples;
 
@@ -70,8 +70,8 @@ public class TestGioviTuple {
 				"a", 69,
 				"b", true,
 				"c", Tuples.ofNamed(
-					"foo", "foo",
-					"bar", "bar")));
+					"foo", VarD.of("foo"),
+					"bar", VarD.of("bar"))));
 		}
 
 		@Test
@@ -90,9 +90,9 @@ public class TestGioviTuple {
 				"a", 69,
 				"b", true,
 				"c", Tuples.ofNamed(
-					"foo", "foo",
-					"bar", "bar"),
-				"d", Tuples.of(1, 2, 3)));
+					"foo", VarD.of("foo"),
+					"bar", VarD.of("bar")),
+				"d", Tuples.ofNative(1, 2, 3)));
 		}
 
 	}
@@ -186,7 +186,7 @@ public class TestGioviTuple {
 				<0 1 2 3>@3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
-				assertThat(visitNativeValue(code)).isEqualTo(expected);
+				assertThat(visitVar(code).value().value()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -199,7 +199,7 @@ public class TestGioviTuple {
 			void access_withNegativeInt_shouldReturnFieldAtRearIndex(
 				String code,
 				Integer expected) {
-				assertThat(visitValue(code)).isEqualTo(GioviValue.of(expected));
+				assertThat(visitVar(code).value().value()).isEqualTo(expected);
 			}
 
 
@@ -289,10 +289,11 @@ public class TestGioviTuple {
 
 			@Test
 			void access_withLengthOperator_shouldReturnFieldsCount() {
-				assertThat(visitNativeValue("""
+				assertThat(visitValue("""
 					<0 1 2 3 4>@%
-					"""))
-					.isEqualTo(5);
+					""")
+					.value())
+						.isEqualTo(5);
 			}
 
 			@Test

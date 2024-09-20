@@ -12,11 +12,11 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
+import giovi.Var;
 import giovi.VarD;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.Structs;
 
 public class TestDefaults {
@@ -106,8 +106,8 @@ public class TestDefaults {
 				.defaultValue()
 				.value())
 					.isEqualTo(Map.of(
-						new GioviInt(1), new GioviBool(true),
-						new GioviInt(2), new GioviBool(false)));
+						Var.of(1), Var.of(true),
+						Var.of(2), Var.of(false)));
 		}
 
 		@Test
@@ -134,12 +134,55 @@ public class TestDefaults {
 				.defaultValue()
 				.value();
 			assertThat(def)
-				.isEqualTo(Structs.ofNative(
+				.isEqualTo(Structs.of(
 					"Foo",
-					"foo", "foo",
-					"bar", Structs.ofNative("Bar",
-						"baz", "baz",
-						"foobar", List.of(1, 2, 3))));
+					"foo", VarD.of("foo"),
+					"bar", VarD.of(
+						Structs.of("Bar",
+							"baz", VarD.of("baz"),
+							"foobar", VarD.of(List.of(1, 2, 3))),
+						Structs.of("Bar",
+							"baz", VarD.of(""),
+							"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
+		}
+
+		@Test
+		void testNestedDefaultOverrideStruct() {
+			var def = visit("""
+				Bar <
+					baz Text default "bazdefault"
+					foobar [Int] default [69]
+				>
+				Foo <
+					foo Text default "foodefault"
+					bar Bar default Bar.<
+						baz: "overriden bazdefault"
+						foobar: [420]
+					>
+				>
+				x Foo default Foo.<
+					foo: "foo"
+					bar: Bar.<
+						baz: "baz"
+						foobar: [1 2 3]
+					>
+				>
+				""")
+				.getCurrentScope()
+				.getVariable("x")
+				.defaultValue()
+				.value();
+			assertThat(def)
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", VarD.of("foo", "foodefault"),
+					"bar", VarD.of(
+						Structs.of("Bar",
+							"baz", VarD.of("baz", "bazdefault"),
+							"foobar", VarD.of(List.of(1, 2, 3), List.of(69))),
+						Structs.of("Bar",
+							"baz", VarD.of("overriden bazdefault", "bazdefault"),
+							"foobar", VarD.of(List.of(420), List.of(69))))));
 		}
 
 	}
@@ -217,7 +260,7 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.value())
-					.isEqualTo(GioviLists.of(1, 2, 3).value());
+					.isEqualTo(GioviLists.of(1, 2, 3));
 		}
 
 		@Test
@@ -229,9 +272,13 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.isEqualTo(GioviMaps.of(
-						1, true,
-						2, false));
+					.isEqualTo(VarD.of(
+						Map.of(
+							1, true,
+							2, false),
+						Map.of(
+							1, true,
+							2, false)));
 		}
 
 		@Test
@@ -263,13 +310,18 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x")
+				.value()
 				.value())
-					.isEqualTo(GioviStructs.ofNative(
+					.isEqualTo(Structs.of(
 						"Foo",
-						"foo", "foo",
-						"bar", Structs.ofNative("Bar",
-							"baz", "baz",
-							"foobar", List.of(1, 2, 3))));
+						"foo", VarD.of("foo"),
+						"bar", VarD.of(
+							Structs.of("Bar",
+								"baz", VarD.of("baz"),
+								"foobar", VarD.of(List.of(1, 2, 3))),
+							Structs.of("Bar",
+								"baz", VarD.of(""),
+								"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
@@ -375,13 +427,19 @@ public class TestDefaults {
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
-				"""))
-				.isEqualTo(GioviStructs.ofNative(
-					"Foo",
-					"foo", "foo",
-					"bar", Structs.ofNative("Bar",
-						"baz", "baz",
-						"foobar", List.of(1, 2, 3))));
+				""")
+				.asGioviValue()
+				.value())
+					.isEqualTo(Structs.of(
+						"Foo",
+						"foo", VarD.of("foo"),
+						"bar", VarD.of(
+							Structs.of("Bar",
+								"baz", VarD.of("baz"),
+								"foobar", VarD.of(List.of(1, 2, 3))),
+							Structs.of("Bar",
+								"baz", VarD.of(""),
+								"foobar", new VarD<>(new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
@@ -469,16 +527,18 @@ public class TestDefaults {
 				""");
 			assertThat(visitExpression(visitor, """
 				Foo.default
-				"""))
-				.isEqualTo(GioviStructs.ofNative(
-					"Foo",
-					"foo", "foo",
-					"bar", Structs.ofNative("Bar",
-						"baz", "baz",
-						"foobar", List.of(1, 2, 3)),
-					"foobar", Structs.ofNative("Bar",
-						"baz", "BAZ",
-						"foobar", List.of(69, 420))));
+				""")
+				.asGioviValue()
+				.value())
+					.isEqualTo(Structs.of(
+						"Foo",
+						"foo", VarD.of("foo", "foo"),
+						"bar", VarD.of(Structs.of("Bar",
+							"baz", VarD.of("baz", "baz"),
+							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3)))),
+						"foobar", VarD.of(Structs.of("Bar",
+							"baz", VarD.of("BAZ", "baz"),
+							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
 		}
 
 

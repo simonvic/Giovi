@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.GioviParserVisitResult;
+import giovi.Var;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
@@ -37,12 +38,8 @@ public class GioviVisitorUtils {
 		return visitExpression(visitor, code).asGioviValue();
 	}
 
-	public static Object visitNativeValue(String code) {
-		return visitValue(code).value();
-	}
-
-	public static Object visitNativeValue(GioviVisitor visitor, String code) {
-		return visitValue(visitor, code).value();
+	public static Var<?> visitVar(String code) {
+		return visitExpression(code).asVar();
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {

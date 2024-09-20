@@ -148,8 +148,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitForStatement(ForStatementContext ctx) {
 		var iterator = ctx.iterator();
-		var iterated = visit(ctx.iterable());
 		var bodyCtx = ctx.statementOrBlock();
+		var iterated = visit(ctx.iterable());
+		// TODO: figure out a better way to handle vars
+		if (iterated instanceof Var<?> v) {
+			iterated = v.value();
+		}
 		switch (iterated) {
 
 			case Range<?> range -> {
@@ -486,20 +490,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		visit(ctx.varDeclaration()).asVar();
+		visit(ctx.varDeclaration());
 		getCurrentScope().setVariableValue(
 			ctx.varDeclaration().identifier().getText(),
-			visit(ctx.redirectionContent()).asGioviValue());
+			visit(ctx.redirectionContent()).unwrapAsGioviValue());
 		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		visit(ctx.varDeclaration()).asGioviValue();
+		visit(ctx.varDeclaration());
 		getCurrentScope().setVariableValue(
 			ctx.varDeclaration().identifier().getText(),
-			visit(ctx.redirectionContent()).asGioviValue());
+			visit(ctx.redirectionContent()).unwrapAsGioviValue());
 		return null;
 	}
 
@@ -522,11 +526,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (defaultDefinitionCtx == null) {
 			return new VarD<>(type.spawn());
 		}
-		var defaultValue = switch (visit(defaultDefinitionCtx)) {
-			case GioviValue<?> v -> v;
-			case Var<?> v -> v.value().copy();
-			default -> throw new GioviException("dafuq");
-		};
+		var defaultValue = visit(defaultDefinitionCtx).unwrapAsGioviValue();
+		try {
+			defaultValue = defaultValue.widenTo(type);
+		} catch (NonWideneable e) {
+			throw new GioviException(e, "Incompatible default value");
+		}
 		return new VarD<>(defaultValue.copy(), defaultValue);
 	}
 
@@ -540,33 +545,21 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
-		doVisitRedirection(
-			ctx.redirectionContent(),
-			GioviToken.of(ctx.redirectionOperator().getText()),
-			ctx.identifier());
+		VisitorUtils.redirection(
+			visit(ctx.redirectionContent()),
+			GioviToken.of(ctx.bop.getText()),
+			getCurrentScope().getVariable(ctx.identifier().getText()));
 		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
 		RedirectionToIdentifierRTLContext ctx) {
-		doVisitRedirection(
-			ctx.redirectionContent(),
-			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
-			ctx.identifier());
+		VisitorUtils.redirection(
+			visit(ctx.redirectionContent()),
+			GioviToken.of(ctx.bop.getText()),
+			getCurrentScope().getVariable(ctx.identifier().getText()));
 		return null;
-	}
-
-	private void doVisitRedirection(
-		RedirectionContentContext contentCtx,
-		GioviToken gioviToken,
-		IdentifierContext destinationCtx) {
-		var newValue = VisitorUtils
-			.redirection(visit(contentCtx), gioviToken, visit(destinationCtx))
-			.asGioviValue();
-		getCurrentScope().setVariableValue(
-			destinationCtx.getText(),
-			newValue);
 	}
 
 	@Override
@@ -746,9 +739,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionTypeCheck(ExpressionTypeCheckContext ctx) {
-		var expression = visit(ctx.expression()).asGioviValue();
+		var value = visit(ctx.expression()).unwrapAsGioviValue();
 		var type = visit(ctx.type()).asGioviType();
-		boolean equals = expression.getGioviType().equals(type);
+		boolean equals = value.getGioviType().equals(type);
 		if (ctx.NOT() != null) {
 			return new GioviBool(!equals);
 		}
@@ -810,7 +803,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			switch (entry) {
 				case Range<?> range -> entries.addAll(range.expandAsVar());
 				case GioviValue<?> v -> entries.add(new Var<>(v));
-				case Var<?> v -> entries.add(v.copy());
+				case Var<?> v -> entries.add(new Var<>(v.value().copy()));
 				default -> throw new GioviException(
 					"Incompatible type for list creation: " + entry.getClass());
 			}
@@ -823,7 +816,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
 		var map = new LinkedHashMap<Var<?>, Var<?>>();
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
-			map.put(visit(entryCtx.mapKey).asVar(), visit(entryCtx.mapValue).asVar());
+			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
+			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
+			map.put(new Var<>(key), new Var<>(element));
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());
@@ -953,7 +948,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					formalParam.spawn());
 				continue;
 			}
-			var actualParamValue = actualParamExpression.asGioviValue();
+			var actualParamValue = actualParamExpression.unwrapAsGioviValue();
 			try {
 				getCurrentScope().declare(
 					formalParamIdentifier,
@@ -997,7 +992,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
 			} else {
-				var actualParamValue = actualParamExpression.asGioviValue();
+				var actualParamValue = actualParamExpression.unwrapAsGioviValue();
 				try {
 					getCurrentScope().declare(
 						formalParamIdentifier,
@@ -1063,7 +1058,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitReturnStatement(ReturnStatementContext ctx) {
 		var returnValue = ctx.expression() == null
 			? new GioviVoid()
-			: visit(ctx.expression()).asGioviValue();
+			: visit(ctx.expression()).unwrapAsGioviValue();
 		getCurrentScope().doReturn(returnValue);
 		return returnValue;
 	}
@@ -1100,10 +1095,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.structType != null) {
 			return createStruct(ctx.structType.getText(), structFieldsCtx);
 		}
-		if (!structFieldsCtx.namedStructField().isEmpty()) {
-			return createTupleNamed(structFieldsCtx);
+		if (structFieldsCtx == null || structFieldsCtx.namedStructField().isEmpty()) {
+			return createTuple(structFieldsCtx);
 		}
-		return createTuple(structFieldsCtx);
+		return createTupleNamed(structFieldsCtx);
 	}
 
 	private GioviStruct createStruct(String typename, StructFieldsContext ctx) {
@@ -1124,7 +1119,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			String fieldIdentifier = fieldCtx.identifier().getText();
 			gioviStruct.value().boxField(
 				fieldIdentifier,
-				visit(fieldCtx.expression()).asGioviValue());
+				visit(fieldCtx.expression()).unwrapAsGioviValue());
 		}
 	}
 
@@ -1135,7 +1130,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				+ " but instead got " + expressionsCount);
 		}
 		for (int i = 0; i < expressionsCount; i++) {
-			gioviStruct.value().boxField(i, visit(expressions.get(i)).asGioviValue());
+			gioviStruct.value().boxField(i, visit(expressions.get(i)).unwrapAsGioviValue());
 		}
 	}
 
@@ -1145,11 +1140,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var fields = new ArrayList<VarD<?>>();
 		for (var expressionCtx : ctx.expression()) {
-			fields.add(switch (visit(expressionCtx)) {
-				case GioviValue<?> v -> new VarD<>(v);
-				case Var<?> v -> new VarD<>(v.value().copy());
-				default -> throw new GioviException("dafuq");
-			});
+			fields.add(new VarD<>(visit(expressionCtx).unwrapAsGioviValue()));
 		}
 		return new GioviTuple(new Tuple(fields));
 
@@ -1161,13 +1152,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var fields = new LinkedHashMap<String, VarD<?>>();
 		for (var namedStructFieldCtx : ctx.namedStructField()) {
+			var fieldValue = visit(namedStructFieldCtx.expression()).unwrapAsGioviValue();
 			fields.put(
 				namedStructFieldCtx.identifier().getText(),
-				switch (visit(namedStructFieldCtx.expression())) {
-					case GioviValue<?> v -> new VarD<>(v);
-					case Var<?> v -> new VarD<>(v.value().copy());
-					default -> throw new GioviException("dafuq");
-				});
+				new VarD<>(fieldValue));
 		}
 		return new GioviTupleNamed(new TupleNamed(fields));
 	}

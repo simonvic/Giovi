@@ -4,7 +4,6 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-@SuppressWarnings("unchecked")
 public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	public static <T> Var<? extends GioviValue<?>> of(T value) {
@@ -30,13 +29,14 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	/**
 	 * @param value the value to set
 	 */
-	public <U extends GioviValue<?>> void setValue(U value) throws ClassCastException {
-		this.value = (T) value;
+	public <U extends GioviValue<?>> void setValue(U value) {
+		// TODO: just a temporary solution. Maybe solve with widening to cached type?
+		this.value = (T) this.value.redirection(value);
 	}
 
 	@Override
 	public String toString() {
-		return "Var {" + value + "}";
+		return "" + value + "";
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this. value.redirection(defaultValue);
+			// case GioviDefault _ -> this.value.redirection(defaultValue);
 			default -> this.value.redirection(content);
 		};
 		return this.value;
@@ -133,41 +133,172 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return this.value;
 	}
 
-	//@formatter:off
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
-	@Override public GioviParserVisitResult positive()                                 { return value.positive(); }
-	@Override public GioviParserVisitResult negative()                                 { return value.negative(); }
-	@Override public GioviParserVisitResult plus (GioviParserVisitResult right)        { return value.plus(right); }
-	@Override public GioviParserVisitResult minus (GioviParserVisitResult right)       { return value.minus(right); }
-	@Override public GioviParserVisitResult multiply(GioviParserVisitResult right)     { return value.multiply(right); }
-	@Override public GioviParserVisitResult divide (GioviParserVisitResult right)      { return value.divide(right); }
-	@Override public GioviParserVisitResult modulo (GioviParserVisitResult right)      { return value.modulo(right); }
-	@Override public GioviParserVisitResult power (GioviParserVisitResult right)       { return value.power(right); }
+	@Override
+	public GioviParserVisitResult positive() {
+		return value.positive();
+	}
+
+	@Override
+	public GioviParserVisitResult negative() {
+		return value.negative();
+	}
+
+	@Override
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.plus(v.value());
+			default -> value.plus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.minus(v.value());
+			default -> value.minus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.multiply(v.value());
+			default -> value.multiply(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult divide(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.divide(v.value());
+			default -> value.divide(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.modulo(v.value());
+			default -> value.modulo(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult power(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.power(v.value());
+			default -> value.power(right);
+		};
+	}
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 
-	@Override public GioviParserVisitResult not()                                      { return value.not(); }
-	@Override public GioviParserVisitResult and(GioviParserVisitResult right)          { return value.and(right); }
-	@Override public GioviParserVisitResult or(GioviParserVisitResult right)           { return value.or(right); }
+	@Override
+	public GioviParserVisitResult not() {
+		return value.not();
+	}
+
+	@Override
+	public GioviParserVisitResult and(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.and(v.value());
+			default -> value.and(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult or(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.or(v.value());
+			default -> value.or(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
-	@Override public GioviParserVisitResult equal(GioviParserVisitResult right)        { return value.equal(right); }
-	@Override public GioviParserVisitResult notEqual(GioviParserVisitResult right)     { return value.notEqual(right); }
-	@Override public GioviParserVisitResult less(GioviParserVisitResult right)         { return value.less(right); }
-	@Override public GioviParserVisitResult lessEqual(GioviParserVisitResult right)    { return value.lessEqual(right); }
-	@Override public GioviParserVisitResult greater(GioviParserVisitResult right)      { return value.greater(right); }
-	@Override public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) { return value.greaterEqual(right); }
-	@Override public GioviParserVisitResult contains(GioviParserVisitResult right)     { return value.contains(right); }
-	@Override public GioviParserVisitResult isContained(GioviParserVisitResult right)  { return value.isContained(right); }
+	@Override
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.equal(v.value());
+			default -> value.equal(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.notEqual(v.value());
+			default -> value.notEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult less(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.less(v.value());
+			default -> value.less(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.lessEqual(v.value());
+			default -> value.lessEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult greater(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.greater(v.value());
+			default -> value.greater(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.greaterEqual(v.value());
+			default -> value.greaterEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult contains(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.contains(v.value());
+			default -> value.contains(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult isContained(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.isContained(v.value());
+			default -> value.isContained(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
-	@Override public GioviParserVisitResult access(GioviParserVisitResult right)       { return value.access(right); }
-	@Override public GioviParserVisitResult dot(GioviParserVisitResult right)          { return value.dot(right); }
-	//@formatter:on
+	@Override
+	public GioviParserVisitResult access(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.access(v.value());
+			default -> value.access(right);
+		};
+	}
 
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.dot(v.value());
+			default -> value.dot(right);
+		};
+	}
 
 
 }

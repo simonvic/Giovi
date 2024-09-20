@@ -101,6 +101,7 @@ public class TestScope {
 	}
 
 
+	@Disabled("Not needed with records")
 	@Test
 	void update_shouldUpdateVariableValue() {
 		GioviInt value = new GioviInt();
@@ -111,8 +112,7 @@ public class TestScope {
 
 	@Test
 	void testValueUnbox() {
-		GioviInt value = new GioviInt(69);
-		scope.declare("anInt", value);
+		scope.declare("anInt", new GioviInt(69));
 		assertEquals(69, scope.getVariable("anInt").value().value());
 	}
 

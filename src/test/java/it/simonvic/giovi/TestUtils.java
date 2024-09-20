@@ -18,6 +18,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Natural;
 import giovi.Tuple;
 import giovi.TupleNamed;
+import giovi.VarD;
 import giovi.lang.*;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
@@ -38,7 +39,7 @@ public class TestUtils {
 				Arguments.of(GioviText.class, GioviValue.of("hello")),
 				Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 				Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.of("a", "a"))));
+				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.ofNative("a", "a"))));
 		}
 
 		@ParameterizedTest
@@ -56,8 +57,8 @@ public class TestUtils {
 				Arguments.of(String.class, GioviValue.of("hello")),
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(Tuple.class, GioviValue.of(Tuples.of("a", "a"))),
-				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.ofNamed("a", "a"))));
+				Arguments.of(Tuple.class, GioviValue.of(Tuples.ofNative("a", "a"))),
+				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.ofNamed("a", VarD.of("a")))));
 		}
 
 		@ParameterizedTest
@@ -230,29 +231,29 @@ public class TestUtils {
 		@Test
 		void testEquals() {
 			assertEquals(
-				Tuples.of(
-					"foo", "lol",
-					"bar", true),
-				Tuples.of(
-					"foo", "lol",
-					"bar", true));
+				Tuples.ofNamed(
+					"foo", VarD.of("lol"),
+					"bar", VarD.of(true)),
+				Tuples.ofNamed(
+					"foo", VarD.of("lol"),
+					"bar", VarD.of(true)));
 		}
 
 		@Test
 		void testEqualsNested() {
 			assertEquals(
-				Tuples.of(
-					"foo", 69,
-					"bar", true,
-					"foobar", Tuples.of(
-						"x", 0,
-						"y", 0)),
-				Tuples.of(
-					"foo", 69,
-					"bar", true,
-					"foobar", Tuples.of(
-						"x", 0,
-						"y", 0)));
+				Tuples.ofNamed(
+					"foo", VarD.of(69),
+					"bar", VarD.of(true),
+					"foobar", VarD.of(Tuples.ofNamed(
+						"x", VarD.of(0),
+						"y", VarD.of(0)))),
+				Tuples.ofNamed(
+					"foo", VarD.of(69),
+					"bar", VarD.of(true),
+					"foobar", VarD.of(Tuples.ofNamed(
+						"x", VarD.of(0),
+						"y", VarD.of(0)))));
 		}
 
 		@Test
