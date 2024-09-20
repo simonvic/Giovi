@@ -74,7 +74,7 @@ public final class Struct extends TupleNamed {
 		if (!to.typename.equals(this.typename)) {
 			throw new NonWideneable("Can't widen " + this.typename + " to " + to.typename);
 		}
-		return this;
+		return super.widenTo(to);
 	}
 
 }
