@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import java.util.LinkedHashMap;
+
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
@@ -7,19 +9,28 @@ import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
 // TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
-public record GioviStruct(Struct value) implements GioviValue<Struct> {
+public record GioviStruct(Struct signature, Struct value) implements GioviValue<Struct> {
+
+	public GioviStruct(Struct value) {
+		this(signatureFrom(value), value);
+	}
+
+	private static Struct signatureFrom(Struct value) {
+		var fields = new LinkedHashMap<String, VarD<?>>();
+		value.forEach((n, field) -> fields.put(
+			n,
+			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
+		return new Struct(value.getTypename(), fields);
+	}
 
 	@Override
 	public String toString() {
 		return value.toString();
 	}
 
-	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
-
 	@Override
 	public GioviTypeStruct getGioviType() {
-		// FIXME: this would produce two different types as their structs would likely have different value
-		return new GioviTypeStruct(value.copy());
+		return new GioviTypeStruct(signature);
 	}
 
 	@Override

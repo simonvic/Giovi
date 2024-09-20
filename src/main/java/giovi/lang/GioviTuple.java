@@ -1,14 +1,27 @@
 package giovi.lang;
 
+import java.util.ArrayList;
+
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
+public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tuple> {
+
+	public GioviTuple(Tuple value) {
+		this(signatureFrom(value), value);
+	}
+
+	private static Tuple signatureFrom(Tuple value) {
+		var fields = new ArrayList<VarD<?>>();
+		value.forEach(field -> fields
+			.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
+		return new Tuple(fields);
+	}
 
 	public GioviTuple() {
-		this(new Tuple());
+		this(new Tuple(), new Tuple());
 	}
 
 	@Override
@@ -18,12 +31,12 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 
 	@Override
 	public Tuple defaultValue() {
-		return value.copy(); // TODO: replace with signature, or eventually build one from the value()
+		return signature.copy();
 	}
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		return new GioviTypeTuple(value().copy()); // TODO: replace with signature
+		return new GioviTypeTuple(signature);
 	}
 
 	@Override
@@ -85,9 +98,9 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
-			case GioviStruct(var v) -> new GioviBool(this.value.equal(v));
-			case GioviTupleNamed(var v) -> new GioviBool(this.value.equal(v));
-			case GioviTuple(var v) -> new GioviBool(this.value.equal(v));
+			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviTupleNamed(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
 	}
@@ -102,7 +115,7 @@ public record GioviTuple(Tuple value) implements GioviValue<Tuple> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTuple();
+			case GioviDefault _ -> new GioviTuple(signature().copy());
 			default -> GioviValue.super.dot(right);
 		};
 	}

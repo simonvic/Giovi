@@ -181,9 +181,8 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
-			case GioviList v when v.entryType.equals(this.entryType) -> removeAll(v.value);
-			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAllWidened(
-				v.value);
+			case GioviList v when v.entryType.equals(entryType) -> removeAll(v.value);
+			case GioviList v when v.entryType.canWidenTo(entryType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(new Var<>(v.widenTo(this.entryType)));

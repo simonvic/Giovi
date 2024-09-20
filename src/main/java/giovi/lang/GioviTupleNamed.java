@@ -1,18 +1,32 @@
 package giovi.lang;
 
+import java.util.LinkedHashMap;
+
 import giovi.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTupleNamed(TupleNamed value)
+public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	implements GioviValue<TupleNamed> {
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
+	public GioviTupleNamed(TupleNamed value) {
+		this(signatureFrom(value), value);
+	}
+
+	private static TupleNamed signatureFrom(TupleNamed value) {
+		var fields = new LinkedHashMap<String, VarD<?>>();
+		value.forEach((n, field) -> fields.put(
+			n,
+			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
+		return new TupleNamed(fields);
+	}
+
 	public GioviTupleNamed() {
-		this(new TupleNamed());
+		this(new TupleNamed(), new TupleNamed());
 	}
 
 	@Override
@@ -27,7 +41,7 @@ public record GioviTupleNamed(TupleNamed value)
 
 	@Override
 	public GioviTypeTupleNamed getGioviType() {
-		return new GioviTypeTupleNamed(value().copy()); // TODO: replace with signature
+		return new GioviTypeTupleNamed(signature);
 	}
 
 	@Override
