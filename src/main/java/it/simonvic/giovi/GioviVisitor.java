@@ -1180,7 +1180,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var entryType = visit(ctx.type()).asGioviType();
 		if (ctx.initSize == null)
 			return new GioviTypeList(entryType);
-		return switch (visit(ctx.initSize)) {
+		return switch (visit(ctx.initSize).unwrapAsGioviValue()) {
 			case GioviInt i -> new GioviTypeList(entryType, i.value());
 			case GioviNatural i -> new GioviTypeList(entryType, i.value().intValue());
 			default -> throw new GioviException("Invalid list init size");
