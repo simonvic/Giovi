@@ -525,7 +525,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviType<?> type,
 		DefaultDefinitionContext defaultDefinitionCtx) {
 		if (defaultDefinitionCtx == null) {
-			return new VarD<>(type.spawn());
+			return new VarD<>(type.spawn(), type.spawn());
 		}
 		var defaultValue = visit(defaultDefinitionCtx).unwrapAsGioviValue();
 		try {
