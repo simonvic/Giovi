@@ -93,11 +93,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var matchedLabelCtx = matchedLabel.get();
 			if (matchedLabelCtx.caseMatch() instanceof CaseMatchTypeCheckContext typeCheckCtx
 				&& typeCheckCtx.identifier() != null) {
-				getCurrentScope().declare(
-					typeCheckCtx.identifier().getText(),
-					// TODO: clafiry requirements. Should a type check a type = type or a widening check?
-					// A widening check could be useful for struct/tuple matching and destructing
-					subject.as(visit(typeCheckCtx.type())).asGioviValue());
+				var type = visit(typeCheckCtx.type());
+				// TODO: clafiry requirements. Should a type check be a type = type or a widening check?
+				// A widening check could be useful for struct/tuple matching and destructing
+				var castedSubject = subject.as(type);
+				VarD<?> casted = switch (castedSubject) {
+					case GioviValue<?> v -> new VarD<>(v);
+					case VarD<?> v -> v.copy();
+					default -> new VarD<>(castedSubject.unwrapAsGioviValue());
+				};
+				getCurrentScope().declare(typeCheckCtx.identifier().getText(), casted);
 			}
 			visit(matchedLabelCtx.body);
 			exitScope();
@@ -925,9 +930,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
+			var actualParam = formalParam.spawn();
 
+			// if no more actual params found, expecting remaining formal parameters to be optional
 			if (i >= actualParamsCount) {
-				// no more actual params found, expecting remaining formal parameters to be optional
 				for (int j = i; j < formalParamsCount; j++) {
 					formalParam = formalParamsArray.get(j);
 					formalParamIdentifier = formalParam.identifier();
@@ -935,29 +941,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						throw new GioviException(
 							"Required parameter not specified: " + formalParamIdentifier);
 					}
-					getCurrentScope().declare(
-						formalParamIdentifier,
-						formalParam.spawn());
+					getCurrentScope().declare(formalParamIdentifier, actualParam);
 				}
 				break;
 			}
 
 			var actualParamExpression = visit(actualParamCtxList.get(i).expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(
-					formalParamIdentifier,
-					formalParam.spawn());
+				getCurrentScope().declare(formalParamIdentifier, actualParam);
 				continue;
 			}
+
 			var actualParamValue = actualParamExpression.unwrapAsGioviValue();
 			try {
-				getCurrentScope().declare(
-					formalParamIdentifier,
-					actualParamValue.widenTo(formalParam.type()));
+				actualParam.setValue(actualParamValue.widenTo(formalParam.type())); // TODO: remove redundant widening
 			} catch (NonWideneable ex) {
 				throw new GioviException(ex, "Wrong parameter type. Expecting " + formalParam.type()
 					+ " but instead got " + actualParamValue.getGioviType());
 			}
+			getCurrentScope().declare(formalParamIdentifier, actualParam);
 		}
 
 	}
@@ -988,16 +990,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 			var formalParam = signature.parameters().get(actualParamIdentifier);
 			var formalParamIdentifier = formalParam.identifier();
-			var actualParamExpression = visit(actualParams.get(formalParamIdentifier).expression());
+			var actualParam = formalParam.spawn();
 
+			var actualParamExpression = visit(actualParams.get(formalParamIdentifier).expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
+				getCurrentScope().declare(formalParamIdentifier, actualParam);
 			} else {
 				var actualParamValue = actualParamExpression.unwrapAsGioviValue();
 				try {
-					getCurrentScope().declare(
-						formalParamIdentifier,
-						actualParamValue.widenTo(formalParam.type()));
+					actualParam.setValue(actualParamValue.widenTo(formalParam.type()));
+					getCurrentScope().declare(formalParamIdentifier, actualParam);
 				} catch (NonWideneable ex) {
 					throw new GioviException(ex, "Wrong parameter type. Expecting "
 						+ formalParam.type() + " but instead got "

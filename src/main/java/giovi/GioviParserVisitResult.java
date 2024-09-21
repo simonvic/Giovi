@@ -89,6 +89,7 @@ public interface GioviParserVisitResult {
 	default Var<?> asVar() { return (Var<?>) this; }
 	default GioviValue<?> unwrapAsGioviValue() {
 		// TODO: this is ugly
+		// TODO: also check that this method is not abused and defaults values are lost
 		return switch (this) {
 			case Var<?> v -> v.value();
 			default -> asGioviValue();
