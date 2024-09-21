@@ -6,7 +6,7 @@ public record GioviTypeTupleNamed(TupleNamed definition) implements GioviType<Gi
 
 	@Override
 	public String toString() {
-		return definition.toString();
+		return definition.toStringDefinition();
 	}
 
 	@Override
@@ -19,15 +19,11 @@ public record GioviTypeTupleNamed(TupleNamed definition) implements GioviType<Gi
 		return GioviTupleNamed.class;
 	}
 
-	public TupleNamed getDefinition() {
-		return definition;
-	}
-
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeStruct t -> this.definition.canWidenTo(t.getDefinition());
-			case GioviTypeTupleNamed t -> this.definition.canWidenTo(t.definition);
+			case GioviTypeStruct(var definition) -> this.definition.canWidenTo(definition);
+			case GioviTypeTupleNamed(var definition) -> this.definition.canWidenTo(definition);
 			default -> false;
 		};
 	}

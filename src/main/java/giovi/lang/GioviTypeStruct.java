@@ -6,10 +6,6 @@ import giovi.Struct;
 
 public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruct> {
 
-	public Struct getDefinition() {
-		return definition;
-	}
-
 	public String getTypename() {
 		return definition.getTypename();
 	}

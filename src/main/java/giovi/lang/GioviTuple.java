@@ -44,18 +44,12 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeStruct t -> {
-					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviStruct(widened);
-				}
-				case GioviTypeTupleNamed t -> {
-					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviTupleNamed(widened);
-				}
-				case GioviTypeTuple t -> {
-					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviTuple(widened);
-				}
+				case GioviTypeStruct(var definition) -> new GioviStruct(
+					this.value.widenTo(definition));
+				case GioviTypeTupleNamed(var definition) -> new GioviTupleNamed(
+					this.value.widenTo(definition));
+				case GioviTypeTuple(var definition) -> new GioviTuple(
+					this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {

@@ -43,10 +43,8 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeStruct t -> {
-					var widened = this.value.widenTo(t.getDefinition());
-					yield new GioviStruct(widened);
-				}
+				case GioviTypeStruct(var definition) -> new GioviStruct(
+					this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {

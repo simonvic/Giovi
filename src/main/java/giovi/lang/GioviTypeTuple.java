@@ -4,10 +4,6 @@ import giovi.Tuple;
 
 public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> {
 
-	public Tuple getDefinition() {
-		return definition;
-	}
-
 	@Override
 	public Class<? extends GioviTuple> value() {
 		return GioviTuple.class;
@@ -26,9 +22,9 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeStruct t -> this.definition.canWidenTo(t.getDefinition());
-			case GioviTypeTupleNamed t -> this.definition.canWidenTo(t.getDefinition());
-			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
+			case GioviTypeStruct(var definition) -> this.definition.canWidenTo(definition);
+			case GioviTypeTupleNamed(var definition) -> this.definition.canWidenTo(definition);
+			case GioviTypeTuple(var definition) -> this.definition.canWidenTo(definition);
 			default -> false;
 		};
 	}
