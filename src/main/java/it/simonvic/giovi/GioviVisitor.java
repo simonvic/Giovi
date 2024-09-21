@@ -98,9 +98,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				// A widening check could be useful for struct/tuple matching and destructing
 				var castedSubject = subject.as(type);
 				VarD<?> casted = switch (castedSubject) {
-					case GioviValue<?> v -> new VarD<>(v);
 					case VarD<?> v -> v.copy();
-					default -> new VarD<>(castedSubject.unwrapAsGioviValue());
+					default -> new VarD<>(castedSubject.asGioviValue());
 				};
 				getCurrentScope().declare(typeCheckCtx.identifier().getText(), casted);
 			}
