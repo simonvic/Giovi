@@ -56,56 +56,56 @@ public class GioviTuples {
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTuple content) {
 		var newTuple = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.copy()));
+		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.value()));
 		return new GioviTuple(newTuple);
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTupleNamed content) {
 		var newTuple = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.copy()));
+		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.value()));
 		return new GioviTuple(newTuple);
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviStruct content) {
 		var newTuple = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.copy()));
+		content.value().forEachIndexed((i, f) -> newTuple.boxField(i, f.value()));
 		return new GioviTuple(newTuple);
 	}
 
 	public static GioviTupleNamed redirection(GioviTupleNamed dest, GioviTuple content) {
 		var newTupleNamed = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newTupleNamed.boxField(i, f));
+		content.value().forEachIndexed((i, f) -> newTupleNamed.boxField(i, f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
 	public static GioviTupleNamed redirection(GioviTupleNamed dest, GioviTupleNamed content) {
 		var newTupleNamed = dest.value().copy();
-		content.value().forEach((i, f) -> newTupleNamed.boxField(i, f));
+		content.value().forEach((i, f) -> newTupleNamed.boxField(i, f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
 	public static GioviTupleNamed redirection(GioviTupleNamed dest, GioviStruct content) {
 		var newTupleNamed = dest.value().copy();
-		content.value().forEach((i, f) -> newTupleNamed.boxField(i, f));
+		content.value().forEach((i, f) -> newTupleNamed.boxField(i, f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviTuple content) {
 		var newStruct = dest.value().copy();
 		// TODO: if (content.getFieldsCount() != dest.getFieldsCount()) throw new GioviException("awfawf");
-		content.value().forEachIndexed((i, f) -> newStruct.boxField(i, f));
+		content.value().forEachIndexed((i, f) -> newStruct.boxField(i, f.value()));
 		return new GioviStruct(newStruct);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviTupleNamed content) {
 		var newStruct = dest.value().copy();
-		content.value().forEach((i, f) -> newStruct.boxField(i, f));
+		content.value().forEach((i, f) -> newStruct.boxField(i, f.value()));
 		return new GioviStruct(newStruct);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviStruct content) {
 		var newStruct = dest.value().copy();
-		content.value().forEach((i, f) -> newStruct.boxField(i, f));
+		content.value().forEach((i, f) -> newStruct.boxField(i, f.value()));
 		return new GioviStruct(newStruct);
 	}
 

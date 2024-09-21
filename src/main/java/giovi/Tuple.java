@@ -101,11 +101,6 @@ public sealed class Tuple permits TupleNamed {
 		fields.get(i).setValue(gioviValue);
 	}
 
-	public void boxField(int i, VarD<?> var) { // TODO: remove?
-		// fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
-		fields.get(i).setValue(var.value());
-	}
-
 	public void forEach(Consumer<VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}

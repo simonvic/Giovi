@@ -178,10 +178,6 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		}
 	}
 
-	public void boxField(String fieldIdentifier, VarD<?> var) { // TODO: remove?
-		boxField(fieldIdentifier, var.value());
-	}
-
 	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
