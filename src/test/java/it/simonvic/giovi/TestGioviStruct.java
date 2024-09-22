@@ -34,7 +34,7 @@ public class TestGioviStruct {
 		void testEmptyStruct() {
 			assertThat(visit("""
 				Foo <>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of("Foo"));
 		}
 
@@ -46,7 +46,7 @@ public class TestGioviStruct {
 					bar Bool
 					foobar Text
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of(
 					"Foo",
 					"foo", VarD.of(0),
@@ -62,7 +62,7 @@ public class TestGioviStruct {
 					b Bool default true
 					t Text default "hello"
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of(
 					"Foo",
 					"i", VarD.of(69, 69),
@@ -84,7 +84,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Person"))
+				.getDefinitionStruct("Person").get())
 					.isEqualTo(Structs.of(
 						"Person",
 						"name", VarD.of(""),
@@ -114,7 +114,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Person"))
+				.getDefinitionStruct("Person").get())
 					.isEqualTo(Structs.of(
 						"Person",
 						"name", VarD.of(""),
@@ -149,7 +149,7 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				""").getCurrentScope().getDefinitionStruct("RGBA").get())
 				.isEqualTo(Structs.of(
 					"RGBA",
 					"r", VarD.of(0),
@@ -169,7 +169,7 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int default 69
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				""").getCurrentScope().getDefinitionStruct("RGBA").get())
 				.isEqualTo(Structs.of(
 					"RGBA",
 					"r", VarD.of(255, 255),
@@ -193,8 +193,8 @@ public class TestGioviStruct {
 					a Int
 				>
 				""");
-			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB");
-			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA");
+			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB").get();
+			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA").get();
 			assertAll(
 				() -> assertThat(rgb).isEqualTo(Structs.of(
 					"RGB",

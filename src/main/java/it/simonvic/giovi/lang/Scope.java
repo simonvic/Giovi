@@ -2,6 +2,7 @@ package it.simonvic.giovi.lang;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import giovi.Function;
 import giovi.Struct;
@@ -177,12 +178,12 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public Struct getDefinitionStruct(String identifier) {
+	public Optional<Struct> getDefinitionStruct(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
-			return structDefinitions.get(identifier);
+			return Optional.of(structDefinitions.get(identifier));
 		}
 		if (parent == null) {
-			throw new StructNotDefined(identifier);
+			return Optional.empty();
 		}
 		return parent.getDefinitionStruct(identifier);
 	}

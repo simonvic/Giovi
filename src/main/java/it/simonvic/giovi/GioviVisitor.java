@@ -384,8 +384,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					String fieldIdentifier = uCtx.unaryIterator().identifier().getText();
 					var field = struct.value().getField(fieldIdentifier)
 						.orElseThrow(() -> new GioviException(
-							new NoSuchField(fieldIdentifier),
-							"Can't deconstruct"));
+							"Can't deconstruct",
+							new NoSuchField(fieldIdentifier)));
 					getCurrentScope().declare(fieldIdentifier, field);
 				}
 
@@ -397,8 +397,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					String fieldIdentifier = aCtx.whole.identifier().getText();
 					var field = struct.value().getField(fieldIdentifier)
 						.orElseThrow(() -> new GioviException(
-							new NoSuchField(fieldIdentifier),
-							"Can't deconstruct"));
+							"Can't deconstruct",
+							new NoSuchField(fieldIdentifier)));
 					deconstruct(field, aCtx);
 				}
 
@@ -1072,9 +1072,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var fieldDefinitions = new LinkedHashMap<String, VarD<?>>();
 
 		if (ctx.parentName != null) {
-			var parentDefinition = getDefinitionStruct(ctx.parentName.getText());
-			parentDefinition
-				.forEach((identifier, field) -> fieldDefinitions.put(identifier, field.copy()));
+			String parentTypename = ctx.parentName.getText();
+			var parentDefinition = getCurrentScope()
+				.getDefinitionStruct(parentTypename)
+				.orElseThrow(() -> new GioviException(
+					"Can't inherit from " + parentTypename,
+					new TypeNotFound(parentTypename)));
+			parentDefinition.forEach(
+				(identifier, field) -> fieldDefinitions.put(identifier, field.copy()));
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
@@ -1102,7 +1107,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	private GioviStruct createStruct(String typename, StructFieldsContext ctx) {
-		var gioviStruct = new GioviStruct(getDefinitionStruct(typename).copy());
+		var struct = getCurrentScope()
+			.getDefinitionStruct(typename)
+			.orElseThrow(() -> new GioviException(
+				"Can't create struct " + typename,
+				new TypeNotFound(typename)))
+			.copy();
+		var gioviStruct = new GioviStruct(struct);
 		if (ctx == null) {
 			return gioviStruct;
 		}
@@ -1168,13 +1179,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTypeIdentifier(TypeIdentifierContext ctx) {
-		return switch (ctx.getText()) {
+		String typename = ctx.getText();
+		return switch (typename) {
 			case "Natural" -> new GioviTypeNatural();
 			case "Int" -> new GioviTypeInt();
 			case "Real" -> new GioviTypeReal();
 			case "Bool" -> new GioviTypeBool();
 			case "Text" -> new GioviTypeText();
-			default -> new GioviTypeStruct(getDefinitionStruct(ctx.getText()));
+			default -> new GioviTypeStruct(getCurrentScope()
+				.getDefinitionStruct(typename)
+				.orElseThrow(() -> new TypeNotFound(typename)));
 		};
 	}
 
@@ -1195,13 +1209,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return new GioviTypeMap(
 			visit(ctx.mapKeyType).asGioviType(),
 			visit(ctx.mapValueType).asGioviType());
-	}
-
-	private Struct getDefinitionStruct(String structType) {
-		if (!getCurrentScope().isDefinedStruct(structType)) {
-			throw new TypeNotFound(structType);
-		}
-		return getCurrentScope().getDefinitionStruct(structType);
 	}
 
 	@Override
