@@ -1,14 +1,11 @@
 package giovi;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
@@ -84,7 +81,10 @@ public sealed class Tuple permits TupleNamed {
 
 	public Tuple copy(Range<Integer> range) {
 		var list = new ArrayList<VarD<?>>();
-		range.iterate(index -> list.add(getField(index).copy()));
+		range.iterate(index -> list.add(
+			getField(index)
+				.orElseThrow(() -> new NoSuchField(index))
+				.copy()));
 		return new Tuple(list);
 	}
 
@@ -92,13 +92,8 @@ public sealed class Tuple permits TupleNamed {
 		return fields.size();
 	}
 
-	public VarD<?> getField(int index) {
-		return fields.get(index);
-	}
-
-	public void boxField(int i, GioviValue<?> gioviValue) {
-		// fields.set(i, fields.get(i).redirection(gioviValue).asGioviValue());
-		fields.get(i).setValue(gioviValue);
+	public Optional<VarD<?>> getField(int index) {
+		return Optional.ofNullable(fields.get(index));
 	}
 
 	public void forEach(Consumer<VarD<?>> valueConsumer) {
@@ -173,7 +168,9 @@ public sealed class Tuple permits TupleNamed {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
-			var narrowField = this.getField(i);
+			final int j = i;
+			var narrowField = this.getField(i)
+				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
 			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),
@@ -190,7 +187,9 @@ public sealed class Tuple permits TupleNamed {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
-			var narrowField = this.getField(i);
+			final int j = i;
+			var narrowField = this.getField(i)
+				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
 			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),

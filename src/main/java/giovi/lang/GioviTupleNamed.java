@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 
 import giovi.*;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
@@ -65,18 +65,6 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 		return new GioviTupleNamed(value.copy());
 	}
 
-	public VarD<?> getField(String identifier) throws UnknownTupleField {
-		return value.getField(identifier);
-	}
-
-	public boolean containsField(String field) {
-		return ((TupleNamed) value).containsField(field);
-	}
-
-	public int getFieldsCount() {
-		return value.getFieldsCount();
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
@@ -106,13 +94,8 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviTupleNamed();
-			case FieldKey(var identifier) -> {
-				try {
-					yield value.getField(identifier);
-				} catch (UnknownTupleField e) {
-					yield GioviValue.super.dot(right);
-				}
-			}
+			case FieldKey(var identifier) -> value.getField(identifier)
+				.orElseThrow(() -> new NoSuchField(identifier));
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -127,11 +110,9 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
-			case GioviInt i -> {
-				int index = i.value();
-				index = index >= 0 ? index : value.getFieldsCount() + index;
-				yield value.getField(index);
-			}
+			case GioviInt(var index) -> value
+				.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviValue.super.access(right);
 		};
 	}

@@ -1,18 +1,13 @@
 package giovi;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
-import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
 
@@ -98,11 +93,14 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
 			try {
-				VarD<?> otherField = other.getField(entry.getKey());
-				if (!entry.getValue().equal(otherField).asNativeBool()) {
+				var otherFieldOpt = other.getField(entry.getKey());
+				if (otherFieldOpt.isEmpty()) {
 					return false;
 				}
-			} catch (UnknownTupleField | OperatorNotSupported e) {
+				if (!entry.getValue().equal(otherFieldOpt.get()).asNativeBool()) {
+					return false;
+				}
+			} catch (OperatorNotSupported e) {
 				return false;
 			}
 		}
@@ -113,12 +111,8 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var widerEntry : to.fields.entrySet()) {
-			VarD<?> thisField;
-			try {
-				thisField = getField(widerEntry.getKey());
-			} catch (UnknownTupleField e) {
-				throw new NonWideneable(e);
-			}
+			var thisField = getField(widerEntry.getKey()).orElseThrow(
+				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
 			var widerField = widerEntry.getValue();
 			widenedFields.put(
 				widerEntry.getKey(),
@@ -131,12 +125,8 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	public Struct widenTo(Struct to) throws NonWideneable {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var widerEntry : to.fields.entrySet()) {
-			VarD<?> thisField;
-			try {
-				thisField = getField(widerEntry.getKey());
-			} catch (UnknownTupleField e) {
-				throw new NonWideneable(e);
-			}
+			var thisField = getField(widerEntry.getKey()).orElseThrow(
+				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
 			var widerField = widerEntry.getValue();
 			widenedFields.put(
 				widerEntry.getKey(),
@@ -149,13 +139,8 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	// TODO: use optional
-	public VarD<?> getField(String identifier) throws UnknownTupleField {
-		var v = fields.get(identifier);
-		if (v == null) {
-			throw new UnknownTupleField(this, identifier);
-		}
-		return v;
+	public Optional<VarD<?>> getField(String identifier) {
+		return Optional.ofNullable(fields.get(identifier));
 	}
 
 	public List<String> getFieldNames() {
@@ -168,14 +153,6 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	public Set<Entry<String, VarD<?>>> entrySet() {
 		return fields.entrySet();
-	}
-
-	public void boxField(String fieldIdentifier, GioviValue<?> gioviValue) {
-		try {
-			getField(fieldIdentifier).setValue(gioviValue);
-		} catch (UnknownTupleField e) {
-			throw new GioviException(e);
-		}
 	}
 
 	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {

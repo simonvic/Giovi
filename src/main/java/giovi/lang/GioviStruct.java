@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 
 import giovi.*;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
@@ -57,19 +57,6 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 		return new GioviStruct(value.copy());
 	}
 
-	public String getTypename() {
-		return value.getTypename();
-	}
-
-	public int getFieldsCount() {
-		return value.getFieldsCount();
-	}
-
-	public VarD<?> getField(String identifier) throws UnknownTupleField {
-		return value.getField(identifier);
-	}
-
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
@@ -78,7 +65,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			// TODO: can we assume equal typename means equal definition?
-			case GioviTypeStruct t when t.getTypename().equals(this.getTypename()) -> this;
+			case GioviTypeStruct t when t.getTypename().equals(value.getTypename()) -> this;
 			default -> GioviValue.super.as(right);
 		};
 	}
@@ -108,13 +95,8 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
-			case FieldKey(var identifier) -> {
-				try {
-					yield value.getField(identifier);
-				} catch (UnknownTupleField e) {
-					yield GioviValue.super.dot(right);
-				}
-			}
+			case FieldKey(var identifier) -> value.getField(identifier)
+				.orElseThrow(() -> new NoSuchField(identifier));
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -129,11 +111,9 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
-			case GioviInt i -> {
-				int index = i.value();
-				index = index >= 0 ? index : value.getFieldsCount() + index;
-				yield value.getField(index);
-			}
+			case GioviInt(var index) -> value
+				.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviValue.super.access(right);
 		};
 	}

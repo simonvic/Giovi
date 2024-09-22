@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import giovi.*;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
@@ -60,10 +61,6 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 	@Override
 	public GioviTuple copy() {
 		return new GioviTuple(value.copy());
-	}
-
-	public int getFieldsCount() {
-		return value.getFieldsCount();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -128,11 +125,9 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
-			case GioviInt i -> {
-				int index = i.value();
-				index = index >= 0 ? index : value.getFieldsCount() + index;
-				yield value.getField(index);
-			}
+			case GioviInt(var index) -> value
+				.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviValue.super.access(right);
 		};
 	}

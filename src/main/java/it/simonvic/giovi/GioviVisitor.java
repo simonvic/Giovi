@@ -381,13 +381,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 
 				case IteratorUnaryContext uCtx -> {
-					try {
-						String fieldIdentifier = uCtx.unaryIterator().identifier().getText();
-						var field = struct.getField(fieldIdentifier);
-						getCurrentScope().declare(fieldIdentifier, field);
-					} catch (UnknownTupleField e) {
-						throw new GioviException(e, "Can't deconstruct");
-					}
+					String fieldIdentifier = uCtx.unaryIterator().identifier().getText();
+					var field = struct.value().getField(fieldIdentifier)
+						.orElseThrow(() -> new GioviException(
+							new NoSuchField(fieldIdentifier),
+							"Can't deconstruct"));
+					getCurrentScope().declare(fieldIdentifier, field);
 				}
 
 				case IteratorAggregateContext aCtx -> {
@@ -395,13 +394,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						throw new GioviException(
 							"Can't deconstruct nested aggregate without a whole identifier");
 					}
-					try {
-						String fieldIdentifier = aCtx.whole.identifier().getText();
-						var field = struct.getField(fieldIdentifier);
-						deconstruct(field, aCtx);
-					} catch (UnknownTupleField e) {
-						throw new GioviException(e, "Can't deconstruct");
-					}
+					String fieldIdentifier = aCtx.whole.identifier().getText();
+					var field = struct.value().getField(fieldIdentifier)
+						.orElseThrow(() -> new GioviException(
+							new NoSuchField(fieldIdentifier),
+							"Can't deconstruct"));
+					deconstruct(field, aCtx);
 				}
 
 				default -> throw new GioviException("Can't deconstruct");
@@ -1119,20 +1117,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void initStructNamed(GioviStruct gioviStruct, List<NamedStructFieldContext> fieldsCtx) {
 		for (var fieldCtx : fieldsCtx) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
-			gioviStruct.value().boxField(
-				fieldIdentifier,
-				visit(fieldCtx.expression()).unwrapAsGioviValue());
+			gioviStruct.value()
+				.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
+				.setValue(visit(fieldCtx.expression()).unwrapAsGioviValue());
 		}
 	}
 
 	private void initStructUnnamed(GioviStruct gioviStruct, List<ExpressionContext> expressions) {
 		int expressionsCount = expressions.size();
-		if (expressionsCount != gioviStruct.getFieldsCount()) {
-			throw new GioviException("Wrong fields count. Expecting " + gioviStruct.getFieldsCount()
-				+ " but instead got " + expressionsCount);
+		if (expressionsCount != gioviStruct.value().getFieldsCount()) {
+			throw new GioviException(
+				"Wrong fields count. Expecting " + gioviStruct.value().getFieldsCount()
+					+ " but instead got " + expressionsCount);
 		}
 		for (int i = 0; i < expressionsCount; i++) {
-			gioviStruct.value().boxField(i, visit(expressions.get(i)).unwrapAsGioviValue());
+			final int j = i;
+			gioviStruct.value()
+				.getField(i).orElseThrow(() -> new NoSuchField(j))
+				.setValue(visit(expressions.get(i)).unwrapAsGioviValue());
 		}
 	}
 

@@ -17,6 +17,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Range;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.Structs;
@@ -502,7 +503,7 @@ public class TestGioviStruct {
 
 			@Test
 			void redir_namedTuple_withDifferentNames_shouldThrow() {
-				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				assertThatExceptionOfType(NoSuchField.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
 					x <- <foo:69 t:"hello" b:true>
