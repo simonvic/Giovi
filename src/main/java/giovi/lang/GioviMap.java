@@ -49,7 +49,7 @@ public record GioviMap(
 	 * @param element
 	 * @throws IllegalArgumentException
 	 */
-	public void put(Var<?> key, Var<?> element) throws IllegalArgumentException {
+	private void put(Var<?> key, Var<?> element) throws IllegalArgumentException {
 		// TODO: remove widening here and handle manually
 		try {
 			value.put(
@@ -60,11 +60,11 @@ public record GioviMap(
 		}
 	}
 
-	public void putAll(Map<Var<?>, Var<?>> map) throws IllegalArgumentException {
+	private void putAll(Map<Var<?>, Var<?>> map) throws IllegalArgumentException {
 		map.forEach(this::put);
 	}
 
-	// TODO: return optional
+	// TODO: return optional or default value (@candidate)
 	public Var<?> get(Var<?> key) {
 		if (!value.containsKey(key)) {
 			throw new KeyNotPresent(this, key.value());
@@ -72,29 +72,11 @@ public record GioviMap(
 		return value.get(key);
 	}
 
-
-	public void remove(Var<?> key, Var<?> element) {
-		if (value.containsKey(key)) {
-			if (value.get(key).equals(element)) {
-				value.remove(key);
-			}
-		}
+	private void removeAll(Map<Var<?>, Var<?>> entries) {
+		entries.forEach(value::remove);
 	}
 
-	public void remove(Var<?> key) {
-		for (Var<?> k : value.keySet()) {
-			if (k.equals(key)) {
-				value.remove(k);
-				return;
-			}
-		}
-	}
-
-	public void removeAll(Map<Var<?>, Var<?>> entries) {
-		entries.forEach(this::remove);
-	}
-
-	public void removeAllWidened(Map<Var<?>, Var<?>> entries) {
+	private void removeAllWidened(Map<Var<?>, Var<?>> entries) {
 		try {
 			for (var entry : entries.entrySet()) {
 				value.remove(
@@ -104,15 +86,6 @@ public record GioviMap(
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
 		}
-	}
-
-	public void clear() {
-		value.clear();
-	}
-
-	public void init(LinkedHashMap<Var<?>, Var<?>> entries) {
-		clear();
-		putAll(entries);
 	}
 
 	public GioviType<?> getKeyType() {
@@ -205,8 +178,6 @@ public record GioviMap(
 		};
 	}
 
-	// FIXME: redirection for maps and list
-
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
@@ -228,8 +199,8 @@ public record GioviMap(
 				&& v.elementType.canWidenTo(this.elementType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
-					remove(new Var<>(v.widenTo(this.keyType)));
-				} catch (IllegalArgumentException | NonWideneable e) {
+					value.remove(new Var<>(v.widenTo(this.keyType)));
+				} catch (NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}
 			}

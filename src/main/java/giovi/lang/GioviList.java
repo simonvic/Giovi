@@ -58,8 +58,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	 * Add entry to list. The entry will be widened if necessary
 	 * @param entry
 	 */
-	public void add(Var<?> entry) {
-		// TODO: remove widening here and handle manually
+	private void add(Var<?> entry) {
 		try {
 			value.add(entry.widenTo(entryType));
 		} catch (NonWideneable ex) {
@@ -67,7 +66,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		}
 	}
 
-	public void addAll(List<? extends Var<?>> entries) {
+	private void addAll(List<? extends Var<?>> entries) {
 		entries.forEach(this::add);
 	}
 
@@ -90,15 +89,6 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
 		}
-	}
-
-	public void clear() {
-		value.clear();
-	}
-
-	public void init(List<Var<?>> entries) {
-		clear();
-		addAll(entries);
 	}
 
 	public GioviType<?> getEntryType() {

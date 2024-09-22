@@ -87,6 +87,10 @@ public interface GioviParserVisitResult {
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return (Function) this; }
 	default Var<?> asVar() { return (Var<?>) this; }
+
+	/**
+	 * To be used ONLY when we know we can discard/ignore the default value of a variable
+	 */
 	default GioviValue<?> unwrapAsGioviValue() {
 		// TODO: this is ugly
 		// TODO: also check that this method is not abused and defaults values are lost
