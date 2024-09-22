@@ -92,23 +92,12 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredVariable(identifier));
 	}
 
-	public void setVariableValue(String identifier, GioviValue<?> value) {
+	public Optional<VarD<?>> getVariable(String identifier) {
 		if (variables.containsKey(identifier)) {
-			variables.get(identifier).setValue(value);
-		} else {
-			if (parent == null) {
-				throw new VariableNotDeclared(identifier);
-			}
-			parent.setVariableValue(identifier, value);
-		}
-	}
-
-	public VarD<?> getVariable(String identifier) {
-		if (variables.containsKey(identifier)) {
-			return variables.get(identifier);
+			return Optional.of(variables.get(identifier));
 		}
 		if (parent == null) {
-			throw new VariableNotDeclared(identifier);
+			return Optional.empty();
 		}
 		return parent.getVariable(identifier);
 	}
@@ -130,12 +119,12 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredConstant(identifier));
 	}
 
-	public GioviValue<?> getConstantValue(String identifier) {
+	public Optional<GioviValue<?>> getConstantValue(String identifier) {
 		if (constants.containsKey(identifier)) {
-			return constants.get(identifier);
+			return Optional.of(constants.get(identifier));
 		}
 		if (parent == null) {
-			throw new VariableNotDeclared(identifier);
+			return Optional.empty();
 		}
 		return parent.getConstantValue(identifier);
 	}
@@ -152,14 +141,14 @@ public class Scope {
 		functions.put(function.signature().identifier(), function);
 	}
 
-	public Function getFunction(String identifier) throws FunctionNotDeclared {
+	public Optional<Function> getFunction(String identifier) throws FunctionNotDeclared {
 		if (!functions.containsKey(identifier)) {
 			if (parent == null) {
-				throw new FunctionNotDeclared(identifier);
+				return Optional.empty();
 			}
 			return parent.getFunction(identifier);
 		}
-		return functions.get(identifier);
+		return Optional.of(functions.get(identifier));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs

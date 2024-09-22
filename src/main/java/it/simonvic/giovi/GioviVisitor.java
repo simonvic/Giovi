@@ -12,7 +12,10 @@ import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.delegates.SwitchStatementDelegate;
-import it.simonvic.giovi.exceptions.*;
+import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.TextProcessor;
@@ -493,20 +496,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		visit(ctx.varDeclaration());
-		getCurrentScope().setVariableValue(
-			ctx.varDeclaration().identifier().getText(),
-			visit(ctx.redirectionContent()).unwrapAsGioviValue());
+		visit(ctx.varDeclaration())
+			.asVar()
+			.setValue(visit(ctx.redirectionContent()).unwrapAsGioviValue());
 		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		visit(ctx.varDeclaration());
-		getCurrentScope().setVariableValue(
-			ctx.varDeclaration().identifier().getText(),
-			visit(ctx.redirectionContent()).unwrapAsGioviValue());
+		visit(ctx.varDeclaration())
+			.asVar()
+			.setValue(visit(ctx.redirectionContent()).unwrapAsGioviValue());
 		return null;
 	}
 
@@ -551,7 +552,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.bop.getText()),
-			getCurrentScope().getVariable(ctx.identifier().getText()));
+			visit(ctx.identifier()));
 		return null;
 	}
 
@@ -561,7 +562,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.bop.getText()),
-			getCurrentScope().getVariable(ctx.identifier().getText()));
+			visit(ctx.identifier()));
 		return null;
 	}
 
@@ -627,11 +628,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		String identifier;
 		if (ctx.identifier() != null) {
 			identifier = ctx.identifier().getText();
-			try {
-				return getCurrentScope().getFunction(identifier);
-			} catch (FunctionNotDeclared e) {
-				throw new GioviException("Can't reference non-existing function " + identifier);
-			}
+			return getCurrentScope()
+				.getFunction(identifier)
+				.orElseThrow(() -> new GioviException(
+					"Can't reference non-existing function " + identifier));
 		}
 
 		FunctionSignature signature;
@@ -773,12 +773,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitIdentifier(IdentifierContext ctx) {
-		return getCurrentScope().getVariable(ctx.getText());
+		return getCurrentScope()
+			.getVariable(ctx.getText())
+			.orElseThrow(() -> new GioviException("Variable not declared: " + ctx.getText()));
 	}
 
 	@Override
 	public GioviParserVisitResult visitConstantIdentifier(ConstantIdentifierContext ctx) {
-		return getCurrentScope().getConstantValue(ctx.getText());
+		return getCurrentScope()
+			.getConstantValue(ctx.getText())
+			.orElseThrow(() -> new GioviException("Constant not declared: " + ctx.getText()));
 	}
 
 	@Override
@@ -868,16 +872,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitFunctionCall(FunctionCallContext ctx) {
-		Function function;
 		String identifier = ctx.identifier().getText();
-		try {
-			function = getCurrentScope().getFunction(identifier);
-		} catch (FunctionNotDeclared e) {
-			var reference = getCurrentScope().getVariable(identifier).value();
-			if (reference instanceof GioviFunction gioviFunction) {
-				function = gioviFunction.value();
+		Function function;
+		var funcOpt = getCurrentScope().getFunction(identifier);
+		if (funcOpt.isPresent()) {
+			function = funcOpt.get();
+		} else {
+			var referenceOpt = getCurrentScope().getVariable(identifier);
+			if (referenceOpt.isPresent()
+				&& referenceOpt.get().value() instanceof GioviFunction(var func)) {
+				function = func;
 			} else {
-				throw new GioviException(e, "Can't call " + identifier);
+				throw new GioviException("No invokable function found with name " + identifier);
 			}
 		}
 		enterFunctionScope();

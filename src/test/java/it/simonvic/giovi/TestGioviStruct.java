@@ -450,6 +450,7 @@ public class TestGioviStruct {
 					x <- <69 "hello" true>
 					""").getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
@@ -476,6 +477,7 @@ public class TestGioviStruct {
 					x <- <i:69 t:"hello" b:true>
 					""").getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
@@ -493,6 +495,7 @@ public class TestGioviStruct {
 					x +<- <i:69 t:true>
 					""").getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
@@ -520,6 +523,7 @@ public class TestGioviStruct {
 					x.b <- true
 					""").getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
@@ -536,6 +540,7 @@ public class TestGioviStruct {
 					x <- Foo.<i:69 t:"hello" b:true>
 					""").getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",

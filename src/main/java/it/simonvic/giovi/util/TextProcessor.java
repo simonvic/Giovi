@@ -13,6 +13,7 @@ import giovi.lang.GioviText;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.Scope;
 
 public class TextProcessor {
@@ -68,6 +69,8 @@ public class TextProcessor {
 			.matcher(text)
 			.replaceAll(matchResult -> scope
 				.getVariable(matchResult.group().substring(1))
+				.orElseThrow(() -> new GioviException(
+					"Variable not declared: " + matchResult.group().substring(1)))
 				.value()
 				.toString());
 	}

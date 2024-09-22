@@ -45,6 +45,7 @@ public class TestGioviBool {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
+					.get()
 					.value()
 					.value())
 						.isEqualTo(true);
