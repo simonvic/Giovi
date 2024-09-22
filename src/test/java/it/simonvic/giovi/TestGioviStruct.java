@@ -364,6 +364,61 @@ public class TestGioviStruct {
 				"b", VarD.of(true)));
 		}
 
+		@Test
+		void whenCreatingStruct_withDefault_shouldUseDefaultValue() {
+			var visitor = visit("""
+				Bar <
+					r Real default 4.20
+				>
+				Foo <
+					i Int default 69
+					t Text default "foo"
+					s Bar default <6.9>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				Foo.<
+					i: 420
+					t: default
+					s: default
+				>
+				""")).isEqualTo(GioviStructs.of(
+				"Foo",
+				"i", VarD.of(420, 69),
+				"t", VarD.of("foo", "foo"),
+				"s", VarD.of(
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
+		}
+
+		@Disabled("Not implemented yet")
+		@Test
+		void whenCreatingStruct_withPlaceholder_shouldUseDefaultValue() {
+			var visitor = visit("""
+				Bar <
+					r Real default 4.20
+				>
+				Foo <
+					i Int default 69
+					t Text default "foo"
+					s Bar default <6.9>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				Foo.<
+					i: 420
+					t: _
+					s: _
+				>
+				""")).isEqualTo(GioviStructs.of(
+				"Foo",
+				"i", VarD.of(420, 69),
+				"t", VarD.of("foo", "foo"),
+				"s", VarD.of(
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
+		}
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS

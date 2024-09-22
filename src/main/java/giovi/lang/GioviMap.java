@@ -50,6 +50,7 @@ public record GioviMap(
 	 * @throws IllegalArgumentException
 	 */
 	public void put(Var<?> key, Var<?> element) throws IllegalArgumentException {
+		// TODO: remove widening here and handle manually
 		try {
 			value.put(
 				key.widenTo(keyType),

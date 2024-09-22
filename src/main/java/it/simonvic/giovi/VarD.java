@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviDefault;
+import giovi.lang.GioviInt;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -78,7 +79,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return new VarD<>(value.copy(), defaultValue.copy());
 	}
 
-	public VarD<?> widenTo(GioviType<? extends GioviValue<?>> gioviType, GioviValue<?> defaultValue) throws NonWideneable {
+	public VarD<?> widenTo(GioviType<?> gioviType, GioviValue<?> defaultValue)
+		throws NonWideneable {
 		return new VarD<>(value.widenTo(gioviType), defaultValue.widenTo(gioviType));
 	}
 

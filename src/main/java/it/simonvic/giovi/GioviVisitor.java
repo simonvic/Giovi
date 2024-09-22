@@ -496,18 +496,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx) {
-		visit(ctx.varDeclaration())
-			.asVar()
-			.setValue(visit(ctx.redirectionContent()).unwrapAsGioviValue());
+		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
 		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx) {
-		visit(ctx.varDeclaration())
-			.asVar()
-			.setValue(visit(ctx.redirectionContent()).unwrapAsGioviValue());
+		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
 		return null;
 	}
 
@@ -542,7 +538,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
 		var constant = spawnType(ctx.type(), null);
-		constant.redirection(visit(ctx.expression()));
+		constant.setValueWithRedirection(visit(ctx.expression()));
 		getCurrentScope().declareConstant(ctx.constantIdentifier().getText(), constant.value());
 		return constant;
 	}
@@ -950,18 +946,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 
 			var actualParamExpression = visit(actualParamCtxList.get(i).expression());
+
+			// TODO: eventually remove it and let the redirection handle the default
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(formalParamIdentifier, actualParam);
 				continue;
 			}
 
-			var actualParamValue = actualParamExpression.unwrapAsGioviValue();
-			try {
-				actualParam.setValue(actualParamValue.widenTo(formalParam.type())); // TODO: remove redundant widening
-			} catch (NonWideneable ex) {
-				throw new GioviException(ex, "Wrong parameter type. Expecting " + formalParam.type()
-					+ " but instead got " + actualParamValue.getGioviType());
-			}
+			actualParam.setValueWithRedirection(actualParamExpression);
 			getCurrentScope().declare(formalParamIdentifier, actualParam);
 		}
 
@@ -999,15 +991,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				getCurrentScope().declare(formalParamIdentifier, actualParam);
 			} else {
-				var actualParamValue = actualParamExpression.unwrapAsGioviValue();
-				try {
-					actualParam.setValue(actualParamValue.widenTo(formalParam.type()));
-					getCurrentScope().declare(formalParamIdentifier, actualParam);
-				} catch (NonWideneable ex) {
-					throw new GioviException(ex, "Wrong parameter type. Expecting "
-						+ formalParam.type() + " but instead got "
-						+ actualParamValue.getGioviType());
-				}
+				actualParam.setValueWithRedirection(actualParamExpression);
+				getCurrentScope().declare(formalParamIdentifier, actualParam);
 			}
 			undeclaredParameters.remove(formalParamIdentifier);
 		});
@@ -1102,7 +1087,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		var structFieldsCtx = ctx.structFields();
-		// TODO: Struct.<field: _> field is null
 		if (ctx.structType != null) {
 			return createStruct(ctx.structType.getText(), structFieldsCtx);
 		}
@@ -1136,7 +1120,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			String fieldIdentifier = fieldCtx.identifier().getText();
 			gioviStruct.value()
 				.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
-				.setValue(visit(fieldCtx.expression()).unwrapAsGioviValue());
+				.setValueWithRedirection(visit(fieldCtx.expression()));
 		}
 	}
 
@@ -1151,7 +1135,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			final int j = i;
 			gioviStruct.value()
 				.getField(i).orElseThrow(() -> new NoSuchField(j))
-				.setValue(visit(expressions.get(i)).unwrapAsGioviValue());
+				.setValueWithRedirection(visit(expressions.get(i)));
 		}
 	}
 

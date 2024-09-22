@@ -59,6 +59,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	 * @param entry
 	 */
 	public void add(Var<?> entry) {
+		// TODO: remove widening here and handle manually
 		try {
 			value.add(entry.widenTo(entryType));
 		} catch (NonWideneable ex) {

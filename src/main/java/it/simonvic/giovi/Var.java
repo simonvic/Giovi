@@ -4,6 +4,8 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
+import it.simonvic.giovi.exceptions.RedirectionException;
 
 public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
@@ -30,9 +32,17 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	/**
 	 * @param value the value to set
 	 */
-	public <U extends GioviValue<?>> void setValue(U value) {
-		// TODO: just a temporary solution. Maybe solve with widening to cached type?
-		this.value = (T) this.value.redirection(value);
+	public void setValue(T value) {
+		this.value = value;
+	}
+
+	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
+	public void setValueWithRedirection(GioviParserVisitResult value) {
+		try {
+			this.value = (T) redirection(value);
+		} catch (OperatorNotSupported ex) {
+			throw new RedirectionException(ex);
+		}
 	}
 
 	@Override
@@ -60,7 +70,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return true;
 	}
 
-	public GioviType<? extends GioviValue<?>> getGioviType() {
+	public GioviType<?> getGioviType() {
 		return value.getGioviType();
 	}
 
@@ -68,7 +78,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return new Var<>(value.copy());
 	}
 
-	public Var<?> widenTo(GioviType<? extends GioviValue<?>> gioviType) throws NonWideneable {
+	public Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
 		return new Var<>(value.widenTo(gioviType));
 	}
 
@@ -89,48 +99,36 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	// TODO: eventually remove redirection handling of default values from giovi values
 
+	// TODO: setting the value in a redirection is different than the GioviValue
+	// implementation and might lead to a double setting of the value
+
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this.value.redirection(defaultValue);
-			default -> this.value.redirection(content);
-		};
+		this.value = (T) this.value.redirection(content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this. value.redirectionPlus(defaultValue);
-			default -> this.value.redirectionPlus(content);
-		};
+		this.value = (T) this.value.redirectionPlus(content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this. value.redirectionMinus(defaultValue);
-			default -> this.value.redirectionMinus(content);
-		};
+		this.value = (T) this.value.redirectionMinus(content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this. value.redirectionMultiply(defaultValue);
-			default -> this.value.redirectionMultiply(content);
-		};
+		this.value = (T) this.value.redirectionMultiply(content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			// case GioviDefault _ -> this. value.redirectionDivide(defaultValue);
-			default -> this.value.redirectionDivide(content);
-		};
+		this.value = (T) this.value.redirectionDivide(content);
 		return this.value;
 	}
 

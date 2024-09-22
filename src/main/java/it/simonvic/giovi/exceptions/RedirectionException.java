@@ -10,4 +10,8 @@ public class RedirectionException extends GioviException {
 		super(message);
 	}
 
+	public RedirectionException(Throwable cause) {
+		super(cause);
+	}
+
 }

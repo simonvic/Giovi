@@ -59,7 +59,7 @@ public class GioviTuples {
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTuple(newTuple);
 	}
 
@@ -67,7 +67,7 @@ public class GioviTuples {
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTuple(newTuple);
 	}
 
@@ -75,7 +75,7 @@ public class GioviTuples {
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTuple(newTuple);
 	}
 
@@ -83,7 +83,7 @@ public class GioviTuples {
 		var newTupleNamed = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTupleNamed
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
@@ -91,7 +91,7 @@ public class GioviTuples {
 		var newTupleNamed = dest.value().copy();
 		content.value().forEach((s, f) -> newTupleNamed
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
@@ -99,7 +99,7 @@ public class GioviTuples {
 		var newTupleNamed = dest.value().copy();
 		content.value().forEach((s, f) -> newTupleNamed
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviTupleNamed(newTupleNamed);
 	}
 
@@ -107,7 +107,7 @@ public class GioviTuples {
 		var newStruct = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newStruct
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviStruct(newStruct);
 	}
 
@@ -115,7 +115,7 @@ public class GioviTuples {
 		var newStruct = dest.value().copy();
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviStruct(newStruct);
 	}
 
@@ -123,7 +123,7 @@ public class GioviTuples {
 		var newStruct = dest.value().copy();
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValue(f.value()));
+			.setValueWithRedirection(f.value()));
 		return new GioviStruct(newStruct);
 	}
 
