@@ -11,12 +11,12 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 
 	@Override
 	public Class<? extends GioviType<?>> value() {
-		return null; // TODO: lol
+		return GioviTypeType.class;
 	}
 
 	@Override
 	public Class<? extends GioviType<?>> defaultValue() {
-		return null; // TODO: lol
+		return GioviTypeType.class;
 	}
 
 	@Override
