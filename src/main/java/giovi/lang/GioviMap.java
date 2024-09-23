@@ -64,9 +64,11 @@ public record GioviMap(
 		map.forEach(this::put);
 	}
 
-	// TODO: return optional or default value (@candidate)
+	// TODO: return optional or default value (@candidate) (or maybe Void for better performance)
 	public Var<?> get(Var<?> key) {
 		if (!value.containsKey(key)) {
+			// return new Var<>(new GioviVoid());
+			// return new Var<>(elementType.spawn());
 			throw new KeyNotPresent(this, key.value());
 		}
 		return value.get(key);
@@ -271,7 +273,6 @@ public record GioviMap(
 			}
 			case GioviValue<?> v -> {
 				for (var key : value.keySet()) {
-					// TODO: we can finally remove this crap!
 					if (key.equal(v).asNativeBool()) {
 						yield new GioviBool(true);
 					}

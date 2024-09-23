@@ -42,8 +42,8 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 			return "[" + entryType + "]";
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
-		sb.append(entryType);
-		sb.append(": ");
+		// sb.append(entryType);
+		// sb.append(": ");
 		for (;;) {
 			sb.append(i.next());
 			if (!i.hasNext())
