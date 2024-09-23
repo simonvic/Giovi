@@ -70,18 +70,15 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		entries.forEach(this::add);
 	}
 
-
-	// TODO: is wrapping in a var necessary
-
-	public void remove(Var<?> entry) {
+	private void remove(Var<?> entry) {
 		value.remove(entry);
 	}
 
-	public void removeAll(List<? extends Var<?>> entries) {
+	private void removeAll(List<? extends Var<?>> entries) {
 		value.removeAll(entries);
 	}
 
-	public void removeAllWidened(List<? extends Var<?>> entries) {
+	private void removeAllWidened(List<? extends Var<?>> entries) {
 		try {
 			for (var entry : entries) {
 				value.remove(entry.widenTo(entryType));
