@@ -36,7 +36,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 
 	@Override
 	public Struct defaultValue() {
-		return value.copy(); // TODO: use signature
+		return signature.copy();
 	}
 
 	@Override

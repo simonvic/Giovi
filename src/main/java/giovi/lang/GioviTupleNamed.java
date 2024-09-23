@@ -37,7 +37,7 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 
 	@Override
 	public TupleNamed defaultValue() {
-		return value.copy();
+		return signature.copy();
 	}
 
 	@Override
