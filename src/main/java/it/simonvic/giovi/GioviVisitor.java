@@ -102,6 +102,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				var castedSubject = subject.as(type);
 				VarD<?> casted = switch (castedSubject) {
 					case VarD<?> v -> v.copy();
+					case Var<?> v -> new VarD<>(v.value());
 					default -> new VarD<>(castedSubject.asGioviValue());
 				};
 				getCurrentScope().declare(typeCheckCtx.identifier().getText(), casted);
