@@ -18,6 +18,7 @@ import giovi.Range;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.Structs;
@@ -520,13 +521,21 @@ public class TestGioviStruct {
 							"b", VarD.of(true)));
 			}
 
-			@Disabled("awfawfawafawf")
 			@Test
-			void redir_narrowerTuple_shouldThrow() {
-				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+			void redir_tupleWithLessFields_shouldThrow() {
+				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
 					x <- <69 "hello">
+					"""));
+			}
+
+			@Test
+			void redir_tupleWithMoreFields_shouldThrow() {
+				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <69 "hello" false 420>
 					"""));
 			}
 

@@ -7,6 +7,7 @@ import giovi.lang.GioviStruct;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviTupleNamed;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviTuples {
@@ -56,6 +57,9 @@ public class GioviTuples {
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTuple content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
@@ -64,6 +68,9 @@ public class GioviTuples {
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTupleNamed content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
@@ -72,6 +79,9 @@ public class GioviTuples {
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviStruct content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
@@ -80,6 +90,9 @@ public class GioviTuples {
 	}
 
 	public static GioviTupleNamed redirection(GioviTupleNamed dest, GioviTuple content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
 		var newTupleNamed = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTupleNamed
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
@@ -104,6 +117,9 @@ public class GioviTuples {
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviTuple content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
 		var newStruct = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newStruct
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
