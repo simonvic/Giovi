@@ -89,6 +89,22 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
+	@Override
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
+			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviTupleNamed(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
+			default -> GioviValue.super.equal(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		return equal(right).not();
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
