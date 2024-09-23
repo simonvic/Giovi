@@ -26,11 +26,12 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 			&& t.getSignature().equals(this.value.signature())) {
 			return this;
 		}
+		// TODO: clarify requirements. Should (Natural) => Int be wideneable to (Int) => Real ?
 		throw new NonWideneable(this, type);
 	}
 
 	@Override
-	public GioviValue<Function> copy() {
+	public GioviFunction copy() {
 		return new GioviFunction(value.copy());
 	}
 

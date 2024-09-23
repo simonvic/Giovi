@@ -36,7 +36,7 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 	}
 
 	@Override
-	public GioviType<GioviFunction> copy() {
+	public GioviTypeFunction copy() {
 		return new GioviTypeFunction(signature.copy());
 	}
 

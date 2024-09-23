@@ -37,7 +37,7 @@ public final record GioviVoid() implements GioviPrimitive<Void> {
 	}
 
 	@Override
-	public GioviValue<Void> copy() {
+	public GioviVoid copy() {
 		return new GioviVoid();
 	}
 

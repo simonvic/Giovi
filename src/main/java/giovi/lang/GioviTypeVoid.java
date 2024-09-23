@@ -42,6 +42,5 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 		return GioviTypePrimitive.super.dot(right);
 	}
 
-
 }
 
