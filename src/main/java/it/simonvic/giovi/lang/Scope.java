@@ -105,7 +105,6 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Constants
 
-	// TODO: use VarD?
 	private final Map<String, GioviValue<?>> constants = new HashMap<>();
 
 	public void declareConstant(String identifier, GioviValue<?> value) {

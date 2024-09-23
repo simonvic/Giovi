@@ -15,7 +15,7 @@ public class VisitorUtils {
 		return switch (prefix) {
 			case PLUS -> value.positive();
 			case MINUS -> value.negative();
-			default -> throw new OperatorNotSupported(prefix);
+			default -> throw new OperatorNotSupported(value, prefix);
 		};
 	}
 
@@ -26,7 +26,7 @@ public class VisitorUtils {
 		return switch (operator) {
 			case PLUS -> left.plus(right);
 			case MINUS -> left.minus(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
@@ -38,7 +38,7 @@ public class VisitorUtils {
 			case MULT -> left.multiply(right);
 			case DIV -> left.divide(right);
 			case MODULO -> left.modulo(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
@@ -51,7 +51,7 @@ public class VisitorUtils {
 			case GREATER_EQUAL -> left.greaterEqual(right);
 			case GREATER -> left.greater(right);
 			case LESS -> left.less(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
@@ -62,7 +62,7 @@ public class VisitorUtils {
 		return switch (operator) {
 			case AND, AND_SYM -> left.and(right);
 			case OR, OR_SYM -> left.or(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
@@ -96,7 +96,7 @@ public class VisitorUtils {
 		return switch (operator) {
 			case EQUAL -> left.equal(right);
 			case NOT_EQUAL -> left.notEqual(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
@@ -107,7 +107,7 @@ public class VisitorUtils {
 		return switch (operator) {
 			case CONTAINED, IN -> left.isContained(right);
 			case CONTAINS -> left.contains(right);
-			default -> throw new OperatorNotSupported(operator);
+			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
 
