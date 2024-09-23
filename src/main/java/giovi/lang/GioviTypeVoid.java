@@ -35,11 +35,6 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public GioviVoid spawn(GioviVoid gioviValue) {
-		return new GioviVoid();
-	}
-
-	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
 			return new GioviVoid();

@@ -35,11 +35,6 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 	}
 
 	@Override
-	public GioviTuple spawn(GioviTuple gioviValue) {
-		return new GioviTuple(gioviValue.value());
-	}
-
-	@Override
 	public GioviType<GioviTuple> copy() {
 		return new GioviTypeTuple(definition.copy());
 	}

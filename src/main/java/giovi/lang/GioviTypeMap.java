@@ -43,11 +43,6 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	}
 
 	@Override
-	public GioviMap spawn(GioviMap gioviValue) {
-		return new GioviMap(this.keyType, this.elementType, gioviValue.value());
-	}
-
-	@Override
 	public GioviTypeMap copy() {
 		return new GioviTypeMap(this.keyType.copy(), this.elementType.copy());
 	}

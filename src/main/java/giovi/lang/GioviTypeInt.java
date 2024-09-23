@@ -34,11 +34,6 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 	}
 
 	@Override
-	public GioviInt spawn(GioviInt gioviValue) {
-		return new GioviInt(gioviValue.value());
-	}
-
-	@Override
 	public GioviTypeInt copy() {
 		return new GioviTypeInt();
 	}

@@ -35,12 +35,6 @@ public sealed interface GioviType<T extends GioviValue<?>>
 
 	GioviValue<?> spawn();
 
-	GioviValue<?> spawn(T gioviValue);
-
-	@SuppressWarnings("unchecked")
-	default GioviValue<?> spawnFunky(GioviValue<?> gioviValue) {
-		return spawn((T) gioviValue);
-	}
 
 	@Override
 	GioviType<T> copy();

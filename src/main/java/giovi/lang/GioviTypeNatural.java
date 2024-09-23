@@ -35,11 +35,6 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	}
 
 	@Override
-	public GioviNatural spawn(GioviNatural gioviValue) {
-		return new GioviNatural(gioviValue.value());
-	}
-
-	@Override
 	public GioviTypeNatural copy() {
 		return new GioviTypeNatural();
 	}

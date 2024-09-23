@@ -40,11 +40,6 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public GioviTypeVoid spawn(GioviType<?> gioviValue) {
-		return new GioviTypeVoid();
-	}
-
-	@Override
 	public GioviTypeType copy() {
 		return new GioviTypeType();
 	}
@@ -56,7 +51,6 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 		}
 		return GioviTypePrimitive.super.dot(right);
 	}
-
 
 }
 

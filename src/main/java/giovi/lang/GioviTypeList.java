@@ -57,11 +57,6 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	}
 
 	@Override
-	public GioviList spawn(GioviList gioviValue) {
-		return new GioviList(this.entryType, gioviValue.value());
-	}
-
-	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
 			return new GioviList(entryType);
