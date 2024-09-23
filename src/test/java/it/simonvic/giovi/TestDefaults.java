@@ -563,9 +563,13 @@ public class TestDefaults {
 						"bar", VarD.of(Structs.of("Bar",
 							"baz", VarD.of("baz", "baz"),
 							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3)))),
-						"foobar", VarD.of(Structs.of("Bar",
-							"baz", VarD.of("BAZ", "baz"),
-							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
+						"foobar", VarD.of(
+							Structs.of("Bar",
+								"baz", VarD.of("BAZ", "baz"),
+								"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))),
+							Structs.of("Bar",
+								"baz", VarD.of("BAZ", "baz"),
+								"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
 		}
 
 

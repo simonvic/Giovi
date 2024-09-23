@@ -118,11 +118,17 @@ public class TestGioviStruct {
 					.isEqualTo(Structs.of(
 						"Person",
 						"name", VarD.of(""),
-						"favoriteColor", VarD.of(Structs.of(
-							"RGB",
-							"r", VarD.of(255, 0),
-							"g", VarD.of(250, 0),
-							"b", VarD.of(200, 0)))));
+						"favoriteColor", VarD.of(
+							Structs.of(
+								"RGB",
+								"r", VarD.of(255, 0),
+								"g", VarD.of(250, 0),
+								"b", VarD.of(200, 0)),
+							Structs.of(
+								"RGB",
+								"r", VarD.of(255, 0),
+								"g", VarD.of(250, 0),
+								"b", VarD.of(200, 0)))));
 		}
 
 
