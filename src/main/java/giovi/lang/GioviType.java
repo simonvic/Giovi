@@ -33,8 +33,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 
 	// TODO: add canNarrowTo(type)
 
-	GioviValue<?> spawn();
-
+	T spawn();
 
 	@Override
 	GioviType<T> copy();
