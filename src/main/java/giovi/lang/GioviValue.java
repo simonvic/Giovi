@@ -54,7 +54,7 @@ public sealed interface GioviValue<T>
 	 * Get the Type (in Giovi space) of this value
 	 * @return Type
 	 */
-	GioviType<? extends GioviValue<T>> getGioviType();
+	GioviType<?> getGioviType();
 
 	/**
 	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
