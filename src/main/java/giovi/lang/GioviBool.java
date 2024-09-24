@@ -3,22 +3,24 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class GioviBool extends GioviPrimitive<Boolean> {
+public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
 	}
 
-	public GioviBool(Boolean value, Boolean defaultValue) {
-		super(value, defaultValue);
-	}
-
-	public GioviBool(Boolean value) {
-		super(value, false);
-	}
-
 	public GioviBool() {
-		super(false, false);
+		this(false);
+	}
+
+	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
+	public Boolean defaultValue() {
+		return false;
 	}
 
 	@Override
@@ -36,7 +38,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 
 	@Override
 	public GioviBool copy() {
-		return new GioviBool(this.value, this.defaultValue);
+		return new GioviBool(this.value);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -47,7 +49,7 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviTypeBool _ -> new GioviBool(this.value);
-			default -> super.as(right);
+			default -> GioviPrimitive.super.as(right);
 		};
 	}
 
@@ -55,12 +57,11 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = defaultValue;
-			case GioviBool v -> value = v.unbox();
-			default -> super.redirection(content);
-		}
-		return this;
+		return switch (content) {
+			case GioviDefault _ -> new GioviBool(defaultValue());
+			case GioviBool(var v) -> new GioviBool(v);
+			default -> GioviPrimitive.super.redirection(content);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -75,20 +76,20 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value && defaultValue);
-			case GioviBool v -> new GioviBool(value && v.unbox());
-			// case IntValue v -> new BoolValue(value && v.asBool());
-			default -> super.and(right);
+			case GioviDefault _ -> new GioviBool(value && defaultValue());
+			case GioviBool(var v) -> new GioviBool(value && v);
+			// case IntValue(var v) -> new BoolValue(value && v.asBool());
+			default -> GioviPrimitive.super.and(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value || defaultValue);
-			case GioviBool v -> new GioviBool(value || v.unbox());
-			// case IntValue v -> new BoolValue(value || v.asBool());
-			default -> super.or(right);
+			case GioviDefault _ -> new GioviBool(value || defaultValue());
+			case GioviBool(var v) -> new GioviBool(value || v);
+			// case IntValue(var v) -> new BoolValue(value || v.asBool());
+			default -> GioviPrimitive.super.or(right);
 		};
 	}
 
@@ -97,10 +98,10 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(defaultValue));
-			case GioviBool v -> new GioviBool(value.equals(v.unbox()));
-			// case IntValue v -> new BoolValue(value == v.asBool());
-			default -> super.equal(right);
+			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
+			case GioviBool(var v) -> new GioviBool(value.equals(v));
+			// case IntValue(var v) -> new BoolValue(value == v.asBool());
+			default -> GioviPrimitive.super.equal(right);
 		};
 	}
 
@@ -114,9 +115,9 @@ public final class GioviBool extends GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviBool(defaultValue);
+			return new GioviBool();
 		}
-		return super.dot(right);
+		return GioviPrimitive.super.dot(right);
 	}
 
 }

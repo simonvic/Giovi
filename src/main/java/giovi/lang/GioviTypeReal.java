@@ -2,10 +2,21 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public final class GioviTypeReal extends GioviTypeNumber<GioviReal> {
+public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
-	public GioviTypeReal() {
-		super(GioviReal.class);
+	@Override
+	public String toString() {
+		return "Real";
+	}
+
+	@Override
+	public Class<? extends GioviReal> value() {
+		return GioviReal.class;
+	}
+
+	@Override
+	public Class<? extends GioviReal> defaultValue() {
+		return GioviReal.class;
 	}
 
 	@Override
@@ -28,9 +39,7 @@ public final class GioviTypeReal extends GioviTypeNumber<GioviReal> {
 		if (right instanceof GioviDefault) {
 			return new GioviReal();
 		}
-		return super.dot(right);
+		return GioviTypeNumber.super.dot(right);
 	}
-
-
 
 }

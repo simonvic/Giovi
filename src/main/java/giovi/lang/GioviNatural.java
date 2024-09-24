@@ -4,22 +4,24 @@ import giovi.GioviParserVisitResult;
 import giovi.Natural;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class GioviNatural extends GioviNumber<Natural> {
+public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 
 	public static GioviNatural valueOf(String s) throws NumberFormatException {
 		return new GioviNatural(Natural.valueOf(s));
 	}
 
-	public GioviNatural(Natural value, Natural defaultValue) {
-		super(value, defaultValue);
-	}
-
-	public GioviNatural(Natural value) {
-		super(value, new Natural());
-	}
-
 	public GioviNatural() {
-		super(new Natural(), new Natural());
+		this(new Natural());
+	}
+
+	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
+	public Natural defaultValue() {
+		return new Natural();
 	}
 
 	@Override
@@ -39,9 +41,7 @@ public final class GioviNatural extends GioviNumber<Natural> {
 
 	@Override
 	public GioviNatural copy() {
-		return new GioviNatural(
-			new Natural(this.value.intValue()),
-			new Natural(this.defaultValue.intValue()));
+		return new GioviNatural(new Natural(this.value.intValue()));
 	}
 
 	@Override
@@ -67,52 +67,47 @@ public final class GioviNatural extends GioviNumber<Natural> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = new Natural(defaultValue.intValue());
-			case GioviNatural v -> value = v.value;
-			default -> super.redirection(content);
-		}
-		return this;
+		return switch (content) {
+			case GioviDefault _ -> new GioviNatural(defaultValue());
+			case GioviNatural(var v) -> new GioviNatural(v);
+			default -> GioviNumber.super.redirection(content);
+		};
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = value.plus(defaultValue);
-			case GioviNatural v -> value = value.plus(v.value);
-			default -> super.redirectionPlus(content);
-		}
-		return this;
+	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> new GioviNatural(value.plus(defaultValue()));
+			case GioviNatural(var v) -> new GioviNatural(value.plus(v));
+			default -> GioviNumber.super.redirectionPlus(right);
+		};
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = value.minus(defaultValue);
-			case GioviNatural v -> value = value.minus(v.value);
-			default -> super.redirectionMinus(content);
-		}
-		return this;
+	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> new GioviNatural(value.minus(defaultValue()));
+			case GioviNatural(var v) -> new GioviNatural(value.minus(v));
+			default -> GioviNumber.super.redirectionMinus(right);
+		};
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = value.multiply(defaultValue);
-			case GioviNatural v -> value = value.multiply(v.value);
-			default -> super.redirectionMultiply(content);
-		}
-		return this;
+	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> new GioviNatural(value.multiply(defaultValue()));
+			case GioviNatural(var v) -> new GioviNatural(value.multiply(v));
+			default -> GioviNumber.super.redirectionMultiply(right);
+		};
 	}
 
 	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = value.divide(defaultValue);
-			case GioviNatural v -> value = value.divide(v.value);
-			default -> super.redirectionDivide(content);
-		}
-		return this;
+	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> new GioviNatural(value.divide(defaultValue()));
+			case GioviNatural(var v) -> new GioviNatural(value.divide(v));
+			default -> GioviNumber.super.redirectionDivide(right);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -126,12 +121,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() + defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() + v.unbox().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() + v.unbox());
-			case GioviReal v -> new GioviReal(value.doubleValue() + v.unbox());
-			default -> super.plus(right);
+				new Natural(value.intValue() + defaultValue().intValue()));
+			case GioviNatural(var v) -> new GioviNatural(
+				new Natural(value.intValue() + v.intValue()));
+			case GioviInt(var v) -> new GioviInt(value.intValue() + v);
+			case GioviReal(var v) -> new GioviReal(value.doubleValue() + v);
+			default -> GioviNumber.super.plus(right);
 		};
 	}
 
@@ -139,12 +134,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() - defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() - v.unbox().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() - v.unbox());
-			case GioviReal v -> new GioviReal(value.doubleValue() - v.unbox());
-			default -> super.minus(right);
+				new Natural(value.intValue() - defaultValue().intValue()));
+			case GioviNatural(var v) -> new GioviNatural(
+				new Natural(value.intValue() - v.intValue()));
+			case GioviInt(var v) -> new GioviInt(value.intValue() - v);
+			case GioviReal(var v) -> new GioviReal(value.doubleValue() - v);
+			default -> GioviNumber.super.minus(right);
 		};
 	}
 
@@ -152,12 +147,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() * defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() * v.unbox().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() * v.unbox());
-			case GioviReal v -> new GioviReal(value.doubleValue() * v.unbox());
-			default -> super.multiply(right);
+				new Natural(value.intValue() * defaultValue().intValue()));
+			case GioviNatural(var v) -> new GioviNatural(
+				new Natural(value.intValue() * v.intValue()));
+			case GioviInt(var v) -> new GioviInt(value.intValue() * v);
+			case GioviReal(var v) -> new GioviReal(value.doubleValue() * v);
+			default -> GioviNumber.super.multiply(right);
 		};
 	}
 
@@ -165,11 +160,11 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() / defaultValue.intValue()));
-			case GioviNatural v -> new GioviReal(value.doubleValue() / v.unbox().doubleValue());
-			case GioviInt v -> new GioviReal(value.doubleValue() / v.unbox());
-			case GioviReal v -> new GioviReal(value.doubleValue() / v.unbox());
-			default -> super.divide(right);
+				new Natural(value.intValue() / defaultValue().intValue()));
+			case GioviNatural(var v) -> new GioviReal(value.doubleValue() / v.doubleValue());
+			case GioviInt(var v) -> new GioviReal(value.doubleValue() / v);
+			case GioviReal(var v) -> new GioviReal(value.doubleValue() / v);
+			default -> GioviNumber.super.divide(right);
 		};
 	}
 
@@ -177,12 +172,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() % defaultValue.intValue()));
-			case GioviNatural v -> new GioviNatural(
-				new Natural(value.intValue() % v.unbox().intValue()));
-			case GioviInt v -> new GioviInt(value.intValue() % v.unbox());
-			case GioviReal v -> new GioviReal(value.doubleValue() % v.unbox());
-			default -> super.modulo(right);
+				new Natural(value.intValue() % defaultValue().intValue()));
+			case GioviNatural(var v) -> new GioviNatural(
+				new Natural(value.intValue() % v.intValue()));
+			case GioviInt(var v) -> new GioviInt(value.intValue() % v);
+			case GioviReal(var v) -> new GioviReal(value.doubleValue() % v);
+			default -> GioviNumber.super.modulo(right);
 		};
 	}
 
@@ -190,12 +185,12 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural((int) Math.pow(value.intValue(), defaultValue.intValue())));
-			case GioviNatural v -> new GioviNatural(
-				new Natural((int) Math.pow(value.intValue(), v.unbox().intValue())));
-			case GioviInt v -> new GioviInt((int) Math.pow(value.intValue(), v.unbox()));
-			case GioviReal v -> new GioviReal(Math.pow(value.doubleValue(), v.unbox()));
-			default -> super.power(right);
+				new Natural((int) Math.pow(value.intValue(), defaultValue().intValue())));
+			case GioviNatural(var v) -> new GioviNatural(
+				new Natural((int) Math.pow(value.intValue(), v.intValue())));
+			case GioviInt(var v) -> new GioviInt((int) Math.pow(value.intValue(), v));
+			case GioviReal(var v) -> new GioviReal(Math.pow(value.doubleValue(), v));
+			default -> GioviNumber.super.power(right);
 		};
 	}
 
@@ -206,11 +201,11 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.intValue() == defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() == v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() == v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() == v.unbox());
-			default -> super.equal(right);
+			case GioviDefault _ -> new GioviBool(value.intValue() == defaultValue().intValue());
+			case GioviNatural(var v) -> new GioviBool(value.intValue() == v.intValue());
+			case GioviInt(var v) -> new GioviBool(value.intValue() == v);
+			case GioviReal(var v) -> new GioviBool(value.doubleValue() == v);
+			default -> GioviNumber.super.equal(right);
 		};
 	}
 
@@ -223,44 +218,44 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.intValue() < defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() < v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() < v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() < v.unbox());
-			default -> super.less(right);
+			case GioviDefault _ -> new GioviBool(value.intValue() < defaultValue().intValue());
+			case GioviNatural(var v) -> new GioviBool(value.intValue() < v.intValue());
+			case GioviInt(var v) -> new GioviBool(value.intValue() < v);
+			case GioviReal(var v) -> new GioviBool(value.doubleValue() < v);
+			default -> GioviNumber.super.less(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.intValue() <= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() <= v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() <= v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() <= v.unbox());
-			default -> super.lessEqual(right);
+			case GioviDefault _ -> new GioviBool(value.intValue() <= defaultValue().intValue());
+			case GioviNatural(var v) -> new GioviBool(value.intValue() <= v.intValue());
+			case GioviInt(var v) -> new GioviBool(value.intValue() <= v);
+			case GioviReal(var v) -> new GioviBool(value.doubleValue() <= v);
+			default -> GioviNumber.super.lessEqual(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.intValue() > defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() > v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() > v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() > v.unbox());
-			default -> super.greater(right);
+			case GioviDefault _ -> new GioviBool(value.intValue() > defaultValue().intValue());
+			case GioviNatural(var v) -> new GioviBool(value.intValue() > v.intValue());
+			case GioviInt(var v) -> new GioviBool(value.intValue() > v);
+			case GioviReal(var v) -> new GioviBool(value.doubleValue() > v);
+			default -> GioviNumber.super.greater(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.intValue() >= defaultValue.intValue());
-			case GioviNatural v -> new GioviBool(value.intValue() >= v.unbox().intValue());
-			case GioviInt v -> new GioviBool(value.intValue() >= v.unbox());
-			case GioviReal v -> new GioviBool(value.doubleValue() >= v.unbox());
-			default -> super.greaterEqual(right);
+			case GioviDefault _ -> new GioviBool(value.intValue() >= defaultValue().intValue());
+			case GioviNatural(var v) -> new GioviBool(value.intValue() >= v.intValue());
+			case GioviInt(var v) -> new GioviBool(value.intValue() >= v);
+			case GioviReal(var v) -> new GioviBool(value.doubleValue() >= v);
+			default -> GioviNumber.super.greaterEqual(right);
 		};
 	}
 
@@ -269,9 +264,9 @@ public final class GioviNatural extends GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviNatural(new Natural(defaultValue.intValue()));
+			return new GioviNatural();
 		}
-		return super.dot(right);
+		return GioviNumber.super.dot(right);
 	}
 
 }

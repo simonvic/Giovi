@@ -5,6 +5,7 @@ import java.util.List;
 
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public interface GioviParserVisitResult {
@@ -20,6 +21,7 @@ public interface GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
+	// Redirection methods will produce a new value based on the assignement
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR, content); }
 	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_PLUS, content); }
 	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MINUS, content); }
@@ -75,15 +77,26 @@ public interface GioviParserVisitResult {
 	default GioviBool asGioviBool() { return (GioviBool) this; }
 	default GioviText asGioviText() { return (GioviText) this; }
 	default GioviFunction asGioviFunction() { return (GioviFunction) this; }
-	default Number asNativeNumber() { return asGioviNumber().unbox(); }
-	default Natural asNativeNatural() { return asGioviNatural().unbox(); }
-	default Integer asNativeInt() { return asGioviInt().unbox(); }
-	default Double asNativeReal() { return asGioviReal().unbox(); }
-	default Boolean asNativeBool() { return asGioviBool().unbox(); }
-	default String asNativeText() { return asGioviText().unbox(); }
-	default List<?> asNativeList() { return asGioviList().unbox(); }
-	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().unbox(); }
+	default Number asNativeNumber() { return asGioviNumber().value(); }
+	default Natural asNativeNatural() { return asGioviNatural().value(); }
+	default Integer asNativeInt() { return asGioviInt().value(); }
+	default Double asNativeReal() { return asGioviReal().value(); }
+	default Boolean asNativeBool() { return asGioviBool().value(); }
+	default String asNativeText() { return asGioviText().value(); }
+	default List<?> asNativeList() { return asGioviList().value(); }
+	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return (Function) this; }
+	default Var<?> asVar() { return (Var<?>) this; }
+
+	/**
+	 * To be used ONLY when we know we can discard/ignore the default value of a variable
+	 */
+	default GioviValue<?> unwrapAsGioviValue() {
+		return switch (this) {
+			case Var<?> v -> v.value();
+			default -> (GioviValue<?>) this;
+		};
+	}
 
 	// @formatter:on
 

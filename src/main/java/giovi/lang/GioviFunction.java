@@ -4,18 +4,15 @@ import giovi.Function;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class GioviFunction extends GioviValue<Function> {
-
-	public GioviFunction(Function value, Function defaultValue) {
-		super(value, defaultValue);
-	}
-
-	public GioviFunction(Function value) {
-		super(value, Function.EMPTY);
-	}
+public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	public GioviFunction() {
-		super(Function.EMPTY, Function.EMPTY);
+		this(Function.EMPTY);
+	}
+
+	@Override
+	public Function defaultValue() {
+		return Function.EMPTY;
 	}
 
 	@Override
@@ -29,12 +26,13 @@ public final class GioviFunction extends GioviValue<Function> {
 			&& t.getSignature().equals(this.value.signature())) {
 			return this;
 		}
+		// TODO: clarify requirements. Should (Natural) => Int be wideneable to (Int) => Real ?
 		throw new NonWideneable(this, type);
 	}
 
 	@Override
 	public GioviFunction copy() {
-		return new GioviFunction(value.copy(), defaultValue.copy());
+		return new GioviFunction(value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -46,7 +44,7 @@ public final class GioviFunction extends GioviValue<Function> {
 		// TODO: do this properly
 		return switch (right) {
 			case GioviTypeFunction v -> this;
-			default -> super.as(right);
+			default -> GioviValue.super.as(right);
 		};
 	}
 
@@ -54,20 +52,19 @@ public final class GioviFunction extends GioviValue<Function> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		switch (content) {
-			case GioviDefault _ -> value = defaultValue.copy();
+		return switch (content) {
+			case GioviDefault _ -> new GioviFunction(defaultValue());
 			case GioviFunction v when v.value.signature()
-				.equals(this.value.signature()) -> this.value = v.value.copy();
+				.equals(this.value.signature()) -> new GioviFunction(v.value.copy());
 
 			// equal parameters and return type
 			case GioviFunction v when v.value.signature().parameters()
 				.equals(value.signature().parameters())
 				&& v.value.signature().returnType()
-					.equals(value.signature().returnType()) -> this.value = v.value.copy();
+					.equals(value.signature().returnType()) -> new GioviFunction(v.value.copy());
 
-			default -> super.redirection(content);
-		}
-		return this;
+			default -> GioviValue.super.redirection(content);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
@@ -81,9 +78,9 @@ public final class GioviFunction extends GioviValue<Function> {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviFunction(defaultValue.copy());
+			return new GioviFunction();
 		}
-		return super.dot(right);
+		return GioviValue.super.dot(right);
 	}
 
 }

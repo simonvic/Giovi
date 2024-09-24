@@ -74,12 +74,12 @@ public class VisitorUtils {
 		if (lhs instanceof GioviBool b) {
 			switch (operator) {
 				case AND, AND_SYM -> {
-					if (!b.unbox()) {
+					if (!b.value()) {
 						return new GioviBool(false);
 					}
 				}
 				case OR, OR_SYM -> {
-					if (b.unbox()) {
+					if (b.value()) {
 						return new GioviBool(true);
 					}
 				}
@@ -111,18 +111,18 @@ public class VisitorUtils {
 		};
 	}
 
-	public static void redirection(
+	public static GioviParserVisitResult redirection(
 		GioviParserVisitResult content,
 		GioviToken operator,
 		GioviParserVisitResult destination) {
-		switch (operator) {
+		return switch (operator) {
 			case REDIR, REDIR_RTL -> destination.redirection(content);
 			case REDIR_PLUS, REDIR_PLUS_RTL -> destination.redirectionPlus(content);
 			case REDIR_MINUS, REDIR_MINUS_RTL -> destination.redirectionMinus(content);
 			case REDIR_MULT, REDIR_MULT_RTL -> destination.redirectionMultiply(content);
 			case REDIR_DIV, REDIR_DIV_RTL -> destination.redirectionDivide(content);
 			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
-		}
+		};
 	}
 
 	public static void redirectionToPrimitive(

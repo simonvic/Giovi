@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import giovi.lang.*;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
@@ -32,13 +33,19 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		return expand().stream().map(GioviValue::of).toList();
 	}
 
+	public List<? extends Var<?>> expandAsVar() {
+		return expand().stream().map(Var::of).toList();
+	}
+
 	public GioviList expandAsGioviList() {
-		var gioviList = new ArrayList<GioviValue<?>>(
-			expand().stream().map(GioviValue::of).toList());
+		var gioviList = new ArrayList<Var<?>>(
+			expand().stream().map(Var::of).toList());
 		return new GioviList(GioviTypes.inferGioviType(gioviList), gioviList);
 	}
 
-	public static Range<?> of(GioviParserVisitResult start, GioviParserVisitResult end,
+	public static Range<?> of(
+		GioviParserVisitResult start,
+		GioviParserVisitResult end,
 		GioviParserVisitResult step) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
@@ -54,15 +61,15 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 
 		int stepInt = step == null ? 1 : stepNumber.intValue();
 		if (start instanceof GioviInt s && end instanceof GioviInt e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		if (start instanceof GioviNatural s && end instanceof GioviNatural e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		if (start instanceof GioviText s && end instanceof GioviText e) {
-			return Range.of(s.unbox(), e.unbox(), stepInt);
+			return Range.of(s.value(), e.value(), stepInt);
 		}
 
 		throw new GioviException("Invalid range: %s .. %s .. %s".formatted(start, end, step));

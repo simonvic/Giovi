@@ -33,9 +33,9 @@ public class TestGioviMap {
 				[ 1:"a" 2:"b" 3:"c" ]
 				""").asGioviMap();
 			assertAll(
-				() -> assertThat(map.getKeyType().unbox())
+				() -> assertThat(map.getKeyType().value())
 					.isEqualTo(GioviInt.class),
-				() -> assertThat(map.getElementType().unbox())
+				() -> assertThat(map.getElementType().value())
 					.isEqualTo(GioviText.class));
 		}
 
@@ -44,7 +44,7 @@ public class TestGioviMap {
 			assertThat(visitExpression("""
 				[ 1i:"a" 2n:"b" 3r:"c" ]
 				""").asGioviMap()
-				.getKeyType().unbox())
+				.getKeyType().value())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -53,7 +53,7 @@ public class TestGioviMap {
 			assertThat(visitExpression("""
 				[ 1:1n 2:2i 3:3r ]
 				""").asGioviMap()
-				.getElementType().unbox())
+				.getElementType().value())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -64,10 +64,10 @@ public class TestGioviMap {
 				""").asGioviMap();
 			assertAll(
 				() -> assertThat(map
-					.getKeyType().unbox())
+					.getKeyType().value())
 						.isEqualTo(GioviReal.class),
 				() -> assertThat(map
-					.getElementType().unbox())
+					.getElementType().value())
 						.isEqualTo(GioviReal.class));
 		}
 
@@ -75,7 +75,7 @@ public class TestGioviMap {
 		void mapOfMixedKeyElementType_shouldCastEntriesToWidest() {
 			assertThat(visitExpression("""
 				[ 1n:1n 2i:2i 3r:3r ]
-				""").asGioviMap().unbox())
+				""").asGioviMap().value())
 				.allSatisfy((k, e) -> assertAll(
 					() -> assertThat(k.getGioviType()).isEqualTo(new GioviTypeReal()),
 					() -> assertThat(e.getGioviType()).isEqualTo(new GioviTypeReal())));
@@ -207,7 +207,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					[69:"foo" 420:"bar" 69420:"foobar"] -> x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(69, "foo", 420, "bar", 69420, "foobar"));
 			}
 
@@ -217,7 +219,9 @@ public class TestGioviMap {
 					[1r:1r 2r:2r 3r:3r] -> x [Real:Real]
 					[1:10 2:20 3:30] -> x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1d, 10d, 2d, 20d, 3d, 30d));
 			}
 
@@ -236,7 +240,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					[3:"foobar"] ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "foobar"));
 			}
 
@@ -246,7 +252,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					[69:"foobar"] ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c", 69, "foobar"));
 			}
 
@@ -256,7 +264,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					[3:"foo" 69:"bar" 42:"foobar"] ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "foo", 69, "bar", 42, "foobar"));
 			}
 
@@ -266,7 +276,9 @@ public class TestGioviMap {
 					[1r:1r 2r:2r 3r:3r] -> x [Real:Real]
 					[1:69 2:420] ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1d, 69d, 2d, 420d, 3d, 3d));
 			}
 
@@ -285,7 +297,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- [2:"b"]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -295,7 +309,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- [2:"foobar"]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -305,7 +321,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- [222:"b"]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -315,7 +333,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- 2
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -325,7 +345,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- 2n
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -335,7 +357,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- 222
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -345,7 +369,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- [2:"b" 3:"c"]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a"));
 			}
 
@@ -355,7 +381,9 @@ public class TestGioviMap {
 					[1i:1r 2i:2r 3i:3r] -> x [Int:Real]
 					x -<- [2n:2i]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, 1d, 3, 3d));
 			}
 
@@ -366,7 +394,9 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
 					x -<- [2 3]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviMaps.of(1, "a"));
 			}
 
@@ -379,10 +409,13 @@ public class TestGioviMap {
 						[3:"c"] : "C"
 					]
 					x -<- [3:"c"]
-					""").getCurrentScope().getVariableValue("x"))
-					.isEqualTo(GioviMaps.of(
-						Map.of(1, "a"), "A",
-						Map.of(2, "b"), "B"));
+					""").getCurrentScope()
+					.getVariable("x")
+					.get()
+					.value())
+						.isEqualTo(GioviMaps.of(
+							Map.of(1, "a"), "A",
+							Map.of(2, "b"), "B"));
 			}
 
 			@Test
@@ -416,7 +449,7 @@ public class TestGioviMap {
 			void checkingIfContainsExistingKey_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "a"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -424,7 +457,7 @@ public class TestGioviMap {
 			void checkingIfContainsExistingEqualKeyWithDifferentType_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					[1n:"a" 2n:"b"] =~ 1i
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -432,7 +465,7 @@ public class TestGioviMap {
 			void checkingIfContainsNonExistingKey_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] =~ "zzz"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -440,7 +473,7 @@ public class TestGioviMap {
 			void checkingIfContainsExistingSubset_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1 "b":2 "c":3] =~ ["b":2 "c":3]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -453,7 +486,7 @@ public class TestGioviMap {
 			void comparingMapsWithEqualEntries_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["a":1i] = ["a":1i]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -461,7 +494,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentEntryTypeButEqualValue_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					[1n:1n] = [1i:1i]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -469,7 +502,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentKeyType_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					[1:69] = ["hello":69]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -477,7 +510,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentElementType_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					[1:"hello"] = [1:69]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -485,7 +518,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentElements_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1 "b":2] = ["a":1 "b":3]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -493,7 +526,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentKeys_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1 "c":2] = ["a":1 "b":2]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -501,7 +534,7 @@ public class TestGioviMap {
 			void comparingMapsWithDifferentEntriesCount_shouldReturnFalse() {
 				assertThat(visitExpression("""
 					["a":1] = ["a":1 "b":2]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -516,7 +549,7 @@ public class TestGioviMap {
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
 				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@%
-					""").asGioviInt().unbox())
+					""").asGioviInt().value())
 					.isEqualTo(3);
 			}
 
@@ -540,8 +573,11 @@ public class TestGioviMap {
 			void accessWithValueKey_shouldReturnMappedElement() {
 				assertThat(visitExpression("""
 					[1:"a" 2:"b" 3:"c"]@2
-					""").asGioviText().unbox())
-					.isEqualTo("b");
+					""")
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo("b");
 			}
 
 			@Test

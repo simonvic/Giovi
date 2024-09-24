@@ -4,48 +4,31 @@ import giovi.FieldKey;
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
 
-public final class GioviTypeStruct extends GioviTypeTupleNamed {
-
-	private final Struct definition;
-
-	public GioviTypeStruct(Struct definition) {
-		super(GioviStruct.class, definition);
-		this.definition = definition;
-	}
-
-	@Override
-	public Struct getDefinition() {
-		return definition;
-	}
+public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruct> {
 
 	public String getTypename() {
 		return definition.getTypename();
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
-		return result;
+	public String toString() {
+		return definition.toStringDefinition();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviTypeStruct other = (GioviTypeStruct) obj;
-		if (definition == null) {
-			if (other.definition != null) return false;
-		} else if (!definition.equals(other.definition)) return false;
-		return true;
+	public Class<? extends GioviStruct> value() {
+		return GioviStruct.class;
+	}
+
+	@Override
+	public Class<? extends GioviStruct> defaultValue() {
+		return GioviStruct.class;
 	}
 
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeStruct t -> t.definition.equals(this.definition);
+			case GioviTypeStruct t -> t.definition.canWidenTo(this.definition);
 			default -> false;
 		};
 	}
@@ -65,7 +48,7 @@ public final class GioviTypeStruct extends GioviTypeTupleNamed {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(definition.copy());
 			case FieldKey(var identifier) -> definition.get(identifier).copy();
-			default -> super.dot(right);
+			default -> GioviType.super.dot(right);
 		};
 	}
 

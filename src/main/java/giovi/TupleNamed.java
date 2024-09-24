@@ -1,27 +1,24 @@
 package giovi;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.BiConsumer;
 
-import giovi.lang.GioviValue;
+import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.UnknownTupleField;
 
 public sealed class TupleNamed extends Tuple permits Struct {
 
-	protected final LinkedHashMap<String, GioviValue<?>> fields;
+	protected final LinkedHashMap<String, VarD<?>> fields;
 
 	public TupleNamed() {
 		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
-	public TupleNamed(LinkedHashMap<String, GioviValue<?>> fields) {
+	public TupleNamed(LinkedHashMap<String, VarD<?>> fields) {
 		super(new ArrayList<>(fields.values()));
 		this.fields = fields;
 	}
@@ -86,7 +83,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public TupleNamed copy() {
-		var a = new LinkedHashMap<String, GioviValue<?>>();
+		var a = new LinkedHashMap<String, VarD<?>>();
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new TupleNamed(a);
 	}
@@ -96,11 +93,14 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
 			try {
-				GioviValue<?> otherField = other.getField(entry.getKey());
-				if (!entry.getValue().equal(otherField).asNativeBool()) {
+				var otherFieldOpt = other.getField(entry.getKey());
+				if (otherFieldOpt.isEmpty()) {
 					return false;
 				}
-			} catch (UnknownTupleField | OperatorNotSupported e) {
+				if (!entry.getValue().equal(otherFieldOpt.get()).asNativeBool()) {
+					return false;
+				}
+			} catch (OperatorNotSupported e) {
 				return false;
 			}
 		}
@@ -109,34 +109,28 @@ public sealed class TupleNamed extends Tuple permits Struct {
 
 	@Override
 	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
-		var widened = new LinkedHashMap<String, GioviValue<?>>();
-		for (var entry : to.fields.entrySet()) {
-			GioviValue<?> thisField;
-			try {
-				thisField = getField(entry.getKey());
-			} catch (UnknownTupleField e) {
-				throw new NonWideneable(e);
-			}
-			widened.put(
-				entry.getKey(),
-				thisField.widenTo(entry.getValue().getGioviType()));
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		for (var widerEntry : to.fields.entrySet()) {
+			var thisField = getField(widerEntry.getKey()).orElseThrow(
+				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
+			var widerField = widerEntry.getValue();
+			widenedFields.put(
+				widerEntry.getKey(),
+				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
-		return new TupleNamed(widened);
+		return new TupleNamed(widenedFields);
 	}
 
 	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
-		for (var entry : to.fields.entrySet()) {
-			GioviValue<?> thisField;
-			try {
-				thisField = getField(entry.getKey());
-			} catch (UnknownTupleField e) {
-				throw new NonWideneable(e);
-			}
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		for (var widerEntry : to.fields.entrySet()) {
+			var thisField = getField(widerEntry.getKey()).orElseThrow(
+				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
+			var widerField = widerEntry.getValue();
 			widenedFields.put(
-				entry.getKey(),
-				thisField.widenTo(entry.getValue().getGioviType()));
+				widerEntry.getKey(),
+				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
 		return new Struct(to.getTypename(), widenedFields);
 	}
@@ -145,27 +139,23 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	public GioviValue<?> getField(String identifier) throws UnknownTupleField {
-		var v = fields.get(identifier);
-		if (v == null) {
-			throw new UnknownTupleField(this, identifier);
-		}
-		return v;
+	public Optional<VarD<?>> getField(String identifier) {
+		return Optional.ofNullable(fields.get(identifier));
 	}
 
 	public List<String> getFieldNames() {
 		return new ArrayList<>(fields.keySet());
 	}
 
-	public GioviValue<?> get(String identifier) {
+	public VarD<?> get(String identifier) {
 		return fields.get(identifier);
 	}
 
-	public Set<Entry<String, GioviValue<?>>> entrySet() {
+	public Set<Entry<String, VarD<?>>> entrySet() {
 		return fields.entrySet();
 	}
 
-	public void forEach(BiConsumer<String, GioviValue<?>> valueConsumer) {
+	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 

@@ -1,25 +1,28 @@
 package giovi;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import giovi.lang.GioviValue;
+import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class Tuple permits TupleNamed {
 
-	private final List<GioviValue<?>> fields;
+	private final List<VarD<?>> fields;
 
 	public Tuple() {
 		fields = new ArrayList<>();
 	}
 
-	public Tuple(List<GioviValue<?>> fields) {
+	public Tuple(List<VarD<?>> fields) {
 		this.fields = fields;
+	}
+
+	public Tuple(VarD<?>... fields) {
+		this.fields = new ArrayList<>(Arrays.asList(fields));
 	}
 
 	@Override
@@ -71,14 +74,17 @@ public sealed class Tuple permits TupleNamed {
 	}
 
 	public Tuple copy() {
-		var a = new ArrayList<GioviValue<?>>();
+		var a = new ArrayList<VarD<?>>();
 		this.fields.forEach(value -> a.add(value.copy()));
 		return new Tuple(a);
 	}
 
 	public Tuple copy(Range<Integer> range) {
-		var list = new ArrayList<GioviValue<?>>();
-		range.iterate(index -> list.add(getField(index).copy()));
+		var list = new ArrayList<VarD<?>>();
+		range.iterate(index -> list.add(
+			getField(index)
+				.orElseThrow(() -> new NoSuchField(index))
+				.copy()));
 		return new Tuple(list);
 	}
 
@@ -86,15 +92,15 @@ public sealed class Tuple permits TupleNamed {
 		return fields.size();
 	}
 
-	public GioviValue<?> getField(int index) {
-		return fields.get(index);
+	public Optional<VarD<?>> getField(int index) {
+		return Optional.ofNullable(fields.get(index));
 	}
 
-	public void forEach(Consumer<GioviValue<?>> valueConsumer) {
+	public void forEach(Consumer<VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 
-	public void forEachIndexed(BiConsumer<Integer, GioviValue<?>> valueConsumer) {
+	public void forEachIndexed(BiConsumer<Integer, VarD<?>> valueConsumer) {
 		for (int i = 0; i < fields.size(); i++) {
 			valueConsumer.accept(i, fields.get(i));
 		}
@@ -144,9 +150,13 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new ArrayList<GioviValue<?>>();
+		var widenedFields = new ArrayList<VarD<?>>();
 		for (int i = 0; i < fields.size(); i++) {
-			widenedFields.add(this.fields.get(i).widenTo(to.fields.get(i).getGioviType()));
+			var narrowField = this.fields.get(i);
+			var widerField = to.fields.get(i);
+			// we widen the field, but use the default value of the wider field
+			widenedFields.add(
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
 		return new Tuple(widenedFields);
 	}
@@ -155,12 +165,16 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
+			final int j = i;
+			var narrowField = this.getField(i)
+				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
+			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),
-				this.getField(i).widenTo(entry.getValue().getGioviType()));
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 			i++;
 		}
 		return new TupleNamed(widenedFields);
@@ -170,12 +184,16 @@ public sealed class Tuple permits TupleNamed {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
-		var widenedFields = new LinkedHashMap<String, GioviValue<?>>();
+		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		int i = 0;
 		for (var entry : to.fields.entrySet()) {
+			final int j = i;
+			var narrowField = this.getField(i)
+				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
+			var widerField = entry.getValue();
 			widenedFields.put(
 				entry.getKey(),
-				this.getField(i).widenTo(entry.getValue().getGioviType()));
+				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 			i++;
 		}
 		return new Struct(to.getTypename(), widenedFields);

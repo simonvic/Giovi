@@ -1,15 +1,7 @@
 package giovi.lang;
 
-public abstract sealed class GioviTypeNumber<T extends GioviNumber<?>>
+public sealed interface GioviTypeNumber<T extends GioviNumber<?>>
 	extends GioviTypePrimitive<T>
 	permits GioviTypeNatural, GioviTypeInt, GioviTypeReal {
-
-	public GioviTypeNumber(Class<T> value, Class<T> defaultValue) {
-		super(value, defaultValue);
-	}
-
-	public GioviTypeNumber(Class<T> value) {
-		super(value);
-	}
 
 }

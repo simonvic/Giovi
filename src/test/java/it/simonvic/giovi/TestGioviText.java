@@ -21,7 +21,7 @@ public class TestGioviText {
 		void testText() {
 			assertThat(visitExpression("""
 				"hello world"
-				""").asGioviText().unbox()).isEqualTo(
+				""").asGioviText().value()).isEqualTo(
 				"hello world");
 		}
 
@@ -29,7 +29,7 @@ public class TestGioviText {
 		void testExactText() {
 			assertThat(visitExpression("""
 				'hello world'
-				""").asGioviText().unbox()).isEqualTo(
+				""").asGioviText().value()).isEqualTo(
 				"hello world");
 		}
 
@@ -40,7 +40,7 @@ public class TestGioviText {
 			void singleLineAndEmpty_shouldBeEmptyString() {
 				assertThat(visitExpression("""
 					"{}"
-					""").asGioviText().unbox()).isEqualTo(
+					""").asGioviText().value()).isEqualTo(
 					"");
 			}
 
@@ -48,7 +48,7 @@ public class TestGioviText {
 			void singleLineNotEmpty_shouldBeOneLineString() {
 				assertThat(visitExpression("""
 					"{hello world}"
-					""").asGioviText().unbox()).isEqualTo(
+					""").asGioviText().value()).isEqualTo(
 					"hello world");
 			}
 
@@ -58,7 +58,7 @@ public class TestGioviText {
 					"{
 					hello world
 					}"
-					""").asGioviText().unbox()).isEqualTo("""
+					""").asGioviText().value()).isEqualTo("""
 					hello world
 					""");
 			}
@@ -70,7 +70,7 @@ public class TestGioviText {
 					hello
 					world
 					}"
-					""").asGioviText().unbox()).isEqualTo("""
+					""").asGioviText().value()).isEqualTo("""
 					hello
 					world
 					""");
@@ -82,7 +82,7 @@ public class TestGioviText {
 					"{hello
 					world
 					}"
-					""").asGioviText().unbox()).isEqualTo("""
+					""").asGioviText().value()).isEqualTo("""
 					hello
 					world
 					""");
@@ -94,7 +94,7 @@ public class TestGioviText {
 					"{
 					hello
 					world}"
-					""").asGioviText().unbox()).isEqualTo("""
+					""").asGioviText().value()).isEqualTo("""
 					hello
 					world""");
 			}
@@ -106,7 +106,7 @@ public class TestGioviText {
 
 
 					}"
-					""").asGioviText().unbox()).isEqualTo("""
+					""").asGioviText().value()).isEqualTo("""
 
 
 					""");
@@ -122,7 +122,7 @@ public class TestGioviText {
 						"{	hello
 						world
 						}"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"\thello\nworld\n");
 				}
 
@@ -133,7 +133,7 @@ public class TestGioviText {
 							hello
 							world
 							}"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"hello\nworld\n");
 				}
 
@@ -145,7 +145,7 @@ public class TestGioviText {
 								world
 										!!!
 								}"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"\thello\nworld\n\t\t!!!\n");
 				}
 
@@ -157,7 +157,7 @@ public class TestGioviText {
 									world
 									!!!
 								}"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"\thello\n\tworld\n\t!!!\n");
 				}
 
@@ -169,7 +169,7 @@ public class TestGioviText {
 						    world
 						            !!!
 						    }"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"    hello\nworld\n        !!!\n");
 				}
 
@@ -181,7 +181,7 @@ public class TestGioviText {
 						        world
 						        !!!
 						    }"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"    hello\n    world\n    !!!\n");
 				}
 
@@ -193,7 +193,7 @@ public class TestGioviText {
 								    world
 								    !!!
 								    }"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"    hello\n    world\n    !!!\n    ");
 				}
 
@@ -205,7 +205,7 @@ public class TestGioviText {
 								  world
 								    !!!
 								  }"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"\thello\n  world\n    !!!\n  ");
 				}
 
@@ -217,7 +217,7 @@ public class TestGioviText {
 						    	world
 						    	!!!
 						    	}"
-						""").asGioviText().unbox()).isEqualTo(
+						""").asGioviText().value()).isEqualTo(
 						"\thello\n\tworld\n\t!!!\n\t");
 				}
 
@@ -242,8 +242,10 @@ public class TestGioviText {
 					"foo" -> x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo("foo");
 			}
 
@@ -254,8 +256,10 @@ public class TestGioviText {
 					"bar" ->+ x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo("foobar");
 			}
 
@@ -266,8 +270,10 @@ public class TestGioviText {
 					"foo" ->- x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo("bar");
 			}
 
@@ -278,8 +284,10 @@ public class TestGioviText {
 					"foo" ->- x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo("bar");
 			}
 
@@ -293,7 +301,7 @@ public class TestGioviText {
 			void plus_shouldConcatenate() {
 				assertThat(visitExpression("""
 					"hello" + " world"
-					""").asGioviText().unbox()).isEqualTo(
+					""").asGioviText().value()).isEqualTo(
 					"hello world");
 			}
 
@@ -301,7 +309,7 @@ public class TestGioviText {
 			void minus_shouldRemoveAllSubstrings() {
 				assertThat(visitExpression("""
 					"hello world" - "o"
-					""").asGioviText().unbox()).isEqualTo(
+					""").asGioviText().value()).isEqualTo(
 					"hell wrld");
 			}
 
@@ -309,7 +317,7 @@ public class TestGioviText {
 			void power_shouldRepeat() {
 				assertThat(visitExpression("""
 					"Hello" ^ 3
-					""").asGioviText().unbox()).isEqualTo(
+					""").asGioviText().value()).isEqualTo(
 					"HelloHelloHello");
 			}
 
@@ -331,7 +339,7 @@ public class TestGioviText {
 			void less_shouldCompareLexicographically() {
 				assertThat(visitExpression("""
 					"11" < "2"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -339,7 +347,7 @@ public class TestGioviText {
 			void greater_shouldCompareLexicographically() {
 				assertThat(visitExpression("""
 					"2" > "11"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -347,7 +355,7 @@ public class TestGioviText {
 			void equalTexts_shouldBeEqual() {
 				assertThat(visitExpression("""
 					"hello" = "hello"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -355,7 +363,7 @@ public class TestGioviText {
 			void equal_shouldBeCaseSensitive() {
 				assertThat(visitExpression("""
 					"hello" = "heLLO"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -374,7 +382,7 @@ public class TestGioviText {
 				"01234"@4, 4
 				""")
 			void accessWithInt_shouldReturnCharAtIndex(String expression, String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -389,7 +397,7 @@ public class TestGioviText {
 			void accessWithNegativeInt_shouldReturnCharAtRearIndex(
 				String expression,
 				String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -408,7 +416,7 @@ public class TestGioviText {
 				"01234"@2..4, 234
 				""")
 			void accessWithRange_shouldReturnSubstring(String expression, String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -427,7 +435,7 @@ public class TestGioviText {
 			void accessWithInverseRange_shouldReturnSubstringReversed(
 				String expression,
 				String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -446,7 +454,7 @@ public class TestGioviText {
 				"01234"@2..4..2, 24
 				""")
 			void accessWithStepRange_shouldReturnSubstring(String expression, String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -464,7 +472,7 @@ public class TestGioviText {
 			void accessWithInverseStepRange_shouldReturnSubstringReversed(
 				String expression,
 				String expected) {
-				assertThat(visitExpression(expression).asGioviText().unbox())
+				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
 
@@ -472,7 +480,7 @@ public class TestGioviText {
 			void accessWithLengthOperator_shouldReturnCharactersCount() {
 				assertThat(visitExpression("""
 					"01234"@%
-					""").asGioviInt().unbox())
+					""").asGioviInt().value())
 					.isEqualTo(5);
 			}
 

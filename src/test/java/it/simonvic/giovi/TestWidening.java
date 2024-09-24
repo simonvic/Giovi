@@ -8,10 +8,7 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import giovi.Natural;
-import giovi.Struct;
-import giovi.Tuple;
-import giovi.TupleNamed;
+import giovi.*;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.*;
@@ -179,34 +176,37 @@ public class TestWidening {
 
 		@Test
 		void testWidening_toTuple_with_sameFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				69,
 				true,
-				"foo")
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
-					new GioviInt(),
-					new GioviBool(),
-					new GioviText())))))
-						.isEqualTo(GioviTuples.of(
-							69,
-							true,
-							"foo"));
+				"foo");
+			var type = new GioviTypeTuple(new Tuple(
+				new VarD<>(new GioviInt()),
+				new VarD<>(new GioviBool()),
+				new VarD<>(new GioviText())));
+			assertThat(narrow.widenTo(type)).isEqualTo(GioviTuples.of(
+				69,
+				true,
+				"foo"));
 		}
 
 		@Test
 		void testWidening_toTuple_with_widerFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
-				List.of(69, 420))
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
-					new GioviInt(),
-					new GioviReal(),
-					new GioviList(new GioviTypeReal()))))))
-						.isEqualTo(GioviTuples.of(
-							69,
-							69d,
-							List.of(69d, 420d)));
+				List.of(69, 420));
+			var type = new GioviTypeTuple(new Tuple(
+				new VarD<>(new GioviInt()),
+				new VarD<>(new GioviReal()),
+				new VarD<>(
+					new GioviList(new GioviTypeReal()),
+					new GioviList(new GioviTypeReal()))));
+			assertThat(narrow.widenTo(type).value())
+				.isEqualTo(new Tuple(
+					VarD.of(69),
+					VarD.of(69d),
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal()))));
 		}
 
 		@Test
@@ -215,42 +215,42 @@ public class TestWidening {
 				69,
 				69d,
 				List.of(69d, 420d))
-				.widenTo(new GioviTypeTuple(new Tuple(List.of(
-					new GioviNatural(),
-					new GioviInt(),
-					new GioviList(new GioviTypeInt()))))));
+				.widenTo(new GioviTypeTuple(new Tuple(
+					new VarD<>(new GioviNatural()),
+					new VarD<>(new GioviInt()),
+					new VarD<>(new GioviList(new GioviTypeInt()))))));
 		}
 
 		@Test
 		void testWidening_toNamedTuple_with_sameFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
-				List.of(69, 420))
-				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
-					"n", new Natural(0),
-					"i", 0,
-					"li", List.of(0)))))
-						.isEqualTo(GioviTuples.ofNamed(
-							"n", new Natural(69),
-							"i", 69,
-							"li", List.of(69, 420)));
+				List.of(69, 420));
+			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+				"n", new VarD<>(new GioviNatural()),
+				"i", new VarD<>(new GioviInt()),
+				"li", new VarD<>(new GioviList(new GioviTypeInt()))));
+			assertThat(narrow.widenTo(type).value()).isEqualTo(Tuples.ofNamed(
+				"n", new VarD<>(new GioviNatural(new Natural(69))),
+				"i", new VarD<>(new GioviInt(69)),
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt()))));
 		}
 
 		@Test
 		void testWidening_toNamedTuple_with_widerFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
-				List.of(69, 420))
-				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
-					"i", 0,
-					"r", 0d,
-					"lr", List.of(0d)))))
-						.isEqualTo(GioviTuples.ofNamed(
-							"i", 69,
-							"r", 69d,
-							"lr", List.of(69d, 420d)));
+				List.of(69, 420));
+			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+				"i", new VarD<>(new GioviInt()),
+				"r", new VarD<>(new GioviReal()),
+				"lr", new VarD<>(new GioviList(new GioviTypeReal()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviTupleNamed(Tuples.ofNamed(
+				"i", new VarD<>(new GioviInt(69)),
+				"r", new VarD<>(new GioviReal(69d)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
 		}
 
 		@Test
@@ -260,46 +260,46 @@ public class TestWidening {
 				69d,
 				List.of(69d, 420d))
 				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
-					"n", new Natural(),
-					"i", 0,
-					"li", List.of(0)))));
+					"n", new VarD<>(new GioviNatural()),
+					"i", new VarD<>(new GioviInt()),
+					"li", new VarD<>(new GioviList(new GioviTypeInt()))))));
 		}
 
 
 		@Test
 		void testWidening_toStruct_with_sameFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
-				List.of(69, 420))
-				.widenTo(new GioviTypeStruct(Structs.ofNative(
-					"Foo",
-					"n", new Natural(0),
-					"i", 0,
-					"li", List.of(0)))))
-						.isEqualTo(GioviStructs.ofNative(
-							"Foo",
-							"n", new Natural(69),
-							"i", 69,
-							"li", List.of(69, 420)));
+				List.of(69, 420));
+			var type = new GioviTypeStruct(Structs.of(
+				"Foo",
+				"n", new VarD<>(new GioviNatural()),
+				"i", new VarD<>(new GioviInt()),
+				"li", new VarD<>(new GioviList(new GioviTypeInt()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(Structs.of(
+				"Foo",
+				"n", new VarD<>(new GioviNatural(new Natural(69))),
+				"i", new VarD<>(new GioviInt(69)),
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
 		}
 
 		@Test
 		void testWidening_toStruct_with_widerFields() throws NonWideneable {
-			assertThat(GioviTuples.of(
+			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
-				List.of(69, 420))
-				.widenTo(new GioviTypeStruct(Structs.ofNative(
-					"Foo",
-					"i", 0,
-					"r", 0d,
-					"lr", List.of(0d)))))
-						.isEqualTo(GioviStructs.ofNative(
-							"Foo",
-							"i", 69,
-							"r", 69d,
-							"lr", List.of(69d, 420d)));
+				List.of(69, 420));
+			var type = new GioviTypeStruct(Structs.of(
+				"Foo",
+				"i", new VarD<>(new GioviInt()),
+				"r", new VarD<>(new GioviReal()),
+				"lr", new VarD<>(new GioviList(new GioviTypeReal()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(Structs.of(
+				"Foo",
+				"i", new VarD<>(new GioviInt(69)),
+				"r", new VarD<>(new GioviReal(69d)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
 		}
 
 		@Test
@@ -338,18 +338,18 @@ public class TestWidening {
 
 		@Test
 		void testWidening_toNamedTuple_with_sameFields() throws NonWideneable {
-			assertThat(GioviTuples.ofNamed(
+			var narrow = GioviTuples.ofNamed(
 				"a", new Natural(69),
 				"b", 69,
-				"c", List.of(69, 420))
-				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
-					"a", new Natural(0),
-					"b", 0,
-					"c", List.of(0)))))
-						.isEqualTo(GioviTuples.ofNamed(
-							"a", new Natural(69),
-							"b", 69,
-							"c", List.of(69, 420)));
+				"c", List.of(69, 420));
+			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+				"a", new VarD<>(new GioviNatural()),
+				"b", new VarD<>(new GioviInt()),
+				"c", new VarD<>(new GioviList(new GioviTypeInt()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviTupleNamed(Tuples.ofNamed(
+				"a", new VarD<>(new GioviNatural(new Natural(69))),
+				"b", new VarD<>(new GioviInt(69)),
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
 		}
 
 		@Test
@@ -359,27 +359,27 @@ public class TestWidening {
 				"b", 69,
 				"c", List.of(69, 420))
 				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
-					"x", new Natural(0),
-					"y", 0,
-					"z", List.of(0)))));
+					"x", new VarD<>(new GioviNatural()),
+					"y", new VarD<>(new GioviInt()),
+					"z", new VarD<>(new GioviList(new GioviTypeInt()))))));
 		}
 
 		@Test
 		void testWidening_toStruct_with_sameFields() throws NonWideneable {
-			assertThat(GioviTuples.ofNamed(
+			var narrow = GioviTuples.ofNamed(
 				"a", new Natural(69),
 				"b", 69,
-				"c", List.of(69, 420))
-				.widenTo(new GioviTypeStruct(Structs.ofNative(
-					"Foo",
-					"a", 0,
-					"b", 0d,
-					"c", List.of(0d)))))
-						.isEqualTo(GioviStructs.ofNative(
-							"Foo",
-							"a", 69,
-							"b", 69d,
-							"c", List.of(69d, 420d)));
+				"c", List.of(69, 420));
+			var type = new GioviTypeStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviInt()),
+				"b", new VarD<>(new GioviReal()),
+				"c", new VarD<>(new GioviList(new GioviTypeReal()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviInt(69)),
+				"b", new VarD<>(new GioviReal(69d)),
+				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
 		}
 
 		@Test
@@ -430,21 +430,21 @@ public class TestWidening {
 
 		@Test
 		void testWidening_toStruct_of_sameType() throws NonWideneable {
-			assertThat(GioviStructs.ofNative(
+			var narrow = GioviStructs.ofNative(
 				"Foo",
 				"a", new Natural(69),
 				"b", 69,
-				"c", List.of(69, 420))
-				.widenTo(new GioviTypeStruct(Structs.ofNative(
-					"Foo",
-					"a", new Natural(0),
-					"b", 0,
-					"c", List.of(0, 0)))))
-						.isEqualTo(GioviStructs.ofNative(
-							"Foo",
-							"a", new Natural(69),
-							"b", 69,
-							"c", List.of(69, 420)));
+				"c", List.of(69, 420));
+			var type = new GioviTypeStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviNatural()),
+				"b", new VarD<>(new GioviInt()),
+				"c", new VarD<>(new GioviList(new GioviTypeInt()))));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(Structs.of(
+				"Foo",
+				"a", new VarD<>(new GioviNatural(new Natural(69))),
+				"b", new VarD<>(new GioviInt(69)),
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
 		}
 
 		// TODO: clarify requirements about widening between different struct types

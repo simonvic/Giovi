@@ -35,7 +35,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1 2 3 4 ]
 				""").asGioviList()
-				.getEntryType().unbox())
+				.getEntryType().value())
 					.isEqualTo(GioviInt.class);
 		}
 
@@ -44,7 +44,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1.0 2.0 3.0 4.0 ]
 				""").asGioviList()
-				.getEntryType().unbox())
+				.getEntryType().value())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -53,7 +53,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ "A" "B" "C" ]
 				""").asGioviList()
-				.getEntryType().unbox())
+				.getEntryType().value())
 					.isEqualTo(GioviText.class);
 		}
 
@@ -62,7 +62,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ true false true true ]
 				""").asGioviList()
-				.getEntryType().unbox())
+				.getEntryType().value())
 					.isEqualTo(GioviBool.class);
 		}
 
@@ -78,7 +78,7 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList()
-				.getEntryType().unbox())
+				.getEntryType().value())
 					.isEqualTo(GioviReal.class);
 		}
 
@@ -86,7 +86,7 @@ public class TestGioviList {
 		void listOfMixedButCompatibleTypes_shouldHaveAllValuesWidened() {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
-				""").asGioviList().unbox())
+				""").asGioviList().value())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
 						.isEqualTo(new GioviTypeReal()));
@@ -118,7 +118,7 @@ public class TestGioviList {
 		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToWidestType() {
 			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
-				""").asGioviList().unbox())
+				""").asGioviList().value())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
 						.isEqualTo(new GioviTypeList(new GioviTypeReal())));
@@ -150,7 +150,9 @@ public class TestGioviList {
 					x [Int]
 					[1 2 3] -> x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -160,7 +162,9 @@ public class TestGioviList {
 					x [Real]
 					[1 2 3] -> x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
@@ -179,7 +183,9 @@ public class TestGioviList {
 					[1 2] -> x [Int]
 					3 ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -189,7 +195,9 @@ public class TestGioviList {
 					[1r 2r] -> x [Real]
 					3 ->+ x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
@@ -208,7 +216,9 @@ public class TestGioviList {
 					[1 2 3 4] -> x [Int]
 					4 ->- x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -218,7 +228,9 @@ public class TestGioviList {
 					[1 2 4 3 4] -> x [Int]
 					4 ->- x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3, 4));
 			}
 
@@ -228,7 +240,9 @@ public class TestGioviList {
 					[1 2 3 4] -> x [Int]
 					4n ->- x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -238,7 +252,9 @@ public class TestGioviList {
 					[1 2 3] -> x [Int]
 					x +<- [4 5 6]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3, 4, 5, 6));
 			}
 
@@ -248,7 +264,9 @@ public class TestGioviList {
 					[1 2 3 4 5 6] -> x [Int]
 					x -<- [4 5 6]
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -258,7 +276,9 @@ public class TestGioviList {
 					[1 2 3 4] -> x [Int]
 					[4n] ->- x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -268,7 +288,9 @@ public class TestGioviList {
 					[4 5 1 6 5 2 3 4 5 6] -> x [Int]
 					[4 5 6] ->- x
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -282,11 +304,15 @@ public class TestGioviList {
 						[0 0 1]
 					]
 					x -<- [1 1 1]
-					""").getCurrentScope().getVariableValue("x"))
-					.isEqualTo(GioviLists.of(
-						List.of(1, 0, 0),
-						List.of(0, 1, 0),
-						List.of(0, 0, 1)));
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.get()
+					.value())
+						.isEqualTo(GioviLists.of(
+							List.of(1, 0, 0),
+							List.of(0, 1, 0),
+							List.of(0, 0, 1)));
 			}
 
 			@Test
@@ -300,11 +326,13 @@ public class TestGioviList {
 						[0 0 1]
 					]
 					x -<- [[1 1 1] [2 2 2]]
-					""").getCurrentScope().getVariableValue("x"))
-					.isEqualTo(GioviLists.of(
-						List.of(1, 0, 0),
-						List.of(0, 1, 0),
-						List.of(0, 0, 1)));
+					""").getCurrentScope().getVariable("x")
+					.get()
+					.value())
+						.isEqualTo(GioviLists.of(
+							List.of(1, 0, 0),
+							List.of(0, 1, 0),
+							List.of(0, 0, 1)));
 			}
 
 			@Test
@@ -313,7 +341,9 @@ public class TestGioviList {
 					[1 2 3] -> x [Int]
 					69 -> x@1
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviLists.of(1, 69, 3));
 			}
 
@@ -362,7 +392,7 @@ public class TestGioviList {
 			void checkingIfContainsEqualEntry_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					["hello" "world"] =~ "world"
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -370,7 +400,7 @@ public class TestGioviList {
 			void checkingIfContainsEqualEntryWithDifferentType_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					[1i 2i 3i] =~ 1n
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -378,7 +408,7 @@ public class TestGioviList {
 			void checkingIfContainsEqualEntries_shouldReturnTrue() {
 				assertThat(visitExpression("""
 					[1 2 3] =~ [1 3]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -391,7 +421,7 @@ public class TestGioviList {
 			void comparingLists_withEqualValues_shouldBeTrue() {
 				assertThat(visitExpression("""
 					["hello" "world"] = ["hello" "world"]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -399,7 +429,7 @@ public class TestGioviList {
 			void comparingLists_withEqualValues_butDifferentSize_shouldBeFalse() {
 				assertThat(visitExpression("""
 					["hello" "world"] = ["hello"]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -407,7 +437,7 @@ public class TestGioviList {
 			void comparingLists_withDifferentValueTypes_shouldBeFalse() {
 				assertThat(visitExpression("""
 					[1 2] = ["hello" "world"]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isFalse();
 			}
 
@@ -415,7 +445,7 @@ public class TestGioviList {
 			void comparingLists_withDifferentButCompatibleValueTypes_shouldBeTrue() {
 				assertThat(visitExpression("""
 					[1n 2n] = [1r 2r]
-					""").asGioviBool().unbox())
+					""").asGioviBool().value())
 					.isTrue();
 			}
 
@@ -435,7 +465,11 @@ public class TestGioviList {
 				[0 1 2 3 4]@4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
-				assertEquals(expected, visitExpression(expression).asGioviInt().unbox());
+				assertThat(visitExpression(expression)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -449,7 +483,11 @@ public class TestGioviList {
 			void accessWithNegativeInt_shouldReturnElementAtRearIndex(
 				String expression,
 				Integer expected) {
-				assertEquals(expected, visitExpression(expression).asGioviInt().unbox());
+				assertThat(visitExpression(expression)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 			static Stream<Arguments> produceEqualGioviLists_range() {
@@ -499,7 +537,7 @@ public class TestGioviList {
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
 				assertThat(visitExpression("""
 					[0 1 2 3 4]@%
-					""").asGioviInt().unbox())
+					""").asGioviInt().value())
 					.isEqualTo(5);
 			}
 
@@ -520,7 +558,7 @@ public class TestGioviList {
 			void testUpcasting() {
 				assertThat(visitExpression("""
 					[1 2 3] as [Real]
-					""").asGioviList().unbox())
+					""").asGioviList().value())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
 							.isEqualTo(new GioviTypeReal()));
@@ -530,7 +568,7 @@ public class TestGioviList {
 			void testDowncasting() {
 				assertThat(visitExpression("""
 					[1.69 2.69 3.69] as [Int]
-					""").asGioviList().unbox())
+					""").asGioviList().value())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
 							.isEqualTo(new GioviTypeInt()));

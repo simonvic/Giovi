@@ -5,10 +5,16 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 // TODO: what if we make Void the variadic netrual element for all operations?
 // TODO: eventually it should be used instead of Default and Placeholder
 // we could also return void from a function to return a default value
-public final class GioviVoid extends GioviPrimitive<Void> {
+public final record GioviVoid() implements GioviPrimitive<Void> {
 
-	public GioviVoid() {
-		super(null, null);
+	@Override
+	public Void value() {
+		return null;
+	}
+
+	@Override
+	public Void defaultValue() {
+		return null;
 	}
 
 	@Override

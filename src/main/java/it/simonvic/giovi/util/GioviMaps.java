@@ -4,13 +4,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import giovi.lang.GioviMap;
-import giovi.lang.GioviValue;
+import it.simonvic.giovi.Var;
 
 public class GioviMaps {
 
 	public static <K, V> GioviMap of(Map<K, V> map) {
-		var entries = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
-		map.forEach((k, v) -> entries.put(GioviValue.of(k), GioviValue.of(v)));
+		var entries = new LinkedHashMap<Var<?>, Var<?>>();
+		map.forEach((k, v) -> entries.put(Var.of(k), Var.of(v)));
 		return new GioviMap(
 			GioviTypes.inferGioviType(entries.keySet()),
 			GioviTypes.inferGioviType(entries.values()),
@@ -83,9 +83,8 @@ public class GioviMaps {
 			k6, v6));
 	}
 
-	public static LinkedHashMap<GioviValue<?>, GioviValue<?>> copyOf(
-		LinkedHashMap<GioviValue<?>, GioviValue<?>> map) {
-		var copied = new LinkedHashMap<GioviValue<?>, GioviValue<?>>();
+	public static LinkedHashMap<Var<?>, Var<?>> copyOf(LinkedHashMap<Var<?>, Var<?>> map) {
+		var copied = new LinkedHashMap<Var<?>, Var<?>>();
 		map.forEach((k, v) -> copied.put(k.copy(), v.copy()));
 		return copied;
 	}

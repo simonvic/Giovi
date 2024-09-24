@@ -2,22 +2,16 @@ package giovi.lang;
 
 import giovi.Tuple;
 
-public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTypeTupleNamed {
+public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> {
 
-	private final Tuple definition;
-
-	public GioviTypeTuple(Tuple definition) {
-		super(GioviTuple.class);
-		this.definition = definition;
+	@Override
+	public Class<? extends GioviTuple> value() {
+		return GioviTuple.class;
 	}
 
-	protected GioviTypeTuple(Class<? extends GioviTuple> clazz, Tuple definition) {
-		super(clazz);
-		this.definition = definition;
-	}
-
-	public Tuple getDefinition() {
-		return definition;
+	@Override
+	public Class<? extends GioviTuple> defaultValue() {
+		return GioviTuple.class;
 	}
 
 	@Override
@@ -26,31 +20,11 @@ public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTy
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((definition == null) ? 0 : definition.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviTypeTuple other = (GioviTypeTuple) obj;
-		if (definition == null) {
-			if (other.definition != null) return false;
-		} else if (!definition.equals(other.definition)) return false;
-		return true;
-	}
-
-	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeStruct t -> this.definition.canWidenTo(t.getDefinition());
-			case GioviTypeTupleNamed t -> this.definition.canWidenTo(t.getDefinition());
-			case GioviTypeTuple t -> this.definition.canWidenTo(t.definition);
+			case GioviTypeStruct(var definition) -> this.definition.canWidenTo(definition);
+			case GioviTypeTupleNamed(var definition) -> this.definition.canWidenTo(definition);
+			case GioviTypeTuple(var definition) -> this.definition.canWidenTo(definition);
 			default -> false;
 		};
 	}
@@ -61,7 +35,7 @@ public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTy
 	}
 
 	@Override
-	public GioviTypeTuple copy() {
+	public GioviType<GioviTuple> copy() {
 		return new GioviTypeTuple(definition.copy());
 	}
 

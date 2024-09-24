@@ -15,11 +15,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
-import giovi.lang.GioviBool;
-import giovi.lang.GioviInt;
-import giovi.lang.GioviText;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.Structs;
@@ -36,7 +35,7 @@ public class TestGioviStruct {
 		void testEmptyStruct() {
 			assertThat(visit("""
 				Foo <>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of("Foo"));
 		}
 
@@ -48,12 +47,12 @@ public class TestGioviStruct {
 					bar Bool
 					foobar Text
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of(
 					"Foo",
-					"foo", new GioviInt(),
-					"bar", new GioviBool(),
-					"foobar", new GioviText()));
+					"foo", VarD.of(0),
+					"bar", VarD.of(false),
+					"foobar", VarD.of("")));
 		}
 
 		@Test
@@ -64,12 +63,12 @@ public class TestGioviStruct {
 					b Bool default true
 					t Text default "hello"
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo"))
+				""").getCurrentScope().getDefinitionStruct("Foo").get())
 				.isEqualTo(Structs.of(
 					"Foo",
-					"i", new GioviInt(69, 69),
-					"b", new GioviBool(true, true),
-					"t", new GioviText("hello", "hello")));
+					"i", VarD.of(69, 69),
+					"b", VarD.of(true, true),
+					"t", VarD.of("hello", "hello")));
 		}
 
 		@Test
@@ -84,15 +83,17 @@ public class TestGioviStruct {
 					name Text
 					favoriteColor RGB
 				>
-				""").getCurrentScope().getDefinitionStruct("Person"))
-				.isEqualTo(Structs.of(
-					"Person",
-					"name", new GioviText(),
-					"favoriteColor", GioviStructs.of(
-						"RGB",
-						"r", new GioviInt(),
-						"g", new GioviInt(),
-						"b", new GioviInt())));
+				""")
+				.getCurrentScope()
+				.getDefinitionStruct("Person").get())
+					.isEqualTo(Structs.of(
+						"Person",
+						"name", VarD.of(""),
+						"favoriteColor", VarD.of(Structs.of(
+							"RGB",
+							"r", VarD.of(0),
+							"g", VarD.of(0),
+							"b", VarD.of(0)))));
 		}
 
 
@@ -112,15 +113,23 @@ public class TestGioviStruct {
 						b: 200
 					>
 				>
-				""").getCurrentScope().getDefinitionStruct("Person"))
-				.isEqualTo(Structs.of(
-					"Person",
-					"name", new GioviText(),
-					"favoriteColor", GioviStructs.of(
-						"RGB",
-						"r", new GioviInt(255, 255),
-						"g", new GioviInt(250, 250),
-						"b", new GioviInt(200, 200))));
+				""")
+				.getCurrentScope()
+				.getDefinitionStruct("Person").get())
+					.isEqualTo(Structs.of(
+						"Person",
+						"name", VarD.of(""),
+						"favoriteColor", VarD.of(
+							Structs.of(
+								"RGB",
+								"r", VarD.of(255, 0),
+								"g", VarD.of(250, 0),
+								"b", VarD.of(200, 0)),
+							Structs.of(
+								"RGB",
+								"r", VarD.of(255, 0),
+								"g", VarD.of(250, 0),
+								"b", VarD.of(200, 0)))));
 		}
 
 
@@ -147,13 +156,13 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				""").getCurrentScope().getDefinitionStruct("RGBA").get())
 				.isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(),
-					"g", new GioviInt(),
-					"b", new GioviInt(),
-					"a", new GioviInt()));
+					"r", VarD.of(0),
+					"g", VarD.of(0),
+					"b", VarD.of(0),
+					"a", VarD.of(0)));
 		}
 
 		@Test
@@ -167,13 +176,13 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int default 69
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA"))
+				""").getCurrentScope().getDefinitionStruct("RGBA").get())
 				.isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(255, 255),
-					"g", new GioviInt(255, 255),
-					"b", new GioviInt(255, 255),
-					"a", new GioviInt(69, 69)));
+					"r", VarD.of(255, 255),
+					"g", VarD.of(255, 255),
+					"b", VarD.of(255, 255),
+					"a", VarD.of(69, 69)));
 		}
 
 		@Test
@@ -191,20 +200,20 @@ public class TestGioviStruct {
 					a Int
 				>
 				""");
-			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB");
-			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA");
+			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB").get();
+			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA").get();
 			assertAll(
 				() -> assertThat(rgb).isEqualTo(Structs.of(
 					"RGB",
-					"r", new GioviInt(255, 255),
-					"g", new GioviInt(255, 255),
-					"b", new GioviInt(255, 255))),
+					"r", VarD.of(255, 255),
+					"g", VarD.of(255, 255),
+					"b", VarD.of(255, 255))),
 				() -> assertThat(argb).isEqualTo(Structs.of(
 					"RGBA",
-					"r", new GioviInt(250, 250),
-					"g", new GioviInt(200, 200),
-					"b", new GioviInt(150, 150),
-					"a", new GioviInt())));
+					"r", VarD.of(250, 250),
+					"g", VarD.of(200, 200),
+					"b", VarD.of(150, 150),
+					"a", VarD.of(0))));
 		}
 
 	}
@@ -227,9 +236,9 @@ public class TestGioviStruct {
 				Foo.<>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(),
-				"t", new GioviText(),
-				"b", new GioviBool()));
+				"i", VarD.of(0),
+				"t", VarD.of(""),
+				"b", VarD.of(false)));
 		}
 
 		@Test
@@ -249,9 +258,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -271,9 +280,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -293,9 +302,9 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText("hello"),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of("hello"),
+				"b", VarD.of(true)));
 		}
 
 		@Test
@@ -357,9 +366,64 @@ public class TestGioviStruct {
 				>
 				""")).isEqualTo(GioviStructs.of(
 				"Foo",
-				"i", new GioviInt(69),
-				"t", new GioviText(),
-				"b", new GioviBool(true)));
+				"i", VarD.of(69),
+				"t", VarD.of(""),
+				"b", VarD.of(true)));
+		}
+
+		@Test
+		void whenCreatingStruct_withDefault_shouldUseDefaultValue() {
+			var visitor = visit("""
+				Bar <
+					r Real default 4.20
+				>
+				Foo <
+					i Int default 69
+					t Text default "foo"
+					s Bar default <6.9>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				Foo.<
+					i: 420
+					t: default
+					s: default
+				>
+				""")).isEqualTo(GioviStructs.of(
+				"Foo",
+				"i", VarD.of(420, 69),
+				"t", VarD.of("foo", "foo"),
+				"s", VarD.of(
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
+		}
+
+		@Disabled("Not implemented yet")
+		@Test
+		void whenCreatingStruct_withPlaceholder_shouldUseDefaultValue() {
+			var visitor = visit("""
+				Bar <
+					r Real default 4.20
+				>
+				Foo <
+					i Int default 69
+					t Text default "foo"
+					s Bar default <6.9>
+				>
+				""");
+			assertThat(visitExpression(visitor, """
+				Foo.<
+					i: 420
+					t: _
+					s: _
+				>
+				""")).isEqualTo(GioviStructs.of(
+				"Foo",
+				"i", VarD.of(420, 69),
+				"t", VarD.of("foo", "foo"),
+				"s", VarD.of(
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
 		}
 
 	}
@@ -384,9 +448,9 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"Color",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3)));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3)));
 			}
 
 			@Test
@@ -401,9 +465,9 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGB",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3)));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3)));
 			}
 
 			@Test
@@ -418,10 +482,10 @@ public class TestGioviStruct {
 					"""))
 					.isEqualTo(GioviStructs.of(
 						"RGBA",
-						"r", new GioviInt(1),
-						"g", new GioviInt(2),
-						"b", new GioviInt(3),
-						"a", new GioviInt()));
+						"r", VarD.of(1),
+						"g", VarD.of(2),
+						"b", VarD.of(3),
+						"a", VarD.of(0)));
 			}
 
 			@Test
@@ -447,20 +511,31 @@ public class TestGioviStruct {
 					x Foo
 					x <- <69 "hello" true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
-			void redir_narrowerTuple_shouldThrow() {
-				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+			void redir_tupleWithLessFields_shouldThrow() {
+				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
 					x <- <69 "hello">
+					"""));
+			}
+
+			@Test
+			void redir_tupleWithMoreFields_shouldThrow() {
+				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
+					Foo <i Int, t Text, b Bool>
+					x Foo
+					x <- <69 "hello" false 420>
 					"""));
 			}
 
@@ -471,12 +546,14 @@ public class TestGioviStruct {
 					x Foo
 					x <- <i:69 t:"hello" b:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -487,17 +564,19 @@ public class TestGioviStruct {
 					x Foo
 					x +<- <i:69 t:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText(),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of(""),
+							"b", VarD.of(true)));
 			}
 
 			@Test
 			void redir_namedTuple_withDifferentNames_shouldThrow() {
-				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
+				assertThatExceptionOfType(NoSuchField.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
 					x <- <foo:69 t:"hello" b:true>
@@ -513,12 +592,14 @@ public class TestGioviStruct {
 					x.t <- "hello"
 					x.b <- true
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 			@Test
@@ -528,12 +609,14 @@ public class TestGioviStruct {
 					x Foo
 					x <- Foo.<i:69 t:"hello" b:true>
 					""").getCurrentScope()
-					.getVariableValue("x"))
+					.getVariable("x")
+					.get()
+					.value())
 						.isEqualTo(GioviStructs.of(
 							"Foo",
-							"i", new GioviInt(69),
-							"t", new GioviText("hello"),
-							"b", new GioviBool(true)));
+							"i", VarD.of(69),
+							"t", VarD.of("hello"),
+							"b", VarD.of(true)));
 			}
 
 		}
@@ -563,7 +646,11 @@ public class TestGioviStruct {
 				var visitor = visit("""
 					Foobar <a Int, b Int, c Int, d Int>
 					""");
-				assertThat(visitNativeValue(visitor, code)).isEqualTo(expected);
+				assertThat(visitExpression(visitor, code)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -579,7 +666,11 @@ public class TestGioviStruct {
 				var visitor = visit("""
 					Foobar <a Int, b Int, c Int, d Int>
 					""");
-				assertThat(visitNativeValue(visitor, code)).isEqualTo(expected);
+				assertThat(visitExpression(visitor, code)
+					.asVar()
+					.value()
+					.value())
+						.isEqualTo(expected);
 			}
 
 
@@ -684,10 +775,12 @@ public class TestGioviStruct {
 				var visitor = visit("""
 					Foobar <a Int, b Int, c Int, d Int, e Int>
 					""");
-				assertThat(visitNativeValue(visitor, """
+				assertThat(visitExpression(visitor, """
 					Foobar.<>@%
-					"""))
-					.isEqualTo(5);
+					""")
+					.asGioviValue()
+					.value())
+						.isEqualTo(5);
 			}
 
 			@Test

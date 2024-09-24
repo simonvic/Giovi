@@ -68,8 +68,10 @@ public class TestGioviNatural {
 					69n -> x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo(new Natural(69));
 			}
 
@@ -80,8 +82,10 @@ public class TestGioviNatural {
 					9n ->+ x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo(new Natural(69));
 			}
 
@@ -92,8 +96,10 @@ public class TestGioviNatural {
 					10n ->- x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo(new Natural(69));
 			}
 
@@ -104,8 +110,10 @@ public class TestGioviNatural {
 					10n ->* x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo(new Natural(420));
 			}
 
@@ -116,8 +124,10 @@ public class TestGioviNatural {
 					10n ->/ x
 					""")
 					.getCurrentScope()
-					.getVariableValue("x")
-					.unbox())
+					.getVariable("x")
+					.get()
+					.value()
+					.value())
 						.isEqualTo(new Natural(69));
 			}
 

@@ -2,29 +2,24 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public abstract sealed class GioviNumber<T extends Number>
+public sealed interface GioviNumber<T extends Number>
 	extends GioviPrimitive<T>
 	permits GioviNatural, GioviInt, GioviReal {
 
-	public GioviNumber(T value, T defaultValue) {
-		super(value, defaultValue);
-	}
+	GioviNatural naturalValue();
 
-	public abstract GioviNatural naturalValue();
+	GioviInt intValue();
 
-	public abstract GioviInt intValue();
-
-	public abstract GioviReal realValue();
+	GioviReal realValue();
 
 	@Override
-	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		if (right instanceof GioviTypeNumber<?> t) {
-			var typeClass = t.unbox();
-			if (typeClass == GioviInt.class) return intValue();
-			if (typeClass == GioviReal.class) return realValue();
-			if (typeClass == GioviNatural.class) return naturalValue();
-		}
-		return super.as(right);
+	default public GioviParserVisitResult as(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviTypeReal _ -> realValue();
+			case GioviTypeInt _ -> intValue();
+			case GioviTypeNatural _ -> naturalValue();
+			default -> GioviPrimitive.super.as(right);
+		};
 	}
 
 }

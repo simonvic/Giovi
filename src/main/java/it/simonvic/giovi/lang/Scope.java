@@ -2,10 +2,12 @@ package it.simonvic.giovi.lang;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import giovi.Function;
 import giovi.Struct;
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
 
 public class Scope {
@@ -76,13 +78,13 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Variables
 
-	private final Map<String, GioviValue<?>> variables = new HashMap<>();
+	private final Map<String, VarD<?>> variables = new HashMap<>();
 
-	public void declare(String identifier, GioviValue<?> value) {
+	public void declare(String identifier, VarD<?> var) {
 		if (variables.containsKey(identifier)) {
 			throw new VariableAlreadyDeclared(identifier);
 		}
-		variables.put(identifier, value);
+		variables.put(identifier, var);
 	}
 
 	public boolean isDeclaredVariable(String identifier) {
@@ -90,25 +92,14 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredVariable(identifier));
 	}
 
-	public void setVariableValue(String identifier, GioviValue<?> value) {
+	public Optional<VarD<?>> getVariable(String identifier) {
 		if (variables.containsKey(identifier)) {
-			variables.get(identifier).redirection(value);
-		} else {
-			if (parent == null) {
-				throw new VariableNotDeclared(identifier);
-			}
-			parent.setVariableValue(identifier, value);
-		}
-	}
-
-	public GioviValue<?> getVariableValue(String identifier) {
-		if (variables.containsKey(identifier)) {
-			return variables.get(identifier);
+			return Optional.of(variables.get(identifier));
 		}
 		if (parent == null) {
-			throw new VariableNotDeclared(identifier);
+			return Optional.empty();
 		}
-		return parent.getVariableValue(identifier);
+		return parent.getVariable(identifier);
 	}
 
 
@@ -128,12 +119,12 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredConstant(identifier));
 	}
 
-	public GioviValue<?> getConstantValue(String identifier) {
+	public Optional<GioviValue<?>> getConstantValue(String identifier) {
 		if (constants.containsKey(identifier)) {
-			return constants.get(identifier);
+			return Optional.of(constants.get(identifier));
 		}
 		if (parent == null) {
-			throw new VariableNotDeclared(identifier);
+			return Optional.empty();
 		}
 		return parent.getConstantValue(identifier);
 	}
@@ -150,14 +141,14 @@ public class Scope {
 		functions.put(function.signature().identifier(), function);
 	}
 
-	public Function getFunction(String identifier) throws FunctionNotDeclared {
+	public Optional<Function> getFunction(String identifier) throws FunctionNotDeclared {
 		if (!functions.containsKey(identifier)) {
 			if (parent == null) {
-				throw new FunctionNotDeclared(identifier);
+				return Optional.empty();
 			}
 			return parent.getFunction(identifier);
 		}
-		return functions.get(identifier);
+		return Optional.of(functions.get(identifier));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
@@ -176,12 +167,12 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public Struct getDefinitionStruct(String identifier) {
+	public Optional<Struct> getDefinitionStruct(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
-			return structDefinitions.get(identifier);
+			return Optional.of(structDefinitions.get(identifier));
 		}
 		if (parent == null) {
-			throw new StructNotDefined(identifier);
+			return Optional.empty();
 		}
 		return parent.getDefinitionStruct(identifier);
 	}

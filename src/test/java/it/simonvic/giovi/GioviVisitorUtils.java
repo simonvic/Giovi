@@ -37,12 +37,8 @@ public class GioviVisitorUtils {
 		return visitExpression(visitor, code).asGioviValue();
 	}
 
-	public static Object visitNativeValue(String code) {
-		return visitValue(code).unbox();
-	}
-
-	public static Object visitNativeValue(GioviVisitor visitor, String code) {
-		return visitValue(visitor, code).unbox();
+	public static Var<?> visitVar(String code) {
+		return visitExpression(code).asVar();
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {

@@ -1,19 +1,10 @@
 package giovi.lang;
 
-import java.util.Objects;
-
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Var;
 
-public final class GioviTypeList extends GioviType<GioviList> {
-
-	private final GioviType<?> entryType;
-	private final Integer initSize;
-
-	public GioviTypeList(GioviType<?> entryType, Integer initSize) {
-		super(GioviList.class);
-		this.entryType = entryType;
-		this.initSize = initSize;
-	}
+public record GioviTypeList(GioviType<?> entryType, Integer initSize)
+	implements GioviType<GioviList> {
 
 	public GioviTypeList(GioviType<?> entryType) {
 		this(entryType, 0);
@@ -28,25 +19,18 @@ public final class GioviTypeList extends GioviType<GioviList> {
 	}
 
 	@Override
+	public Class<? extends GioviList> value() {
+		return GioviList.class;
+	}
+
+	@Override
+	public Class<? extends GioviList> defaultValue() {
+		return GioviList.class;
+	}
+
+	@Override
 	public String toString() {
 		return "[" + entryType + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + ((entryType == null) ? 0 : entryType.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		GioviTypeList other = (GioviTypeList) obj;
-		return Objects.equals(this.entryType, other.entryType);
 	}
 
 	@Override
@@ -65,9 +49,9 @@ public final class GioviTypeList extends GioviType<GioviList> {
 	@Override
 	public GioviList spawn() {
 		var list = new GioviList(this.entryType);
-		var rawList = list.unbox();
+		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
-			rawList.add(this.entryType.spawn());
+			rawList.add(new Var<>(this.entryType.spawn()));
 		}
 		return list;
 	}
@@ -77,7 +61,7 @@ public final class GioviTypeList extends GioviType<GioviList> {
 		if (right instanceof GioviDefault) {
 			return new GioviList(entryType);
 		}
-		return super.dot(right);
+		return GioviType.super.dot(right);
 	}
 
 

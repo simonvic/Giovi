@@ -2,5 +2,5 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public class GioviObject implements GioviParserVisitResult {
+public interface GioviObject extends GioviParserVisitResult {
 }
