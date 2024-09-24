@@ -92,11 +92,9 @@ public interface GioviParserVisitResult {
 	 * To be used ONLY when we know we can discard/ignore the default value of a variable
 	 */
 	default GioviValue<?> unwrapAsGioviValue() {
-		// TODO: this is ugly
-		// TODO: also check that this method is not abused and defaults values are lost
 		return switch (this) {
 			case Var<?> v -> v.value();
-			default -> asGioviValue();
+			default -> (GioviValue<?>) this;
 		};
 	}
 

@@ -8,9 +8,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 
 	public static GioviInt valueOf(String s) throws NumberFormatException {
 		if (s.isBlank()) {
-			// TODO: clarify requirements
-			// this has been added to fix casting a VarD string default value (empty string) failing
-			// (does casting the default even make sense?)
 			return new GioviInt();
 		}
 		s = s.replace("i", "") // i suffix
