@@ -4,10 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import giovi.Natural;
-import giovi.Struct;
-import giovi.Tuple;
-import giovi.TupleNamed;
+import giovi.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
@@ -29,6 +26,7 @@ public abstract sealed class GioviValue<T>
 			case Struct v -> new GioviStruct(v);
 			case TupleNamed v -> new GioviTupleNamed(v);
 			case Tuple v -> new GioviTuple(v);
+			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(
 				"Unknown type " + value + " (" + value.getClass() + ")");
 		};
