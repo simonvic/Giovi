@@ -1,7 +1,5 @@
 package giovi;
 
-import java.util.Objects;
-
 import it.simonvic.giovi.exceptions.GioviException;
 
 public final class Natural extends Number {
@@ -45,11 +43,10 @@ public final class Natural extends Number {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (obj == null) return false;
-		if (getClass() != obj.getClass()) return false;
-		Natural other = (Natural) obj;
-		return Objects.equals(this.value, other.value);
+		if (obj instanceof Natural n) {
+			return value == n.value;
+		}
+		return false;
 	}
 
 	@Override
