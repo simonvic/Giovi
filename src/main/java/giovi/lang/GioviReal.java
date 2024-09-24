@@ -7,6 +7,9 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 public final class GioviReal extends GioviNumber<Double> {
 
 	public static GioviReal valueOf(String s) throws NumberFormatException {
+		if (s.isBlank()) {
+			return new GioviReal();
+		}
 		s = s.replace("r", "") // r suffix
 			.replace("_", ""); // separators
 		if (s.startsWith("0b")) {

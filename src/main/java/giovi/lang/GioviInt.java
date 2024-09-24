@@ -7,6 +7,9 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 public final class GioviInt extends GioviNumber<Integer> {
 
 	public static GioviInt valueOf(String s) throws NumberFormatException {
+		if (s.isBlank()) {
+			return new GioviInt();
+		}
 		s = s.replace("i", "") // i suffix
 			.replace("_", ""); // separators
 		if (s.startsWith("0b")) {

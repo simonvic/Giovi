@@ -5,6 +5,9 @@ import it.simonvic.giovi.exceptions.GioviException;
 public final class Natural extends Number {
 
 	public static Natural valueOf(String s) throws NumberFormatException {
+		if (s.isBlank()) {
+			return new Natural();
+		}
 		s = s.replace("n", "") // n suffix
 			.replace("_", ""); // separators
 		if (s.startsWith("0b")) {
@@ -44,7 +47,7 @@ public final class Natural extends Number {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Natural n) {
-			return value == n.value;
+			return value == n.intValue();
 		}
 		return false;
 	}
