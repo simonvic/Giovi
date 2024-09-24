@@ -489,6 +489,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
+		RedirectionToVarDeclarationRTLContext ctx) {
+		var content = visit(ctx.redirectionContent());
+		var variable = visit(ctx.varDeclaration());
+		variable.redirection(content);
+		return null;
+	}
+
+	@Override
 	public GioviParserVisitResult visitVarDeclaration(VarDeclarationContext ctx) {
 		var variable = spawnType(ctx.type(), ctx.defaultDefinition());
 		getCurrentScope().declare(ctx.identifier().getText(), variable);
@@ -537,7 +546,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
 		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
-			GioviToken.of(ctx.redirectionOperator().getText()),
+			GioviToken.of(ctx.bop.getText()),
+			visit(ctx.identifier()));
+		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
+		RedirectionToIdentifierRTLContext ctx) {
+		VisitorUtils.redirection(
+			visit(ctx.redirectionContent()),
+			GioviToken.of(ctx.bop.getText()),
 			visit(ctx.identifier()));
 		return null;
 	}
@@ -554,25 +573,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.redirectionOperator().getText()),
 			visit(ctx.expression()));
-		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
-		RedirectionToVarDeclarationRTLContext ctx) {
-		var content = visit(ctx.redirectionContent());
-		var variable = visit(ctx.varDeclaration());
-		variable.redirection(content);
-		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
-		RedirectionToIdentifierRTLContext ctx) {
-		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
-			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
-			visit(ctx.identifier()));
 		return null;
 	}
 
