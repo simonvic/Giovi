@@ -51,7 +51,7 @@ public final class GioviTypeStruct extends GioviTypeTupleNamed {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviStruct spawn() {
 		return new GioviStruct(definition.copy());
 	}
 

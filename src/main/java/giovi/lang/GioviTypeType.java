@@ -29,7 +29,7 @@ public final class GioviTypeType extends GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviTypeVoid spawn() {
 		return new GioviTypeVoid();
 	}
 

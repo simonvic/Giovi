@@ -45,7 +45,7 @@ public abstract sealed class GioviType<T extends GioviValue<?>>
 
 	// TODO: add canNarrowTo(type)
 
-	public abstract GioviValue<?> spawn();
+	public abstract T spawn();
 
 	@Override
 	public abstract GioviType<T> copy();

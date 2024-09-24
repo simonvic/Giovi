@@ -162,7 +162,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
+	public GioviTypeMap getGioviType() {
 		return new GioviTypeMap(keyType, elementType);
 	}
 

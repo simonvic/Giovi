@@ -19,7 +19,7 @@ public final class GioviFunction extends GioviValue<Function> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
+	public GioviTypeFunction getGioviType() {
 		return new GioviTypeFunction(value.signature().copy());
 	}
 
@@ -33,7 +33,7 @@ public final class GioviFunction extends GioviValue<Function> {
 	}
 
 	@Override
-	public GioviValue<Function> copy() {
+	public GioviFunction copy() {
 		return new GioviFunction(value.copy(), defaultValue.copy());
 	}
 

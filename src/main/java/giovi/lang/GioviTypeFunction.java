@@ -23,12 +23,12 @@ public final class GioviTypeFunction extends GioviType<GioviFunction> {
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviFunction spawn() {
 		return new GioviFunction(new Function(signature.copy()));
 	}
 
 	@Override
-	public GioviType<GioviFunction> copy() {
+	public GioviTypeFunction copy() {
 		return new GioviTypeFunction(signature.copy());
 	}
 

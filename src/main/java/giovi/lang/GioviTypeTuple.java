@@ -56,12 +56,12 @@ public sealed class GioviTypeTuple extends GioviType<GioviTuple> permits GioviTy
 	}
 
 	@Override
-	public GioviValue<?> spawn() {
+	public GioviTuple spawn() {
 		return new GioviTuple(definition.copy());
 	}
 
 	@Override
-	public GioviType<GioviTuple> copy() {
+	public GioviTypeTuple copy() {
 		return new GioviTypeTuple(definition.copy());
 	}
 

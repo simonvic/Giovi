@@ -100,7 +100,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	}
 
 	@Override
-	public GioviType<?> getGioviType() {
+	public GioviTypeList getGioviType() {
 		return new GioviTypeList(entryType);
 	}
 
