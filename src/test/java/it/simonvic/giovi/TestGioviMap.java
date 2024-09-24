@@ -320,6 +320,16 @@ public class TestGioviMap {
 			}
 
 			@Test
+			void redirMinus_existingNarrowerKey_shouldRemovePair() {
+				assertThat(visit("""
+					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
+					x -<- 2n
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
+			}
+
+			@Test
 			void redirMinus_nonExistingKey_shouldNotRemovePair() {
 				assertThat(visit("""
 					[1:"a" 2:"b" 3:"c"] -> x [Int:Text]
@@ -337,6 +347,16 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariableValue("x"))
 						.isEqualTo(GioviMaps.of(1, "a"));
+			}
+
+			@Test
+			void redirMinus_multipleExistingNarrowerPairs_shouldRemoveAllPairs() {
+				assertThat(visit("""
+					[1i:1r 2i:2r 3i:3r] -> x [Int:Real]
+					x -<- [2n:2i]
+					""").getCurrentScope()
+					.getVariableValue("x"))
+						.isEqualTo(GioviMaps.of(1, 1d, 3, 3d));
 			}
 
 			@Test

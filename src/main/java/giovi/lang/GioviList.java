@@ -86,6 +86,16 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		value.removeAll(entries);
 	}
 
+	private void removeAllWidened(List<? extends GioviValue<?>> entries) {
+		try {
+			for (var entry : entries) {
+				value.remove(entry.widenTo(entryType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
+	}
+
 	private void clear() {
 		value.clear();
 	}
@@ -176,7 +186,9 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault _ -> removeAll(defaultValue);
-			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAll(v.value);
+			case GioviList v when v.entryType.equals(this.entryType) -> removeAll(v.value);
+			case GioviList v when v.entryType.canWidenTo(this.entryType) -> removeAllWidened(
+				v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(v.widenTo(this.entryType));

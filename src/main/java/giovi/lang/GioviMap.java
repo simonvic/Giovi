@@ -95,8 +95,20 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		}
 	}
 
-	private void removeAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
-		defaultValue.forEach(this::remove);
+	private void removeAll(Map<GioviValue<?>, GioviValue<?>> entries) {
+		entries.forEach(this::remove);
+	}
+
+	public void removeAllWidened(Map<GioviValue<?>, GioviValue<?>> entries) {
+		try {
+			for (var entry : entries.entrySet()) {
+				value.remove(
+					entry.getKey().widenTo(keyType),
+					entry.getValue().widenTo(elementType));
+			}
+		} catch (NonWideneable ex) {
+			throw new IllegalArgumentException(ex);
+		}
 	}
 
 	private void clear() {
@@ -236,8 +248,10 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		switch (content) {
 			case GioviDefault _ -> removeAll(defaultValue);
+			case GioviMap v when v.keyType.equals(this.keyType)
+				&& v.elementType.equals(this.elementType) -> removeAll(v.value);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
-				&& v.elementType.canWidenTo(this.elementType) -> removeAll(v.value);
+				&& v.elementType.canWidenTo(this.elementType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(v.widenTo(this.keyType));
