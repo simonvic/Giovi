@@ -66,7 +66,7 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 	 * Add entry to list. The entry will be widened if necessary
 	 * @param entry
 	 */
-	public void add(GioviValue<?> entry) {
+	private void add(GioviValue<?> entry) {
 		try {
 			value.add(entry.widenTo(entryType));
 		} catch (NonWideneable ex) {
@@ -74,23 +74,23 @@ public final class GioviList extends GioviValue<List<GioviValue<?>>> {
 		}
 	}
 
-	public void addAll(List<? extends GioviValue<?>> entries) {
+	private void addAll(List<? extends GioviValue<?>> entries) {
 		entries.forEach(this::add);
 	}
 
-	public void remove(GioviValue<?> entry) {
+	private void remove(GioviValue<?> entry) {
 		value.remove(entry);
 	}
 
-	public void removeAll(List<? extends GioviValue<?>> entries) {
+	private void removeAll(List<? extends GioviValue<?>> entries) {
 		value.removeAll(entries);
 	}
 
-	public void clear() {
+	private void clear() {
 		value.clear();
 	}
 
-	public void init(List<GioviValue<?>> entries) {
+	private void init(List<GioviValue<?>> entries) {
 		clear();
 		addAll(entries);
 	}

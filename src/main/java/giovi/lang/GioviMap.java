@@ -56,7 +56,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	 * @param element
 	 * @throws IllegalArgumentException
 	 */
-	public void put(GioviValue<?> key, GioviValue<?> element) throws IllegalArgumentException {
+	private void put(GioviValue<?> key, GioviValue<?> element) throws IllegalArgumentException {
 		try {
 			value.put(
 				key.widenTo(keyType),
@@ -66,11 +66,11 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		}
 	}
 
-	public void putAll(Map<GioviValue<?>, GioviValue<?>> map) throws IllegalArgumentException {
+	private void putAll(Map<GioviValue<?>, GioviValue<?>> map) throws IllegalArgumentException {
 		map.forEach(this::put);
 	}
 
-	public GioviValue<?> get(GioviValue<?> key) {
+	private GioviValue<?> get(GioviValue<?> key) {
 		if (!value.containsKey(key)) {
 			throw new KeyNotPresent(this, key);
 		}
@@ -78,7 +78,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 	}
 
 
-	public void remove(GioviValue<?> key, GioviValue<?> element) {
+	private void remove(GioviValue<?> key, GioviValue<?> element) {
 		if (value.containsKey(key)) {
 			if (value.get(key).equals(element)) {
 				value.remove(key);
@@ -86,7 +86,7 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		}
 	}
 
-	public void remove(GioviValue<?> key) {
+	private void remove(GioviValue<?> key) {
 		for (GioviValue<?> k : value.keySet()) {
 			if (k.equals(key)) {
 				value.remove(k);
@@ -95,15 +95,15 @@ public final class GioviMap extends GioviValue<LinkedHashMap<GioviValue<?>, Giov
 		}
 	}
 
-	public void removeAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
+	private void removeAll(Map<GioviValue<?>, GioviValue<?>> defaultValue) {
 		defaultValue.forEach(this::remove);
 	}
 
-	public void clear() {
+	private void clear() {
 		value.clear();
 	}
 
-	public void init(LinkedHashMap<GioviValue<?>, GioviValue<?>> entries) {
+	private void init(LinkedHashMap<GioviValue<?>, GioviValue<?>> entries) {
 		clear();
 		putAll(entries);
 	}
