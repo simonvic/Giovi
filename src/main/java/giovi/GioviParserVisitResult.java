@@ -16,49 +16,49 @@ public interface GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
-	default GioviParserVisitResult as(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.AS); }
+	default GioviParserVisitResult as(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.AS, right); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
-	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR); }
-	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_PLUS); }
-	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_MINUS); }
-	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_MULT); }
-	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { throw new OperatorNotSupported(GioviToken.REDIR_DIV); }
+	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR, content); }
+	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_PLUS, content); }
+	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MINUS, content); }
+	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MULT, content); }
+	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_DIV, content); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
-	default GioviParserVisitResult positive() { throw new OperatorNotSupported(GioviToken.PLUS); }
-	default GioviParserVisitResult negative() { throw new OperatorNotSupported(GioviToken.MINUS); }
-	default GioviParserVisitResult plus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.PLUS); }
-	default GioviParserVisitResult minus(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.MINUS); }
-	default GioviParserVisitResult multiply(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.MULT); }
-	default GioviParserVisitResult divide(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.DIV); }
-	default GioviParserVisitResult modulo(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.MODULO); }
-	default GioviParserVisitResult power(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.EXPONENTIAL); }
+	default GioviParserVisitResult positive() { throw new OperatorNotSupported(this, GioviToken.PLUS); }
+	default GioviParserVisitResult negative() { throw new OperatorNotSupported(this, GioviToken.MINUS); }
+	default GioviParserVisitResult plus(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.PLUS, right); }
+	default GioviParserVisitResult minus(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.MINUS, right); }
+	default GioviParserVisitResult multiply(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.MULT, right); }
+	default GioviParserVisitResult divide(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.DIV, right); }
+	default GioviParserVisitResult modulo(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.MODULO, right); }
+	default GioviParserVisitResult power(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.EXPONENTIAL, right); }
 
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 
-	default GioviParserVisitResult not() { throw new OperatorNotSupported(GioviToken.NOT_SYM); }
-	default GioviParserVisitResult and(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.AND_SYM); }
-	default GioviParserVisitResult or(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.OR_SYM); }
+	default GioviParserVisitResult not() { throw new OperatorNotSupported(this, GioviToken.NOT_SYM); }
+	default GioviParserVisitResult and(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.AND_SYM, right); }
+	default GioviParserVisitResult or(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.OR_SYM, right); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
-	default GioviParserVisitResult equal(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.EQUAL); }
-	default GioviParserVisitResult notEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.NOT_EQUAL); }
-	default GioviParserVisitResult less(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.LESS); }
-	default GioviParserVisitResult lessEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.LESS_EQUAL); }
-	default GioviParserVisitResult greater(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.GREATER); }
-	default GioviParserVisitResult greaterEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.GREATER_EQUAL); }
-	default GioviParserVisitResult contains(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.CONTAINS); }
+	default GioviParserVisitResult equal(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.EQUAL, right); }
+	default GioviParserVisitResult notEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.NOT_EQUAL, right); }
+	default GioviParserVisitResult less(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.LESS, right); }
+	default GioviParserVisitResult lessEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.LESS_EQUAL, right); }
+	default GioviParserVisitResult greater(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.GREATER, right); }
+	default GioviParserVisitResult greaterEqual(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.GREATER_EQUAL, right); }
+	default GioviParserVisitResult contains(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.CONTAINS, right); }
 	default GioviParserVisitResult isContained(GioviParserVisitResult right) { return right.contains(this); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.AT); }
-	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(GioviToken.DOT); }
+	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.AT, right); }
+	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.DOT, right); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// CASTS
 
