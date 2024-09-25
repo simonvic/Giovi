@@ -930,11 +930,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
-			var actualParam = formalParam.spawn();
 
 			// if no more actual params found, expecting remaining formal parameters to be optional
 			if (i >= actualParamsCount) {
 				for (int j = i; j < formalParamsCount; j++) {
+					var actualParam = formalParam.spawn();
 					formalParam = formalParamsArray.get(j);
 					formalParamIdentifier = formalParam.identifier();
 					if (!formalParam.isOptional()) {
@@ -946,6 +946,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				break;
 			}
 
+			var actualParam = formalParam.spawn();
 			var actualParamExpression = visit(actualParamCtxList.get(i).expression());
 
 			// TODO: eventually remove it and let the redirection handle the default
