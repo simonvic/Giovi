@@ -129,7 +129,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 			case GioviText(var v) -> new GioviList(
 				new GioviTypeText(),
 				new ArrayList<>(Stream.of(value
-					.split(v))
+					.split(v)) // TODO: sanitize v, it should not be treated as regex
 					.map(this::toVar)
 					.toList()));
 			default -> GioviPrimitive.super.divide(right);

@@ -726,10 +726,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionContainment(ExpressionContainmentContext ctx) {
-		return VisitorUtils.containment(
+		var containment = VisitorUtils.containment(
 			visit(ctx.expression(0)),
 			GioviToken.of(ctx.bop.getText()),
 			visit(ctx.expression(1)));
+		if (ctx.NOT() != null) {
+			return containment.not();
+		}
+		return containment;
 	}
 
 	@Override
