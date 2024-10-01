@@ -1,9 +1,7 @@
 package it.simonvic.giovi;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.GioviDefault;
-import giovi.lang.GioviType;
-import giovi.lang.GioviValue;
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public class VarD<T extends GioviValue<?>> extends Var<T> {
@@ -27,15 +25,12 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		this.defaultValue = defaultValue;
 	}
 
-	// TODO: eventually offer this constructor only for primitive values
 	/**
 	 * @param value
 	 */
 	public VarD(T value) {
-		super(value);
-		// TODO: this would return an incompatible default value for List,Maps,Tuples and Structs
-		// e.g. a list default value would be a list of void
-		this.defaultValue = (T) GioviValue.of(value.defaultValue());
+		this(value, (T) value.getGioviType().spawn());
+		// TODO: ugly but needed in order to have proper default value for maps, lists and structs
 	}
 
 	/**
