@@ -14,7 +14,6 @@ public class TestExpressionEquality {
 		10 = 50, false
 		10.0 = 10, true
 		10 = 10.0, true
-				
 		10 != 10, false
 		10 != 50, true
 		10.0 != 10, false

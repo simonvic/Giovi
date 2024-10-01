@@ -11,9 +11,9 @@ public class Tuples {
 
 	public static Tuple ofNative(Object... fields) {
 		var l = new ArrayList<VarD<?>>();
-		for (int i = 0; i < fields.length; i++) {
-			l.add(VarD.of(fields[i]));
-		}
+        for (var field : fields) {
+            l.add(VarD.of(field));
+        }
 		return new Tuple(l);
 	}
 

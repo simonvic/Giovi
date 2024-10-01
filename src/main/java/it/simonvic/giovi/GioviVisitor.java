@@ -907,7 +907,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	/**
 	 * Visit function call parameters and declare actual parameters
-	 * @param ctx Function call context
+	 * @param callParamsCtx Function call context
 	 * @param signature Function signature
 	 */
 	private void setupFunctionParameters(

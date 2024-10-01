@@ -122,7 +122,7 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				case VALUES -> GioviLists.of(((TupleNamed) value).getFieldNames());
+				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));

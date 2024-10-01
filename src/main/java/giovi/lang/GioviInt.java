@@ -43,8 +43,8 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		return switch (type) {
-			case GioviTypeInt t -> this;
-			case GioviTypeReal t -> this.realValue();
+			case GioviTypeInt _ -> this;
+			case GioviTypeReal _ -> this.realValue();
 			default -> throw new NonWideneable(this, type);
 		};
 	}

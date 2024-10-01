@@ -22,10 +22,8 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	@Override
 	public boolean canWidenTo(GioviType<?> to) {
 		return switch (to) {
-			case GioviTypeNatural _ -> true;
-			case GioviTypeInt _ -> true;
-			case GioviTypeReal _ -> true;
-			default -> false;
+			case GioviTypeNatural _, GioviTypeInt _, GioviTypeReal _ -> true;
+            default -> false;
 		};
 	}
 

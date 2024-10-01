@@ -141,7 +141,7 @@ public class Scope {
 		functions.put(function.signature().identifier(), function);
 	}
 
-	public Optional<Function> getFunction(String identifier) throws FunctionNotDeclared {
+	public Optional<Function> getFunction(String identifier) {
 		if (!functions.containsKey(identifier)) {
 			if (parent == null) {
 				return Optional.empty();
