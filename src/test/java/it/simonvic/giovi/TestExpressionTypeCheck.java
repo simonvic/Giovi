@@ -2,14 +2,13 @@ package it.simonvic.giovi;
 
 import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class TestExpressionTypeCheck {
-
-	// TODO(test): negated type check
 
 	@Test
 	void testNatural() {
@@ -155,6 +154,16 @@ public class TestExpressionTypeCheck {
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is <Int, Text, Bool>
+			""").asNativeBool());
+	}
+
+	@Test
+	void testTypecheckNegation() {
+		var visitor = visit("""
+			x Int
+			""");
+		assertFalse(visitExpression(visitor, """
+			x is not Int
 			""").asNativeBool());
 	}
 
