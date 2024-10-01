@@ -774,9 +774,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitIdentifier(IdentifierContext ctx) {
-		return getCurrentScope()
-			.getVariable(ctx.getText())
-			.orElseThrow(() -> new GioviException("Variable not declared: " + ctx.getText()));
+		String identifier = ctx.getText();
+		var varOpt = getCurrentScope().getVariable(identifier);
+		if (varOpt.isPresent()) {
+			return varOpt.get();
+		}
+		var funcOpt = getCurrentScope().getFunction(identifier);
+		if (funcOpt.isPresent()) {
+			return funcOpt.get();
+		}
+		throw new GioviException("No variable nor function defined with name " + identifier);
 	}
 
 	@Override
@@ -873,22 +880,26 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitFunctionCall(FunctionCallContext ctx) {
-		String identifier = ctx.identifier().getText();
-		Function function;
-		var funcOpt = getCurrentScope().getFunction(identifier);
-		if (funcOpt.isPresent()) {
-			function = funcOpt.get();
-		} else {
-			var referenceOpt = getCurrentScope().getVariable(identifier);
-			if (referenceOpt.isPresent()
-				&& referenceOpt.get().value() instanceof GioviFunction(var func)) {
-				function = func;
-			} else {
-				throw new GioviException("No invokable function found with name " + identifier);
-			}
-		}
+		return doVisitFunctionCall(ctx.expression(), ctx.functionCallParameters());
+	}
+
+	@Override
+	public GioviParserVisitResult visitExpressionFunctionCall(ExpressionFunctionCallContext ctx) {
+		return doVisitFunctionCall(ctx.expression(), ctx.functionCallParameters());
+	}
+
+	private GioviParserVisitResult doVisitFunctionCall(
+		ExpressionContext expressionCtx,
+		FunctionCallParametersContext parametersCtx) {
+		var visit = visit(expressionCtx);
+		Function function = switch (visit) {
+			case GioviFunction f -> f.value();
+			case Function f -> f;
+			case Var<?> v when v.value() instanceof GioviFunction f -> f.value();
+			default -> throw new GioviException("Invokation fail " + visit);
+		};
 		enterFunctionScope();
-		setupFunctionParameters(ctx, function.signature());
+		setupFunctionParameters(parametersCtx, function.signature());
 		var returnValue = callFunction(function);
 		exitScope();
 		return returnValue;
@@ -900,9 +911,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param signature Function signature
 	 */
 	private void setupFunctionParameters(
-		FunctionCallContext ctx,
+		FunctionCallParametersContext callParamsCtx,
 		FunctionSignature signature) {
-		var callParamsCtx = ctx.functionCallParameters();
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
 		if (callParamsCtx == null) {
@@ -1151,7 +1161,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var fields = new ArrayList<VarD<?>>();
 		for (var expressionCtx : ctx.expression()) {
-			fields.add(new VarD<>(visit(expressionCtx).unwrapAsGioviValue()));
+			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
+			fields.add(new VarD<>(fieldValue));
 		}
 		return new GioviTuple(new Tuple(fields));
 
