@@ -9,7 +9,11 @@ public class OperatorNotSupported extends GioviException {
 		GioviParserVisitResult lhs,
 		GioviToken op,
 		GioviParserVisitResult rhs) {
-		super("" + lhs + " doesn't support operator " + op + "(" + op.label + ") with " + rhs);
+		super("""
+			Operator %s (%s) not supported
+				by:   %s
+				with: %s
+			""".formatted(op, op.label, rhs, lhs));
 	}
 
 	public OperatorNotSupported(GioviParserVisitResult r, GioviToken op) {
