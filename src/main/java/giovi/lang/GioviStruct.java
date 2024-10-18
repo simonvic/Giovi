@@ -125,7 +125,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
-			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
+			case Range(Integer start, Integer end, Integer step, _) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
 			case GioviInt(var index) -> value
 				.getField(index >= 0 ? index : value.getFieldsCount() + index)

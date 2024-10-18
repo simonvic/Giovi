@@ -219,7 +219,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 					new GioviTypeText(),
 					new ArrayList<>(value.chars().boxed().map(this::toVar).toList()));
 			};
-			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {
+			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
 				var sb = new StringBuilder();
 				range.iterate(index -> sb.append(this.value.charAt((int) index)));
 				yield new GioviText(sb.toString());

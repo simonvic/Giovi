@@ -262,7 +262,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> GioviValue.super.access(right);
 			};
-			case Range<?> range when range instanceof Range(Integer start, Integer end, var step, var strategy) -> {
+			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
 				var gioviList = new GioviList(this.entryType.copy());
 				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 				yield gioviList;

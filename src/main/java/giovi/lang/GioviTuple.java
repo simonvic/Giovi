@@ -123,7 +123,7 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 					default -> GioviValue.super.access(right);
 				};
 			};
-			case Range(Integer start, Integer end, Integer step, var strategy) -> new GioviTuple(
+			case Range(Integer start, Integer end, Integer step, _) -> new GioviTuple(
 				this.value.copy(Range.of(start, end, step)));
 			case GioviInt(var index) -> value
 				.getField(index >= 0 ? index : value.getFieldsCount() + index)
