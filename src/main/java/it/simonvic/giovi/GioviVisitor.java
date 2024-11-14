@@ -377,6 +377,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void deconstruct(GioviStruct struct, IteratorAggregateContext aggregateCtx) {
 		// TODO: iterate by identifiers or by field index?
 		// TODO: should fields be by value?
+		// TODO: handle concurrent modifications
 		for (var fieldIteratorCtx : aggregateCtx.iterator()) {
 			switch (fieldIteratorCtx) {
 
@@ -567,6 +568,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToConstantIdentifier(
 		RedirectionToConstantIdentifierContext ctx) {
 		throw new GioviException("Can't redirect to a constant");
+		// TODO: redirecting to field still overrides the field 69 -> SOME_CONSTANT.someField
 	}
 
 	@Override

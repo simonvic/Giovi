@@ -7,6 +7,8 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 
+// TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
+
 public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	public static <T> Var<? extends GioviValue<?>> of(T value) {
