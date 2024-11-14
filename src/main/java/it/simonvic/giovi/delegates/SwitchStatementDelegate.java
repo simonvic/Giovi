@@ -32,7 +32,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 
 	public Optional<SwitchLabelContext> evaluate() {
 		for (SwitchLabelContext ctx : ctx.switchLabel()) {
-			if (visit(ctx.caseMatch()).asNativeBool()) {
+			if (visit(ctx.caseMatch()).asNativeBool()
+				&& (ctx.guard == null || gioviVisitor.visit(ctx.guard).asNativeBool())) {
 				return Optional.of(ctx);
 			}
 		}
@@ -66,14 +67,6 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 			visit(ctx.caseMatch(0)),
 			GioviToken.of(ctx.bop.getText()),
 			() -> visit(ctx.caseMatch(1)));
-	}
-
-	@Override
-	public GioviParserVisitResult visitCaseMatchGuarded(CaseMatchGuardedContext ctx) {
-		return VisitorUtils.bool(
-			visit(ctx.caseMatch()),
-			GioviToken.AND,
-			() -> gioviVisitor.visit(ctx.expression()));
 	}
 
 	@Override
