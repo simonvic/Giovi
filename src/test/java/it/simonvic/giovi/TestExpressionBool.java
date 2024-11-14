@@ -39,6 +39,15 @@ public class TestExpressionBool {
 				"if 'hello' { = 'hello' or = []@69 do {} }",
 				"if 'hello' { != 'hello' and = []@69 do {} }",
 		})
+	void testShortCircuitEvaluationInMultiIfCascade(String code) {
+		assertThatNoException().isThrownBy(() -> visit(code));
+	}
+
+	@ParameterizedTest
+	@ValueSource(
+		strings = {
+				"if 'hello' { = 'hello' when false do []@69() }",
+		})
 	void testShortCircuitEvaluationInMultiIfGuarded(String code) {
 		assertThatNoException().isThrownBy(() -> visit(code));
 	}
