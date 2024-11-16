@@ -832,6 +832,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
 		var map = new LinkedHashMap<Var<?>, Var<?>>();
+		if (ctx.mapEntries() == null) {
+			return new GioviMap(new GioviTypeVoid(), new GioviTypeVoid(), map);
+		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
 			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
