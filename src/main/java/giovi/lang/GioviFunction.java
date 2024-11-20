@@ -17,7 +17,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	@Override
 	public String toString() {
-		return "function" + value.toString();
+		return "function " + value.toString();
 	}
 
 	@Override
