@@ -1,5 +1,6 @@
 package giovi.lang;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import giovi.*;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Const;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 
@@ -253,6 +255,21 @@ public sealed interface GioviValue<T>
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case Var<?> v -> dot(v.value());
+			case FieldKey(var identifier) -> {
+				// Field
+				try {
+					Field field = this.getClass().getField(identifier);
+					if (field.isAnnotationPresent(Const.class)
+						&& field.get(this) instanceof GioviParserVisitResult v) {
+						yield v;
+					}
+				} catch (NoSuchFieldException
+					| IllegalArgumentException
+					| IllegalAccessException e) {
+					throw new GioviException(e);
+				}
+				throw new GioviException("No member with name: " + identifier);
+			}
 			default -> GioviObject.super.dot(right);
 		};
 	}
