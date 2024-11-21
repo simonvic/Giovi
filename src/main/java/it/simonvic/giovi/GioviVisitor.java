@@ -74,7 +74,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	protected final Scanner scanner = new Scanner(System.in);
-	private Scope currentScope = GLOBAL_SCOPE;
+	private Scope currentScope = new Scope(GLOBAL_SCOPE);
 
 	public Scope getCurrentScope() {
 		return currentScope;
