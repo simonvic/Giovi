@@ -39,7 +39,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public String toString() {
 		var i = value.iterator();
 		if (!i.hasNext())
-			return "[" + entryType + "]";
+			return "[{" + entryType + "}]";
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
 		// sb.append(entryType);
