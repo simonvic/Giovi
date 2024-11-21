@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.lang.annotation.Native.Const;
 
 public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
@@ -41,5 +42,17 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 		}
 		return GioviTypeNumber.super.dot(right);
 	}
+
+	@Const
+	public static final GioviReal MAX_VALUE = new GioviReal(Double.MAX_VALUE);
+
+	@Const
+	public static final GioviReal MIN_VALUE = new GioviReal(Double.MIN_VALUE);
+
+	@Const
+	public static final GioviReal INF = new GioviReal(Double.POSITIVE_INFINITY);
+
+	@Const
+	public static final GioviReal NAN = new GioviReal(Double.NaN);
 
 }
