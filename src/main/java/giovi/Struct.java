@@ -30,7 +30,7 @@ public final class Struct extends TupleNamed {
 	@Override
 	public String toStringDefinition() {
 		var i = this.entrySet().iterator();
-		if (!i.hasNext()) return "<>";
+		if (!i.hasNext()) return typename + "<>";
 		StringBuilder sb = new StringBuilder(typename);
 		sb.append('<');
 		while (i.hasNext()) {
