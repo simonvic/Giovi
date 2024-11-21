@@ -14,6 +14,7 @@ import giovi.lang.GioviType;
  * 5. Expose Range and Types as GioviValues (or reimplement them as Native)
  * 6. Find a way to handle Generic-like types (List,Maps,Range)
  * 7. Import/Include statements
+ * 8. Some sort of generic typing
  *
  */
 
@@ -36,6 +37,52 @@ public interface Native {
 		public @interface Field {
 		}
 
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.METHOD, ElementType.PARAMETER })
+	@Documented
+	public @interface Func {
+
+		// TODO: eventually add @OverloadOf(@Func) and enhance method lookup
+		// TODO: optional parameters
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target(ElementType.PARAMETER)
+		@Documented
+		public @interface Param {
+
+			String label() default "";
+
+			String name(); // eventually enable parameter name discovery compiler option
+
+			Type type();
+
+		}
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target(ElementType.PARAMETER)
+		@Documented
+		public @interface GenericParam {
+
+			String label() default "";
+
+			String name();
+
+			// Type upperBound() default @Type(GioviType.class); can't be of use without some sort of generics
+
+			boolean optional() default false;
+
+		}
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE_USE)
+	@Documented
+	public @interface Type {
+
+		Class<? extends GioviType<?>> value();
 
 	}
 

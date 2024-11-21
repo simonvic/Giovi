@@ -21,6 +21,7 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
+import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.util.GioviTypes;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.util.VisitorUtils;
@@ -695,7 +696,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			: new GioviTypeVoid();
 
 		signature = new FunctionSignature("", parameters, returnType);
-		return new Function(signature, ctx.body);
+		return new GFunction(signature, ctx.body);
 	}
 
 	@Override
@@ -918,7 +919,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			signature = new FunctionSignature(identifier, parameters, returnType);
 		}
 
-		getCurrentScope().declare(new Function(signature, ctx.body));
+		getCurrentScope().declare(new GFunction(signature, ctx.body));
 		return signature;
 	}
 
@@ -952,10 +953,47 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			default -> throw new GioviException("Invokation fail " + visit);
 		};
 		enterFunctionScope();
-		setupFunctionParameters(parametersCtx, function.signature());
-		var returnValue = callFunction(function);
+		var returnValue = switch (function) {
+			case JFunction jFunction -> {
+				try {
+					yield jFunction.invoke(buildFunctionParameters(parametersCtx));
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					throw new GioviException("Invocation fail", e);
+				}
+			}
+			case GFunction gFunction -> {
+				setupFunctionParameters(parametersCtx, function.signature());
+				yield callFunction(gFunction);
+			}
+		};
 		exitScope();
 		return returnValue;
+	}
+
+	private GioviParserVisitResult[] buildFunctionParameters(
+		FunctionCallParametersContext callParamsCtx) {
+		if (callParamsCtx == null) {
+			return new GioviParserVisitResult[] {};
+		} else if (callParamsCtx.functionCallParameter(0).identifier() == null) {
+			return buildFunctionParametersIteratively(callParamsCtx.functionCallParameter());
+		} else {
+			return buildNamedFunctionParameters(callParamsCtx.functionCallParameter());
+		}
+	}
+
+	private GioviParserVisitResult[] buildNamedFunctionParameters(
+		List<FunctionCallParameterContext> actualParamCtxList) {
+		throw new UnsupportedOperationException(
+			"Unimplemented method 'buildNamedFunctionParameters'");
+	}
+
+	private GioviParserVisitResult[] buildFunctionParametersIteratively(
+		List<FunctionCallParameterContext> actualParamCtxList) {
+		var args = new GioviParserVisitResult[actualParamCtxList.size()];
+		for (int i = 0; i < args.length; i++) {
+			args[i] = visit(actualParamCtxList.get(i).expression());
+		}
+		return args;
 	}
 
 	/**
@@ -1082,7 +1120,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param func function to invocate
 	 * @return returned value or GioviVoid
 	 */
-	private GioviValue<?> callFunction(Function func) {
+	private GioviValue<?> callFunction(GFunction func) {
 		if (func.bodyCtx() == null) {
 			if (func.signature().returnType().value() != GioviVoid.class) {
 				// returning returnType default value

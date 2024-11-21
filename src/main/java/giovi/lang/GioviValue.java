@@ -1,6 +1,10 @@
 package giovi.lang;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +12,13 @@ import giovi.*;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.lang.annotation.Native.Const;
+import it.simonvic.giovi.lang.annotation.Native.Func;
+import it.simonvic.giovi.lang.annotation.Native.Func.GenericParam;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param;
+import it.simonvic.giovi.lang.annotation.Native.Type;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviMaps;
 
@@ -265,9 +275,18 @@ public sealed interface GioviValue<T>
 					}
 				} catch (NoSuchFieldException
 					| IllegalArgumentException
-					| IllegalAccessException e) {
-					throw new GioviException(e);
+					| IllegalAccessException _) {
 				}
+
+				// Method
+				for (Method method : this.getClass().getMethods()) {
+					if (method.getName().equals(identifier)
+						&& method.isAnnotationPresent(Func.class)) {
+						// TODO: fails on overloaded methods
+						yield new GioviFunction(new JFunction(this, method));
+					}
+				}
+
 				throw new GioviException("No member with name: " + identifier);
 			}
 			default -> GioviObject.super.dot(right);

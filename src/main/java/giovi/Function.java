@@ -1,27 +1,15 @@
 package giovi;
 
-import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.FunctionSignature;
 
-public record Function(
-	FunctionSignature signature,
-	BlockContext bodyCtx)
-	implements GioviParserVisitResult {
+public sealed interface Function
+	extends GioviParserVisitResult
+	permits GFunction, JFunction {
 
-	public static final Function EMPTY = new Function(FunctionSignature.EMPTY, null);
+	public static final Function EMPTY = new GFunction(FunctionSignature.EMPTY, null);
 
-	public Function(FunctionSignature signature) {
-		this(signature, null);
-	}
+	FunctionSignature signature();
 
-	public Function copy() {
-		return new Function(signature.copy(), bodyCtx);
-	}
-
-	@Override
-	public String toString() {
-		String body = bodyCtx != null ? " {" + bodyCtx + "}" : "";
-		return signature + body;
-	}
+	Function copy();
 
 }

@@ -1,6 +1,6 @@
 package giovi.lang;
 
-import giovi.Function;
+import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.lang.FunctionSignature;
 
@@ -32,7 +32,7 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 
 	@Override
 	public GioviFunction spawn() {
-		return new GioviFunction(new Function(signature.copy()));
+		return new GioviFunction(new GFunction(signature.copy()));
 	}
 
 	@Override
