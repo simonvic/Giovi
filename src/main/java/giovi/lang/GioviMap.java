@@ -102,7 +102,7 @@ public record GioviMap(
 	public String toString() {
 		var i = value.entrySet().iterator();
 		if (!i.hasNext())
-			return "[:]";
+			return "[{" + keyType + "}:{" + elementType + "}]";
 
 		StringBuilder sb = new StringBuilder();
 		sb.append('[');
