@@ -25,4 +25,18 @@ public interface Native {
 	public @interface Const {
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Documented
+	public @interface Struct {
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target(ElementType.FIELD)
+		@Documented
+		public @interface Field {
+		}
+
+
+	}
+
 }

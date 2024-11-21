@@ -1,11 +1,15 @@
 package it.simonvic.giovi;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import giovi.*;
 import giovi.lang.*;
@@ -23,10 +27,54 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	protected final Scanner scanner = new Scanner(System.in);
+	private static Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
+		InputStream stream = ClassLoader.getSystemClassLoader()
+			.getResourceAsStream(packageName.replaceAll("[.]", "/"));
+		var reader = new BufferedReader(new InputStreamReader(stream));
+		return reader.lines()
+			.filter(line -> line.endsWith(".class"))
+			.map(line -> getClass(line, packageName))
+			.collect(Collectors.toSet());
+	}
 
-	private final Scope globalScope = new Scope();
-	private Scope currentScope = globalScope;
+	private static Class<?> getClass(String className, String packageName) {
+		try {
+			return Class.forName(
+				packageName + "." + className.substring(0, className.lastIndexOf('.')));
+		} catch (ClassNotFoundException e) {
+			// handle the exception
+		}
+		return null;
+	}
+
+	private static void scanAPIs() {
+		var classes = findAllClassesUsingClassLoader("giovi");
+		classes = classes.stream()
+			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
+			.collect(Collectors.toSet());
+		for (var clazz : classes) {
+			var fields = new LinkedHashMap<String, VarD<?>>();
+			for (Field field : clazz.getFields()) {
+				if (Modifier.isStatic(field.getModifiers())
+					&& field.isAnnotationPresent(Native.Struct.Field.class)) {
+					try {
+						fields.put(field.getName(), (VarD<?>) field.get(null));
+					} catch (IllegalArgumentException | IllegalAccessException e) {
+					}
+				}
+			}
+			GLOBAL_SCOPE.define(new Struct(clazz.getSimpleName(), fields));
+		}
+	}
+
+	private static final Scope GLOBAL_SCOPE = new Scope();
+
+	static {
+		scanAPIs();
+	}
+
+	protected final Scanner scanner = new Scanner(System.in);
+	private Scope currentScope = GLOBAL_SCOPE;
 
 	public Scope getCurrentScope() {
 		return currentScope;
