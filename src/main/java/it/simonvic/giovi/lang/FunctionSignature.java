@@ -34,7 +34,7 @@ public record FunctionSignature(
 	@Override
 	public String toString() {
 		var sb = new StringBuilder();
-		parameters.forEach((identifier, param) -> sb.append(param.toString() + ","));
+		parameters.forEach((_, param) -> sb.append(param.toString() + ","));
 		return String.format("%s(%s) => %s", identifier, sb.toString(), returnType);
 	}
 
