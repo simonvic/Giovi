@@ -161,6 +161,10 @@ public class TextProcessor {
 		text = text.replaceAll(Pattern.quote("\\r"), "\r");
 		text = text.replaceAll(Pattern.quote("\\f"), "\f");
 		text = Pattern
+			.compile(Matcher.quoteReplacement("\\([\"'${}])"))
+			.matcher(text)
+			.replaceAll(result -> result.group(1));
+		text = Pattern
 			.compile(Matcher.quoteReplacement("\\u([a-fA-F0-9]{4})"))
 			.matcher(text)
 			.replaceAll(result -> String.valueOf((char) Integer.parseInt(result.group(1), 16)));
