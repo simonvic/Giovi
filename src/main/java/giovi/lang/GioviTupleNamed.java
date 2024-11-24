@@ -110,7 +110,7 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviTupleNamed();
-			case FieldKey(var identifier) -> value.getField(identifier)
+			case MemberKey(var identifier) -> value.getField(identifier)
 				.orElseThrow(() -> new NoSuchField(identifier));
 			default -> GioviValue.super.dot(right);
 		};

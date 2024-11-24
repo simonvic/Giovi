@@ -732,7 +732,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
 		if (ctx.anyIdentifier() != null) {
-			return lhs.dot(new FieldKey(ctx.anyIdentifier().getText()));
+			return lhs.dot(new MemberKey(ctx.anyIdentifier().getText()));
 		}
 		if (ctx.DEFAULT() != null) {
 			return lhs.dot(new GioviDefault());

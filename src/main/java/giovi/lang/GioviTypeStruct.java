@@ -1,6 +1,6 @@
 package giovi.lang;
 
-import giovi.FieldKey;
+import giovi.MemberKey;
 import giovi.GioviParserVisitResult;
 import giovi.Struct;
 
@@ -47,7 +47,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(definition.copy());
-			case FieldKey(var identifier) when definition.containsField(identifier) -> definition
+			case MemberKey(var identifier) when definition.containsField(identifier) -> definition
 				.get(identifier).copy();
 			default -> GioviType.super.dot(right);
 		};

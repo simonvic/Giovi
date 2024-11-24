@@ -111,7 +111,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
-			case FieldKey(var identifier) when value.containsField(identifier) -> value
+			case MemberKey(var identifier) when value.containsField(identifier) -> value
 				.getField(identifier).get();
 			default -> GioviValue.super.dot(right);
 		};

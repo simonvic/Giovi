@@ -265,7 +265,7 @@ public sealed interface GioviValue<T>
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case Var<?> v -> dot(v.value());
-			case FieldKey(var identifier) -> {
+			case MemberKey(var identifier) -> {
 				// Field
 				try {
 					Field field = this.getClass().getField(identifier);
