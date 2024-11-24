@@ -106,6 +106,8 @@ public sealed class Tuple permits TupleNamed {
 		}
 	}
 
+	// TODO: clarify requirements. Should a Point.<x y z> be equal to a Color.<r g b>?
+	// FIXME: also using this.equal(Tuple) is wrong
 	public boolean equal(Struct other) {
 		return this.equal((Tuple) other);
 	}
