@@ -66,17 +66,28 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
 			.collect(Collectors.toSet());
 		for (var clazz : classes) {
+
+			String typename = clazz.getSimpleName();
+
+			// TODO: check if classField/method are static or final?
 			var fields = new LinkedHashMap<String, VarD<?>>();
-			for (Field field : clazz.getFields()) {
-				if (Modifier.isStatic(field.getModifiers())
-					&& field.isAnnotationPresent(Native.Struct.Field.class)) {
-					try {
-						fields.put(field.getName(), (VarD<?>) field.get(null));
-					} catch (IllegalArgumentException | IllegalAccessException e) {
-					}
+			var constants = new HashMap<String, GioviValue<?>>();
+			for (Field classField : clazz.getFields()) {
+				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
+					fields.put(classField.getName(), (VarD<?>) classField.get(null));
+				} else if (classField.isAnnotationPresent(Native.Const.class)) {
+					constants.put(classField.getName(), (GioviValue<?>) classField.get(null));
 				}
 			}
-			GLOBAL_SCOPE.define(new Struct(clazz.getSimpleName(), fields));
+
+			var functions = new HashMap<String, GioviFunction>();
+			for (Method method : clazz.getMethods()) {
+				if (method.isAnnotationPresent(Native.Func.class)) {
+					functions.put(method.getName(), new GioviFunction(new JFunction(null, method)));
+				}
+			}
+			GLOBAL_SCOPE.define(new Struct(typename, fields, constants, functions));
+
 		}
 	}
 
@@ -310,9 +321,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		try {
 			iterationBody = switch (keyIteratorCtx) {
 
-				case IteratorPlaceholderContext _ -> switch ( valueIteratorCtx) {
+				case IteratorPlaceholderContext _ -> switch (valueIteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> ( body, _, _) -> visit(body);
+					case IteratorPlaceholderContext _ -> (body, _, _) -> visit(body);
 
 					case IteratorUnaryContext valueCtx -> (body, _, v) -> {
 						String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
@@ -338,7 +349,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
 
 					yield switch (valueIteratorCtx) {
-						case IteratorPlaceholderContext _ -> ( body, k, _) -> {
+						case IteratorPlaceholderContext _ -> (body, k, _) -> {
 							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
 							visit(body);
 						};
@@ -370,7 +381,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 				case IteratorAggregateContext keyCtx -> switch (valueIteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> ( body, k, _) -> {
+					case IteratorPlaceholderContext _ -> (body, k, _) -> {
 						deconstruct(k.copy(), keyCtx);
 						visit(body);
 					};
