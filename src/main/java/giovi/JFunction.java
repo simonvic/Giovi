@@ -11,6 +11,8 @@ import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.lang.annotation.Native;
 
 public record JFunction(
+	// TODO: remove instance. All GioviFunction are "static".
+	// "self" functions should probably be handled by the visitor
 	GioviValue<?> instance,
 	Method method,
 	FunctionSignature signature)
@@ -58,6 +60,7 @@ public record JFunction(
 	}
 
 	public JFunction copy() {
+		// TODO: is signature copy necessary?
 		return new JFunction(instance, method, signature.copy());
 	}
 

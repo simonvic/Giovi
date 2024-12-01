@@ -13,6 +13,7 @@ public record GFunction(
 	}
 
 	public GFunction copy() {
+		// TODO: is signature copy necessary?
 		return new GFunction(signature.copy(), bodyCtx);
 	}
 
