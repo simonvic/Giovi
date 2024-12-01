@@ -67,7 +67,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			.collect(Collectors.toSet());
 		for (var clazz : classes) {
 
-			String typename = clazz.getSimpleName();
+			String typename = clazz.getAnnotation(Native.Struct.class).typename();
+			if (typename.isEmpty()) {
+				typename = clazz.getSimpleName();
+			}
 
 			// TODO: check if classField/method are static or final?
 			var fields = new LinkedHashMap<String, VarD<?>>();

@@ -31,6 +31,8 @@ public interface Native {
 	@Documented
 	public @interface Struct {
 
+		String typename() default "";
+
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)
 		@Documented
