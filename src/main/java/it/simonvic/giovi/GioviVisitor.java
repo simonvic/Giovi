@@ -1201,9 +1201,47 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			fieldDefinitions.put(
 				fieldCtx.identifier().getText(),
 				spawnType(fieldCtx.type(), fieldCtx.defaultDefinition()));
+			// TODO: maybe add warning about unimplemented recursive structs
 		}
 
-		getCurrentScope().define(new Struct(ctx.structName.getText(), fieldDefinitions));
+		var constants = new HashMap<String, GioviValue<?>>();
+		var functions = new HashMap<String, GioviFunction>();
+		// TODO: double check that we don't lose constants and functions definitions somewhere else
+		getCurrentScope().define(new Struct(
+			ctx.structName.getText(),
+			fieldDefinitions,
+			constants,
+			functions));
+
+		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
+			var constant = spawnType(constCtx.type(), null);
+			constant.setValueWithRedirection(visit(constCtx.expression()));
+			constants.put(
+				constCtx.constantIdentifier().getText(),
+				constant.value());
+		}
+
+		for (var funcCtx : ctx.structBodyDefinition().functionDeclaration()) {
+			// TODO: once formal and actual parameter parser rules have been refactored, remove this duplicated code
+			FunctionSignature signature;
+			String identifier = funcCtx.identifier().getText();
+			GioviType<?> returnType = funcCtx.type() == null
+				? new GioviTypeVoid()
+				: visit(funcCtx.type()).asGioviType();
+			if (funcCtx.formalParameters() == null) {
+				signature = funcCtx.type() == null
+					? new FunctionSignature(identifier)
+					: new FunctionSignature(identifier, returnType);
+			} else {
+				var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
+				for (var formalParamCtx : funcCtx.formalParameters().formalParameter()) {
+					var formalParameter = (FunctionSignatureParam) visit(formalParamCtx);
+					parameters.put(formalParameter.identifier(), formalParameter);
+				}
+				signature = new FunctionSignature(identifier, parameters, returnType);
+			}
+			functions.put(identifier, new GioviFunction(new GFunction(signature, funcCtx.body)));
+		}
 
 		return null;
 	}

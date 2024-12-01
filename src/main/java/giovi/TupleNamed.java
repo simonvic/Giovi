@@ -132,7 +132,8 @@ public sealed class TupleNamed extends Tuple permits Struct {
 				widerEntry.getKey(),
 				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
-		return new Struct(to.getTypename(), widenedFields);
+		// TODO: this is wrong; fix once we rework Tuple, Record and Struct
+		return new Struct(to.getTypename(), widenedFields, to.getConstants(), to.getFunctions());
 	}
 
 	public boolean containsField(String identifier) {
