@@ -9,22 +9,22 @@ import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Struct;
 import it.simonvic.giovi.lang.annotation.Native.Type;
 
-@Struct
-public class Math implements GioviObject {
+@Struct(typename = "Math")
+public class GMath implements GioviObject {
 
 	@Const
-	public static final GioviReal E = new GioviReal(java.lang.Math.E);
+	public static final GioviReal E = new GioviReal(Math.E);
 
 	@Const
-	public static final GioviReal PI = new GioviReal(java.lang.Math.PI);
+	public static final GioviReal PI = new GioviReal(Math.PI);
 
 	@Const
-	public static final GioviReal TAU = new GioviReal(java.lang.Math.TAU);
+	public static final GioviReal TAU = new GioviReal(Math.TAU);
 
 	@Func
 	public static @Type(GioviTypeReal.class) GioviReal floor(
 		@Param(name = "x", type = @Type(GioviTypeReal.class)) GioviReal x) {
-		return new GioviReal(java.lang.Math.floor(x.value()));
+		return new GioviReal(Math.floor(x.value()));
 	}
 
 }
