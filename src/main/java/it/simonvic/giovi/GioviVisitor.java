@@ -1,11 +1,14 @@
 package it.simonvic.giovi;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -28,28 +31,37 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	private static Set<Class<?>> findAllClassesUsingClassLoader(String packageName) {
-		InputStream stream = ClassLoader.getSystemClassLoader()
-			.getResourceAsStream(packageName.replaceAll("[.]", "/"));
-		var reader = new BufferedReader(new InputStreamReader(stream));
-		return reader.lines()
-			.filter(line -> line.endsWith(".class"))
-			.map(line -> getClass(line, packageName))
+	public static Set<Class<?>> findClasses(String packageName)
+		throws URISyntaxException, IOException {
+		String packageFolder = packageName.replaceAll("[.]", "/");
+		URI packageURI = ClassLoader.getSystemClassLoader().getResource(packageFolder).toURI();
+		Path packagePath = packageURI.getScheme().equals("file")
+			? Path.of(packageURI)
+			: FileSystems.newFileSystem(packageURI, Map.of()).getPath(packageFolder);
+		return Files.walk(packagePath, 1)
+			.map(path -> path.toString())
+			.filter(pathName -> pathName.endsWith(".class"))
+			.map(pathName -> {
+				try {
+					return toClass(pathName);
+				} catch (ClassNotFoundException e) {
+					throw new RuntimeException(e);
+				}
+			})
 			.collect(Collectors.toSet());
 	}
 
-	private static Class<?> getClass(String className, String packageName) {
-		try {
-			return Class.forName(
-				packageName + "." + className.substring(0, className.lastIndexOf('.')));
-		} catch (ClassNotFoundException e) {
-			// handle the exception
-		}
-		return null;
+	public static Class<?> toClass(String pathName) throws ClassNotFoundException {
+		return Class.forName(pathName
+			.replace(".class", "")
+			.replaceFirst(".*target/classes/", "") // TODO: lol hack
+			.replace("[$]", ".") // nested classes
+			.replace("/", "."));
 	}
 
-	private static void scanAPIs() {
-		var classes = findAllClassesUsingClassLoader("giovi");
+	private static void scanAPIs()
+		throws IllegalArgumentException, IllegalAccessException, URISyntaxException, IOException {
+		var classes = findClasses("giovi");
 		classes = classes.stream()
 			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
 			.collect(Collectors.toSet());
@@ -71,7 +83,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private static final Scope GLOBAL_SCOPE = new Scope();
 
 	static {
-		scanAPIs();
+		try {
+			scanAPIs();
+		} catch (IllegalArgumentException | IllegalAccessException | URISyntaxException
+			| IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	protected final Scanner scanner = new Scanner(System.in);
