@@ -13,7 +13,7 @@ import it.simonvic.giovi.lang.annotation.Native.Type;
 
 public record JFunction(
 	// TODO: remove instance. All GioviFunction are "static".
-	// "self" functions should probably be handled by the visitor
+	// "self" functions should probably be desugared by the visitor
 	GioviValue<?> instance,
 	Method method,
 	FunctionSignature signature)
