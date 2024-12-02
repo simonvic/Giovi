@@ -64,6 +64,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var classes = findClasses("giovi");
 		classes = classes.stream()
 			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
+			// TODO: once we add include statements, we may add a @AutoInclude
 			.collect(Collectors.toSet());
 		for (var clazz : classes) {
 
