@@ -991,16 +991,26 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			default -> throw new GioviException("Invokation fail " + visit);
 		};
 		enterFunctionScope();
+		LinkedHashMap<String, VarD<?>> actualParams = setupFunctionParameters(
+			parametersCtx,
+			function.signature());
 		var returnValue = switch (function) {
 			case JFunction jFunction -> {
+				var args = new GioviValue<?>[actualParams.size()];
+				int i = 0;
+				for (var actualParam : actualParams.entrySet()) {
+					args[i++] = actualParam.getValue().value();
+				}
 				try {
-					yield jFunction.invoke(buildFunctionParameters(parametersCtx));
+					yield jFunction.invoke(args);
 				} catch (IllegalAccessException | InvocationTargetException e) {
 					throw new GioviException("Invocation fail", e);
 				}
 			}
 			case GFunction gFunction -> {
-				setupFunctionParameters(parametersCtx, function.signature());
+				for (var actualParam : actualParams.entrySet()) {
+					getCurrentScope().declare(actualParam.getKey(), actualParam.getValue());
+				}
 				yield callFunction(gFunction);
 			}
 		};
@@ -1008,48 +1018,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return returnValue;
 	}
 
-	private GioviValue<?>[] buildFunctionParameters(
-		FunctionCallParametersContext callParamsCtx) {
-		if (callParamsCtx == null) {
-			return new GioviValue<?>[] {};
-		} else if (callParamsCtx.functionCallParameter(0).identifier() == null) {
-			return buildFunctionParametersIteratively(callParamsCtx.functionCallParameter());
-		} else {
-			return buildNamedFunctionParameters(callParamsCtx.functionCallParameter());
-		}
-	}
-
-	private GioviValue<?>[] buildNamedFunctionParameters(
-		List<FunctionCallParameterContext> actualParamCtxList) {
-		throw new UnsupportedOperationException(
-			"Unimplemented method 'buildNamedFunctionParameters'");
-	}
-
-	private GioviValue<?>[] buildFunctionParametersIteratively(
-		List<FunctionCallParameterContext> actualParamCtxList) {
-		var args = new GioviValue<?>[actualParamCtxList.size()];
-		for (int i = 0; i < args.length; i++) {
-			args[i] = visit(actualParamCtxList.get(i).expression()).unwrapAsGioviValue();
-		}
-		return args;
-	}
-
 	/**
 	 * Visit function call parameters and declare actual parameters
 	 * @param callParamsCtx Function call context
 	 * @param signature Function signature
 	 */
-	private void setupFunctionParameters(
+	private LinkedHashMap<String, VarD<?>> setupFunctionParameters(
 		FunctionCallParametersContext callParamsCtx,
 		FunctionSignature signature) {
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
 		if (callParamsCtx == null) {
-			setupFunctionParametersIteratively(List.of(), signature);
+			return setupFunctionParametersIteratively(List.of(), signature);
 		} else if (callParamsCtx.functionCallParameter(0).identifier() == null) {
-			setupFunctionParametersIteratively(callParamsCtx.functionCallParameter(), signature);
+			return setupFunctionParametersIteratively(callParamsCtx.functionCallParameter(),
+				signature);
 		} else {
-			setupNamedFunctionParameters(callParamsCtx.functionCallParameter(), signature);
+			return setupNamedFunctionParameters(callParamsCtx.functionCallParameter(), signature);
 		}
 
 	}
@@ -1059,7 +1044,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
 	 */
-	private void setupFunctionParametersIteratively(
+	private LinkedHashMap<String, VarD<?>> setupFunctionParametersIteratively(
 		List<FunctionCallParameterContext> actualParamCtxList,
 		FunctionSignature signature) {
 		var formalParamsArray = signature.getParametersList();
@@ -1069,7 +1054,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			throw new GioviException(
 				"Expecting at most " + formalParamsCount + " but instead got " + actualParamsCount);
 		}
-
+		var params = new LinkedHashMap<String, VarD<?>>();
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
@@ -1084,7 +1069,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						throw new GioviException(
 							"Required parameter not specified: " + formalParamIdentifier);
 					}
-					getCurrentScope().declare(formalParamIdentifier, actualParam);
+					params.put(formalParamIdentifier, actualParam);
 				}
 				break;
 			}
@@ -1094,14 +1079,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 			// TODO: eventually remove it and let the redirection handle the default
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(formalParamIdentifier, actualParam);
+				params.put(formalParamIdentifier, actualParam);
 				continue;
 			}
 
 			actualParam.setValueWithRedirection(actualParamExpression);
-			getCurrentScope().declare(formalParamIdentifier, actualParam);
+			params.put(formalParamIdentifier, actualParam);
 		}
-
+		return params;
 	}
 
 	/**
@@ -1109,7 +1094,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
 	 */
-	private void setupNamedFunctionParameters(
+	private LinkedHashMap<String, VarD<?>> setupNamedFunctionParameters(
 		List<FunctionCallParameterContext> actualParamCtxList,
 		FunctionSignature signature) {
 
@@ -1119,6 +1104,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			actualParams.put(actualParamCtx.identifier().getText(), actualParamCtx);
 		}
 
+		var params = new LinkedHashMap<String, VarD<?>>();
 		var undeclaredParameters = new LinkedHashMap<>(signature.parameters());
 		actualParams.forEach((actualParamIdentifier, actualParamCtx) -> {
 			if (!signature.parameters().containsKey(actualParamIdentifier)) {
@@ -1134,10 +1120,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 			var actualParamExpression = visit(actualParams.get(formalParamIdentifier).expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
-				getCurrentScope().declare(formalParamIdentifier, actualParam);
+				params.put(formalParamIdentifier, actualParam);
 			} else {
 				actualParam.setValueWithRedirection(actualParamExpression);
-				getCurrentScope().declare(formalParamIdentifier, actualParam);
+				params.put(formalParamIdentifier, actualParam);
 			}
 			undeclaredParameters.remove(formalParamIdentifier);
 		});
@@ -1148,9 +1134,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				throw new GioviException(
 					"Required parameter not specified: " + formalParamIdentifier);
 			}
-			getCurrentScope().declare(formalParamIdentifier, formalParam.spawn());
+			params.put(formalParamIdentifier, formalParam.spawn());
 		});
-
+		return params;
 	}
 
 	/**
