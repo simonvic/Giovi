@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
@@ -77,6 +78,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var fields = new LinkedHashMap<String, VarD<?>>();
 			var constants = new HashMap<String, GioviValue<?>>();
 			for (Field classField : clazz.getFields()) {
+				if (!Modifier.isStatic(classField.getModifiers())) {
+					System.err.println(
+						"Non static fields are not supported. Ignoring " + classField);
+					continue;
+				}
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
 					fields.put(classField.getName(), (VarD<?>) classField.get(null));
 				} else if (classField.isAnnotationPresent(Native.Const.class)) {
