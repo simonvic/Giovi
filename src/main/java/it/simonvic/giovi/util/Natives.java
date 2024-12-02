@@ -14,6 +14,22 @@ import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
 
+	public static Struct structSignatureOf(Class<?> clazz) {
+		// Find field marked as signature...
+		for (Field field : clazz.getFields()) {
+			var annotation = field.getAnnotation(Native.Struct.Signature.class);
+			if (annotation != null) {
+				try {
+					return (Struct) field.get(null);
+				} catch (IllegalArgumentException | IllegalAccessException e) {
+					continue;
+				}
+			}
+		}
+		// ... or build it if not defined
+		return Natives.structSignatureFrom(clazz);
+	}
+
 	public static Struct structSignatureFrom(Class<?> clazz) {
 		String typename = clazz.getAnnotation(Native.Struct.class).typename();
 		if (typename.isEmpty()) {

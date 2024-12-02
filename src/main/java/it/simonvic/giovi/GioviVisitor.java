@@ -31,57 +31,31 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	public static Set<Class<?>> findClasses(String packageName)
-		throws URISyntaxException, IOException {
-		String packageFolder = packageName.replaceAll("[.]", "/");
+	private static void scanAPIs() throws URISyntaxException, IOException {
+		String packageFolder = "giovi";
 		URI packageURI = ClassLoader.getSystemClassLoader().getResource(packageFolder).toURI();
 		Path packagePath = packageURI.getScheme().equals("file")
 			? Path.of(packageURI)
 			: FileSystems.newFileSystem(packageURI, Map.of()).getPath(packageFolder);
-		return Files.walk(packagePath, 69)
+
+		Files.walk(packagePath, 69)
 			.map(path -> path.toString())
 			.filter(pathName -> pathName.endsWith(".class"))
 			.map(pathName -> {
 				try {
-					return toClass(pathName);
+					return Class.forName(pathName
+						.replace(".class", "")
+						.replaceFirst(".*target/classes/", "") // TODO: lol hack
+						.replace("[$]", ".") // nested classes
+						.replace("/", "."));
 				} catch (ClassNotFoundException e) {
 					throw new RuntimeException(e);
 				}
 			})
-			.collect(Collectors.toSet());
-	}
-
-	public static Class<?> toClass(String pathName) throws ClassNotFoundException {
-		return Class.forName(pathName
-			.replace(".class", "")
-			.replaceFirst(".*target/classes/", "") // TODO: lol hack
-			.replace("[$]", ".") // nested classes
-			.replace("/", "."));
-	}
-
-	private static void scanAPIs()
-		throws IllegalArgumentException, IllegalAccessException, URISyntaxException, IOException {
-		var classes = findClasses("giovi");
-		classes = classes.stream()
 			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
-			// TODO: once we add include statements, we may add a @AutoInclude
-			.collect(Collectors.toSet());
-		for (var clazz : classes) {
-			Struct signature = null;
-			// Find field marked as signature...
-			for (Field field : clazz.getFields()) {
-				var annotation = field.getAnnotation(Native.Struct.Signature.class);
-				if (annotation != null) {
-					signature = (Struct) field.get(null);
-					break;
-				}
-			}
-			// ... or build it if not present
-			if (signature == null) {
-				signature = Natives.structSignatureFrom(clazz);
-			}
-			GLOBAL_SCOPE.define(Natives.structSignatureFrom(clazz));
-		}
+			.distinct()
+			.map(Natives::structSignatureOf)
+			.forEach(GLOBAL_SCOPE::define);
 	}
 
 	private static final Scope GLOBAL_SCOPE = new Scope();
@@ -89,8 +63,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	static {
 		try {
 			scanAPIs();
-		} catch (IllegalArgumentException | IllegalAccessException | URISyntaxException
-			| IOException e) {
+		} catch (URISyntaxException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
