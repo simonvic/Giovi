@@ -2,13 +2,18 @@ package giovi.util;
 
 import java.util.Random;
 
+import giovi.Struct;
 import giovi.lang.*;
+import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.Func;
-import it.simonvic.giovi.lang.annotation.Native.Struct;
 import it.simonvic.giovi.lang.annotation.Native.Type;
+import it.simonvic.giovi.util.Natives;
 
-@Struct(typename = "Random")
-public class GRandom implements GioviObject {
+@Native.Struct(typename = "Random")
+public class GRandom {
+
+	@Native.Struct.Signature
+	public static final Struct SIGNATURE = Natives.structSignatureFrom(GRandom.class);
 
 	private static Random random = new Random();
 

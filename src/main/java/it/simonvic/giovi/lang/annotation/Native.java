@@ -3,7 +3,6 @@ package it.simonvic.giovi.lang.annotation;
 import java.lang.annotation.*;
 
 import giovi.lang.GioviType;
-import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 
 /*
  * For a full implementation this depends on:
@@ -33,6 +32,12 @@ public interface Native {
 	public @interface Struct {
 
 		String typename() default "";
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target(ElementType.FIELD)
+		@Documented
+		public @interface Signature {
+		}
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)

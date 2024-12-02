@@ -1,23 +1,53 @@
 package it.simonvic.giovi.util;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import giovi.JFunction;
 import giovi.Struct;
-import giovi.lang.GioviType;
-import giovi.lang.GioviTypePrimitive;
-import giovi.lang.GioviTypeVoid;
+import giovi.lang.*;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.lang.annotation.Native;
-import it.simonvic.giovi.lang.annotation.Native.Type;
 
 public class Natives {
 
 	public static Struct structSignatureFrom(Class<?> clazz) {
-		return new Struct("");
+		String typename = clazz.getAnnotation(Native.Struct.class).typename();
+		if (typename.isEmpty()) {
+			typename = clazz.getSimpleName();
+		}
+
+		// TODO: check if classField/method are static or final?
+		var fields = new LinkedHashMap<String, VarD<?>>();
+		var constants = new HashMap<String, GioviValue<?>>();
+		for (Field classField : clazz.getFields()) {
+			if (!Modifier.isStatic(classField.getModifiers())) {
+				System.err.println(
+					"Non static fields are not supported. Ignoring " + classField);
+				continue;
+			}
+			try {
+				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
+					fields.put(classField.getName(), (VarD<?>) classField.get(null));
+				} else if (classField.isAnnotationPresent(Native.Const.class)) {
+					constants.put(classField.getName(), (GioviValue<?>) classField.get(null));
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		var functions = new HashMap<String, GioviFunction>();
+		for (Method method : clazz.getMethods()) {
+			if (method.isAnnotationPresent(Native.Func.class)) {
+				functions.put(method.getName(), new GioviFunction(new JFunction(null, method)));
+			}
+		}
+
+		return new Struct(typename, fields, constants, functions);
 	}
 
 	// TODO: not robust enough
@@ -35,7 +65,7 @@ public class Natives {
 		return new FunctionSignature(identifier, parameters, returnType);
 	}
 
-	private static GioviType<?> gioviTypeFrom(Type annotation) {
+	private static GioviType<?> gioviTypeFrom(Native.Type annotation) {
 		Class<? extends GioviType<?>> clazz = annotation.value();
 		if (GioviTypePrimitive.class.isAssignableFrom(clazz)) {
 			try {

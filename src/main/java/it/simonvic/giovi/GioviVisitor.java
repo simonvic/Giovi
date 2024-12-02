@@ -3,8 +3,6 @@ package it.simonvic.giovi;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
@@ -27,6 +25,7 @@ import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.util.GioviTypes;
+import it.simonvic.giovi.util.Natives;
 import it.simonvic.giovi.util.TextProcessor;
 import it.simonvic.giovi.util.VisitorUtils;
 
@@ -68,36 +67,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			// TODO: once we add include statements, we may add a @AutoInclude
 			.collect(Collectors.toSet());
 		for (var clazz : classes) {
-
-			String typename = clazz.getAnnotation(Native.Struct.class).typename();
-			if (typename.isEmpty()) {
-				typename = clazz.getSimpleName();
-			}
-
-			// TODO: check if classField/method are static or final?
-			var fields = new LinkedHashMap<String, VarD<?>>();
-			var constants = new HashMap<String, GioviValue<?>>();
-			for (Field classField : clazz.getFields()) {
-				if (!Modifier.isStatic(classField.getModifiers())) {
-					System.err.println(
-						"Non static fields are not supported. Ignoring " + classField);
-					continue;
-				}
-				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
-					fields.put(classField.getName(), (VarD<?>) classField.get(null));
-				} else if (classField.isAnnotationPresent(Native.Const.class)) {
-					constants.put(classField.getName(), (GioviValue<?>) classField.get(null));
+			Struct signature = null;
+			// Find field marked as signature...
+			for (Field field : clazz.getFields()) {
+				var annotation = field.getAnnotation(Native.Struct.Signature.class);
+				if (annotation != null) {
+					signature = (Struct) field.get(null);
+					break;
 				}
 			}
-
-			var functions = new HashMap<String, GioviFunction>();
-			for (Method method : clazz.getMethods()) {
-				if (method.isAnnotationPresent(Native.Func.class)) {
-					functions.put(method.getName(), new GioviFunction(new JFunction(null, method)));
-				}
+			// ... or build it if not present
+			if (signature == null) {
+				signature = Natives.structSignatureFrom(clazz);
 			}
-			GLOBAL_SCOPE.define(new Struct(typename, fields, constants, functions));
-
+			GLOBAL_SCOPE.define(Natives.structSignatureFrom(clazz));
 		}
 	}
 
