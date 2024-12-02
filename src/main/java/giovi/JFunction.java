@@ -70,7 +70,7 @@ public record JFunction(
 		return signature.toString() + " {" + method.toString() + "}";
 	}
 
-	public GioviParserVisitResult invoke(GioviParserVisitResult... args)
+	public GioviParserVisitResult invoke(GioviValue<?>... args)
 		throws IllegalAccessException, InvocationTargetException {
 		Object returnValue = method.invoke(instance, (Object[]) args);
 		if (method.getReturnType().equals(Void.TYPE)) {

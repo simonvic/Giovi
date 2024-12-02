@@ -1001,10 +1001,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return returnValue;
 	}
 
-	private GioviParserVisitResult[] buildFunctionParameters(
+	private GioviValue<?>[] buildFunctionParameters(
 		FunctionCallParametersContext callParamsCtx) {
 		if (callParamsCtx == null) {
-			return new GioviParserVisitResult[] {};
+			return new GioviValue<?>[] {};
 		} else if (callParamsCtx.functionCallParameter(0).identifier() == null) {
 			return buildFunctionParametersIteratively(callParamsCtx.functionCallParameter());
 		} else {
@@ -1012,17 +1012,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 	}
 
-	private GioviParserVisitResult[] buildNamedFunctionParameters(
+	private GioviValue<?>[] buildNamedFunctionParameters(
 		List<FunctionCallParameterContext> actualParamCtxList) {
 		throw new UnsupportedOperationException(
 			"Unimplemented method 'buildNamedFunctionParameters'");
 	}
 
-	private GioviParserVisitResult[] buildFunctionParametersIteratively(
+	private GioviValue<?>[] buildFunctionParametersIteratively(
 		List<FunctionCallParameterContext> actualParamCtxList) {
-		var args = new GioviParserVisitResult[actualParamCtxList.size()];
+		var args = new GioviValue<?>[actualParamCtxList.size()];
 		for (int i = 0; i < args.length; i++) {
-			args[i] = visit(actualParamCtxList.get(i).expression());
+			args[i] = visit(actualParamCtxList.get(i).expression()).unwrapAsGioviValue();
 		}
 		return args;
 	}
