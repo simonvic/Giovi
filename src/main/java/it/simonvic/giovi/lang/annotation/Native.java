@@ -77,4 +77,13 @@ public interface Native {
 
 	}
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Documented
+	public @interface TypeNative {
+
+		Class<?> value();
+
+	}
+
 }

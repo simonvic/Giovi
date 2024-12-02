@@ -104,10 +104,15 @@ public class Natives {
 
 	private static GioviType<?> gioviTypeFrom(Parameter param) {
 		var typeAnnotation = param.getAnnotation(Native.Type.class);
-		if (typeAnnotation == null) {
-			return new GioviTypeVoid();
+		if (typeAnnotation != null) {
+			return gioviTypeFrom(typeAnnotation);
 		}
-		return gioviTypeFrom(typeAnnotation);
+
+		var nativeTypeAnnotation = param.getAnnotation(Native.TypeNative.class);
+		if (nativeTypeAnnotation != null) {
+			return new GioviTypeStruct(structSignatureOf(nativeTypeAnnotation.value()));
+		}
+		return new GioviTypeVoid();
 	}
 
 
