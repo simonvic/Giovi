@@ -38,7 +38,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		Path packagePath = packageURI.getScheme().equals("file")
 			? Path.of(packageURI)
 			: FileSystems.newFileSystem(packageURI, Map.of()).getPath(packageFolder);
-		return Files.walk(packagePath, 1)
+		return Files.walk(packagePath, 69)
 			.map(path -> path.toString())
 			.filter(pathName -> pathName.endsWith(".class"))
 			.map(pathName -> {
