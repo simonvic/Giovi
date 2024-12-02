@@ -12,9 +12,6 @@ import it.simonvic.giovi.util.Natives;
 @Native.Struct(typename = "Random")
 public class GRandom {
 
-	@Native.Struct.Signature
-	public static final Struct SIGNATURE = Natives.structSignatureFrom(GRandom.class);
-
 	private static Random random = new Random();
 
 	@Func
@@ -31,5 +28,8 @@ public class GRandom {
 	public static @Type(GioviTypeBool.class) GioviBool bool() {
 		return new GioviBool(random.nextBoolean());
 	}
+
+	@Native.Struct.Signature
+	public static final Struct SIGNATURE = Natives.structSignatureFrom(GRandom.class);
 
 }
