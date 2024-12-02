@@ -11,7 +11,6 @@ import giovi.Range;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.Func;
-import it.simonvic.giovi.lang.annotation.Native.Func.GenericParam;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Type;
 
@@ -299,28 +298,28 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	}
 
 	@Func
-	public void insert(@GenericParam(name = "value") GioviValue<?> value)
+	public void insert(@Param("value") GioviValue<?> value)
 		throws NonWideneable {
 		this.value.add(0, new Var<>(value.copy().widenTo(entryType)));
 	}
 
 	@Func
-	public void print(@GenericParam(name = "number") GioviParserVisitResult number) {
+	public void print(@Param("number") GioviParserVisitResult number) {
 		System.out.println(number);
 	}
 
 	@Func
 	public void insertAt(
-		@Param(name = "index", type = @Type(GioviTypeInt.class)) GioviInt index,
-		@GenericParam(name = "value") GioviValue<?> value)
+		@Param("index") @Type(GioviTypeInt.class) GioviInt index,
+		@Param("value") GioviValue<?> value)
 		throws NonWideneable {
 		this.value.add(index.value(), new Var<>(value.copy().widenTo(entryType)));
 	}
 
 	@Func
 	public @Type(GioviTypeList.class) GioviList cut(
-		@Param(name = "start", type = @Type(GioviTypeInt.class)) GioviInt start,
-		@Param(name = "end", type = @Type(GioviTypeInt.class)) GioviInt end) {
+		@Param("start") @Type(GioviTypeInt.class) GioviInt start,
+		@Param("end") @Type(GioviTypeInt.class) GioviInt end) {
 		return new GioviList(entryType, value.subList(start.value(), end.value()));
 	}
 
@@ -332,7 +331,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 
 	@Func
 	public @Type(GioviTypeList.class) GioviList merge(
-		@Param(name = "list", type = @Type(GioviTypeList.class)) GioviList list) {
+		@Param("list") @Type(GioviTypeList.class) GioviList list) {
 		var merged = this.copy();
 		for (var entry : list.value) {
 			if (!merged.value.contains(entry)) {

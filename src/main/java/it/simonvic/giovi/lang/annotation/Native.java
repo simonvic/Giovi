@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang.annotation;
 import java.lang.annotation.*;
 
 import giovi.lang.GioviType;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 
 /*
  * For a full implementation this depends on:
@@ -56,31 +57,14 @@ public interface Native {
 
 			String label() default "";
 
-			String name(); // eventually enable parameter name discovery compiler option
-
-			Type type();
-
-		}
-
-		@Retention(RetentionPolicy.RUNTIME)
-		@Target(ElementType.PARAMETER)
-		@Documented
-		public @interface GenericParam {
-
-			String label() default "";
-
-			String name();
-
-			// Type upperBound() default @Type(GioviType.class); can't be of use without some sort of generics
-
-			boolean optional() default false;
+			String value(); // eventually enable parameter name discovery compiler option
 
 		}
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.TYPE_USE)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Documented
 	public @interface Type {
 

@@ -9,6 +9,7 @@ import giovi.lang.*;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.lang.annotation.Native;
+import it.simonvic.giovi.lang.annotation.Native.Type;
 
 public record JFunction(
 	// TODO: remove instance. All GioviFunction are "static".
@@ -25,30 +26,20 @@ public record JFunction(
 	// TODO: not robust enough
 	private static FunctionSignature signatureFrom(Method method) {
 		String identifier = method.getName();
-		GioviType<?> returnType = method.getReturnType().isAnnotationPresent(Native.Type.class)
-			? gioviTypeFrom(method.getReturnType().getAnnotation(Native.Type.class).value())
-			: new GioviTypeVoid();
+		GioviType<?> returnType = gioviTypeFrom(method);
 		var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
 		for (Parameter param : method.getParameters()) {
-			String paramName;
-			GioviType<?> paramType;
-			if (param.isAnnotationPresent(Native.Func.Param.class)) {
-				var annotation = param.getAnnotation(Native.Func.Param.class);
-				paramName = annotation.name();
-				paramType = gioviTypeFrom(annotation.type().value());
-			} else if (param.isAnnotationPresent(Native.Func.GenericParam.class)) {
-				var annotation = param.getAnnotation(Native.Func.GenericParam.class);
-				paramName = annotation.name();
-				paramType = new GioviTypeVoid();
-			} else {
-				continue;
-			}
+			var annotation = param.getAnnotation(Native.Func.Param.class);
+			if (annotation == null) continue;
+			String paramName = annotation.value();
+			GioviType<?> paramType = gioviTypeFrom(param);
 			parameters.put(paramName, new FunctionSignatureParam(paramName, paramType));
 		}
 		return new FunctionSignature(identifier, parameters, returnType);
 	}
 
-	private static GioviType<?> gioviTypeFrom(Class<? extends GioviType<?>> clazz) {
+	private static GioviType<?> gioviTypeFrom(Type annotation) {
+		Class<? extends GioviType<?>> clazz = annotation.value();
 		if (GioviTypePrimitive.class.isAssignableFrom(clazz)) {
 			try {
 				return clazz.getConstructor().newInstance();
@@ -57,6 +48,22 @@ public record JFunction(
 			}
 		}
 		return new GioviTypeVoid();
+	}
+
+	private static GioviType<?> gioviTypeFrom(Method method) {
+		var typeAnnotation = method.getAnnotation(Native.Type.class);
+		if (typeAnnotation == null) {
+			return new GioviTypeVoid();
+		}
+		return gioviTypeFrom(typeAnnotation);
+	}
+
+	private static GioviType<?> gioviTypeFrom(Parameter param) {
+		var typeAnnotation = param.getAnnotation(Native.Type.class);
+		if (typeAnnotation == null) {
+			return new GioviTypeVoid();
+		}
+		return gioviTypeFrom(typeAnnotation);
 	}
 
 	public JFunction copy() {
