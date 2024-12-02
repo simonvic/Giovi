@@ -64,7 +64,20 @@ public interface Native {
 
 			String value(); // eventually enable parameter name discovery compiler option
 
+			@Retention(RetentionPolicy.RUNTIME)
+			@Target(ElementType.PARAMETER)
+			@Documented
+			public @interface Optional {
+
+				/**
+				 * Method source for the default value; leave empty to use the type's default
+				 */
+				String value() default "";
+
+			}
+
 		}
+
 
 	}
 

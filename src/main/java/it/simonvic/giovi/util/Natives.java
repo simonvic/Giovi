@@ -8,6 +8,7 @@ import giovi.JFunction;
 import giovi.Struct;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FunctionSignatureParam;
 import it.simonvic.giovi.lang.annotation.Native;
@@ -77,7 +78,37 @@ public class Natives {
 			if (annotation == null) continue;
 			String paramName = annotation.value();
 			GioviType<?> paramType = gioviTypeFrom(param);
-			parameters.put(paramName, new FunctionSignatureParam(paramName, paramType));
+
+			FunctionSignatureParam formalParam;
+			var optionalAnnotation = param.getAnnotation(Native.Func.Param.Optional.class);
+			if (optionalAnnotation == null) {
+				formalParam = new FunctionSignatureParam(paramName, paramType);
+			} else {
+				GioviValue<?> defaultValue;
+				String defaultMethodSource = optionalAnnotation.value();
+				if (defaultMethodSource.isEmpty()) {
+					defaultValue = paramType.spawn(); // Type's default
+				} else {
+					try {
+						defaultValue = (GioviValue<?>) method
+							.getDeclaringClass()
+							.getMethod(defaultMethodSource)
+							.invoke(null);
+						defaultValue = defaultValue.widenTo(paramType);
+					} catch (
+						IllegalAccessException
+						| InvocationTargetException
+						| NoSuchMethodException
+						| SecurityException
+						| NonWideneable e) {
+						throw new RuntimeException(
+							"Can't invoke parameter default value method source", e);
+					}
+				}
+				formalParam = new FunctionSignatureParam(paramName, paramType, defaultValue);
+			}
+
+			parameters.put(paramName, formalParam);
 		}
 		return new FunctionSignature(identifier, parameters, returnType);
 	}
@@ -91,7 +122,7 @@ public class Natives {
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			}
 		}
-		return new GioviTypeVoid();
+		throw new RuntimeException("Can't find giovi type from " + clazz);
 	}
 
 	private static GioviType<?> gioviTypeFrom(Method method) {
