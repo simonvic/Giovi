@@ -46,10 +46,11 @@ public class Natives {
 				continue;
 			}
 			try {
+				var gioviValue = (GioviValue<?>) classField.get(null);
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
-					fields.put(classField.getName(), (VarD<?>) classField.get(null));
+					fields.put(classField.getName(), new VarD<>(gioviValue, gioviValue.copy()));
 				} else if (classField.isAnnotationPresent(Native.Const.class)) {
-					constants.put(classField.getName(), (GioviValue<?>) classField.get(null));
+					constants.put(classField.getName(), gioviValue);
 				}
 			} catch (IllegalArgumentException | IllegalAccessException e) {
 				throw new RuntimeException(e);
