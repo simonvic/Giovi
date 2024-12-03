@@ -75,7 +75,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTupleNamed(defaultValue().copy());
+			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
 			case GioviStruct v -> GioviTuples.redirection(this, v);
