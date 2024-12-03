@@ -275,7 +275,7 @@ public sealed interface GioviValue<T>
 					if (method.getName().equals(identifier)
 						&& method.isAnnotationPresent(Func.class)) {
 						// TODO: fails on overloaded methods
-						yield new GioviFunction(new JFunction(this, method));
+						yield new GioviFunction(new JFunction(method));
 					}
 				}
 

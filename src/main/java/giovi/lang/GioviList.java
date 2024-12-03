@@ -10,9 +10,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.lang.annotation.Native.Func;
-import it.simonvic.giovi.lang.annotation.Native.Func.Param;
-import it.simonvic.giovi.lang.annotation.Native.Type;
 
 public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	implements GioviValue<List<Var<?>>> {
@@ -280,65 +277,6 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 			return new GioviList(entryType);
 		}
 		return GioviValue.super.dot(right);
-	}
-
-	@Func
-	public void clear() {
-		value.clear();
-	}
-
-	@Func
-	public @Type(GioviTypeInt.class) GioviInt size() {
-		return new GioviInt(value.size());
-	}
-
-	@Func
-	public @Type(GioviTypeList.class) GioviList reversed() {
-		return new GioviList(entryType, value.reversed());
-	}
-
-	@Func
-	public void insert(@Param("value") GioviValue<?> value)
-		throws NonWideneable {
-		this.value.add(0, new Var<>(value.copy().widenTo(entryType)));
-	}
-
-	@Func
-	public void print(@Param("number") GioviParserVisitResult number) {
-		System.out.println(number);
-	}
-
-	@Func
-	public void insertAt(
-		@Param("index") @Type(GioviTypeInt.class) GioviInt index,
-		@Param("value") GioviValue<?> value)
-		throws NonWideneable {
-		this.value.add(index.value(), new Var<>(value.copy().widenTo(entryType)));
-	}
-
-	@Func
-	public @Type(GioviTypeList.class) GioviList cut(
-		@Param("start") @Type(GioviTypeInt.class) GioviInt start,
-		@Param("end") @Type(GioviTypeInt.class) GioviInt end) {
-		return new GioviList(entryType, value.subList(start.value(), end.value()));
-	}
-
-	//@Func
-	//public @Type(GioviTypeList.class) GioviList cut(
-	//	@Param(name = "end", type = @Type(GioviTypeInt.class)) GioviInt end) {
-	//	return new GioviList(entryType, value.subList(0, end.value()));
-	//}
-
-	@Func
-	public @Type(GioviTypeList.class) GioviList merge(
-		@Param("list") @Type(GioviTypeList.class) GioviList list) {
-		var merged = this.copy();
-		for (var entry : list.value) {
-			if (!merged.value.contains(entry)) {
-				merged.value.add(entry);
-			}
-		}
-		return merged;
 	}
 
 }

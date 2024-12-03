@@ -61,7 +61,7 @@ public class Natives {
 		var functions = new HashMap<String, GioviFunction>();
 		for (Method method : clazz.getMethods()) {
 			if (method.isAnnotationPresent(Native.Func.class)) {
-				functions.put(method.getName(), new GioviFunction(new JFunction(null, method)));
+				functions.put(method.getName(), new GioviFunction(new JFunction(method)));
 			}
 		}
 
