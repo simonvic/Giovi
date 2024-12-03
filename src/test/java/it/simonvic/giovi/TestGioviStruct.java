@@ -4,6 +4,8 @@ import static it.simonvic.giovi.GioviVisitorUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Disabled;
@@ -14,11 +16,16 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.GFunction;
 import giovi.Range;
-import giovi.lang.GioviTuple;
+import giovi.Struct;
+import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.RedirectionException;
+import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.FunctionSignatureParam;
+import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 import it.simonvic.giovi.util.Structs;
@@ -86,14 +93,14 @@ public class TestGioviStruct {
 				""")
 				.getCurrentScope()
 				.getDefinitionStruct("Person").get())
-					.isEqualTo(Structs.of(
-						"Person",
-						"name", VarD.of(""),
-						"favoriteColor", VarD.of(Structs.of(
-							"RGB",
-							"r", VarD.of(0),
-							"g", VarD.of(0),
-							"b", VarD.of(0)))));
+				.isEqualTo(Structs.of(
+					"Person",
+					"name", VarD.of(""),
+					"favoriteColor", VarD.of(Structs.of(
+						"RGB",
+						"r", VarD.of(0),
+						"g", VarD.of(0),
+						"b", VarD.of(0)))));
 		}
 
 
@@ -116,27 +123,86 @@ public class TestGioviStruct {
 				""")
 				.getCurrentScope()
 				.getDefinitionStruct("Person").get())
-					.isEqualTo(Structs.of(
-						"Person",
-						"name", VarD.of(""),
-						"favoriteColor", VarD.of(
-							Structs.of(
-								"RGB",
-								"r", VarD.of(255, 0),
-								"g", VarD.of(250, 0),
-								"b", VarD.of(200, 0)),
-							Structs.of(
-								"RGB",
-								"r", VarD.of(255, 0),
-								"g", VarD.of(250, 0),
-								"b", VarD.of(200, 0)))));
+				.isEqualTo(Structs.of(
+					"Person",
+					"name", VarD.of(""),
+					"favoriteColor", VarD.of(
+						Structs.of(
+							"RGB",
+							"r", VarD.of(255, 0),
+							"g", VarD.of(250, 0),
+							"b", VarD.of(200, 0)),
+						Structs.of(
+							"RGB",
+							"r", VarD.of(255, 0),
+							"g", VarD.of(250, 0),
+							"b", VarD.of(200, 0)))));
 		}
 
+		@Test
+		void testConstants() {
+			assertThat(visit("""
+				Foo <
+					a Int
+					b Int
+					constant BAR Real <- 6.9
+					constant BAZ [Int] <- [1 2 3]
+				>
+				""")
+				.getCurrentScope()
+				.getDefinitionStruct("Foo").get()
+				.getConstants())
+				.isEqualTo(Map.of(
+					"BAR", new GioviReal(6.9),
+					"BAZ", GioviLists.of(1, 2, 3)));
+		}
 
-		@Disabled("Not implemented yet")
+		@Disabled("Fix constants definition getting lost")
+		@Test
+		void testConstantsWithSameDeclaringType() {
+			var expectedDefinition = new Struct(
+				"Foo", new LinkedHashMap<>(Map.of(
+					"a", VarD.of(0),
+					"b", VarD.of(0))),
+				new LinkedHashMap<>(),
+				new LinkedHashMap<>());
+			expectedDefinition.getConstants().put("FOO", new GioviStruct(expectedDefinition));
+			assertThat(visit("""
+				Foo <
+					a Int
+					b Int
+					constant FOO Foo <- Foo.<69 420>
+				>
+				""")
+				.getCurrentScope()
+				.getDefinitionStruct("Foo").get())
+				.isEqualTo(expectedDefinition);
+		}
+
+		@Disabled("Find a way to test functions equality (different bodyctx)")
 		@Test
 		void testFunctions() {
-
+			assertThat(visit("""
+				Foo <
+					foo() {}
+					bar(a Real, b [Int] default [1 2 3]) => Text {}
+				>
+				""")
+				.getCurrentScope()
+				.getDefinitionStruct("Foo")
+				.get()
+				.getFunctions())
+				.isEqualTo(Map.of(
+					"foo", new GioviFunction(new GFunction(new FunctionSignature(
+						"foo",
+						new LinkedHashMap<>(),
+						new GioviTypeVoid()))),
+					"bar", new GioviFunction(new GFunction(new FunctionSignature(
+						"bar",
+						new LinkedHashMap<>(Map.of(
+							"a", new FunctionSignatureParam("a", new GioviTypeReal()),
+							"b", new FunctionSignatureParam("b", GioviLists.of(1, 2, 3)))),
+						new GioviTypeText())))));
 		}
 
 		@Disabled("Not implemented yet")
@@ -514,11 +580,11 @@ public class TestGioviStruct {
 					.getVariable("x")
 					.get()
 					.value())
-						.isEqualTo(GioviStructs.of(
-							"Foo",
-							"i", VarD.of(69),
-							"t", VarD.of("hello"),
-							"b", VarD.of(true)));
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"i", VarD.of(69),
+						"t", VarD.of("hello"),
+						"b", VarD.of(true)));
 			}
 
 			@Test
@@ -549,11 +615,11 @@ public class TestGioviStruct {
 					.getVariable("x")
 					.get()
 					.value())
-						.isEqualTo(GioviStructs.of(
-							"Foo",
-							"i", VarD.of(69),
-							"t", VarD.of("hello"),
-							"b", VarD.of(true)));
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"i", VarD.of(69),
+						"t", VarD.of("hello"),
+						"b", VarD.of(true)));
 			}
 
 			@Test
@@ -567,11 +633,11 @@ public class TestGioviStruct {
 					.getVariable("x")
 					.get()
 					.value())
-						.isEqualTo(GioviStructs.of(
-							"Foo",
-							"i", VarD.of(69),
-							"t", VarD.of(""),
-							"b", VarD.of(true)));
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"i", VarD.of(69),
+						"t", VarD.of(""),
+						"b", VarD.of(true)));
 			}
 
 			@Test
@@ -595,11 +661,11 @@ public class TestGioviStruct {
 					.getVariable("x")
 					.get()
 					.value())
-						.isEqualTo(GioviStructs.of(
-							"Foo",
-							"i", VarD.of(69),
-							"t", VarD.of("hello"),
-							"b", VarD.of(true)));
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"i", VarD.of(69),
+						"t", VarD.of("hello"),
+						"b", VarD.of(true)));
 			}
 
 			@Test
@@ -612,11 +678,11 @@ public class TestGioviStruct {
 					.getVariable("x")
 					.get()
 					.value())
-						.isEqualTo(GioviStructs.of(
-							"Foo",
-							"i", VarD.of(69),
-							"t", VarD.of("hello"),
-							"b", VarD.of(true)));
+					.isEqualTo(GioviStructs.of(
+						"Foo",
+						"i", VarD.of(69),
+						"t", VarD.of("hello"),
+						"b", VarD.of(true)));
 			}
 
 		}
@@ -650,7 +716,7 @@ public class TestGioviStruct {
 					.asVar()
 					.value()
 					.value())
-						.isEqualTo(expected);
+					.isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -670,7 +736,7 @@ public class TestGioviStruct {
 					.asVar()
 					.value()
 					.value())
-						.isEqualTo(expected);
+					.isEqualTo(expected);
 			}
 
 
@@ -780,7 +846,7 @@ public class TestGioviStruct {
 					""")
 					.asGioviValue()
 					.value())
-						.isEqualTo(5);
+					.isEqualTo(5);
 			}
 
 			@Test
