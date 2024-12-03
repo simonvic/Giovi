@@ -97,7 +97,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitIfStatement(IfStatementContext ctx) {
-		if (visit(ctx.expression()).asNativeBool()) {
+		if (visit(ctx.expression()).unwrapAsGioviValue().asNativeBool()) {
 			enterScope();
 			visit(ctx.ifBody);
 			exitScope();
@@ -175,7 +175,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRepeatStatement(RepeatStatementContext ctx) {
 		boolean infiniteRepeat = ctx.IF() == null;
-		while (infiniteRepeat || visit(ctx.expression()).asNativeBool()) {
+		while (infiniteRepeat || visit(ctx.expression()).unwrapAsGioviValue().asNativeBool()) {
 			enterLoopScope();
 			visit(ctx.statementOrBlock());
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
@@ -660,7 +660,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionRef(ExpressionRefContext ctx) {
-		return new GioviFunction(visit(ctx.referenceable()).asNativeFunction());
+		return new GioviFunction(visit(ctx.referenceable()).unwrapAsGioviValue().asNativeFunction());
 	}
 
 	@Override
