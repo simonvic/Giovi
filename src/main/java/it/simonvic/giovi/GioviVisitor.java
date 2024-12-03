@@ -1174,6 +1174,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			constants,
 			functions));
 
+		// TODO: constants and functions with referring to the type we're
+		// currently declaring, won't have the same constants and functions
+		// Shall we allow cyclic references?
+		// Or maybe move constants and functions outside of struct?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
 			var constant = spawnType(constCtx.type(), null);
 			constant.setValueWithRedirection(visit(constCtx.expression()));
