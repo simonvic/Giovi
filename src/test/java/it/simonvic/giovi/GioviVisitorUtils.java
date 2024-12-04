@@ -8,14 +8,15 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
-import it.simonvic.giovi.lang.FunctionSignature;
 
 public class GioviVisitorUtils {
 
 	public static GioviParser parserOf(String code) {
 		var lexer = new GioviLexer(CharStreams.fromString(code));
 		var tokens = new CommonTokenStream(lexer);
-		return new GioviParser(tokens);
+		var parser = new GioviParser(tokens);
+		parser.addErrorListener(new GioviParserErrorListener(code));
+		return parser;
 	}
 
 	public static GioviVisitor visit(String code) {
@@ -43,9 +44,7 @@ public class GioviVisitorUtils {
 	}
 
 	public static GioviVisitor visit(GioviVisitor visitor, String code) {
-		var lexer = new GioviLexer(CharStreams.fromString(code));
-		var tokens = new CommonTokenStream(lexer);
-		visitor.visit(new GioviParser(tokens).begin());
+		visitor.visit(parserOf(code).begin());
 		return visitor;
 	}
 
