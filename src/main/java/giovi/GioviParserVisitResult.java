@@ -85,7 +85,7 @@ public interface GioviParserVisitResult {
 	default String asNativeText() { return asGioviText().value(); }
 	default List<?> asNativeList() { return asGioviList().value(); }
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
-	default Function asNativeFunction() { return (Function) this; }
+	default Function asNativeFunction() { return asGioviFunction().value(); }
 	default Var<?> asVar() { return (Var<?>) this; }
 
 	/**

@@ -20,7 +20,8 @@ public class TestFunctions {
 
 	private static FunctionSignature signatureOf(
 		String identifier,
-		FunctionSignatureParam... parameters) {
+		FunctionSignatureParam... parameters
+	) {
 		var params = new LinkedHashMap<String, FunctionSignatureParam>();
 		for (var param : parameters) {
 			params.put(param.identifier(), param);
@@ -44,7 +45,7 @@ public class TestFunctions {
 		void testFunctionDeclaration_withNoParamsAndNoReturn() {
 			var functionSignature = visitFunctionDeclaration("""
 				someFunction() {}
-				""").signature();
+				""");
 			assertAll(
 				() -> assertThat(functionSignature.parameters())
 					.isEmpty(),
@@ -56,7 +57,7 @@ public class TestFunctions {
 		void testFunctionDeclaration_withNoParamsAndReturn() {
 			var functionSignature = visitFunctionDeclaration("""
 				someFunction() => Int {}
-				""").signature();
+				""");
 			assertAll(
 				() -> assertThat(functionSignature.parameters())
 					.isEmpty(),
@@ -70,8 +71,7 @@ public class TestFunctions {
 				someFunction(
 					a Int
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", new GioviTypeInt())));
@@ -85,8 +85,7 @@ public class TestFunctions {
 					a Int,
 					b Real
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", new GioviTypeInt()),
@@ -99,8 +98,7 @@ public class TestFunctions {
 				someFunction(
 					a Int default 69,
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", 69)));
@@ -113,8 +111,7 @@ public class TestFunctions {
 				someFunction(
 					a Int default _,
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", 0)));
@@ -145,8 +142,7 @@ public class TestFunctions {
 					a Int default 69,
 					b Real default 6.9,
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", 69),
@@ -161,8 +157,7 @@ public class TestFunctions {
 					b Real,
 					c Bool default true,
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", new GioviTypeInt()),
@@ -178,8 +173,7 @@ public class TestFunctions {
 					b Real,
 					c Bool default true,
 				) {}
-				""")
-				.signature())
+				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", 69),

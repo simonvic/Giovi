@@ -8,6 +8,7 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.lang.FunctionSignature;
 
 public class GioviVisitorUtils {
 
@@ -52,12 +53,12 @@ public class GioviVisitorUtils {
 		return visitor.visit(parserOf(code).expression());
 	}
 
-	public static GFunction visitFunctionDeclaration(String code) {
+	public static FunctionSignature visitFunctionDeclaration(String code) {
 		return visitFunctionDeclaration(new GioviVisitor(), code);
 	}
 
-	public static GFunction visitFunctionDeclaration(GioviVisitor visitor, String code) {
-		return (GFunction) visitor.visit(parserOf(code).functionDeclaration());
+	public static FunctionSignature visitFunctionDeclaration(GioviVisitor visitor, String code) {
+		return (FunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
 	}
 
 }

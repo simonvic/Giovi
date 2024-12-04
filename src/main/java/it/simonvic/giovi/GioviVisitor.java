@@ -673,22 +673,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionRef(ExpressionRefContext ctx) {
-		return new GioviFunction(
-			visit(ctx.referenceable()).unwrapAsGioviValue().asNativeFunction());
+		var referenced = visit(ctx.referenceable()).unwrapAsGioviValue();
+		if (referenced instanceof GioviFunction f) {
+			return f;
+		}
+		throw new GioviException("Can't reference non-function " + referenced);
 	}
 
 	@Override
 	public GioviParserVisitResult visitReferenceable(ReferenceableContext ctx) {
-		String identifier;
-		if (ctx.identifier() != null) {
-			identifier = ctx.identifier().getText();
-			return getCurrentScope()
-				.getFunction(identifier)
-				.orElseThrow(() -> new GioviException(
-					"Can't reference non-existing function " + identifier));
+		if (ctx.anonFunction() != null) {
+			return visit(ctx.anonFunction());
 		}
-
-		return visit(ctx.anonFunction());
+		String identifier = ctx.identifier().getText();
+		Function function = getCurrentScope()
+			.getFunction(identifier)
+			.orElseThrow(() -> new GioviException(
+				"Can't reference non-existing function " + identifier));
+		return new GioviFunction(function);
 	}
 
 	@Override
@@ -696,7 +698,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		FunctionSignature signature = ctx.anonFunctionSignature() == null
 			? FunctionSignature.EMPTY
 			: (FunctionSignature) visit(ctx.anonFunctionSignature());
-		return new GFunction(signature, ctx.body);
+		return new GioviFunction(new GFunction(signature, ctx.body));
 	}
 
 	@Override
@@ -833,7 +835,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var funcOpt = getCurrentScope().getFunction(identifier);
 		if (funcOpt.isPresent()) {
-			return funcOpt.get();
+			return new GioviFunction(funcOpt.get());
 		}
 		throw new GioviException("No variable nor function defined with name " + identifier);
 	}
@@ -902,7 +904,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var signature = (FunctionSignature) visit(ctx.functionSignature());
 		var function = new GFunction(signature, ctx.body);
 		getCurrentScope().declare(function);
-		return function;
+		return signature;
 	}
 
 	@Override
@@ -953,7 +955,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var visit = visit(expressionCtx);
 		Function function = switch (visit) {
 			case GioviFunction f -> f.value();
-			case Function f -> f;
 			case Var<?> v when v.value() instanceof GioviFunction f -> f.value();
 			default -> throw new GioviException("Invokation fail " + visit);
 		};
