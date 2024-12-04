@@ -1,7 +1,6 @@
 package it.simonvic.giovi;
 
-import static it.simonvic.giovi.GioviVisitorUtils.visit;
-import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
+import static it.simonvic.giovi.GioviVisitorUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -410,6 +409,56 @@ public class TestGioviList {
 				assertThat(visitExpression("""
 					[1 2 3] =~ [1 3]
 					""").asGioviBool().value())
+					.isTrue();
+			}
+
+			@Test
+			void checkingIf_listOfList_contains_equalEntry_shouldReturnTrue() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [2 2 2]
+					"""))
+					.isTrue();
+			}
+
+			@Test
+			void checkingIf_listOfList_contains_multipleEqualEntries_shouldReturnTrue() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [[1 1 1] [3 3 3]]
+					"""))
+					.isTrue();
+			}
+
+			@Test
+			void checkingIf_listOfList_contains_notEqualEntry_shouldReturnFalse() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [1 69 1]
+					"""))
+					.isFalse();
+			}
+
+			@Test
+			void checkingIf_listOfList_contains_multipleNotEqualEntries_shouldReturnFalse() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [[1 1 1] [2 69 2] [3 3 3]]
+					"""))
+					.isFalse();
+			}
+
+			@Test
+			@Disabled("Clarify requirements")
+			void checkingIf_listOfList_contains_narrowerButEqualEntry_shouldReturnTrue() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [1n 1n 1n]
+					"""))
+					.isTrue();
+			}
+
+			@Test
+			@Disabled("Clarify requirements")
+			void checkingIf_listOfList_contains_multipleNarrowerButEqualEntries_shouldReturnTrue() {
+				assertThat(visitNativeBool("""
+					[[1 1 1] [2 2 2] [3 3 3]] =~ [[1n 1n 1n] [3n 3n 3n]]
+					"""))
 					.isTrue();
 			}
 

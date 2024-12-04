@@ -221,17 +221,11 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviList v -> {
-				for (var entry : v.value) {
-					if (!contains(entry.value()).asNativeBool()) {
-						yield new GioviBool(false);
-					}
-				}
-				yield new GioviBool(true);
-			}
+			case GioviList v when v.entryType.equals(this.entryType)
+				-> new GioviBool(this.value.containsAll(v.value));
 			case GioviValue<?> v -> {
 				for (var entry : this.value) {
-					if (entry.value().equal(right).asNativeBool()) {
+					if (entry.value().equal(v).asNativeBool()) {
 						yield new GioviBool(true);
 					}
 				}
