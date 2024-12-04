@@ -197,7 +197,8 @@ public class TestGioviTuple {
 				""")
 			void access_withNegativeInt_shouldReturnFieldAtRearIndex(
 				String code,
-				Integer expected) {
+				Integer expected
+			) {
 				assertThat(visitVar(code).value().value()).isEqualTo(expected);
 			}
 
@@ -240,7 +241,8 @@ public class TestGioviTuple {
 			@MethodSource("produceArgs_access_withInverseRange")
 			void access_withInverseRange_shouldReturnSubsetReversed(
 				String code,
-				GioviTuple expected) {
+				GioviTuple expected
+			) {
 				assertThat(visitValue(code)).isEqualTo(expected);
 			}
 
@@ -282,7 +284,8 @@ public class TestGioviTuple {
 			@MethodSource("produceArgs_inverseStepRange")
 			void access_withInverseStepRange_shouldReturnSubsetReversed(
 				String code,
-				GioviTuple expected) {
+				GioviTuple expected
+			) {
 				assertThat(visitValue(code)).isEqualTo(expected);
 			}
 
@@ -292,7 +295,7 @@ public class TestGioviTuple {
 					<0 1 2 3 4>@%
 					""")
 					.value())
-						.isEqualTo(5);
+					.isEqualTo(5);
 			}
 
 			@Test

@@ -10,8 +10,7 @@ public record FunctionSignatureParam(
 	GioviType<?> type,
 	VarD<?> param,
 	boolean isOptional
-)
-	implements GioviParserVisitResult {
+) implements GioviParserVisitResult {
 
 	public FunctionSignatureParam(
 		String identifier,

@@ -14,8 +14,7 @@ public class TestExpressionContainment {
 		"mon" ~= "simone", true
 		"simone" =~ "zzz", false
 		"zzz" ~= "simone", false
-		"""
-	)
+		""")
 	void testStrings(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
@@ -28,9 +27,9 @@ public class TestExpressionContainment {
 		2 ~= [0 1 2 3], true
 		3 ~= [0 1 2 3], true
 		4 ~= [0 1 2 3], false
-		"""
-	)
+		""")
 	void testLists(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
+
 }

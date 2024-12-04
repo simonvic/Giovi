@@ -5,8 +5,8 @@ import it.simonvic.giovi.lang.FunctionSignature;
 
 public record GFunction(
 	FunctionSignature signature,
-	BlockContext bodyCtx)
-	implements Function {
+	BlockContext bodyCtx
+) implements Function {
 
 	public GFunction(FunctionSignature signature) {
 		this(signature, null);
