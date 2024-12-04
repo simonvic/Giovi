@@ -3,6 +3,7 @@ package it.simonvic.giovi;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
@@ -52,14 +53,12 @@ public class GioviVisitorUtils {
 		return visitor.visit(parserOf(code).expression());
 	}
 
-	public static FunctionSignature visitFunctionDeclaration(String code) {
+	public static GFunction visitFunctionDeclaration(String code) {
 		return visitFunctionDeclaration(new GioviVisitor(), code);
 	}
 
-	public static FunctionSignature visitFunctionDeclaration(
-		GioviVisitor visitor,
-		String code) {
-		return (FunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
+	public static GFunction visitFunctionDeclaration(GioviVisitor visitor, String code) {
+		return (GFunction) visitor.visit(parserOf(code).functionDeclaration());
 	}
 
 }
