@@ -11,8 +11,8 @@ import giovi.lang.GioviTypeVoid;
 public record FunctionSignature(
 	String identifier,
 	LinkedHashMap<String, FunctionSignatureParam> parameters,
-	GioviType<?> returnType)
-	implements GioviParserVisitResult {
+	GioviType<?> returnType
+) implements GioviParserVisitResult {
 
 	public static final FunctionSignature EMPTY = new FunctionSignature(
 		"",
@@ -27,7 +27,10 @@ public record FunctionSignature(
 		this(identifier, new LinkedHashMap<>(), returnType);
 	}
 
-	public FunctionSignature(String identifier, LinkedHashMap<String, FunctionSignatureParam> parameters) {
+	public FunctionSignature(
+		String identifier,
+		LinkedHashMap<String, FunctionSignatureParam> parameters
+	) {
 		this(identifier, parameters, new GioviTypeVoid());
 	}
 

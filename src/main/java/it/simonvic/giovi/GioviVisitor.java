@@ -280,7 +280,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviMap map,
 		StatementOrBlockContext bodyCtx,
 		IteratorContext keyIteratorCtx,
-		IteratorContext valueIteratorCtx) {
+		IteratorContext valueIteratorCtx
+	) {
 		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> iterationBody;
 		try {
 			iterationBody = switch (keyIteratorCtx) {
@@ -461,7 +462,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void iterate(
 		GioviList list,
 		StatementOrBlockContext statementOrBlockCtx,
-		Consumer<Var<?>> preamble) {
+		Consumer<Var<?>> preamble
+	) {
 		for (var entry : list.value()) {
 			enterLoopScope();
 			preamble.accept(entry);
@@ -486,7 +488,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void iterate(
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
-		BiConsumer<Var<?>, Var<?>> preamble) {
+		BiConsumer<Var<?>, Var<?>> preamble
+	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
 			preamble.accept(entry.getKey(), entry.getValue());
@@ -511,7 +514,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void iterate(
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
-		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> loopBody) {
+		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> loopBody
+	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
 			loopBody.accept(statementOrBlockCtx, entry.getKey(), entry.getValue());
@@ -538,14 +542,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
-		RedirectionToVarDeclarationContext ctx) {
+		RedirectionToVarDeclarationContext ctx
+	) {
 		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
 		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
-		RedirectionToVarDeclarationRTLContext ctx) {
+		RedirectionToVarDeclarationRTLContext ctx
+	) {
 		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
 		return null;
 	}
@@ -559,13 +565,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private VarD<?> spawnType(
 		TypeContext typeCtx,
-		DefaultDefinitionContext defaultDefinitionCtx) {
+		DefaultDefinitionContext defaultDefinitionCtx
+	) {
 		return spawnType(visit(typeCtx).asGioviType(), defaultDefinitionCtx);
 	}
 
 	private VarD<?> spawnType(
 		GioviType<?> type,
-		DefaultDefinitionContext defaultDefinitionCtx) {
+		DefaultDefinitionContext defaultDefinitionCtx
+	) {
 		if (defaultDefinitionCtx == null) {
 			return new VarD<>(type.spawn(), type.spawn());
 		}
@@ -597,7 +605,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
-		RedirectionToIdentifierRTLContext ctx) {
+		RedirectionToIdentifierRTLContext ctx
+	) {
 		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.bop.getText()),
@@ -607,7 +616,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToConstantIdentifier(
-		RedirectionToConstantIdentifierContext ctx) {
+		RedirectionToConstantIdentifierContext ctx
+	) {
 		throw new GioviException("Can't redirect to a constant");
 		// TODO: redirecting to field still overrides the field 69 -> SOME_CONSTANT.someField
 	}
@@ -623,7 +633,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToExpressionRTL(
-		RedirectionToExpressionRTLContext ctx) {
+		RedirectionToExpressionRTLContext ctx
+	) {
 		VisitorUtils.redirection(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
@@ -633,7 +644,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToPrimitiveDestination(
-		RedirectionToPrimitiveDestinationContext ctx) {
+		RedirectionToPrimitiveDestinationContext ctx
+	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.redirectionOperator().getText()),
@@ -643,7 +655,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToPrimitiveDestinationRTL(
-		RedirectionToPrimitiveDestinationRTLContext ctx) {
+		RedirectionToPrimitiveDestinationRTLContext ctx
+	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.redirectionContent()),
 			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
@@ -660,7 +673,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionRef(ExpressionRefContext ctx) {
-		return new GioviFunction(visit(ctx.referenceable()).unwrapAsGioviValue().asNativeFunction());
+		return new GioviFunction(
+			visit(ctx.referenceable()).unwrapAsGioviValue().asNativeFunction());
 	}
 
 	@Override
@@ -702,7 +716,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionMultiplicative(
-		ExpressionMultiplicativeContext ctx) {
+		ExpressionMultiplicativeContext ctx
+	) {
 		return VisitorUtils.multiplicative(
 			visit(ctx.expression(0)),
 			GioviToken.of(ctx.bop.getText()),
@@ -933,7 +948,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private GioviParserVisitResult doVisitInvocation(
 		ExpressionContext expressionCtx,
-		ActualParametersContext parametersCtx) {
+		ActualParametersContext parametersCtx
+	) {
 		var visit = visit(expressionCtx);
 		Function function = switch (visit) {
 			case GioviFunction f -> f.value();
@@ -976,7 +992,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private LinkedHashMap<String, VarD<?>> setupFunctionParameters(
 		ActualParametersContext actualParamsContext,
-		FunctionSignature signature) {
+		FunctionSignature signature
+	) {
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
 		List<ActualParameterContext> actualParameters = actualParamsContext.actualParameter();
@@ -995,7 +1012,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private LinkedHashMap<String, VarD<?>> setupFunctionParametersIteratively(
 		List<ActualParameterContext> actualParamCtxList,
-		FunctionSignature signature) {
+		FunctionSignature signature
+	) {
 		var formalParamsArray = signature.getParametersList();
 		int formalParamsCount = formalParamsArray.size();
 		int actualParamsCount = actualParamCtxList.size();
@@ -1045,7 +1063,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private LinkedHashMap<String, VarD<?>> setupNamedFunctionParameters(
 		List<ActualParameterContext> actualParamCtxList,
-		FunctionSignature signature) {
+		FunctionSignature signature
+	) {
 
 		// cache actual params mapped by their identifiers
 		var actualParams = new LinkedHashMap<String, ActualParameterContext>();

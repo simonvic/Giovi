@@ -23,7 +23,8 @@ public class GMath implements GioviObject {
 
 	@Func
 	public static @Type(GioviTypeReal.class) GioviReal floor(
-		@Param("x") @Type(GioviTypeReal.class) GioviReal x) {
+		@Param("x") @Type(GioviTypeReal.class) GioviReal x
+	) {
 		return new GioviReal(Math.floor(x.value()));
 	}
 

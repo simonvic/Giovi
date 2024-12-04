@@ -284,4 +284,5 @@ public sealed interface GioviValue<T>
 			default -> GioviObject.super.dot(right);
 		};
 	}
+
 }

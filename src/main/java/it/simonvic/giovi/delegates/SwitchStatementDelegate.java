@@ -17,7 +17,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public SwitchStatementDelegate(
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
-		GioviParserVisitResult subject) {
+		GioviParserVisitResult subject
+	) {
 		super(gioviVisitor);
 		this.ctx = ctx;
 		this.subject = subject;
@@ -26,7 +27,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 	public static Optional<SwitchLabelContext> evaluate(
 		GioviVisitor gioviVisitor,
 		SwitchBlockContext ctx,
-		GioviParserVisitResult subject) {
+		GioviParserVisitResult subject
+	) {
 		return new SwitchStatementDelegate(gioviVisitor, ctx, subject).evaluate();
 	}
 

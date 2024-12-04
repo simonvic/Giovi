@@ -59,14 +59,14 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviDefault _ -> new GioviFunction(defaultValue());
-			case GioviFunction v when v.value.signature()
-				.equals(this.value.signature()) -> new GioviFunction(v.value.copy());
+			case GioviFunction v when v.value.signature().equals(this.value.signature())
+				-> new GioviFunction(v.value.copy());
 
 			// equal parameters and return type
 			case GioviFunction v when v.value.signature().parameters()
 				.equals(value.signature().parameters())
-				&& v.value.signature().returnType()
-					.equals(value.signature().returnType()) -> new GioviFunction(v.value.copy());
+				&& v.value.signature().returnType().equals(value.signature().returnType())
+				-> new GioviFunction(v.value.copy());
 
 			default -> GioviValue.super.redirection(content);
 		};

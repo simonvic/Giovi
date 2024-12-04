@@ -56,8 +56,9 @@ public class GioviLists {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v9, v10));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10,
-		T v11) {
+	public static <T> GioviList of(
+		T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11
+	) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11));
 	}
 

@@ -22,7 +22,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult additive(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case PLUS -> left.plus(right);
 			case MINUS -> left.minus(right);
@@ -33,7 +34,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult multiplicative(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case MULT -> left.multiply(right);
 			case DIV -> left.divide(right);
@@ -45,7 +47,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult relational(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case LESS_EQUAL -> left.lessEqual(right);
 			case GREATER_EQUAL -> left.greaterEqual(right);
@@ -58,7 +61,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult bool(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case AND, AND_SYM -> left.and(right);
 			case OR, OR_SYM -> left.or(right);
@@ -70,7 +74,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult bool(
 		GioviParserVisitResult lhs,
 		GioviToken operator,
-		Supplier<GioviParserVisitResult> rhsVisit) {
+		Supplier<GioviParserVisitResult> rhsVisit
+	) {
 		if (lhs instanceof GioviBool b) {
 			switch (operator) {
 				case AND, AND_SYM -> {
@@ -92,7 +97,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult equality(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case EQUAL -> left.equal(right);
 			case NOT_EQUAL -> left.notEqual(right);
@@ -103,7 +109,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult containment(
 		GioviParserVisitResult left,
 		GioviToken operator,
-		GioviParserVisitResult right) {
+		GioviParserVisitResult right
+	) {
 		return switch (operator) {
 			case CONTAINED, IN -> left.isContained(right);
 			case CONTAINS -> left.contains(right);
@@ -114,7 +121,8 @@ public class VisitorUtils {
 	public static GioviParserVisitResult redirection(
 		GioviParserVisitResult content,
 		GioviToken operator,
-		GioviParserVisitResult destination) {
+		GioviParserVisitResult destination
+	) {
 		return switch (operator) {
 			case REDIR, REDIR_RTL -> destination.redirection(content);
 			case REDIR_PLUS, REDIR_PLUS_RTL -> destination.redirectionPlus(content);
@@ -128,7 +136,8 @@ public class VisitorUtils {
 	public static void redirectionToPrimitive(
 		GioviParserVisitResult content,
 		GioviToken operator,
-		String destination) {
+		String destination
+	) {
 		switch (operator) {
 			case REDIR, REDIR_RTL -> {
 				switch (destination) {

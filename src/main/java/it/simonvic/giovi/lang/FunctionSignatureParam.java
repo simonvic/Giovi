@@ -9,19 +9,22 @@ public record FunctionSignatureParam(
 	String identifier,
 	GioviType<?> type,
 	VarD<?> param,
-	boolean isOptional)
+	boolean isOptional
+)
 	implements GioviParserVisitResult {
 
 	public FunctionSignatureParam(
 		String identifier,
 		GioviType<?> type,
-		GioviValue<?> defaultValue) {
+		GioviValue<?> defaultValue
+	) {
 		this(identifier, type, new VarD<>(defaultValue, defaultValue.copy()), true);
 	}
 
 	public FunctionSignatureParam(
 		String identifier,
-		GioviValue<?> defaultValue) {
+		GioviValue<?> defaultValue
+	) {
 		this(identifier, defaultValue.getGioviType(), defaultValue);
 	}
 

@@ -1,6 +1,7 @@
 package it.simonvic.giovi.exceptions;
 
 public class GioviException extends RuntimeException {
+
 	public GioviException() {
 	}
 
@@ -19,4 +20,5 @@ public class GioviException extends RuntimeException {
 	public GioviException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
 }

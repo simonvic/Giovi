@@ -46,7 +46,8 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 	public static Range<?> of(
 		GioviParserVisitResult start,
 		GioviParserVisitResult end,
-		GioviParserVisitResult step) {
+		GioviParserVisitResult step
+	) {
 		if (step != null && !(step instanceof GioviNumber<?>)) {
 			throw new GioviException("A step must be a valid number but got " + step);
 		}

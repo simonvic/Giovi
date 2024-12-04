@@ -45,12 +45,12 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeStruct(var definition) -> new GioviStruct(
-					this.value.widenTo(definition));
-				case GioviTypeTupleNamed(var definition) -> new GioviTupleNamed(
-					this.value.widenTo(definition));
-				case GioviTypeTuple(var definition) -> new GioviTuple(
-					this.value.widenTo(definition));
+				case GioviTypeStruct(var definition)
+					-> new GioviStruct(this.value.widenTo(definition));
+				case GioviTypeTupleNamed(var definition)
+					-> new GioviTupleNamed(this.value.widenTo(definition));
+				case GioviTypeTuple(var definition)
+					-> new GioviTuple(this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {
@@ -123,11 +123,11 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 					default -> GioviValue.super.access(right);
 				};
 			};
-			case Range(Integer start, Integer end, Integer step, _) -> new GioviTuple(
-				this.value.copy(Range.of(start, end, step)));
-			case GioviInt(var index) -> value
-				.getField(index >= 0 ? index : value.getFieldsCount() + index)
-				.orElseThrow(() -> new NoSuchField(index));
+			case Range(Integer start, Integer end, Integer step, _)
+				-> new GioviTuple(this.value.copy(Range.of(start, end, step)));
+			case GioviInt(var index)
+				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
+					.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviValue.super.access(right);
 		};
 	}

@@ -22,12 +22,13 @@ public class GioviParserErrorListener extends BaseErrorListener {
 		int line,
 		int charPositionInLine,
 		String msg,
-		RecognitionException e) {
+		RecognitionException e
+	) {
 		String badLine = code.lines().toList().get(line - 1);
 		var errorLineBuilder = new StringBuilder();
 		errorLineBuilder.repeat(" ", charPositionInLine);
 		errorLineBuilder.append("^ " + msg);
-		throw new GioviException(e, msg+ "\n" + badLine);
+		throw new GioviException(e, msg + "\n" + badLine);
 	}
 
 }

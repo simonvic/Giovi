@@ -170,4 +170,5 @@ public class TextProcessor {
 			.replaceAll(result -> String.valueOf((char) Integer.parseInt(result.group(1), 16)));
 		return text;
 	}
+
 }

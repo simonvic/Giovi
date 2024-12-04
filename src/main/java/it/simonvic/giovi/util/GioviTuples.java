@@ -17,7 +17,8 @@ public class GioviTuples {
 	}
 
 	public static <T> GioviTuple ofNamed(
-		String i1, T v1) {
+		String i1, T v1
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		return new GioviTuple(new TupleNamed(s));
@@ -25,7 +26,8 @@ public class GioviTuples {
 
 	public static <T> GioviTupleNamed ofNamed(
 		String i1, T v1,
-		String i2, T v2) {
+		String i2, T v2
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
@@ -35,7 +37,8 @@ public class GioviTuples {
 	public static <T> GioviTupleNamed ofNamed(
 		String i1, T v1,
 		String i2, T v2,
-		String i3, T v3) {
+		String i3, T v3
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
@@ -47,7 +50,8 @@ public class GioviTuples {
 		String i1, T v1,
 		String i2, T v2,
 		String i3, T v3,
-		String i4, T v4) {
+		String i4, T v4
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));

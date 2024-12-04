@@ -11,8 +11,8 @@ import it.simonvic.giovi.util.Natives;
 public record JFunction(
 	// TODO: what if we dynamically fetch the method based on arguments? In case of defaults
 	Method method,
-	FunctionSignature signature)
-	implements Function {
+	FunctionSignature signature
+) implements Function {
 
 	public JFunction(Method body) {
 		this(body, Natives.functionSignatureFrom(body));

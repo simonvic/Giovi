@@ -6,7 +6,8 @@ import giovi.lang.GioviValue;
 public record GioviFieldDefinition(
 	String identifier,
 	GioviType<?> type,
-	GioviValue<?> field) {
+	GioviValue<?> field
+) {
 
 	public GioviFieldDefinition(String identifier, GioviType<?> type) {
 		this(identifier, type, type.spawn());

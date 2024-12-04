@@ -8,7 +8,8 @@ public class OperatorNotSupported extends GioviException {
 	public OperatorNotSupported(
 		GioviParserVisitResult lhs,
 		GioviToken op,
-		GioviParserVisitResult rhs) {
+		GioviParserVisitResult rhs
+	) {
 		super("""
 			Operator %s (%s) not supported
 				by:   %s

@@ -6,8 +6,8 @@ public class NoSuchField extends GioviException {
 		super("No such field with name " + identifier);
 	}
 
-    public NoSuchField(Integer index) {
-        super("No field at index " + index);
-    }
+	public NoSuchField(Integer index) {
+		super("No field at index " + index);
+	}
 
 }

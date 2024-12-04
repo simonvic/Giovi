@@ -21,7 +21,8 @@ public final class Struct extends TupleNamed {
 		String typename,
 		LinkedHashMap<String, VarD<?>> fields,
 		Map<String, GioviValue<?>> constants,
-		Map<String, GioviFunction> functions) {
+		Map<String, GioviFunction> functions
+	) {
 		super(fields);
 		this.typename = typename;
 		this.constants = constants;
@@ -118,12 +119,12 @@ public final class Struct extends TupleNamed {
 	}
 
 	// TODO: we shouldn't expose these two; fix once we rework Tuple, Record and Struct
-    public Map<String, GioviValue<?>> getConstants() {
-        return constants;
-    }
+	public Map<String, GioviValue<?>> getConstants() {
+		return constants;
+	}
 
-    public Map<String, GioviFunction> getFunctions() {
-        return functions;
-    }
+	public Map<String, GioviFunction> getFunctions() {
+		return functions;
+	}
 
 }

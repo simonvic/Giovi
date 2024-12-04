@@ -18,14 +18,16 @@ public class GioviMaps {
 	}
 
 	public static <K, V> GioviMap of(
-		K k1, V v1) {
+		K k1, V v1
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1));
 	}
 
 	public static <K, V> GioviMap of(
 		K k1, V v1,
-		K k2, V v2) {
+		K k2, V v2
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1,
 			k2, v2));
@@ -34,7 +36,8 @@ public class GioviMaps {
 	public static <K, V> GioviMap of(
 		K k1, V v1,
 		K k2, V v2,
-		K k3, V v3) {
+		K k3, V v3
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1,
 			k2, v2,
@@ -45,7 +48,8 @@ public class GioviMaps {
 		K k1, V v1,
 		K k2, V v2,
 		K k3, V v3,
-		K k4, V v4) {
+		K k4, V v4
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1,
 			k2, v2,
@@ -58,7 +62,8 @@ public class GioviMaps {
 		K k2, V v2,
 		K k3, V v3,
 		K k4, V v4,
-		K k5, V v5) {
+		K k5, V v5
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1,
 			k2, v2,
@@ -73,7 +78,8 @@ public class GioviMaps {
 		K k3, V v3,
 		K k4, V v4,
 		K k5, V v5,
-		K k6, V v6) {
+		K k6, V v6
+	) {
 		return GioviMaps.of(Map.of(
 			k1, v1,
 			k2, v2,

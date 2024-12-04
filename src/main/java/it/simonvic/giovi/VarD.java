@@ -91,7 +91,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this. value.redirection(defaultValue);
+			case GioviDefault _ -> this.value.redirection(defaultValue);
 			default -> super.redirection(content);
 		};
 		return this.value;
@@ -100,7 +100,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this. value.redirectionPlus(defaultValue);
+			case GioviDefault _ -> this.value.redirectionPlus(defaultValue);
 			default -> super.redirectionPlus(content);
 		};
 		return this.value;
@@ -109,7 +109,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this. value.redirectionMinus(defaultValue);
+			case GioviDefault _ -> this.value.redirectionMinus(defaultValue);
 			default -> super.redirectionMinus(content);
 		};
 		return this.value;
@@ -118,7 +118,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this. value.redirectionMultiply(defaultValue);
+			case GioviDefault _ -> this.value.redirectionMultiply(defaultValue);
 			default -> super.redirectionMultiply(content);
 		};
 		return this.value;
@@ -127,7 +127,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this. value.redirectionDivide(defaultValue);
+			case GioviDefault _ -> this.value.redirectionDivide(defaultValue);
 			default -> super.redirectionDivide(content);
 		};
 		return this.value;

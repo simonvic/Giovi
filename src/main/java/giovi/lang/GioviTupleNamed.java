@@ -49,10 +49,10 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeStruct(var definition) -> new GioviStruct(
-					this.value.widenTo(definition));
-				case GioviTypeTupleNamed(var definition) -> new GioviTupleNamed(
-					this.value.widenTo(definition));
+				case GioviTypeStruct(var definition)
+					-> new GioviStruct(this.value.widenTo(definition));
+				case GioviTypeTupleNamed(var definition)
+					-> new GioviTupleNamed(this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {
@@ -110,8 +110,8 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviTupleNamed();
-			case MemberKey(var identifier) -> value.getField(identifier)
-				.orElseThrow(() -> new NoSuchField(identifier));
+			case MemberKey(var identifier)
+				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -124,11 +124,11 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
-			case Range(Integer start, Integer end, Integer step, _) -> new GioviTuple(
-				this.value.copy(Range.of(start, end, step)));
-			case GioviInt(var index) -> value
-				.getField(index >= 0 ? index : value.getFieldsCount() + index)
-				.orElseThrow(() -> new NoSuchField(index));
+			case Range(Integer start, Integer end, Integer step, _)
+				-> new GioviTuple(this.value.copy(Range.of(start, end, step)));
+			case GioviInt(var index)
+				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
+					.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviValue.super.access(right);
 		};
 	}

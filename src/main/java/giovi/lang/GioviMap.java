@@ -13,8 +13,8 @@ import it.simonvic.giovi.util.GioviMaps;
 public record GioviMap(
 	GioviType<?> keyType,
 	GioviType<?> elementType,
-	LinkedHashMap<Var<?>, Var<?>> value)
-	implements GioviValue<LinkedHashMap<Var<?>, Var<?>>> {
+	LinkedHashMap<Var<?>, Var<?>> value
+) implements GioviValue<LinkedHashMap<Var<?>, Var<?>>> {
 
 	public GioviMap(GioviType<?> keyType, GioviType<?> elementType) {
 		this(keyType, elementType, new LinkedHashMap<>());
@@ -23,7 +23,8 @@ public record GioviMap(
 	public GioviMap(
 		GioviType<?> keyType,
 		GioviType<?> elementType,
-		LinkedHashMap<Var<?>, Var<?>> value) {
+		LinkedHashMap<Var<?>, Var<?>> value
+	) {
 		this.keyType = keyType;
 		this.elementType = elementType;
 		this.value = new LinkedHashMap<>();
@@ -168,8 +169,8 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviMap(keyType, elementType,
-				GioviMaps.copyOf(defaultValue()));
+			case GioviDefault _
+				-> new GioviMap(keyType, elementType, GioviMaps.copyOf(defaultValue()));
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
 				&& v.elementType.canWidenTo(this.elementType) -> {
 				var newGioviMap = new GioviMap(keyType, elementType);
@@ -185,7 +186,8 @@ public record GioviMap(
 		switch (right) {
 			case GioviDefault _ -> putAll(defaultValue());
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
-				&& v.elementType.canWidenTo(this.elementType) -> putAll(v.value);
+				&& v.elementType.canWidenTo(this.elementType)
+				-> putAll(v.value);
 			default -> GioviValue.super.redirectionPlus(right);
 		}
 		return this;
@@ -196,9 +198,11 @@ public record GioviMap(
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
 			case GioviMap v when v.keyType.equals(this.keyType)
-				&& v.elementType.equals(this.elementType) -> removeAll(v.value);
+				&& v.elementType.equals(this.elementType)
+				-> removeAll(v.value);
 			case GioviMap v when v.keyType.canWidenTo(this.keyType)
-				&& v.elementType.canWidenTo(this.elementType) -> removeAllWidened(v.value);
+				&& v.elementType.canWidenTo(this.elementType)
+				-> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
 					value.remove(new Var<>(v.widenTo(this.keyType)));

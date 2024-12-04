@@ -11,14 +11,15 @@ public class Tuples {
 
 	public static Tuple ofNative(Object... fields) {
 		var l = new ArrayList<VarD<?>>();
-        for (var field : fields) {
-            l.add(VarD.of(field));
-        }
+		for (var field : fields) {
+			l.add(VarD.of(field));
+		}
 		return new Tuple(l);
 	}
 
 	public static TupleNamed ofNamed(
-		String f1, VarD<?> v1) {
+		String f1, VarD<?> v1
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(f1, v1);
 		return new TupleNamed(s);
@@ -26,7 +27,8 @@ public class Tuples {
 
 	public static TupleNamed ofNamed(
 		String f1, VarD<?> v1,
-		String f2, VarD<?> v2) {
+		String f2, VarD<?> v2
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(f1, v1);
 		s.put(f2, v2);
@@ -36,7 +38,8 @@ public class Tuples {
 	public static TupleNamed ofNamed(
 		String f1, VarD<?> v1,
 		String f2, VarD<?> v2,
-		String f3, VarD<?> v3) {
+		String f3, VarD<?> v3
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(f1, v1);
 		s.put(f2, v2);
@@ -48,7 +51,8 @@ public class Tuples {
 		String f1, VarD<?> v1,
 		String f2, VarD<?> v2,
 		String f3, VarD<?> v3,
-		String f4, VarD<?> v4) {
+		String f4, VarD<?> v4
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(f1, v1);
 		s.put(f2, v2);
@@ -62,7 +66,8 @@ public class Tuples {
 		String f2, VarD<?> v2,
 		String f3, VarD<?> v3,
 		String f4, VarD<?> v4,
-		String f5, VarD<?> v5) {
+		String f5, VarD<?> v5
+	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(f1, v1);
 		s.put(f2, v2);
