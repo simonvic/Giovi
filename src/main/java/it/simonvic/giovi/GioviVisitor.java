@@ -679,9 +679,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitAnonFunction(AnonFunctionContext ctx) {
-		var signature = (FunctionSignature) visit(ctx.anonFunctionSignature());
-		var function = new GFunction(signature, ctx.body);
-		return function;
+		FunctionSignature signature = ctx.anonFunctionSignature() == null
+			? FunctionSignature.EMPTY
+			: (FunctionSignature) visit(ctx.anonFunctionSignature());
+		return new GFunction(signature, ctx.body);
 	}
 
 	@Override
