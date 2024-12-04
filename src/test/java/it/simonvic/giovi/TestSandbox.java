@@ -13,20 +13,9 @@ public class TestSandbox {
 	void sandbox() {
 		visit(
 			"""
-			Color <
-				r Int default 255
-				g Int default 255
-				b Int default 255
-			>
-			<2 2 2> -> c Color 
-			c -> \\out
-			c.default -> \\out
-			if c {
-				is k Color do {
-					k -> \\out
-					k.default -> \\out
-				}
-			}
+
+
+
 			""");
 	}
 }
