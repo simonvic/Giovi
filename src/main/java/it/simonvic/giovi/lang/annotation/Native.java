@@ -53,7 +53,6 @@ public interface Native {
 	public @interface Func {
 
 		// TODO: eventually add @OverloadOf(@Func) and enhance method lookup
-		// TODO: optional parameters
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.PARAMETER)

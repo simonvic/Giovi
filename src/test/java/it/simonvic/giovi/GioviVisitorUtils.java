@@ -3,7 +3,6 @@ package it.simonvic.giovi;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
-import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
@@ -30,6 +29,10 @@ public class GioviVisitorUtils {
 
 	public static boolean visitNativeBool(String code) {
 		return visitExpression(code).asNativeBool();
+	}
+
+	public static boolean visitNativeBool(GioviVisitor visitor, String code) {
+		return visitExpression(visitor, code).asNativeBool();
 	}
 
 	public static GioviValue<?> visitValue(String code) {

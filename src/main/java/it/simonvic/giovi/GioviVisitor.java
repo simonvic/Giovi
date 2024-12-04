@@ -741,7 +741,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			return lhs.dot(new GioviDefault());
 		}
 		return null;
-		// TODO: struct functions
 	}
 
 	@Override
