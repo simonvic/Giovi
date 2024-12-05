@@ -11,6 +11,7 @@ import it.simonvic.giovi.util.GioviTuples;
 
 // TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
 public record GioviStruct(Struct signature, Struct value) implements GioviValue<Struct> {
+	// TODO: wrap signatures, definitions and such in immutable views
 
 	public GioviStruct(Struct value) {
 		this(signatureFrom(value), value);
