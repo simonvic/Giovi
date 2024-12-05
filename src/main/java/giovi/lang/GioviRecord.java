@@ -2,32 +2,36 @@ package giovi.lang;
 
 import java.util.LinkedHashMap;
 
-import giovi.*;
+import giovi.AccessKey;
+import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
+import giovi.Range;
+import giovi.Record;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviTuples;
+import it.simonvic.giovi.util.GioviRecords;
 
-public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
-	implements GioviValue<TupleNamed> {
+public record GioviRecord(Record signature, Record value)
+	implements GioviValue<Record> {
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
-	public GioviTupleNamed(TupleNamed value) {
+	public GioviRecord(Record value) {
 		this(signatureFrom(value), value);
 	}
 
-	private static TupleNamed signatureFrom(TupleNamed value) {
+	private static Record signatureFrom(Record value) {
 		var fields = new LinkedHashMap<String, VarD<?>>();
 		value.forEach((n, field) -> fields.put(
 			n,
 			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new TupleNamed(fields);
+		return new Record(fields);
 	}
 
-	public GioviTupleNamed() {
-		this(new TupleNamed(), new TupleNamed());
+	public GioviRecord() {
+		this(new Record(), new Record());
 	}
 
 	@Override
@@ -36,13 +40,13 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	}
 
 	@Override
-	public TupleNamed defaultValue() {
+	public Record defaultValue() {
 		return signature.copy();
 	}
 
 	@Override
-	public GioviTypeTupleNamed getGioviType() {
-		return new GioviTypeTupleNamed(signature);
+	public GioviTypeRecord getGioviType() {
+		return new GioviTypeRecord(signature);
 	}
 
 	@Override
@@ -51,8 +55,8 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 			return switch (type) {
 				case GioviTypeStruct(var definition)
 					-> new GioviStruct(this.value.widenTo(definition));
-				case GioviTypeTupleNamed(var definition)
-					-> new GioviTupleNamed(this.value.widenTo(definition));
+				case GioviTypeRecord(var definition)
+					-> new GioviRecord(this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {
@@ -61,8 +65,8 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	}
 
 	@Override
-	public GioviTupleNamed copy() {
-		return new GioviTupleNamed(value.copy());
+	public GioviRecord copy() {
+		return new GioviRecord(value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -74,10 +78,9 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTupleNamed(defaultValue().copy());
-			case GioviTuple v -> GioviTuples.redirection(this, v);
-			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
-			case GioviStruct v -> GioviTuples.redirection(this, v);
+			case GioviDefault _ -> new GioviRecord(defaultValue().copy());
+			case GioviTuple v -> GioviRecords.redirection(this, v);
+			case GioviRecord v -> GioviRecords.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
 	}
@@ -93,7 +96,7 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
-			case GioviTupleNamed(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
@@ -109,7 +112,7 @@ public record GioviTupleNamed(TupleNamed signature, TupleNamed value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTupleNamed();
+			case GioviDefault _ -> new GioviRecord();
 			case MemberKey(var identifier)
 				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
 			default -> GioviValue.super.dot(right);

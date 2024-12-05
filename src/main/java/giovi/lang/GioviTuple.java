@@ -2,7 +2,11 @@ package giovi.lang;
 
 import java.util.ArrayList;
 
-import giovi.*;
+import giovi.AccessKey;
+import giovi.GioviParserVisitResult;
+import giovi.Range;
+import giovi.Record;
+import giovi.Tuple;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -47,8 +51,8 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 			return switch (type) {
 				case GioviTypeStruct(var definition)
 					-> new GioviStruct(this.value.widenTo(definition));
-				case GioviTypeTupleNamed(var definition)
-					-> new GioviTupleNamed(this.value.widenTo(definition));
+				case GioviTypeRecord(var definition)
+					-> new GioviRecord(this.value.widenTo(definition));
 				case GioviTypeTuple(var definition)
 					-> new GioviTuple(this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
@@ -74,8 +78,6 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 		return switch (content) {
 			case GioviDefault _ -> new GioviTuple(defaultValue().copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
-			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
-			case GioviStruct v -> GioviTuples.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
 	}
@@ -91,7 +93,7 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
-			case GioviTupleNamed(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
@@ -119,7 +121,7 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> switch (value) {
-					case TupleNamed named -> GioviLists.of(named.getFieldNames());
+					case Record record -> GioviLists.of(record.getFieldNames());
 					default -> GioviValue.super.access(right);
 				};
 			};

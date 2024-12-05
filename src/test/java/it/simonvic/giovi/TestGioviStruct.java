@@ -606,7 +606,7 @@ public class TestGioviStruct {
 			}
 
 			@Test
-			void redir_compatibleNamedTuple_shouldChangeFields() {
+			void redir_compatibleRecord_shouldChangeFields() {
 				assertThat(visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
@@ -624,7 +624,7 @@ public class TestGioviStruct {
 
 			@Test
 			@Disabled("Candidate not implemented")
-			void redirPlus_narrowerNamedTuple_shouldChangeFields() {
+			void redirPlus_narrowerRecord_shouldChangeFields() {
 				assertThat(visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
@@ -641,7 +641,7 @@ public class TestGioviStruct {
 			}
 
 			@Test
-			void redir_namedTuple_withDifferentNames_shouldThrow() {
+			void redir_record_withDifferentNames_shouldThrow() {
 				assertThatExceptionOfType(NoSuchField.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo

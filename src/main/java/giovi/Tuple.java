@@ -9,7 +9,7 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class Tuple permits TupleNamed {
+public sealed class Tuple permits Record {
 
 	private final List<VarD<?>> fields;
 
@@ -112,7 +112,7 @@ public sealed class Tuple permits TupleNamed {
 		return this.equal((Tuple) other);
 	}
 
-	public boolean equal(TupleNamed other) {
+	public boolean equal(Record other) {
 		return this.equal((Tuple) other);
 	}
 
@@ -163,7 +163,7 @@ public sealed class Tuple permits TupleNamed {
 		return new Tuple(widenedFields);
 	}
 
-	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
+	public Record widenTo(Record to) throws NonWideneable {
 		if (this.fields.size() != to.fields.size()) {
 			throw new NonWideneable("Tuples have different fields count");
 		}
@@ -179,7 +179,7 @@ public sealed class Tuple permits TupleNamed {
 				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 			i++;
 		}
-		return new TupleNamed(widenedFields);
+		return new Record(widenedFields);
 	}
 
 	public Struct widenTo(Struct to) throws NonWideneable {

@@ -16,13 +16,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Natural;
+import giovi.Record;
 import giovi.Tuple;
-import giovi.TupleNamed;
 import giovi.lang.*;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviStructs;
-import it.simonvic.giovi.util.GioviTuples;
-import it.simonvic.giovi.util.Tuples;
+import it.simonvic.giovi.util.*;
 
 public class TestUtils {
 
@@ -57,7 +54,7 @@ public class TestUtils {
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
 				Arguments.of(Tuple.class, GioviValue.of(Tuples.ofNative("a", "a"))),
-				Arguments.of(TupleNamed.class, GioviValue.of(Tuples.ofNamed("a", VarD.of("a")))));
+				Arguments.of(Record.class, GioviValue.of(Records.of("a", VarD.of("a")))));
 		}
 
 		@ParameterizedTest
@@ -230,10 +227,10 @@ public class TestUtils {
 		@Test
 		void testEquals() {
 			assertEquals(
-				Tuples.ofNamed(
+				Records.of(
 					"foo", VarD.of("lol"),
 					"bar", VarD.of(true)),
-				Tuples.ofNamed(
+				Records.of(
 					"foo", VarD.of("lol"),
 					"bar", VarD.of(true)));
 		}
@@ -241,16 +238,16 @@ public class TestUtils {
 		@Test
 		void testEqualsNested() {
 			assertEquals(
-				Tuples.ofNamed(
+				Records.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
-					"foobar", VarD.of(Tuples.ofNamed(
+					"foobar", VarD.of(Records.of(
 						"x", VarD.of(0),
 						"y", VarD.of(0)))),
-				Tuples.ofNamed(
+				Records.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
-					"foobar", VarD.of(Tuples.ofNamed(
+					"foobar", VarD.of(Records.of(
 						"x", VarD.of(0),
 						"y", VarD.of(0)))));
 		}

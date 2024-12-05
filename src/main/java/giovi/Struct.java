@@ -10,7 +10,7 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class Struct extends TupleNamed {
+public final class Struct extends Record {
 
 	private final Map<String, GioviValue<?>> constants;
 	private final Map<String, GioviFunction> functions;

@@ -7,7 +7,7 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviTuples;
+import it.simonvic.giovi.util.GioviStructs;
 
 // TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
 public record GioviStruct(Struct signature, Struct value) implements GioviValue<Struct> {
@@ -77,9 +77,9 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
-			case GioviTuple v -> GioviTuples.redirection(this, v);
-			case GioviTupleNamed v -> GioviTuples.redirection(this, v);
-			case GioviStruct v -> GioviTuples.redirection(this, v);
+			case GioviTuple v -> GioviStructs.redirection(this, v);
+			case GioviRecord v -> GioviStructs.redirection(this, v);
+			case GioviStruct v -> GioviStructs.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
 	}
@@ -95,7 +95,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
-			case GioviTupleNamed(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};

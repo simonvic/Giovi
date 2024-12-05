@@ -15,7 +15,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
 import giovi.lang.GioviTuple;
+import it.simonvic.giovi.util.GioviRecords;
 import it.simonvic.giovi.util.GioviTuples;
+import it.simonvic.giovi.util.Records;
 import it.simonvic.giovi.util.Tuples;
 
 public class TestGioviTuple {
@@ -41,21 +43,21 @@ public class TestGioviTuple {
 		}
 
 		@Test
-		void testCreation_namedTuple() {
+		void testCreation_struct() {
 			assertThat(visitExpression("""
 				<
 					a: 69
 					b: true
 					c: "foo"
 				>
-				""")).isEqualTo(GioviTuples.ofNamed(
+				""")).isEqualTo(GioviRecords.of(
 				"a", 69,
 				"b", true,
 				"c", "foo"));
 		}
 
 		@Test
-		void testCreation_withNestedNamedTuple() {
+		void testCreation_withNestedStruct() {
 			assertThat(visitExpression("""
 				<
 					a: 69
@@ -65,10 +67,10 @@ public class TestGioviTuple {
 						bar: "bar"
 					>
 				>
-				""")).isEqualTo(GioviTuples.ofNamed(
+				""")).isEqualTo(GioviRecords.of(
 				"a", 69,
 				"b", true,
-				"c", Tuples.ofNamed(
+				"c", Records.of(
 					"foo", VarD.of("foo"),
 					"bar", VarD.of("bar"))));
 		}
@@ -85,10 +87,10 @@ public class TestGioviTuple {
 					>
 					d: <1 2 3>
 				>
-				""")).isEqualTo(GioviTuples.ofNamed(
+				""")).isEqualTo(GioviRecords.of(
 				"a", 69,
 				"b", true,
-				"c", Tuples.ofNamed(
+				"c", Records.of(
 					"foo", VarD.of("foo"),
 					"bar", VarD.of("bar")),
 				"d", Tuples.ofNative(1, 2, 3)));

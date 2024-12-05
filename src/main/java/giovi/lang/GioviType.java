@@ -6,7 +6,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 // TODO: better integrate types with values instead of having two separate hierarchies (maybe with nested Annotated classes?)
 public sealed interface GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<? extends T>>
-	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeTupleNamed,
+	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeRecord,
 	GioviTypeStruct, GioviTypeFunction {
 
 	default String getFullyQualifiedName() {

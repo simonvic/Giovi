@@ -3,8 +3,12 @@ package it.simonvic.giovi.util;
 import java.util.LinkedHashMap;
 
 import giovi.Struct;
+import giovi.lang.GioviRecord;
 import giovi.lang.GioviStruct;
+import giovi.lang.GioviTuple;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
+import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviStructs {
 
@@ -107,5 +111,33 @@ public class GioviStructs {
 		s.put(i4, VarD.of(v4));
 		return new GioviStruct(new Struct(typename, s));
 	}
+
+	public static GioviStruct redirection(GioviStruct dest, GioviTuple content) {
+		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
+			throw new IncompatibleFieldsCount(dest.value(), content.value());
+		}
+		var newStruct = dest.value().copy();
+		content.value().forEachIndexed((i, f) -> newStruct
+			.getField(i).orElseThrow(() -> new NoSuchField(i))
+			.setValueWithRedirection(f.value()));
+		return new GioviStruct(newStruct);
+	}
+
+	public static GioviStruct redirection(GioviStruct dest, GioviRecord content) {
+		var newStruct = dest.value().copy();
+		content.value().forEach((s, f) -> newStruct
+			.getField(s).orElseThrow(() -> new NoSuchField(s))
+			.setValueWithRedirection(f.value()));
+		return new GioviStruct(newStruct);
+	}
+
+	public static GioviStruct redirection(GioviStruct dest, GioviStruct content) {
+		var newStruct = dest.value().copy();
+		content.value().forEach((s, f) -> newStruct
+			.getField(s).orElseThrow(() -> new NoSuchField(s))
+			.setValueWithRedirection(f.value()));
+		return new GioviStruct(newStruct);
+	}
+
 
 }

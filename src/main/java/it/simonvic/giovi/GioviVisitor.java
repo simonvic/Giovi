@@ -12,6 +12,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import giovi.*;
+import giovi.Record;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
@@ -387,7 +388,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		switch (aggregate.value()) {
 			case GioviStruct struct -> deconstruct(struct, aggregateCtx);
-			case GioviTupleNamed tuple -> deconstruct(tuple, aggregateCtx);
+			case GioviRecord tuple -> deconstruct(tuple, aggregateCtx);
 			case GioviTuple tuple -> deconstruct(tuple, aggregateCtx);
 			default -> throw new GioviException("Can't deconstruct " + aggregate);
 		}
@@ -407,8 +408,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param tuple
 	 * @param aggregateCtx
 	 */
-	private void deconstruct(GioviTupleNamed tuple, IteratorAggregateContext aggregateCtx) {
-		throw new GioviException("TupleNamed deconstruct not implemented yet");
+	private void deconstruct(GioviRecord tuple, IteratorAggregateContext aggregateCtx) {
+		throw new GioviException("Record deconstruct not implemented yet");
 	}
 
 	/**
@@ -1269,13 +1270,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRecordCreation(RecordCreationContext ctx) {
 		var fields = new LinkedHashMap<String, VarD<?>>();
-		for (var namedStructFieldCtx : ctx.recordEntry()) {
-			var fieldValue = visit(namedStructFieldCtx.expression()).unwrapAsGioviValue();
+		for (var entryCtx : ctx.recordEntry()) {
+			var fieldValue = visit(entryCtx.expression()).unwrapAsGioviValue();
 			fields.put(
-				namedStructFieldCtx.identifier().getText(),
+				entryCtx.identifier().getText(),
 				new VarD<>(fieldValue));
 		}
-		return new GioviTupleNamed(new TupleNamed(fields));
+		return new GioviRecord(new Record(fields));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type

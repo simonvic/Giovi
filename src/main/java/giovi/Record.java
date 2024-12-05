@@ -9,16 +9,16 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class TupleNamed extends Tuple permits Struct {
+public sealed class Record extends Tuple permits Struct {
 
 	protected final LinkedHashMap<String, VarD<?>> fields;
 
-	public TupleNamed() {
+	public Record() {
 		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
-	public TupleNamed(LinkedHashMap<String, VarD<?>> fields) {
+	public Record(LinkedHashMap<String, VarD<?>> fields) {
 		super(new ArrayList<>(fields.values()));
 		this.fields = fields;
 	}
@@ -74,7 +74,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
-		TupleNamed other = (TupleNamed) obj;
+		Record other = (Record) obj;
 		if (fields == null) {
 			if (other.fields != null) return false;
 		} else if (!fields.equals(other.fields)) return false;
@@ -82,14 +82,14 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	}
 
 	@Override
-	public TupleNamed copy() {
+	public Record copy() {
 		var a = new LinkedHashMap<String, VarD<?>>();
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
-		return new TupleNamed(a);
+		return new Record(a);
 	}
 
 	@Override
-	public boolean equal(TupleNamed other) {
+	public boolean equal(Record other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
 			try {
@@ -108,7 +108,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 	}
 
 	@Override
-	public TupleNamed widenTo(TupleNamed to) throws NonWideneable {
+	public Record widenTo(Record to) throws NonWideneable {
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var widerEntry : to.fields.entrySet()) {
 			var thisField = getField(widerEntry.getKey()).orElseThrow(
@@ -118,7 +118,7 @@ public sealed class TupleNamed extends Tuple permits Struct {
 				widerEntry.getKey(),
 				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
 		}
-		return new TupleNamed(widenedFields);
+		return new Record(widenedFields);
 	}
 
 	@Override

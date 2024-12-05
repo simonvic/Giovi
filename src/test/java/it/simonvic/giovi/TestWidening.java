@@ -8,7 +8,10 @@ import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import giovi.*;
+import giovi.Natural;
+import giovi.Record;
+import giovi.Struct;
+import giovi.Tuple;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.*;
@@ -222,44 +225,44 @@ public class TestWidening {
 		}
 
 		@Test
-		void testWidening_toNamedTuple_with_sameFields() throws NonWideneable {
+		void testWidening_toRecord_with_sameFields() throws NonWideneable {
 			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
 				List.of(69, 420));
-			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+			var type = new GioviTypeRecord(Records.of(
 				"n", new VarD<>(new GioviNatural()),
 				"i", new VarD<>(new GioviInt()),
 				"li", new VarD<>(new GioviList(new GioviTypeInt()))));
-			assertThat(narrow.widenTo(type).value()).isEqualTo(Tuples.ofNamed(
+			assertThat(narrow.widenTo(type).value()).isEqualTo(Records.of(
 				"n", new VarD<>(new GioviNatural(new Natural(69))),
 				"i", new VarD<>(new GioviInt(69)),
 				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt()))));
 		}
 
 		@Test
-		void testWidening_toNamedTuple_with_widerFields() throws NonWideneable {
+		void testWidening_toRecord_with_widerFields() throws NonWideneable {
 			var narrow = GioviTuples.of(
 				new Natural(69),
 				69,
 				List.of(69, 420));
-			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+			var type = new GioviTypeRecord(Records.of(
 				"i", new VarD<>(new GioviInt()),
 				"r", new VarD<>(new GioviReal()),
 				"lr", new VarD<>(new GioviList(new GioviTypeReal()))));
-			assertThat(narrow.widenTo(type)).isEqualTo(new GioviTupleNamed(Tuples.ofNamed(
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(Records.of(
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
 				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
 		}
 
 		@Test
-		void widening_toNamedTuple_with_narrowerFields_shouldThrow() throws NonWideneable {
+		void widening_toRecord_with_narrowerFields_shouldThrow() throws NonWideneable {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviTuples.of(
 				69,
 				69d,
 				List.of(69d, 420d))
-				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
+				.widenTo(new GioviTypeRecord(Records.of(
 					"n", new VarD<>(new GioviNatural()),
 					"i", new VarD<>(new GioviInt()),
 					"li", new VarD<>(new GioviList(new GioviTypeInt()))))));
@@ -319,17 +322,17 @@ public class TestWidening {
 	}
 
 	@Nested
-	class TestGioviTupleNamed {
+	class TestGioviRecord {
 
 		@Test
-		void testWidening_emptyNamedTuple_to_emptyNamedTuple() throws NonWideneable {
-			assertThat(new GioviTupleNamed().widenTo(new GioviTypeTupleNamed(new TupleNamed())))
-				.isEqualTo(new GioviTupleNamed());
+		void testWidening_emptyRecord_to_emptyRecord() throws NonWideneable {
+			assertThat(new GioviRecord().widenTo(new GioviTypeRecord(new Record())))
+				.isEqualTo(new GioviRecord());
 		}
 
 		@Test
 		void widening_toTuple_shouldThrow() throws NonWideneable {
-			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviTuples.ofNamed(
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviRecords.of(
 				"n", new Natural(69),
 				"i", 69,
 				"li", List.of(69, 420))
@@ -337,28 +340,28 @@ public class TestWidening {
 		}
 
 		@Test
-		void testWidening_toNamedTuple_with_sameFields() throws NonWideneable {
-			var narrow = GioviTuples.ofNamed(
+		void testWidening_toRecord_with_sameFields() throws NonWideneable {
+			var narrow = GioviRecords.of(
 				"a", new Natural(69),
 				"b", 69,
 				"c", List.of(69, 420));
-			var type = new GioviTypeTupleNamed(Tuples.ofNamed(
+			var type = new GioviTypeRecord(Records.of(
 				"a", new VarD<>(new GioviNatural()),
 				"b", new VarD<>(new GioviInt()),
 				"c", new VarD<>(new GioviList(new GioviTypeInt()))));
-			assertThat(narrow.widenTo(type)).isEqualTo(new GioviTupleNamed(Tuples.ofNamed(
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
 				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
 		}
 
 		@Test
-		void widening_toNamedTuple_with_differentNames_shouldThrow() {
-			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviTuples.ofNamed(
+		void widening_toRecord_with_differentNames_shouldThrow() {
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviRecords.of(
 				"a", new Natural(69),
 				"b", 69,
 				"c", List.of(69, 420))
-				.widenTo(new GioviTypeTupleNamed(Tuples.ofNamed(
+				.widenTo(new GioviTypeRecord(Records.of(
 					"x", new VarD<>(new GioviNatural()),
 					"y", new VarD<>(new GioviInt()),
 					"z", new VarD<>(new GioviList(new GioviTypeInt()))))));
@@ -366,7 +369,7 @@ public class TestWidening {
 
 		@Test
 		void testWidening_toStruct_with_sameFields() throws NonWideneable {
-			var narrow = GioviTuples.ofNamed(
+			var narrow = GioviRecords.of(
 				"a", new Natural(69),
 				"b", 69,
 				"c", List.of(69, 420));
@@ -384,7 +387,7 @@ public class TestWidening {
 
 		@Test
 		void widening_toStruct_with_sameFields_but_differentName_shouldThrow() {
-			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviTuples.ofNamed(
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviRecords.of(
 				"a", new Natural(69),
 				"b", 69,
 				"c", List.of(69, 420))
@@ -418,13 +421,13 @@ public class TestWidening {
 		}
 
 		@Test
-		void widening_toNamedTuple_shouldThrow() throws NonWideneable {
+		void widening_toRecord_shouldThrow() throws NonWideneable {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviStructs.ofNative(
 				"Foo",
 				"n", new Natural(69),
 				"i", 69,
 				"li", List.of(69, 420))
-				.widenTo(new GioviTypeTupleNamed(new TupleNamed())));
+				.widenTo(new GioviTypeRecord(new Record())));
 		}
 
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import giovi.*;
+import giovi.Record;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -16,7 +17,7 @@ import it.simonvic.giovi.util.GioviMaps;
 
 public sealed interface GioviValue<T>
 	extends GioviObject
-	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviTupleNamed, GioviStruct,
+	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviRecord, GioviStruct,
 	GioviFunction {
 
 	public static <U> GioviValue<?> of(U value) {
@@ -29,7 +30,7 @@ public sealed interface GioviValue<T>
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
 			case Struct v -> new GioviStruct(v);
-			case TupleNamed v -> new GioviTupleNamed(v);
+			case Record v -> new GioviRecord(v);
 			case Tuple v -> new GioviTuple(v);
 			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(
