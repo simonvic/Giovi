@@ -1160,9 +1160,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructDefinition(StructDefinitionContext ctx) {
 
 		var fieldDefinitions = new LinkedHashMap<String, VarD<?>>();
+		String typename = ctx.typename.getText();
 
-		if (ctx.parentName != null) {
-			String parentTypename = ctx.parentName.getText();
+		if (ctx.parentTypename != null) {
+			String parentTypename = ctx.parentTypename.getText();
 			var parentDefinition = getCurrentScope()
 				.getDefinitionStruct(parentTypename)
 				.orElseThrow(() -> new GioviException(
@@ -1183,13 +1184,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var functions = new HashMap<String, GioviFunction>();
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
 		getCurrentScope().define(new Struct(
-			ctx.structName.getText(),
+			typename,
 			fieldDefinitions,
 			constants,
 			functions));
 
-		// TODO: constants and functions with referring to the type we're
-		// currently declaring, won't have the same constants and functions
+		// TODO: constants and functions referring to the type we're currently
+		// declaring won't have the same constants and functions
 		// Shall we allow cyclic references?
 		// Or maybe move constants and functions outside of struct?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
@@ -1212,63 +1213,50 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
-		var structFieldsCtx = ctx.structFields();
-		if (ctx.structType != null) {
-			return createStruct(ctx.structType.getText(), structFieldsCtx);
-		}
-		if (structFieldsCtx == null || structFieldsCtx.namedStructField().isEmpty()) {
-			return createTuple(structFieldsCtx);
-		}
-		return createTupleNamed(structFieldsCtx);
-	}
-
-	private GioviStruct createStruct(String typename, StructFieldsContext ctx) {
+		String typename = ctx.typename.getText();
 		var struct = getCurrentScope()
 			.getDefinitionStruct(typename)
 			.orElseThrow(() -> new GioviException(
-				"Can't create struct " + typename,
-				new TypeNotFound(typename)))
+				"Can't create struct " + typename, new TypeNotFound(typename)))
 			.copy();
-		var gioviStruct = new GioviStruct(struct);
-		if (ctx == null) {
-			return gioviStruct;
-		}
-		if (ctx.namedStructField().isEmpty()) {
-			initStructUnnamed(gioviStruct, ctx.expression());
+		if (ctx.tupleCreation() != null) {
+			initStruct(struct, ctx.tupleCreation());
 		} else {
-			initStructNamed(gioviStruct, ctx.namedStructField());
+			initStruct(struct, ctx.recordCreation());
 		}
-		return gioviStruct;
+		return new GioviStruct(struct);
 	}
 
-	private void initStructNamed(GioviStruct gioviStruct, List<NamedStructFieldContext> fieldsCtx) {
-		for (var fieldCtx : fieldsCtx) {
+	private void initStruct(Struct struct, RecordCreationContext fieldsCtx) {
+		for (var fieldCtx : fieldsCtx.recordEntry()) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
-			gioviStruct.value()
-				.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
-				.setValueWithRedirection(visit(fieldCtx.expression()));
+			var fieldValue = visit(fieldCtx.expression());
+			struct.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
+				.setValueWithRedirection(fieldValue);
 		}
 	}
 
-	private void initStructUnnamed(GioviStruct gioviStruct, List<ExpressionContext> expressions) {
+	private void initStruct(Struct struct, TupleCreationContext ctx) {
+		List<ExpressionContext> expressions = ctx.expression();
+		if (expressions == null || expressions.isEmpty()) {
+			return;
+		}
 		int expressionsCount = expressions.size();
-		if (expressionsCount != gioviStruct.value().getFieldsCount()) {
+		if (expressionsCount != struct.getFieldsCount()) {
 			throw new GioviException(
-				"Wrong fields count. Expecting " + gioviStruct.value().getFieldsCount()
+				"Wrong fields count. Expecting " + struct.getFieldsCount()
 					+ " but instead got " + expressionsCount);
 		}
 		for (int i = 0; i < expressionsCount; i++) {
 			final int j = i;
-			gioviStruct.value()
-				.getField(i).orElseThrow(() -> new NoSuchField(j))
-				.setValueWithRedirection(visit(expressions.get(i)));
+			var fieldValue = visit(expressions.get(i));
+			struct.getField(i).orElseThrow(() -> new NoSuchField(j))
+				.setValueWithRedirection(fieldValue);
 		}
 	}
 
-	private GioviTuple createTuple(StructFieldsContext ctx) {
-		if (ctx == null) {
-			return new GioviTuple(new Tuple());
-		}
+	@Override
+	public GioviParserVisitResult visitTupleCreation(TupleCreationContext ctx) {
 		var fields = new ArrayList<VarD<?>>();
 		for (var expressionCtx : ctx.expression()) {
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
@@ -1278,12 +1266,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	}
 
-	private GioviTupleNamed createTupleNamed(StructFieldsContext ctx) {
-		if (ctx == null) {
-			return new GioviTupleNamed(new TupleNamed());
-		}
+	@Override
+	public GioviParserVisitResult visitRecordCreation(RecordCreationContext ctx) {
 		var fields = new LinkedHashMap<String, VarD<?>>();
-		for (var namedStructFieldCtx : ctx.namedStructField()) {
+		for (var namedStructFieldCtx : ctx.recordEntry()) {
 			var fieldValue = visit(namedStructFieldCtx.expression()).unwrapAsGioviValue();
 			fields.put(
 				namedStructFieldCtx.identifier().getText(),
