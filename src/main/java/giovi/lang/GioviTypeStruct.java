@@ -40,6 +40,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 
 	@Override
 	public GioviTypeStruct copy() {
+		// TODO: unnecessary copy?
 		return new GioviTypeStruct(definition.copy());
 	}
 
