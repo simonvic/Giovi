@@ -128,7 +128,7 @@ public record GioviRecord(Record signature, Record value)
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range(Integer start, Integer end, Integer step, _)
-				-> new GioviTuple(this.value.copy(Range.of(start, end, step)));
+				-> new GioviRecord(this.value.copy(Range.of(start, end, step)));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));

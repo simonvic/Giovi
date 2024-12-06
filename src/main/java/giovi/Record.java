@@ -89,6 +89,17 @@ public sealed class Record extends Tuple permits Struct {
 	}
 
 	@Override
+	public Record copy(Range<Integer> range) {
+		var a = new LinkedHashMap<String, VarD<?>>();
+		range.iterate(i -> {
+			String fieldName = getFieldNames().get(i);
+			VarD<?> fieldValue = getField(i).orElseThrow(() -> new NoSuchField(i));
+			a.put(fieldName, fieldValue);
+		});
+		return new Record(a);
+	}
+
+	@Override
 	public boolean equal(Record other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
