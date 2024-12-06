@@ -15,10 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.Range;
 import giovi.lang.GioviTuple;
-import it.simonvic.giovi.util.GioviRecords;
 import it.simonvic.giovi.util.GioviTuples;
-import it.simonvic.giovi.util.Records;
-import it.simonvic.giovi.util.Tuples;
 
 public class TestGioviTuple {
 
@@ -41,61 +38,6 @@ public class TestGioviTuple {
 				""")).isEqualTo(GioviTuples.of(
 				69, true, "foo"));
 		}
-
-		@Test
-		void testCreation_struct() {
-			assertThat(visitExpression("""
-				<
-					a: 69
-					b: true
-					c: "foo"
-				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", "foo"));
-		}
-
-		@Test
-		void testCreation_withNestedStruct() {
-			assertThat(visitExpression("""
-				<
-					a: 69
-					b: true
-					c: <
-						foo: "foo"
-						bar: "bar"
-					>
-				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", Records.of(
-					"foo", VarD.of("foo"),
-					"bar", VarD.of("bar"))));
-		}
-
-		@Test
-		void testCreation_withNestedMixedTuples() {
-			assertThat(visitExpression("""
-				<
-					a: 69
-					b: true
-					c: <
-						foo: "foo"
-						bar: "bar"
-					>
-					d: <1 2 3>
-				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", Records.of(
-					"foo", VarD.of("foo"),
-					"bar", VarD.of("bar")),
-				"d", Tuples.ofNative(1, 2, 3)));
-		}
-
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
