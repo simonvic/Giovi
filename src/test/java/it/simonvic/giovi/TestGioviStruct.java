@@ -25,7 +25,10 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FunctionSignatureParam;
-import it.simonvic.giovi.util.*;
+import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviRecords;
+import it.simonvic.giovi.util.GioviStructs;
+import it.simonvic.giovi.util.Structs;
 
 public class TestGioviStruct {
 
@@ -154,26 +157,25 @@ public class TestGioviStruct {
 					"BAZ", GioviLists.of(1, 2, 3)));
 		}
 
-		@Disabled("Fix constants definition getting lost")
+		@Disabled("Stackoverflow because of cyclic definition")
 		@Test
 		void testConstantsWithSameDeclaringType() {
-			var expectedDefinition = new Struct(
-				"Foo", new LinkedHashMap<>(Map.of(
-					"a", VarD.of(0),
-					"b", VarD.of(0))),
-				new LinkedHashMap<>(),
-				new LinkedHashMap<>());
+			var expectedDefinition = Structs.of(
+				"Foo",
+				"a", VarD.of(0),
+				"b", VarD.of(0));
 			expectedDefinition.getConstants()
 				.put("FOO", new GioviStruct(expectedDefinition, expectedDefinition.copy()));
-			assertThat(visit("""
+			Struct definition = visit("""
 				Foo <
 					a Int
 					b Int
-					constant FOO Foo <- Foo.<69 420>
+					constant FOO Foo <- Foo.<>
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo").get())
+				.getDefinitionStruct("Foo").get();
+			assertThat(definition)
 				.isEqualTo(expectedDefinition);
 		}
 
@@ -518,7 +520,7 @@ public class TestGioviStruct {
 			}
 
 			@Test
-			@Disabled("Needs requirements clarification")
+			@Disabled("Not implemented yet")
 			void testCastingToCompatibleType() {
 				var visitor = visit("""
 					Color <r Int, g Int, b Int>
