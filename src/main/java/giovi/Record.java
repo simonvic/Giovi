@@ -65,7 +65,7 @@ public sealed class Record extends Tuple permits Struct {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
+		result = prime * result + Objects.hash(fields);
 		return result;
 	}
 
@@ -75,10 +75,7 @@ public sealed class Record extends Tuple permits Struct {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		Record other = (Record) obj;
-		if (fields == null) {
-			if (other.fields != null) return false;
-		} else if (!fields.equals(other.fields)) return false;
-		return true;
+		return Objects.equals(fields, other.fields);
 	}
 
 	@Override

@@ -55,10 +55,7 @@ public sealed class Tuple permits Record {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((fields == null) ? 0 : fields.hashCode());
-		return result;
+		return Objects.hash(fields);
 	}
 
 	@Override
@@ -67,10 +64,7 @@ public sealed class Tuple permits Record {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Tuple other = (Tuple) obj;
-		if (fields == null) {
-			if (other.fields != null) return false;
-		} else if (!fields.equals(other.fields)) return false;
-		return true;
+		return Objects.equals(fields, other.fields);
 	}
 
 	public Tuple copy() {

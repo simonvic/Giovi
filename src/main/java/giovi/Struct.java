@@ -83,9 +83,9 @@ public final class Struct extends Record {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		Struct other = (Struct) obj;
-		return Objects.equals(constants, other.constants)
-			&& Objects.equals(functions, other.functions)
-			&& Objects.equals(typename, other.typename);
+		return Objects.equals(typename, other.typename)
+			&& Objects.equals(constants, other.constants)
+			&& Objects.equals(functions, other.functions);
 	}
 
 	@Override
