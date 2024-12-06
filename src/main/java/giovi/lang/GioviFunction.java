@@ -44,15 +44,6 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
-	@Override
-	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		// TODO: do this properly
-		return switch (right) {
-			case GioviTypeFunction v -> this;
-			default -> GioviValue.super.as(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override
