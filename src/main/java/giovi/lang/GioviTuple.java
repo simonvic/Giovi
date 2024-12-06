@@ -111,10 +111,7 @@ public record GioviTuple(Tuple signature, Tuple value)
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				case VALUES -> switch (value) {
-					case Record record -> GioviLists.of(record.getFieldNames());
-					default -> GioviValue.super.access(right);
-				};
+				default -> GioviValue.super.access(right);
 			};
 			case Range(Integer start, Integer end, Integer step, _)
 				-> new GioviTuple(
