@@ -30,7 +30,7 @@ public record GioviTypeRecord(Record definition) implements GioviType<GioviRecor
 
 	@Override
 	public GioviRecord spawn() {
-		return new GioviRecord(definition.copy());
+		return new GioviRecord(definition, definition.copy());
 	}
 
 	@Override

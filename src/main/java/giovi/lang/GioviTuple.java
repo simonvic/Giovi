@@ -13,18 +13,8 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tuple> {
-
-	public GioviTuple(Tuple value) {
-		this(signatureFrom(value), value);
-	}
-
-	private static Tuple signatureFrom(Tuple value) {
-		var fields = new ArrayList<VarD<?>>();
-		value.forEach(field -> fields
-			.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new Tuple(fields);
-	}
+public record GioviTuple(Tuple signature, Tuple value)
+	implements GioviValue<Tuple> {
 
 	public GioviTuple() {
 		this(new Tuple(), new Tuple());
@@ -50,11 +40,11 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 		try {
 			return switch (type) {
 				case GioviTypeStruct(var definition)
-					-> new GioviStruct(this.value.widenTo(definition));
+					-> new GioviStruct(definition, this.value.widenTo(definition));
 				case GioviTypeRecord(var definition)
-					-> new GioviRecord(this.value.widenTo(definition));
+					-> new GioviRecord(definition, this.value.widenTo(definition));
 				case GioviTypeTuple(var definition)
-					-> new GioviTuple(this.value.widenTo(definition));
+					-> new GioviTuple(definition, this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {
@@ -64,7 +54,8 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 
 	@Override
 	public GioviTuple copy() {
-		return new GioviTuple(value.copy());
+		// TODO: unnecessary copy?
+		return new GioviTuple(signature.copy(), value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -76,7 +67,7 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTuple(defaultValue().copy());
+			case GioviDefault _ -> new GioviTuple(signature, signature.copy());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
@@ -109,7 +100,7 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTuple(signature().copy());
+			case GioviDefault _ -> new GioviTuple(signature.copy(), signature.copy());
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -126,7 +117,9 @@ public record GioviTuple(Tuple signature, Tuple value) implements GioviValue<Tup
 				};
 			};
 			case Range(Integer start, Integer end, Integer step, _)
-				-> new GioviTuple(this.value.copy(Range.of(start, end, step)));
+				-> new GioviTuple(
+					this.signature.copy((Range<Integer>) right),
+					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));

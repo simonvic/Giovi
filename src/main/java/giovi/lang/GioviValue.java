@@ -12,8 +12,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.Const;
 import it.simonvic.giovi.lang.annotation.Native.Func;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviMaps;
+import it.simonvic.giovi.util.*;
 
 public sealed interface GioviValue<T>
 	extends GioviObject
@@ -29,9 +28,9 @@ public sealed interface GioviValue<T>
 			case String v -> new GioviText(v);
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
-			case Struct v -> new GioviStruct(v);
-			case Record v -> new GioviRecord(v);
-			case Tuple v -> new GioviTuple(v);
+			case Struct v -> new GioviStruct(GioviStructs.signatureFrom(v), v);
+			case Record v -> new GioviRecord(GioviRecords.signatureFrom(v), v);
+			case Tuple v -> new GioviTuple(GioviTuples.signatureFrom(v), v);
 			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(
 				"Unknown type " + value + " (" + value.getClass() + ")");

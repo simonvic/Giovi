@@ -18,18 +18,6 @@ public record GioviRecord(Record signature, Record value)
 
 	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
 
-	public GioviRecord(Record value) {
-		this(signatureFrom(value), value);
-	}
-
-	private static Record signatureFrom(Record value) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
-		value.forEach((n, field) -> fields.put(
-			n,
-			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new Record(fields);
-	}
-
 	public GioviRecord() {
 		this(new Record(), new Record());
 	}
@@ -53,10 +41,10 @@ public record GioviRecord(Record signature, Record value)
 	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
 		try {
 			return switch (type) {
-				case GioviTypeStruct(var definition)
-					-> new GioviStruct(this.value.widenTo(definition));
-				case GioviTypeRecord(var definition)
-					-> new GioviRecord(this.value.widenTo(definition));
+				case GioviTypeStruct(var signature)
+					-> new GioviStruct(signature, this.value.widenTo(signature));
+				case GioviTypeRecord(var signature)
+					-> new GioviRecord(signature, this.value.widenTo(signature));
 				default -> throw new NonWideneable(this, type);
 			};
 		} catch (NonWideneable ex) {
@@ -66,7 +54,7 @@ public record GioviRecord(Record signature, Record value)
 
 	@Override
 	public GioviRecord copy() {
-		return new GioviRecord(value.copy());
+		return new GioviRecord(signature, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -78,7 +66,7 @@ public record GioviRecord(Record signature, Record value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviRecord(defaultValue().copy());
+			case GioviDefault _ -> new GioviRecord(signature, signature.copy());
 			case GioviTuple v -> GioviRecords.redirection(this, v);
 			case GioviRecord v -> GioviRecords.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
@@ -128,7 +116,9 @@ public record GioviRecord(Record signature, Record value)
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range(Integer start, Integer end, Integer step, _)
-				-> new GioviRecord(this.value.copy(Range.of(start, end, step)));
+				-> new GioviRecord(
+					this.signature.copy((Range<Integer>) right),
+					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));

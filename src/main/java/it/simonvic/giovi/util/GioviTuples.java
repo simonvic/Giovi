@@ -1,13 +1,25 @@
 package it.simonvic.giovi.util;
 
+import java.util.ArrayList;
+
+import giovi.Tuple;
 import giovi.lang.GioviTuple;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviTuples {
 
+	public static Tuple signatureFrom(Tuple value) {
+		var fields = new ArrayList<VarD<?>>();
+		value.forEach(field -> fields
+			.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
+		return new Tuple(fields);
+	}
+
 	public static GioviTuple of(Object... fields) {
-		return new GioviTuple(Tuples.ofNative(fields));
+		var value = Tuples.ofNative(fields);
+		return new GioviTuple(signatureFrom(value), value);
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTuple content) {
@@ -18,7 +30,7 @@ public class GioviTuples {
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
 			.setValueWithRedirection(f.value()));
-		return new GioviTuple(newTuple);
+		return new GioviTuple(dest.signature(), newTuple);
 	}
 
 }

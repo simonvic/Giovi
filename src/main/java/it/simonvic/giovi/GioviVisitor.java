@@ -23,10 +23,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.annotation.Native;
-import it.simonvic.giovi.util.GioviTypes;
-import it.simonvic.giovi.util.Natives;
-import it.simonvic.giovi.util.TextProcessor;
-import it.simonvic.giovi.util.VisitorUtils;
+import it.simonvic.giovi.util.*;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
@@ -1215,17 +1212,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		String typename = ctx.typename.getText();
-		var struct = getCurrentScope()
+		var definition = getCurrentScope()
 			.getDefinitionStruct(typename)
 			.orElseThrow(() -> new GioviException(
-				"Can't create struct " + typename, new TypeNotFound(typename)))
-			.copy();
+				"Can't create struct " + typename, new TypeNotFound(typename)));
+		var struct = definition.copy();
 		if (ctx.tupleCreation() != null) {
 			initStruct(struct, ctx.tupleCreation());
 		} else {
 			initStruct(struct, ctx.recordCreation());
 		}
-		return new GioviStruct(struct);
+		return new GioviStruct(definition, struct);
 	}
 
 	private void initStruct(Struct struct, RecordCreationContext fieldsCtx) {
@@ -1263,7 +1260,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
 			fields.add(new VarD<>(fieldValue));
 		}
-		return new GioviTuple(new Tuple(fields));
+		var value = new Tuple(fields);
+		return new GioviTuple(GioviTuples.signatureFrom(value), value);
 
 	}
 
@@ -1276,7 +1274,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				entryCtx.identifier().getText(),
 				new VarD<>(fieldValue));
 		}
-		return new GioviRecord(new Record(fields));
+		var value = new Record(fields);
+		return new GioviRecord(GioviRecords.signatureFrom(value), value);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type

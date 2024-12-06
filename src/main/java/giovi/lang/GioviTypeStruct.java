@@ -35,7 +35,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 
 	@Override
 	public GioviStruct spawn() {
-		return new GioviStruct(definition.copy());
+		return new GioviStruct(definition, definition.copy());
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(definition.copy());
+			case GioviDefault _ -> new GioviStruct(definition, definition.copy());
 			case MemberKey(var identifier) when definition.containsField(identifier)
 				-> definition.get(identifier).copy();
 			case MemberKey(var identifier) when definition.containsConstant(identifier)

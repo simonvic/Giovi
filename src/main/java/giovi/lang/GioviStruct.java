@@ -10,20 +10,8 @@ import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
 // TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
-public record GioviStruct(Struct signature, Struct value) implements GioviValue<Struct> {
-	// TODO: wrap signatures, definitions and such in immutable views
-
-	public GioviStruct(Struct value) {
-		this(signatureFrom(value), value);
-	}
-
-	private static Struct signatureFrom(Struct value) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
-		value.forEach((n, field) -> fields.put(
-			n,
-			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new Struct(value.getTypename(), fields);
-	}
+public record GioviStruct(Struct signature, Struct value)
+	implements GioviValue<Struct> {
 
 	@Override
 	public String toString() {
@@ -45,6 +33,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 		try {
 			return switch (type) {
 				case GioviTypeStruct(var definition) -> new GioviStruct(
+					definition,
 					this.value.widenTo(definition));
 				default -> throw new NonWideneable(this, type);
 			};
@@ -55,7 +44,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 
 	@Override
 	public GioviStruct copy() {
-		return new GioviStruct(value.copy());
+		return new GioviStruct(signature, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -76,7 +65,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
+			case GioviDefault _ -> new GioviStruct(signature, signature.copy());
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
@@ -111,7 +100,7 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(defaultValue().copy());
+			case GioviDefault _ -> new GioviStruct(signature, signature.copy());
 			case MemberKey(var identifier) when value.containsField(identifier)
 				-> value.getField(identifier).get();
 			case MemberKey(var identifier) when value.containsConstant(identifier)
@@ -131,7 +120,9 @@ public record GioviStruct(Struct signature, Struct value) implements GioviValue<
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
 			case Range(Integer start, Integer end, Integer step, _)
-				-> new GioviTuple(this.value.copy(Range.of(start, end, step)));
+				-> new GioviRecord(
+					this.signature.copy((Range<Integer>) right),
+					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));

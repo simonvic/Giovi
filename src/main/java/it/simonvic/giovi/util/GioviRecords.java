@@ -11,12 +11,21 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviRecords {
 
+	public static Record signatureFrom(Record value) {
+		var fields = new LinkedHashMap<String, VarD<?>>();
+		value.forEach((n, field) -> fields.put(
+			n,
+			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
+		return new Record(fields);
+	}
+
 	public static <T> GioviRecord of(
 		String i1, T v1
 	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
-		return new GioviRecord(new Record(s));
+		var value = new Record(s);
+		return new GioviRecord(signatureFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -26,7 +35,8 @@ public class GioviRecords {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
-		return new GioviRecord(new Record(s));
+		var value = new Record(s);
+		return new GioviRecord(signatureFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -38,7 +48,8 @@ public class GioviRecords {
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
-		return new GioviRecord(new Record(s));
+		var value = new Record(s);
+		return new GioviRecord(signatureFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -52,7 +63,8 @@ public class GioviRecords {
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
-		return new GioviRecord(new Record(s));
+		var value = new Record(s);
+		return new GioviRecord(signatureFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -68,7 +80,8 @@ public class GioviRecords {
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
 		s.put(i5, VarD.of(v5));
-		return new GioviRecord(new Record(s));
+		var value = new Record(s);
+		return new GioviRecord(signatureFrom(value), value);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviTuple content) {
@@ -79,7 +92,7 @@ public class GioviRecords {
 		content.value().forEachIndexed((i, f) -> newRecord
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
 			.setValueWithRedirection(f.value()));
-		return new GioviRecord(newRecord);
+		return new GioviRecord(dest.signature(), newRecord);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviRecord content) {
@@ -87,7 +100,7 @@ public class GioviRecords {
 		content.value().forEach((s, f) -> newRecord
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
 			.setValueWithRedirection(f.value()));
-		return new GioviRecord(newRecord);
+		return new GioviRecord(dest.signature(), newRecord);
 	}
 
 }
