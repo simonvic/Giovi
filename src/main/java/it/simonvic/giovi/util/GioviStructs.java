@@ -140,6 +140,8 @@ public class GioviStructs {
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviRecord content) {
+		// TODO: check requirements and candidate about fields override
+		// the new struct should be dest.signature().spawn()
 		var newStruct = dest.value().copy();
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
