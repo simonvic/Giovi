@@ -1105,14 +1105,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var params = new LinkedHashMap<String, VarD<?>>();
 		var undeclaredParameters = new LinkedHashMap<>(signature.parameters());
 		actualParams.forEach((actualParamIdentifier, actualParamCtx) -> {
-			if (!signature.parameters().containsKey(actualParamIdentifier)) {
+			if (!signature.hasParameter(actualParamIdentifier)) {
 				throw new GioviException(
 					"Unknown parameter " + actualParamIdentifier + " in " + signature);
 			}
 			if (!undeclaredParameters.containsKey(actualParamIdentifier)) {
 				throw new GioviException("Parameter " + actualParamIdentifier + " already defined");
 			}
-			var formalParam = signature.parameters().get(actualParamIdentifier);
+			var formalParam = signature.getParameter(actualParamIdentifier);
 			var formalParamIdentifier = formalParam.identifier();
 			var actualParam = formalParam.spawn();
 

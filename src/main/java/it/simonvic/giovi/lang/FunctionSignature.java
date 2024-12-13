@@ -45,10 +45,18 @@ public record FunctionSignature(
 		return new ArrayList<>(parameters.values());
 	}
 
+	public boolean hasParameter(String identifier) {
+		return parameters.containsKey(identifier);
+	}
+
 	public FunctionSignature copy() {
 		var params = new LinkedHashMap<String, FormalParameter>();
 		parameters.forEach((identifier, param) -> params.put(identifier, param.copy()));
 		return new FunctionSignature(identifier, params, returnType.copy());
 	}
+
+    public FormalParameter getParameter(String identifier) {
+        return parameters.get(identifier);
+    }
 
 }
