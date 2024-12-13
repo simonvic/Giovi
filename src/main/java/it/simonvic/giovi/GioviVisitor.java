@@ -536,9 +536,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.expression() == null) {
 			return visit(ctx.invocation());
 		}
-		var lhs = visit(ctx.expression());
-		var member = lhs.dot(new MemberKey(ctx.invocation().identifier().getText()));
-		return doVisitInvocation(member, ctx.invocation().actualParameters());
+		var instance = visit(ctx.expression());
+		var member = instance.dot(new MemberKey(ctx.invocation().identifier().getText()));
+		return doVisitInvocation(instance, member, ctx.invocation().actualParameters());
 	}
 
 	@Override
@@ -767,6 +767,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			return lhs.dot(new GioviDefault());
 		}
 		return doVisitInvocation(
+			lhs,
 			lhs.dot(new MemberKey(ctx.invocation().identifier().getText())),
 			ctx.invocation().actualParameters());
 	}
@@ -977,6 +978,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private GioviParserVisitResult doVisitInvocation(
 		GioviParserVisitResult invoked,
+		ActualParametersContext actualParameters
+	) {
+		return doVisitInvocation(null, invoked, actualParameters);
+	}
+
+	private GioviParserVisitResult doVisitInvocation(
+		GioviParserVisitResult instance,
+		GioviParserVisitResult invoked,
 		ActualParametersContext parametersCtx
 	) {
 		if (!(invoked.unwrapAsGioviValue() instanceof GioviFunction gioviFunction)) {
@@ -987,6 +996,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		LinkedHashMap<String, VarD<?>> actualParams = setupFunctionParameters(
 			parametersCtx,
 			function.signature());
+		if (function.signature().hasParameter("self")) {
+			actualParams.putFirst("self", new VarD<>(instance.unwrapAsGioviValue()));
+		}
 		var returnValue = switch (function) {
 			case JFunction jFunction -> {
 				var args = new GioviValue<?>[actualParams.size()];
@@ -1026,7 +1038,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
-		List<ActualParameterContext> actualParameters = actualParamsContext.actualParameter();
+		List<ActualParameterContext> actualParameters = new ArrayList<>(
+			actualParamsContext.actualParameter());
+		if (signature.hasParameter("self")) {
+			// TODO: lol hack
+			actualParameters.addFirst(new ActualParameterContext(null, -1));
+		}
 		if (actualParameters.isEmpty() || actualParameters.getFirst().identifier() == null) {
 			return setupFunctionParametersIteratively(actualParameters, signature);
 		} else {
@@ -1055,6 +1072,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
+			if (formalParamIdentifier.equals("self")) {
+				continue;
+			}
 
 			// if no more actual params found, expecting remaining formal parameters to be optional
 			if (i >= actualParamsCount) {
@@ -1234,6 +1254,34 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			functions.put(
 				signature.identifier(),
 				new GioviFunction(new GFunction(signature, funcCtx.body)));
+		}
+
+		var selfType = new GioviTypeStruct(definition);
+		for (var funcCtx : ctx.structBodyDefinition().selfFunctionDeclaration()) {
+			var signatureCtx = funcCtx.selfFunctionSignature();
+
+			String identifier = signatureCtx.name.getText();
+
+			var parameters = new LinkedHashMap<String, FormalParameter>();
+			if (funcCtx.selfFunctionSignature().self != null) {
+				parameters.put("self", new FormalParameter("self", selfType));
+			}
+			for (var formalParamCtx : signatureCtx.formalParameters().formalParameter()) {
+				var formalParameter = (FormalParameter) visit(formalParamCtx);
+				parameters.put(formalParameter.identifier(), formalParameter);
+			}
+
+			GioviType<?> returnType;
+			if (signatureCtx.returnType != null) {
+				returnType = visit(signatureCtx.returnType).asGioviType();
+			} else if (signatureCtx.returnSelf != null) {
+				returnType = selfType;
+			} else {
+				returnType = new GioviTypeVoid();
+			}
+
+			var signature = new FunctionSignature(identifier, parameters, returnType);
+			functions.put(identifier, new GioviFunction(new GFunction(signature, funcCtx.body)));
 		}
 
 		return null;
