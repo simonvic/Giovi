@@ -12,6 +12,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	@Override
 	public Function defaultValue() {
+		// TODO: this should probably be function with same signature but no body
 		return Function.EMPTY;
 	}
 
