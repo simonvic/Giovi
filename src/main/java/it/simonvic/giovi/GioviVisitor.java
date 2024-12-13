@@ -988,6 +988,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				yield doInvoke(gFunction);
 			}
 		};
+		if (returnValue instanceof GioviVoid
+			&& !(function.signature().returnType() instanceof GioviTypeVoid)) {
+			throw new GioviException("Missing return statement in function");
+		}
 		exitScope();
 		return returnValue;
 	}
@@ -1143,9 +1147,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						+ " but got " + returnedValue.getGioviType());
 				}
 			}
-		}
-		if (func.signature().returnType().value() != GioviVoid.class) {
-			throw new GioviException("Missing return statement in function");
 		}
 		return new GioviVoid();
 	}
