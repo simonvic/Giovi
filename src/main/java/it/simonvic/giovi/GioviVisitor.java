@@ -684,6 +684,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			return visit(ctx.anonFunction());
 		}
 		String identifier = ctx.identifier().getText();
+		if (ctx.expression() != null) {
+			var lhs = visit(ctx.expression());
+			var member = lhs.dot(new MemberKey(identifier));
+			if (member instanceof GioviFunction gioviFunction) {
+				return gioviFunction;
+			}
+			throw new GioviException(
+				"Can't reference non-existing member function " + identifier + " in " + lhs);
+		}
 		Function function = getCurrentScope()
 			.getFunction(identifier)
 			.orElseThrow(() -> new GioviException(
