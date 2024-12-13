@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
-import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.exceptions.ParseException;
 
 public class GioviParserErrorListener extends BaseErrorListener {
 
@@ -28,7 +28,7 @@ public class GioviParserErrorListener extends BaseErrorListener {
 		var errorLineBuilder = new StringBuilder();
 		errorLineBuilder.repeat(" ", charPositionInLine);
 		errorLineBuilder.append("^ " + msg);
-		throw new GioviException(e, msg + "\n" + badLine);
+		throw new ParseException(e, msg + "\n" + badLine);
 	}
 
 }
