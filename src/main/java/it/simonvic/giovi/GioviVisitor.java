@@ -1403,4 +1403,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return new GioviVoid();
 	}
 
+	@Override
+	public GioviParserVisitResult visitLiteralSelf(LiteralSelfContext ctx) {
+		return getCurrentScope().getVariable("self")
+			.orElseThrow(() -> new GioviException("Variable self not defined"));
+	}
+
 }
