@@ -857,6 +857,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitIdentifier(IdentifierContext ctx) {
 		String identifier = ctx.getText();
+		// TODO: eventually check if `self` is defined and get the member
 		var varOpt = getCurrentScope().getVariable(identifier);
 		if (varOpt.isPresent()) {
 			return varOpt.get();
@@ -1256,6 +1257,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				new GioviFunction(new GFunction(signature, funcCtx.body)));
 		}
 
+		// TODO: eventually replace with an incomplete type (GioviTypeSelf)
 		var selfType = new GioviTypeStruct(definition);
 		for (var funcCtx : ctx.structBodyDefinition().selfFunctionDeclaration()) {
 			var signatureCtx = funcCtx.selfFunctionSignature();
