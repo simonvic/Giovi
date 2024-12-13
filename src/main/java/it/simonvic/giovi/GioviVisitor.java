@@ -529,6 +529,25 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 	}
 
+	@Override
+	public GioviParserVisitResult visitInvocationStatementSimple(
+		InvocationStatementSimpleContext ctx
+	) {
+		if (ctx.expression() == null) {
+			return visit(ctx.invocation());
+		}
+		var lhs = visit(ctx.expression());
+		var member = lhs.dot(new MemberKey(ctx.invocation().identifier().getText()));
+		return doVisitInvocation(member, ctx.invocation().actualParameters());
+	}
+
+	@Override
+	public GioviParserVisitResult visitInvocationStatementOfExpression(
+		InvocationStatementOfExpressionContext ctx
+	) {
+		return doVisitInvocation(visit(ctx.expression()), ctx.actualParameters());
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// REDIRECTIONS
 
 	@Override
@@ -747,7 +766,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.DEFAULT() != null) {
 			return lhs.dot(new GioviDefault());
 		}
-		return null;
+		return doVisitInvocation(
+			lhs.dot(new MemberKey(ctx.invocation().identifier().getText())),
+			ctx.invocation().actualParameters());
 	}
 
 	@Override
@@ -946,24 +967,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitInvocation(InvocationContext ctx) {
-		return doVisitInvocation(ctx.expression(), ctx.actualParameters());
+		return doVisitInvocation(visit(ctx.identifier()), ctx.actualParameters());
 	}
 
 	@Override
 	public GioviParserVisitResult visitExpressionInvocation(ExpressionInvocationContext ctx) {
-		return doVisitInvocation(ctx.expression(), ctx.actualParameters());
+		return doVisitInvocation(visit(ctx.expression()), ctx.actualParameters());
 	}
 
 	private GioviParserVisitResult doVisitInvocation(
-		ExpressionContext expressionCtx,
+		GioviParserVisitResult invoked,
 		ActualParametersContext parametersCtx
 	) {
-		var visit = visit(expressionCtx);
-		Function function = switch (visit) {
-			case GioviFunction f -> f.value();
-			case Var<?> v when v.value() instanceof GioviFunction f -> f.value();
-			default -> throw new GioviException("Invokation fail " + visit);
-		};
+		if (!(invoked.unwrapAsGioviValue() instanceof GioviFunction gioviFunction)) {
+			throw new GioviException("Invokation error: " + invoked);
+		}
+		Function function = gioviFunction.value();
 		enterFunctionScope();
 		LinkedHashMap<String, VarD<?>> actualParams = setupFunctionParameters(
 			parametersCtx,
@@ -1191,11 +1210,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var constants = new HashMap<String, GioviValue<?>>();
 		var functions = new HashMap<String, GioviFunction>();
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
-		getCurrentScope().define(new Struct(
+		var definition = new Struct(
 			typename,
 			fieldDefinitions,
 			constants,
-			functions));
+			functions);
+		getCurrentScope().define(definition);
 
 		// TODO: constants and functions referring to the type we're currently
 		// declaring won't have the same constants and functions
