@@ -24,7 +24,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.FunctionSignatureParam;
+import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 import it.simonvic.giovi.util.GioviStructs;
@@ -200,8 +200,8 @@ public class TestGioviStruct {
 					"bar", new GioviFunction(new GFunction(new FunctionSignature(
 						"bar",
 						new LinkedHashMap<>(Map.of(
-							"a", new FunctionSignatureParam("a", new GioviTypeReal()),
-							"b", new FunctionSignatureParam("b", GioviLists.of(1, 2, 3)))),
+							"a", new FormalParameter("a", new GioviTypeReal()),
+							"b", new FormalParameter("b", GioviLists.of(1, 2, 3)))),
 						new GioviTypeText())))));
 		}
 

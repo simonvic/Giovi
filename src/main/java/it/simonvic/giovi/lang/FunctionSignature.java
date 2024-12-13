@@ -10,7 +10,7 @@ import giovi.lang.GioviTypeVoid;
 
 public record FunctionSignature(
 	String identifier,
-	LinkedHashMap<String, FunctionSignatureParam> parameters,
+	LinkedHashMap<String, FormalParameter> parameters,
 	GioviType<?> returnType
 ) implements GioviParserVisitResult {
 
@@ -29,7 +29,7 @@ public record FunctionSignature(
 
 	public FunctionSignature(
 		String identifier,
-		LinkedHashMap<String, FunctionSignatureParam> parameters
+		LinkedHashMap<String, FormalParameter> parameters
 	) {
 		this(identifier, parameters, new GioviTypeVoid());
 	}
@@ -41,12 +41,12 @@ public record FunctionSignature(
 		return String.format("%s(%s) => %s", identifier, sb.toString(), returnType);
 	}
 
-	public List<FunctionSignatureParam> getParametersList() {
+	public List<FormalParameter> getParametersList() {
 		return new ArrayList<>(parameters.values());
 	}
 
 	public FunctionSignature copy() {
-		var params = new LinkedHashMap<String, FunctionSignatureParam>();
+		var params = new LinkedHashMap<String, FormalParameter>();
 		parameters.forEach((identifier, param) -> params.put(identifier, param.copy()));
 		return new FunctionSignature(identifier, params, returnType.copy());
 	}

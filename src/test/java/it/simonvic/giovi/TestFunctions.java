@@ -14,28 +14,28 @@ import org.junit.jupiter.api.Test;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.FunctionSignatureParam;
+import it.simonvic.giovi.lang.FormalParameter;
 
 public class TestFunctions {
 
 	private static FunctionSignature signatureOf(
 		String identifier,
-		FunctionSignatureParam... parameters
+		FormalParameter... parameters
 	) {
-		var params = new LinkedHashMap<String, FunctionSignatureParam>();
+		var params = new LinkedHashMap<String, FormalParameter>();
 		for (var param : parameters) {
 			params.put(param.identifier(), param);
 		}
 		return new FunctionSignature(identifier, params);
 	}
 
-	private static FunctionSignatureParam paramOf(String identifier, GioviType<?> type) {
-		return new FunctionSignatureParam(identifier, type);
+	private static FormalParameter paramOf(String identifier, GioviType<?> type) {
+		return new FormalParameter(identifier, type);
 	}
 
-	private static <T> FunctionSignatureParam paramOf(String identifier, T defaultValue) {
+	private static <T> FormalParameter paramOf(String identifier, T defaultValue) {
 		var defaultParamValue = GioviValue.of(defaultValue);
-		return new FunctionSignatureParam(identifier, defaultParamValue);
+		return new FormalParameter(identifier, defaultParamValue);
 	}
 
 	@Nested

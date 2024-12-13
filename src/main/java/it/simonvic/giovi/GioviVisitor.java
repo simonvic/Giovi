@@ -943,9 +943,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitAnonFunctionSignature(AnonFunctionSignatureContext ctx) {
-		var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
+		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (var formalParamCtx : ctx.formalParameters().formalParameter()) {
-			var formalParameter = (FunctionSignatureParam) visit(formalParamCtx);
+			var formalParameter = (FormalParameter) visit(formalParamCtx);
 			parameters.put(formalParameter.identifier(), formalParameter);
 		}
 
@@ -962,7 +962,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var type = visit(ctx.type()).asGioviType();
 		var param = spawnType(type, ctx.defaultDefinition());
 		boolean isOptional = ctx.defaultDefinition() != null;
-		return new FunctionSignatureParam(identifier, type, param, isOptional);
+		return new FormalParameter(identifier, type, param, isOptional);
 	}
 
 	@Override

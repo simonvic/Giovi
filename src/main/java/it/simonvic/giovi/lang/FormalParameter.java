@@ -5,14 +5,14 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 
-public record FunctionSignatureParam(
+public record FormalParameter(
 	String identifier,
 	GioviType<?> type,
 	VarD<?> param,
 	boolean isOptional
 ) implements GioviParserVisitResult {
 
-	public FunctionSignatureParam(
+	public FormalParameter(
 		String identifier,
 		GioviType<?> type,
 		GioviValue<?> defaultValue
@@ -20,14 +20,14 @@ public record FunctionSignatureParam(
 		this(identifier, type, new VarD<>(defaultValue, defaultValue.copy()), true);
 	}
 
-	public FunctionSignatureParam(
+	public FormalParameter(
 		String identifier,
 		GioviValue<?> defaultValue
 	) {
 		this(identifier, defaultValue.getGioviType(), defaultValue);
 	}
 
-	public FunctionSignatureParam(String identifier, GioviType<?> type) {
+	public FormalParameter(String identifier, GioviType<?> type) {
 		this(identifier, type, new VarD<>(type.spawn()), false);
 	}
 
@@ -36,8 +36,8 @@ public record FunctionSignatureParam(
 		return String.format("%s %s%s", identifier, type, isOptional ? "?" + param : "");
 	}
 
-	public FunctionSignatureParam copy() {
-		return new FunctionSignatureParam(identifier, type.copy(), param.copy(), isOptional);
+	public FormalParameter copy() {
+		return new FormalParameter(identifier, type.copy(), param.copy(), isOptional);
 	}
 
 	public VarD<?> spawn() {

@@ -10,7 +10,7 @@ import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.FunctionSignatureParam;
+import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
@@ -72,17 +72,17 @@ public class Natives {
 	public static FunctionSignature functionSignatureFrom(Method method) {
 		String identifier = method.getName();
 		GioviType<?> returnType = gioviTypeFrom(method);
-		var parameters = new LinkedHashMap<String, FunctionSignatureParam>();
+		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
 			var annotation = param.getAnnotation(Native.Func.Param.class);
 			if (annotation == null) continue;
 			String paramName = annotation.value();
 			GioviType<?> paramType = gioviTypeFrom(param);
 
-			FunctionSignatureParam formalParam;
+			FormalParameter formalParam;
 			var optionalAnnotation = param.getAnnotation(Native.Func.Param.Optional.class);
 			if (optionalAnnotation == null) {
-				formalParam = new FunctionSignatureParam(paramName, paramType);
+				formalParam = new FormalParameter(paramName, paramType);
 			} else {
 				GioviValue<?> defaultValue;
 				String defaultMethodSource = optionalAnnotation.value();
@@ -105,7 +105,7 @@ public class Natives {
 							"Can't invoke parameter default value method source", e);
 					}
 				}
-				formalParam = new FunctionSignatureParam(paramName, paramType, defaultValue);
+				formalParam = new FormalParameter(paramName, paramType, defaultValue);
 			}
 
 			parameters.put(paramName, formalParam);
