@@ -9,8 +9,9 @@ import giovi.Struct;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FormalParameter;
+import it.simonvic.giovi.lang.FormalParameters;
+import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
@@ -110,7 +111,7 @@ public class Natives {
 
 			parameters.put(paramName, formalParam);
 		}
-		return new FunctionSignature(identifier, parameters, returnType);
+		return new FunctionSignature(identifier, new FormalParameters(parameters), returnType);
 	}
 
 	private static GioviType<?> gioviTypeFrom(Native.Type annotation) {

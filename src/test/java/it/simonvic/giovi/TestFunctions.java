@@ -13,8 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.FormalParameter;
+import it.simonvic.giovi.lang.FormalParameters;
+import it.simonvic.giovi.lang.FunctionSignature;
 
 public class TestFunctions {
 
@@ -22,11 +23,7 @@ public class TestFunctions {
 		String identifier,
 		FormalParameter... parameters
 	) {
-		var params = new LinkedHashMap<String, FormalParameter>();
-		for (var param : parameters) {
-			params.put(param.identifier(), param);
-		}
-		return new FunctionSignature(identifier, params);
+		return new FunctionSignature(identifier, new FormalParameters(parameters));
 	}
 
 	private static FormalParameter paramOf(String identifier, GioviType<?> type) {
@@ -47,7 +44,7 @@ public class TestFunctions {
 				someFunction() {}
 				""");
 			assertAll(
-				() -> assertThat(functionSignature.parameters())
+				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
 					.isEqualTo(new GioviTypeVoid()));
@@ -59,7 +56,7 @@ public class TestFunctions {
 				someFunction() => Int {}
 				""");
 			assertAll(
-				() -> assertThat(functionSignature.parameters())
+				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
 					.isEqualTo(new GioviTypeInt()));

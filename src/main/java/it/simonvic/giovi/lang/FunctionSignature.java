@@ -1,7 +1,6 @@
 package it.simonvic.giovi.lang;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import giovi.GioviParserVisitResult;
@@ -10,26 +9,26 @@ import giovi.lang.GioviTypeVoid;
 
 public record FunctionSignature(
 	String identifier,
-	LinkedHashMap<String, FormalParameter> parameters,
+	FormalParameters parameters,
 	GioviType<?> returnType
 ) implements GioviParserVisitResult {
 
 	public static final FunctionSignature EMPTY = new FunctionSignature(
 		"",
-		new LinkedHashMap<>(),
+		new FormalParameters(),
 		new GioviTypeVoid());
 
 	public FunctionSignature(String identifier) {
-		this(identifier, new LinkedHashMap<>(), new GioviTypeVoid());
+		this(identifier, new FormalParameters(), new GioviTypeVoid());
 	}
 
 	public FunctionSignature(String identifier, GioviType<?> returnType) {
-		this(identifier, new LinkedHashMap<>(), returnType);
+		this(identifier, new FormalParameters(), returnType);
 	}
 
 	public FunctionSignature(
 		String identifier,
-		LinkedHashMap<String, FormalParameter> parameters
+		FormalParameters parameters
 	) {
 		this(identifier, parameters, new GioviTypeVoid());
 	}
@@ -37,26 +36,24 @@ public record FunctionSignature(
 	@Override
 	public String toString() {
 		var sb = new StringBuilder();
-		parameters.forEach((_, param) -> sb.append(param.toString() + ","));
+		parameters.parameters().forEach((_, param) -> sb.append(param.toString() + ","));
 		return String.format("%s(%s) => %s", identifier, sb.toString(), returnType);
 	}
 
 	public List<FormalParameter> getParametersList() {
-		return new ArrayList<>(parameters.values());
+		return new ArrayList<>(parameters.parameters().values());
 	}
 
 	public boolean hasParameter(String identifier) {
-		return parameters.containsKey(identifier);
+		return parameters.parameters().containsKey(identifier);
 	}
 
 	public FunctionSignature copy() {
-		var params = new LinkedHashMap<String, FormalParameter>();
-		parameters.forEach((identifier, param) -> params.put(identifier, param.copy()));
-		return new FunctionSignature(identifier, params, returnType.copy());
+		return new FunctionSignature(identifier, parameters.copy(), returnType.copy());
 	}
 
-    public FormalParameter getParameter(String identifier) {
-        return parameters.get(identifier);
-    }
+	public FormalParameter getParameter(String identifier) {
+		return parameters.parameters().get(identifier);
+	}
 
 }

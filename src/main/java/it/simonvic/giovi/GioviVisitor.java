@@ -930,11 +930,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitAnonFunctionSignature(AnonFunctionSignatureContext ctx) {
-		var parameters = new LinkedHashMap<String, FormalParameter>();
-		for (var formalParamCtx : ctx.formalParameters().formalParameter()) {
-			var formalParameter = (FormalParameter) visit(formalParamCtx);
-			parameters.put(formalParameter.identifier(), formalParameter);
-		}
+		var parameters = (FormalParameters) visit(ctx.formalParameters());
 
 		GioviType<?> returnType = ctx.returnType != null
 			? visit(ctx.returnType).asGioviType()
@@ -944,8 +940,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitFormalParameters(FormalParametersContext ctx) {
+		int size = ctx.formalParameter().size();
+		var parameters = new FormalParameter[size];
+		for (int i = 0; i < size; i++) {
+			parameters[i] = (FormalParameter) visit(ctx.formalParameter(i));
+		}
+		return new FormalParameters(parameters);
+	}
+
+	@Override
 	public GioviParserVisitResult visitFormalParameter(FormalParameterContext ctx) {
-		String identifier = ctx.identifier().getText();
+		String identifier = ctx.name.getText();
 		var type = visit(ctx.type()).asGioviType();
 		var param = spawnType(type, ctx.defaultDefinition());
 		boolean isOptional = ctx.defaultDefinition() != null;
@@ -1106,14 +1112,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 
 		// cache actual params mapped by their identifiers
-		var actualParams = new LinkedHashMap<String, ActualParameterContext>();
+		var actualParamsCtx = new LinkedHashMap<String, ActualParameterContext>();
 		for (var actualParamCtx : actualParamCtxList) {
-			actualParams.put(actualParamCtx.identifier().getText(), actualParamCtx);
+			actualParamsCtx.put(actualParamCtx.identifier().getText(), actualParamCtx);
 		}
 
 		var params = new LinkedHashMap<String, VarD<?>>();
-		var undeclaredParameters = new LinkedHashMap<>(signature.parameters());
-		actualParams.forEach((actualParamIdentifier, actualParamCtx) -> {
+		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().parameters());
+		actualParamsCtx.forEach((actualParamIdentifier, actualParamCtx) -> {
 			if (!signature.hasParameter(actualParamIdentifier)) {
 				throw new GioviException(
 					"Unknown parameter " + actualParamIdentifier + " in " + signature);
@@ -1125,7 +1131,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var formalParamIdentifier = formalParam.identifier();
 			var actualParam = formalParam.spawn();
 
-			var actualParamExpression = visit(actualParams.get(formalParamIdentifier).expression());
+			var actualParamExpression = visit(actualParamsCtx.get(formalParamIdentifier).expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				params.put(formalParamIdentifier, actualParam);
 			} else {
@@ -1245,20 +1251,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				new GioviFunction(new GFunction(signature, funcCtx.body)));
 		}
 
-		// TODO: eventually replace with an incomplete type (GioviTypeSelf)
+		// TODO: eventually replace with an incomplete type (GioviTypeSelf or GioviTypeVoid)
 		var selfType = new GioviTypeStruct(definition);
 		for (var funcCtx : ctx.structBodyDefinition().selfFunctionDeclaration()) {
 			var signatureCtx = funcCtx.selfFunctionSignature();
 
 			String identifier = signatureCtx.name.getText();
 
-			var parameters = new LinkedHashMap<String, FormalParameter>();
+			var parameters = (FormalParameters) visit(signatureCtx.formalParameters());
 			if (funcCtx.selfFunctionSignature().self != null) {
-				parameters.put("self", new FormalParameter("self", selfType));
-			}
-			for (var formalParamCtx : signatureCtx.formalParameters().formalParameter()) {
-				var formalParameter = (FormalParameter) visit(formalParamCtx);
-				parameters.put(formalParameter.identifier(), formalParameter);
+				parameters.parameters().put("self", new FormalParameter("self", selfType));
 			}
 
 			GioviType<?> returnType;
