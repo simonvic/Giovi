@@ -141,16 +141,16 @@ public class VisitorUtils {
 		switch (operator) {
 			case REDIR, REDIR_RTL -> {
 				switch (destination) {
-					case "\\out" -> System.out.println(content);
-					case "\\err" -> System.err.println(content);
+					case "_out" -> System.out.println(content);
+					case "_err" -> System.err.println(content);
 					default -> throw new GioviException(
 						"Unkown primitive destination " + destination);
 				}
 			}
 			case REDIR_PLUS, REDIR_PLUS_RTL -> {
 				switch (destination) {
-					case "\\out" -> System.out.print(content);
-					case "\\err" -> System.err.print(content);
+					case "_out" -> System.out.print(content);
+					case "_err" -> System.err.print(content);
 					default -> throw new GioviException(
 						"Unkown primitive destination " + destination);
 				}

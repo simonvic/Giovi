@@ -551,17 +551,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	//////////////////////////////////////////////////////////////////////////////////////////////// REDIRECTIONS
 
 	@Override
-	public GioviParserVisitResult visitRedirectionContent(RedirectionContentContext ctx) {
-		return ctx.expression() != null
-			? visit(ctx.expression())
-			: visit(ctx.primitiveContent());
-	}
-
-	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx
 	) {
-		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
+		visit(ctx.dest).redirection(visit(ctx.content));
 		return null;
 	}
 
@@ -569,7 +562,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx
 	) {
-		visit(ctx.varDeclaration()).redirection(visit(ctx.redirectionContent()));
+		visit(ctx.dest).redirection(visit(ctx.content));
 		return null;
 	}
 
@@ -614,9 +607,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
 		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.bop.getText()),
-			visit(ctx.identifier()));
+			visit(ctx.dest));
 		return null;
 	}
 
@@ -625,26 +618,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		RedirectionToIdentifierRTLContext ctx
 	) {
 		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.bop.getText()),
-			visit(ctx.identifier()));
+			visit(ctx.dest));
 		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToConstantIdentifier(
-		RedirectionToConstantIdentifierContext ctx
-	) {
-		throw new GioviException("Can't redirect to a constant");
-		// TODO: redirecting to field still overrides the field 69 -> SOME_CONSTANT.someField
 	}
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
 		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.redirectionOperator().getText()),
-			visit(ctx.expression()));
+			visit(ctx.dest));
 		return null;
 	}
 
@@ -653,31 +638,31 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		RedirectionToExpressionRTLContext ctx
 	) {
 		VisitorUtils.redirection(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
-			visit(ctx.expression()));
+			visit(ctx.dest));
 		return null;
 	}
 
 	@Override
-	public GioviParserVisitResult visitRedirectionToPrimitiveDestination(
-		RedirectionToPrimitiveDestinationContext ctx
+	public GioviParserVisitResult visitRedirectionToReservedIdentifier(
+		RedirectionToReservedIdentifierContext ctx
 	) {
 		VisitorUtils.redirectionToPrimitive(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.redirectionOperator().getText()),
-			ctx.primitiveDestination().getText());
+			ctx.reservedIdentifier().getText());
 		return null;
 	}
 
 	@Override
-	public GioviParserVisitResult visitRedirectionToPrimitiveDestinationRTL(
-		RedirectionToPrimitiveDestinationRTLContext ctx
+	public GioviParserVisitResult visitRedirectionToReservedIdentifierRTL(
+		RedirectionToReservedIdentifierRTLContext ctx
 	) {
 		VisitorUtils.redirectionToPrimitive(
-			visit(ctx.redirectionContent()),
+			visit(ctx.content),
 			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
-			ctx.primitiveDestination().getText());
+			ctx.reservedIdentifier().getText());
 		return null;
 	}
 
@@ -1405,8 +1390,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Literals
 	@Override
-	public GioviParserVisitResult visitPrimitiveContent(PrimitiveContentContext ctx) {
-		return new GioviText(scanner.nextLine());
+	public GioviParserVisitResult visitReservedIdentifier(ReservedIdentifierContext ctx) {
+		return switch (ctx.getText()) {
+			case "_in" -> new GioviText(scanner.nextLine());
+			default -> throw new GioviException("Unkown reserved identifier " + ctx.getText());
+		};
 	}
 
 	@Override
