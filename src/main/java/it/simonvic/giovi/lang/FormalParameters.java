@@ -11,7 +11,9 @@ public record FormalParameters(
 	public FormalParameters(FormalParameter... parameters) {
 		this(new LinkedHashMap<>());
 		for (var p : parameters) {
-			this.parameters.put(p.identifier(), p);
+			if (this.parameters.put(p.identifier(), p) != null) {
+				throw new IllegalArgumentException("Duplicate formal parameter " + p.identifier());
+			}
 		}
 	}
 
