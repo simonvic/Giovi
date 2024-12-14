@@ -998,6 +998,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			parametersCtx,
 			function.signature());
 		if (function.signature().hasParameter("self")) {
+			// TODO: passing by reference yields much better performance, but
+			// it's different from other params getting passed by value.
+			// Clarify requirements
 			actualParams.putFirst("self", new VarD<>(instance.unwrapAsGioviValue()));
 		}
 		var returnValue = switch (function) {
