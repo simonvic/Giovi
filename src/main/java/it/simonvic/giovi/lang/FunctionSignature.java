@@ -35,9 +35,25 @@ public record FunctionSignature(
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		parameters.parameters().forEach((_, param) -> sb.append(param.toString() + ","));
-		return String.format("%s(%s) => %s", identifier, sb.toString(), returnType);
+		var sb = new StringBuilder(identifier);
+		sb.append('(');
+		var i = parameters.parameters().values().iterator();
+		if (!i.hasNext()) {
+			sb.append(')');
+		} else {
+			while (true) {
+				var param = i.next();
+				sb.append(param.toString());
+				if (!i.hasNext()) {
+					sb.append(')');
+					break;
+				}
+				sb.append(", ");
+			}
+		}
+		sb.append(" => ");
+		sb.append(returnType);
+		return sb.toString();
 	}
 
 	public List<FormalParameter> getParametersList() {
