@@ -1260,7 +1260,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 			var parameters = (FormalParameters) visit(signatureCtx.formalParameters());
 			if (funcCtx.selfFunctionSignature().self != null) {
-				parameters.parameters().put("self", new FormalParameter("self", selfType));
+				parameters.parameters().putFirst("self", new FormalParameter("self", selfType));
 			}
 
 			GioviType<?> returnType;
