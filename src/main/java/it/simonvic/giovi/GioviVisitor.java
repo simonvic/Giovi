@@ -1117,14 +1117,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 
 		// cache actual params contexts mapped by their invocation label
-		var actualParamsCtx = new LinkedHashMap<String, ActualParameterContext>();
+		var cachedCtxs = new LinkedHashMap<String, ActualParameterContext>();
 		for (var actualParamCtx : actualParamCtxList) {
-			actualParamsCtx.put(actualParamCtx.label.getText(), actualParamCtx);
+			cachedCtxs.put(actualParamCtx.label.getText(), actualParamCtx);
 		}
 
 		var params = new LinkedHashMap<String, VarD<?>>();
 		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().byLabel());
-		actualParamsCtx.forEach((actualParamLabel, actualParamCtx) -> {
+		cachedCtxs.forEach((actualParamLabel, actualParamCtx) -> {
 			if (!signature.hasParameterLabeled(actualParamLabel)) {
 				throw new GioviException(
 					"Unknown parameter labeled " + actualParamLabel + " in " + signature);
