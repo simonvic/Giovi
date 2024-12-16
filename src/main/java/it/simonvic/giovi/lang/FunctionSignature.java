@@ -64,6 +64,14 @@ public record FunctionSignature(
 		return parameters.parameters().containsKey(identifier);
 	}
 
+	public boolean hasParameterLabeled(String identifier) {
+		return parameters.byLabel().containsKey(identifier);
+	}
+
+	public FormalParameter getParameterLabeled(String label) {
+		return parameters.byLabel().get(label);
+	}
+
 	public FunctionSignature copy() {
 		return new FunctionSignature(identifier, parameters.copy(), returnType.copy());
 	}

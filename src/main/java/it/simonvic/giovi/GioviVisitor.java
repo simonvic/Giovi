@@ -847,6 +847,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (varOpt.isPresent()) {
 			return varOpt.get();
 		}
+		// TODO: now that we have invocations properly parsed, we could remove
+		// this and use ref operator when needed
 		var funcOpt = getCurrentScope().getFunction(identifier);
 		if (funcOpt.isPresent()) {
 			return new GioviFunction(funcOpt.get());
@@ -952,10 +954,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitFormalParameter(FormalParameterContext ctx) {
 		String identifier = ctx.name.getText();
+		String label = ctx.label != null
+			? ctx.label.getText()
+			: identifier;
 		var type = visit(ctx.type()).asGioviType();
 		var param = spawnType(type, ctx.defaultDefinition());
 		boolean isOptional = ctx.defaultDefinition() != null;
-		return new FormalParameter(identifier, type, param, isOptional);
+		return new FormalParameter(label, identifier, type, param, isOptional);
 	}
 
 	@Override
@@ -1111,34 +1116,34 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		FunctionSignature signature
 	) {
 
-		// cache actual params mapped by their identifiers
+		// cache actual params contexts mapped by their invocation label
 		var actualParamsCtx = new LinkedHashMap<String, ActualParameterContext>();
 		for (var actualParamCtx : actualParamCtxList) {
-			actualParamsCtx.put(actualParamCtx.identifier().getText(), actualParamCtx);
+			actualParamsCtx.put(actualParamCtx.label.getText(), actualParamCtx);
 		}
 
 		var params = new LinkedHashMap<String, VarD<?>>();
-		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().parameters());
-		actualParamsCtx.forEach((actualParamIdentifier, actualParamCtx) -> {
-			if (!signature.hasParameter(actualParamIdentifier)) {
+		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().byLabel());
+		actualParamsCtx.forEach((actualParamLabel, actualParamCtx) -> {
+			if (!signature.hasParameterLabeled(actualParamLabel)) {
 				throw new GioviException(
-					"Unknown parameter " + actualParamIdentifier + " in " + signature);
+					"Unknown parameter labeled " + actualParamLabel + " in " + signature);
 			}
-			if (!undeclaredParameters.containsKey(actualParamIdentifier)) {
-				throw new GioviException("Parameter " + actualParamIdentifier + " already defined");
+			if (!undeclaredParameters.containsKey(actualParamLabel)) {
+				throw new GioviException("Parameter " + actualParamLabel + " already defined");
 			}
-			var formalParam = signature.getParameter(actualParamIdentifier);
+			var formalParam = signature.getParameterLabeled(actualParamLabel);
 			var formalParamIdentifier = formalParam.identifier();
 			var actualParam = formalParam.spawn();
 
-			var actualParamExpression = visit(actualParamsCtx.get(formalParamIdentifier).expression());
+			var actualParamExpression = visit(actualParamCtx.expression());
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				params.put(formalParamIdentifier, actualParam);
 			} else {
 				actualParam.setValueWithRedirection(actualParamExpression);
 				params.put(formalParamIdentifier, actualParam);
 			}
-			undeclaredParameters.remove(formalParamIdentifier);
+			undeclaredParameters.remove(formalParam.label());
 		});
 
 		// no more actual params found, expecting remaining formal parameters to be optional
@@ -1147,7 +1152,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				throw new GioviException(
 					"Required parameter not specified: " + formalParamIdentifier);
 			}
-			params.put(formalParamIdentifier, formalParam.spawn());
+			params.put(formalParam.identifier(), formalParam.spawn());
 		});
 		return params;
 	}
