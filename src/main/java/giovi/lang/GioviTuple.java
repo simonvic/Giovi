@@ -1,16 +1,11 @@
 package giovi.lang;
 
-import java.util.ArrayList;
-
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import giovi.Record;
 import giovi.Tuple;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviTuples;
 
 public record GioviTuple(Tuple signature, Tuple value)

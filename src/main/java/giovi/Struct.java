@@ -8,7 +8,6 @@ import java.util.Objects;
 import giovi.lang.GioviFunction;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
-import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Struct extends Record {

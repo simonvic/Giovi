@@ -5,8 +5,6 @@ import static it.simonvic.giovi.GioviVisitorUtils.visitFunctionDeclaration;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import java.util.LinkedHashMap;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,10 @@
 package giovi.lang;
 
-import java.util.LinkedHashMap;
-
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.MemberKey;
 import giovi.Range;
 import giovi.Record;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
