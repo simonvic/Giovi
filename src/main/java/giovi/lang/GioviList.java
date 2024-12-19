@@ -139,7 +139,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 			case GioviDefault _ -> new GioviList(entryType, copyOf(defaultValue()));
 			case GioviList v when v.entryType.equals(this.entryType) -> new GioviList(
 				entryType, copyOf(v.value()));
-			case GioviList v when v.entryType.canWidenTo(this.entryType) -> {
+			case GioviList v when v.entryType.isWider(this.entryType) -> {
 				var newGioviValue = new GioviList(entryType);
 				v.value().forEach(entry -> newGioviValue.add(entry.copy()));
 				yield newGioviValue;
@@ -152,7 +152,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> addAll(copyOf(defaultValue()));
-			case GioviList v when v.entryType.canWidenTo(this.entryType) -> addAll(copyOf(v.value));
+			case GioviList v when v.entryType.isWider(this.entryType) -> addAll(copyOf(v.value));
 			case GioviValue<?> v -> {
 				try {
 					add(new Var<>(v.copy()));
@@ -170,7 +170,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		switch (right) {
 			case GioviDefault _ -> removeAll(defaultValue());
 			case GioviList v when v.entryType.equals(entryType) -> removeAll(v.value);
-			case GioviList v when v.entryType.canWidenTo(entryType) -> removeAllWidened(v.value);
+			case GioviList v when v.entryType.isWider(entryType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
 					remove(new Var<>(v.widenTo(this.entryType)));
@@ -199,7 +199,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 					yield new GioviBool(false);
 				}
 				if (!this.entryType.equals(v.entryType)
-					&& !this.entryType.canWidenTo(v.entryType)) {
+					&& !this.entryType.isWider(v.entryType)) {
 					yield new GioviBool(false);
 				}
 				for (int i = 0; i < this.value.size(); i++) {

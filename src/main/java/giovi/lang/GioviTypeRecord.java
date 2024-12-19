@@ -20,10 +20,10 @@ public record GioviTypeRecord(Record definition) implements GioviType<GioviRecor
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
-		return switch (to) {
-			case GioviTypeStruct(var definition) -> this.definition.canWidenTo(definition);
-			case GioviTypeRecord(var definition) -> this.definition.canWidenTo(definition);
+	public boolean isWider(GioviType<?> type) {
+		return switch (type) {
+			case GioviTypeStruct(var definition) -> this.definition.isWider(definition);
+			case GioviTypeRecord(var definition) -> this.definition.isWider(definition);
 			default -> false;
 		};
 	}

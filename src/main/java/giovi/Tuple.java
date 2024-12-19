@@ -128,14 +128,14 @@ public sealed class Tuple permits Record {
 
 	// TODO: clarify widening requirements
 
-	public boolean canWidenTo(Tuple to) {
+	public boolean isWider(Tuple to) {
 		if (this.fields.size() != to.fields.size()) {
 			return false;
 		}
 		for (int i = 0; i < fields.size(); i++) {
 			var thisFieldType = this.fields.get(i).getGioviType();
 			var otherFieldType = to.fields.get(i).getGioviType();
-			if (!thisFieldType.canWidenTo(otherFieldType)) {
+			if (!thisFieldType.isWider(otherFieldType)) {
 				return false;
 			}
 		}

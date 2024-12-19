@@ -20,7 +20,7 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
+	public boolean isWider(GioviType<?> type) {
 		return true;
 	}
 

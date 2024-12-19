@@ -20,8 +20,8 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
-		return to instanceof GioviTypeBool;
+	public boolean isWider(GioviType<?> type) {
+		return type instanceof GioviTypeBool;
 	}
 
 	@Override

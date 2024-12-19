@@ -19,10 +19,10 @@ public class GioviTypes {
 				inferred = next;
 				continue;
 			}
-			if (next.equals(inferred) || next.canWidenTo(inferred)) {
+			if (next.equals(inferred) || next.isWider(inferred)) {
 				continue;
 			}
-			if (inferred.canWidenTo(next)) {
+			if (inferred.isWider(next)) {
 				inferred = next;
 				continue;
 			}

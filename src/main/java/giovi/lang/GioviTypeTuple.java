@@ -20,11 +20,11 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
-		return switch (to) {
-			case GioviTypeStruct(var definition) -> this.definition.canWidenTo(definition);
-			case GioviTypeRecord(var definition) -> this.definition.canWidenTo(definition);
-			case GioviTypeTuple(var definition) -> this.definition.canWidenTo(definition);
+	public boolean isWider(GioviType<?> type) {
+		return switch (type) {
+			case GioviTypeStruct(var definition) -> this.definition.isWider(definition);
+			case GioviTypeRecord(var definition) -> this.definition.isWider(definition);
+			case GioviTypeTuple(var definition) -> this.definition.isWider(definition);
 			default -> false;
 		};
 	}

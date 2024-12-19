@@ -26,8 +26,8 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
-		return to instanceof GioviTypeFunction f && this.signature.equals(f.signature);
+	public boolean isWider(GioviType<?> type) {
+		return type instanceof GioviTypeFunction f && this.signature.equals(f.signature);
 	}
 
 	@Override

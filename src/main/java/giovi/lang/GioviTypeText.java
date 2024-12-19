@@ -20,8 +20,8 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 	}
 
 	@Override
-	public boolean canWidenTo(GioviType<?> to) {
-		return to instanceof GioviTypeText;
+	public boolean isWider(GioviType<?> type) {
+		return type instanceof GioviTypeText;
 	}
 
 	@Override

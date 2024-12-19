@@ -30,9 +30,9 @@ public sealed interface GioviType<T extends GioviValue<?>>
 		throw new NonWideneable(this, type);
 	}
 
-	boolean canWidenTo(GioviType<?> to);
+	boolean isWider(GioviType<?> type);
 
-	// TODO: add canNarrowTo(type)
+	// TODO: add isNarrower(type)
 
 	T spawn();
 
