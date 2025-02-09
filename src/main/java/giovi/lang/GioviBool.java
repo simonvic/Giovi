@@ -1,7 +1,6 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
@@ -26,14 +25,6 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	@Override
 	public GioviTypeBool getGioviType() {
 		return new GioviTypeBool();
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeBool) {
-			return this;
-		}
-		throw new NonWideneable(this, type);
 	}
 
 	@Override

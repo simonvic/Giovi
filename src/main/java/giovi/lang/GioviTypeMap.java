@@ -1,6 +1,8 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Var;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	implements GioviType<GioviMap> {
@@ -35,6 +37,22 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 				-> getKeyType().isWider(t.getKeyType())
 					&& getElementType().isWider(t.getElementType());
 			default -> false;
+		};
+	}
+
+	@Override
+	public GioviMap widen(GioviValue<?> value) throws NonWideneable {
+		return switch (value) {
+			case GioviMap v -> {
+				var widened = new GioviMap(this.keyType, this.elementType);
+				for (var vEntry : v.value().entrySet()) {
+					widened.value().put(
+						new Var<>(this.keyType.widen(vEntry.getKey().value())),
+						new Var<>(this.elementType.widen(vEntry.getValue().value())));
+				}
+				yield widened;
+			}
+			default -> throw new NonWideneable(value, this);
 		};
 	}
 

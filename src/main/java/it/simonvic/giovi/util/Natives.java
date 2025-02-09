@@ -95,7 +95,7 @@ public class Natives {
 							.getDeclaringClass()
 							.getMethod(defaultMethodSource)
 							.invoke(null);
-						defaultValue = defaultValue.widenTo(paramType);
+						defaultValue = paramType.widen(defaultValue);
 					} catch (
 						IllegalAccessException
 						| InvocationTargetException

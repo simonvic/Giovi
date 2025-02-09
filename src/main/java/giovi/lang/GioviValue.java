@@ -67,9 +67,9 @@ public sealed interface GioviValue<T>
 	 * @return widened value
 	 * @throws NonWideneable
 	 */
-	GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable;
-
-	// TODO: <U extends GioviValue<?>> U safeWidenTo(GioviType<U> type) throws NonWideneable;
+	default <V extends GioviValue<?>> V widenTo(GioviType<V> type) throws NonWideneable {
+		return type.widen(this);
+	}
 
 	// TODO: add narrowTo(type) which should be used along the widenTo(type) inside the as(type)
 
@@ -78,6 +78,7 @@ public sealed interface GioviValue<T>
 	 * @return copy of the object
 	 */
 	GioviValue<T> copy();
+	//public abstract <U extends GioviValue<T>> U copy();
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 

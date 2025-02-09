@@ -2,7 +2,6 @@ package giovi.lang;
 
 import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
-import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
@@ -23,20 +22,6 @@ public record GioviStruct(Struct signature, Struct value)
 	@Override
 	public Struct defaultValue() {
 		return signature.copy();
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		try {
-			return switch (type) {
-				case GioviTypeStruct(var definition) -> new GioviStruct(
-					definition,
-					this.value.widenTo(definition));
-				default -> throw new NonWideneable(this, type);
-			};
-		} catch (NonWideneable ex) {
-			throw new NonWideneable(this, type, ex);
-		}
 	}
 
 	@Override

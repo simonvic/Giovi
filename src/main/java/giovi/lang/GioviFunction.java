@@ -2,7 +2,6 @@ package giovi.lang;
 
 import giovi.Function;
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviFunction(Function value) implements GioviValue<Function> {
 
@@ -24,16 +23,6 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 	@Override
 	public GioviTypeFunction getGioviType() {
 		return new GioviTypeFunction(value.signature().copy());
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeFunction t
-			&& t.getSignature().equals(this.value.signature())) {
-			return this;
-		}
-		// TODO: clarify requirements. Should (Natural) => Int be wideneable to (Int) => Real ?
-		throw new NonWideneable(this, type);
 	}
 
 	@Override

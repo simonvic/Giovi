@@ -81,7 +81,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	}
 
 	public Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
-		return new Var<>(value.widenTo(gioviType));
+		return new Var<>(gioviType.widen(value));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS

@@ -5,7 +5,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.Tuple;
 import it.simonvic.giovi.exceptions.NoSuchField;
-import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviTuples;
 
 public record GioviTuple(Tuple signature, Tuple value)
@@ -28,23 +27,6 @@ public record GioviTuple(Tuple signature, Tuple value)
 	@Override
 	public GioviTypeTuple getGioviType() {
 		return new GioviTypeTuple(signature);
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		try {
-			return switch (type) {
-				case GioviTypeStruct(var definition)
-					-> new GioviStruct(definition, this.value.widenTo(definition));
-				case GioviTypeRecord(var definition)
-					-> new GioviRecord(definition, this.value.widenTo(definition));
-				case GioviTypeTuple(var definition)
-					-> new GioviTuple(definition, this.value.widenTo(definition));
-				default -> throw new NonWideneable(this, type);
-			};
-		} catch (NonWideneable ex) {
-			throw new NonWideneable(this, type, ex);
-		}
 	}
 
 	@Override

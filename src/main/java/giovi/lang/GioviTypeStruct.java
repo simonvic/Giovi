@@ -1,8 +1,9 @@
 package giovi.lang;
 
-import giovi.MemberKey;
 import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
 import giovi.Struct;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruct> {
 
@@ -30,6 +31,16 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 		return switch (type) {
 			case GioviTypeStruct t -> t.definition.isWider(this.definition);
 			default -> false;
+		};
+	}
+
+	@Override
+	public GioviStruct widen(GioviValue<?> value) throws NonWideneable {
+		return switch (value) {
+			case GioviTuple v -> new GioviStruct(definition, v.value().widenTo(definition));
+			case GioviRecord v -> new GioviStruct(definition, v.value().widenTo(definition));
+			case GioviStruct v -> new GioviStruct(definition, v.value().widenTo(definition));
+			default -> throw new NonWideneable(value, this);
 		};
 	}
 

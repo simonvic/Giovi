@@ -8,7 +8,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviText(String value) implements GioviPrimitive<String> {
 
@@ -29,14 +28,6 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviTypeText getGioviType() {
 		return new GioviTypeText();
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeText) {
-			return this;
-		}
-		throw new NonWideneable(this, type);
 	}
 
 	@Override

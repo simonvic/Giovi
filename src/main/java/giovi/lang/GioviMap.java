@@ -126,22 +126,6 @@ public record GioviMap(
 	}
 
 	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeMap t) {
-			var widerKeyType = t.getKeyType();
-			var widerElementType = t.getElementType();
-			var widened = new GioviMap(widerKeyType, widerElementType);
-			for (var entry : this.value.entrySet()) {
-				widened.value.put(
-					entry.getKey().widenTo(widerKeyType),
-					entry.getValue().widenTo(widerElementType));
-			}
-			return widened;
-		}
-		throw new NonWideneable(this, type);
-	}
-
-	@Override
 	public GioviMap copy() {
 		var v = new LinkedHashMap<Var<?>, Var<?>>();
 		this.value.forEach((key, element) -> v.put(key.copy(), element.copy()));
@@ -205,7 +189,7 @@ public record GioviMap(
 				-> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
-					value.remove(new Var<>(v.widenTo(this.keyType)));
+					value.remove(new Var<>(this.keyType.widen(v)));
 				} catch (NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}

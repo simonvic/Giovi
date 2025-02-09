@@ -98,19 +98,6 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	}
 
 	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeList t) {
-			var widerEntryType = t.getEntryType();
-			var widened = new GioviList(widerEntryType);
-			for (var entry : this.value) {
-				widened.value.add(entry.widenTo(widerEntryType));
-			}
-			return widened;
-		}
-		throw new NonWideneable(this, type);
-	}
-
-	@Override
 	public GioviList copy() {
 		var v = new ArrayList<Var<?>>();
 		this.value.forEach(value -> v.add(value.copy()));
@@ -173,7 +160,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 			case GioviList v when v.entryType.isWider(entryType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
-					remove(new Var<>(v.widenTo(this.entryType)));
+					remove(new Var<>(this.entryType.widen(v)));
 				} catch (IllegalArgumentException | NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}

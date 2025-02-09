@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import giovi.Record;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeRecord(Record definition) implements GioviType<GioviRecord> {
 
@@ -25,6 +26,15 @@ public record GioviTypeRecord(Record definition) implements GioviType<GioviRecor
 			case GioviTypeStruct(var definition) -> this.definition.isWider(definition);
 			case GioviTypeRecord(var definition) -> this.definition.isWider(definition);
 			default -> false;
+		};
+	}
+
+	@Override
+	public GioviRecord widen(GioviValue<?> value) throws NonWideneable {
+		return switch (value) {
+			case GioviTuple v -> new GioviRecord(definition, v.value().widenTo(definition));
+			case GioviRecord v -> new GioviRecord(definition, v.value().widenTo(definition));
+			default -> throw new NonWideneable(value, this);
 		};
 	}
 

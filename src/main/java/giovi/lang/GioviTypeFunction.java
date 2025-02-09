@@ -2,6 +2,7 @@ package giovi.lang;
 
 import giovi.GFunction;
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
 
 public record GioviTypeFunction(FunctionSignature signature) implements GioviType<GioviFunction> {
@@ -28,6 +29,15 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 	@Override
 	public boolean isWider(GioviType<?> type) {
 		return type instanceof GioviTypeFunction f && this.signature.equals(f.signature);
+	}
+
+	@Override
+	public GioviFunction widen(GioviValue<?> value) throws NonWideneable {
+		return switch (value) {
+			case GioviFunction v when v.value().signature().equals(this.signature) -> v;
+			// TODO: clarify requirements. Should (Natural) => Int be wideneable to (Int) => Real ?
+			default -> throw new NonWideneable(value, this);
+		};
 	}
 
 	@Override

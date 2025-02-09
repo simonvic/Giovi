@@ -22,15 +22,9 @@ public sealed interface GioviType<T extends GioviValue<?>>
 		return new GioviTypeType();
 	}
 
-	@Override
-	default GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type.equals(this)) {
-			return this;
-		}
-		throw new NonWideneable(this, type);
-	}
-
 	boolean isWider(GioviType<?> type);
+
+	T widen(GioviValue<?> value) throws NonWideneable;
 
 	// TODO: add isNarrower(type)
 

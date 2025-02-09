@@ -2,6 +2,7 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	implements GioviType<GioviList> {
@@ -43,6 +44,21 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		return switch (type) {
 			case GioviTypeList t -> getEntryType().isWider(t.getEntryType());
 			default -> false;
+		};
+	}
+
+	@Override
+	public GioviList widen(GioviValue<?> value) throws NonWideneable {
+		return switch (value) {
+			case GioviList v when v.entryType().equals(this.entryType) -> v;
+			case GioviList v -> {
+				var widened = new GioviList(this.entryType);
+				for (var entry : v.value()) {
+					widened.value().add(new Var<>(this.entryType.widen(entry.value())));
+				}
+				yield widened;
+			}
+			default -> throw new NonWideneable(value, this);
 		};
 	}
 

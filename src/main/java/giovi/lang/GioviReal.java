@@ -2,7 +2,6 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import giovi.Natural;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviReal(Double value) implements GioviNumber<Double> {
 
@@ -38,14 +37,6 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 	@Override
 	public GioviTypeReal getGioviType() {
 		return new GioviTypeReal();
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		if (type instanceof GioviTypeReal) {
-			return this;
-		}
-		throw new NonWideneable(this, type);
 	}
 
 	@Override

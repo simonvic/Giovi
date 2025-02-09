@@ -75,7 +75,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 
 	public VarD<?> widenTo(GioviType<?> gioviType, GioviValue<?> defaultValue)
 		throws NonWideneable {
-		return new VarD<>(value.widenTo(gioviType), defaultValue.widenTo(gioviType));
+		return new VarD<>(gioviType.widen(value), gioviType.widen(defaultValue));
 	}
 
 	@Override

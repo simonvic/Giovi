@@ -6,7 +6,6 @@ import giovi.MemberKey;
 import giovi.Range;
 import giovi.Record;
 import it.simonvic.giovi.exceptions.NoSuchField;
-import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 
@@ -32,21 +31,6 @@ public record GioviRecord(Record signature, Record value)
 	@Override
 	public GioviTypeRecord getGioviType() {
 		return new GioviTypeRecord(signature);
-	}
-
-	@Override
-	public GioviValue<?> widenTo(GioviType<?> type) throws NonWideneable {
-		try {
-			return switch (type) {
-				case GioviTypeStruct(var signature)
-					-> new GioviStruct(signature, this.value.widenTo(signature));
-				case GioviTypeRecord(var signature)
-					-> new GioviRecord(signature, this.value.widenTo(signature));
-				default -> throw new NonWideneable(this, type);
-			};
-		} catch (NonWideneable ex) {
-			throw new NonWideneable(this, type, ex);
-		}
 	}
 
 	@Override

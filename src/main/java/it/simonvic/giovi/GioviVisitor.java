@@ -589,7 +589,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var defaultValue = visit(defaultDefinitionCtx).unwrapAsGioviValue();
 		try {
-			defaultValue = defaultValue.widenTo(type);
+			defaultValue = type.widen(defaultValue);
 		} catch (NonWideneable e) {
 			throw new GioviException(e, "Incompatible default value");
 		}
@@ -1180,7 +1180,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
 				try {
-					return returnedValue.widenTo(returnType);
+					return returnType.widen(returnedValue);
 				} catch (NonWideneable ex) {
 					throw new GioviException(ex, "Wrong return type, expecting " + returnType
 						+ " but got " + returnedValue.getGioviType());
