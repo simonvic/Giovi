@@ -67,6 +67,7 @@ public sealed interface GioviValue<T>
 	 * @return widened value
 	 * @throws NonWideneable
 	 */
+	@Deprecated
 	default <V extends GioviValue<?>> V widenTo(GioviType<V> type) throws NonWideneable {
 		return type.widen(this);
 	}
