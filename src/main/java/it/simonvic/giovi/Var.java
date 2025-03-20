@@ -80,6 +80,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return new Var<>(value.copy());
 	}
 
+	@Deprecated
 	public Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
 		return new Var<>(gioviType.widen(value));
 	}
