@@ -12,6 +12,7 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 public sealed class Tuple permits Record {
 
 	private final List<VarD<?>> fields;
+	// TODO: should we use Var instead? Same for record?
 
 	public Tuple() {
 		fields = new ArrayList<>();
