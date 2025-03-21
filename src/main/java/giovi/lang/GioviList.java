@@ -99,9 +99,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 
 	@Override
 	public GioviList copy() {
-		var v = new ArrayList<Var<?>>();
-		this.value.forEach(value -> v.add(value.copy()));
-		return new GioviList(this.entryType, v);
+		return new GioviList(this.entryType, copyOf(this.value));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -124,13 +122,10 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviDefault _ -> new GioviList(entryType, copyOf(defaultValue()));
-			case GioviList v when v.entryType.equals(this.entryType) -> new GioviList(
-				entryType, copyOf(v.value()));
-			case GioviList v when v.entryType.isWidenableTo(this.entryType) -> {
-				var newGioviValue = new GioviList(entryType);
-				v.value().forEach(entry -> newGioviValue.add(entry.copy()));
-				yield newGioviValue;
-			}
+			case GioviList v when v.entryType.equals(this.entryType)
+				-> new GioviList(entryType, copyOf(v.value()));
+			case GioviList v when v.entryType.isWidenableTo(this.entryType)
+				-> new GioviList(entryType, copyOf(v.value()));
 			default -> GioviValue.super.redirection(content);
 		};
 	}
@@ -139,6 +134,8 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> addAll(copyOf(defaultValue()));
+			case GioviList v when v.entryType.equals(this.entryType)
+				-> addAll(copyOf(v.value));
 			case GioviList v when v.entryType.isWidenableTo(this.entryType)
 				-> addAll(copyOf(v.value));
 			case GioviValue<?> v -> {

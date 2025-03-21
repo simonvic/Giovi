@@ -1,6 +1,8 @@
 // TODO: https://www.youtube.com/shorts/3GLBpNVtDtQ
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviMaps.copyOf;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,7 +11,6 @@ import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.util.GioviMaps;
 
 public record GioviMap(
 	GioviType<?> keyType,
@@ -128,9 +129,7 @@ public record GioviMap(
 
 	@Override
 	public GioviMap copy() {
-		var v = new LinkedHashMap<Var<?>, Var<?>>();
-		this.value.forEach((key, element) -> v.put(key.copy(), element.copy()));
-		return new GioviMap(this.keyType, this.elementType, v);
+		return new GioviMap(this.keyType, this.elementType, copyOf(this.value));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -154,14 +153,16 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _
-				-> new GioviMap(keyType, elementType, GioviMaps.copyOf(defaultValue()));
+			case GioviDefault _ -> new GioviMap(keyType, elementType, copyOf(defaultValue()));
+
+			case GioviMap v when v.keyType.equals(this.keyType)
+				&& v.elementType.equals(this.elementType)
+				-> new GioviMap(this.keyType, this.elementType, copyOf(v.value));
+
 			case GioviMap v when v.keyType.isWidenableTo(this.keyType)
-				&& v.elementType.isWidenableTo(this.elementType) -> {
-				var newGioviMap = new GioviMap(keyType, elementType);
-				newGioviMap.putAll(GioviMaps.copyOf(v.value));
-				yield newGioviMap;
-			}
+				&& v.elementType.isWidenableTo(this.elementType)
+				-> new GioviMap(this.keyType, this.elementType, copyOf(v.value));
+
 			default -> GioviValue.super.redirection(content);
 		};
 	}
