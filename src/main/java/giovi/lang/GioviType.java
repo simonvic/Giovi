@@ -22,14 +22,16 @@ public sealed interface GioviType<T extends GioviValue<?>>
 		return new GioviTypeType();
 	}
 
-	// TODO: wtf?! This was canWiden(), so it should be named isNarrower() or
-	// even better fitsIn() since it currently computes if this is narrower or
-	// equal to type
-	boolean isWider(GioviType<?> type);
+	/**
+	 * Check if this type is widenable to the provided type.
+	 * @param type
+	 * @return true if this type is equal or narrower than the provided type, false otherwise
+	 */
+	boolean isWidenableTo(GioviType<?> type);
+
+	// TODO: add isWider(type) or isNarrowableTo(type)
 
 	T widen(GioviValue<?> value) throws NonWideneable;
-
-	// TODO: add isNarrower(type)
 
 	T spawn();
 

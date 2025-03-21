@@ -31,7 +31,7 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return type instanceof GioviTypeType;
 	}
 

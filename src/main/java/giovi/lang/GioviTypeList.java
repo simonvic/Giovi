@@ -40,9 +40,9 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeList t -> getEntryType().isWider(t.getEntryType());
+			case GioviTypeList t -> getEntryType().isWidenableTo(t.getEntryType());
 			default -> false;
 		};
 	}

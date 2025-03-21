@@ -21,13 +21,12 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return true;
 	}
 
 	@Override
 	public GioviVoid widen(GioviValue<?> value) throws NonWideneable {
-		// TODO: eventually just do spawn()
 		throw new NonWideneable(value, this);
 	}
 

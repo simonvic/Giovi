@@ -22,7 +22,7 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return type instanceof GioviTypeReal;
 	}
 

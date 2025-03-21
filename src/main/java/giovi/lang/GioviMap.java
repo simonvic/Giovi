@@ -156,8 +156,8 @@ public record GioviMap(
 		return switch (content) {
 			case GioviDefault _
 				-> new GioviMap(keyType, elementType, GioviMaps.copyOf(defaultValue()));
-			case GioviMap v when v.keyType.isWider(this.keyType)
-				&& v.elementType.isWider(this.elementType) -> {
+			case GioviMap v when v.keyType.isWidenableTo(this.keyType)
+				&& v.elementType.isWidenableTo(this.elementType) -> {
 				var newGioviMap = new GioviMap(keyType, elementType);
 				newGioviMap.putAll(GioviMaps.copyOf(v.value));
 				yield newGioviMap;
@@ -170,8 +170,8 @@ public record GioviMap(
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviDefault _ -> putAll(defaultValue());
-			case GioviMap v when v.keyType.isWider(this.keyType)
-				&& v.elementType.isWider(this.elementType)
+			case GioviMap v when v.keyType.isWidenableTo(this.keyType)
+				&& v.elementType.isWidenableTo(this.elementType)
 				-> putAll(v.value);
 			default -> GioviValue.super.redirectionPlus(right);
 		}
@@ -185,8 +185,8 @@ public record GioviMap(
 			case GioviMap v when v.keyType.equals(this.keyType)
 				&& v.elementType.equals(this.elementType)
 				-> removeAll(v.value);
-			case GioviMap v when v.keyType.isWider(this.keyType)
-				&& v.elementType.isWider(this.elementType)
+			case GioviMap v when v.keyType.isWidenableTo(this.keyType)
+				&& v.elementType.isWidenableTo(this.elementType)
 				-> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
 				try {
@@ -218,11 +218,11 @@ public record GioviMap(
 					yield new GioviBool(false);
 				}
 				if (!this.keyType.equals(v.keyType)
-					&& !this.keyType.isWider(v.keyType)) {
+					&& !this.keyType.isWidenableTo(v.keyType)) {
 					yield new GioviBool(false);
 				}
 				if (!this.elementType.equals(v.elementType)
-					&& !this.elementType.isWider(v.elementType)) {
+					&& !this.elementType.isWidenableTo(v.elementType)) {
 					yield new GioviBool(false);
 				}
 				var thisIterator = thisEntrySet.iterator();

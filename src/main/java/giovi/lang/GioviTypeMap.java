@@ -31,11 +31,11 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeMap t
-				-> getKeyType().isWider(t.getKeyType())
-					&& getElementType().isWider(t.getElementType());
+				-> getKeyType().isWidenableTo(t.getKeyType())
+					&& getElementType().isWidenableTo(t.getElementType());
 			default -> false;
 		};
 	}

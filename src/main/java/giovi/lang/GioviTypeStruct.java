@@ -27,9 +27,9 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeStruct t -> t.definition.isWider(this.definition);
+			case GioviTypeStruct t -> t.definition.isWidenableTo(this.definition);
 			default -> false;
 		};
 	}

@@ -21,7 +21,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	}
 
 	@Override
-	public boolean isWider(GioviType<?> type) {
+	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeNatural _, GioviTypeInt _, GioviTypeReal _ -> true;
 			default -> false;
