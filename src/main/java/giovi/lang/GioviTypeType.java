@@ -3,7 +3,7 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
+public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimitive<GioviType<T>> {
 
 	@Override
 	public String toString() {
@@ -11,13 +11,13 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public Class<? extends GioviType<?>> value() {
-		return GioviTypeType.class;
+	public Class<? extends GioviType<T>> value() {
+		throw new UnsupportedOperationException("Unimplemented method 'value'");
 	}
 
 	@Override
-	public Class<? extends GioviType<?>> defaultValue() {
-		return GioviTypeType.class;
+	public Class<? extends GioviType<T>> defaultValue() {
+		throw new UnsupportedOperationException("Unimplemented method 'defaultValue'");
 	}
 
 	@Override
@@ -36,22 +36,22 @@ public record GioviTypeType() implements GioviTypePrimitive<GioviType<?>> {
 	}
 
 	@Override
-	public GioviType<?> widen(GioviValue<?> value) throws NonWideneable {
+	public GioviType<T> widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviType<?> v -> v;
+			case GioviType<?> v -> (GioviType<T>) v;
 			default -> throw new NonWideneable(value, this);
 			// TODO: more robust
 		};
 	}
 
 	@Override
-	public GioviTypeVoid spawn() {
-		return new GioviTypeVoid();
+	public GioviType<T> spawn() {
+		return (GioviType<T>) new GioviTypeVoid();
 	}
 
 	@Override
-	public GioviTypeType copy() {
-		return new GioviTypeType();
+	public GioviTypeType<T> copy() {
+		return new GioviTypeType<>();
 	}
 
 	@Override
