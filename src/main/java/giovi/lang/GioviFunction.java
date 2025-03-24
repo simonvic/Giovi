@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import giovi.Function;
+import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 
 public record GioviFunction(Function value) implements GioviValue<Function> {
@@ -11,8 +12,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	@Override
 	public Function defaultValue() {
-		// TODO: this should probably be function with same signature but no body
-		return Function.EMPTY;
+		return new GFunction(value.signature());
 	}
 
 	@Override
