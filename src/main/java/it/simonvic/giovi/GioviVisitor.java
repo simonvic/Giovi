@@ -1164,11 +1164,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private GioviValue<?> doInvoke(GFunction func) {
 		if (func.bodyCtx() == null) {
-			if (func.signature().returnType().value() != GioviVoid.class) {
-				// returning returnType default value
-				return func.signature().returnType().spawn();
-			}
-			return new GioviVoid();
+			// returning returnType default value
+			return func.signature().returnType().spawn();
 		}
 		for (StatementContext statement : func.bodyCtx().statement()) {
 			visit(statement);
