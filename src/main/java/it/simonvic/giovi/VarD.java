@@ -1,5 +1,7 @@
 package it.simonvic.giovi;
 
+import java.util.Objects;
+
 import giovi.GioviParserVisitResult;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -26,11 +28,11 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	}
 
 	/**
+	 * The default value will be set to its type's default value
 	 * @param value
 	 */
 	public VarD(T value) {
 		this(value, (T) value.getGioviType().spawn());
-		// TODO: ugly but needed in order to have proper default value for maps, lists and structs
 	}
 
 	/**
@@ -52,7 +54,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + ((defaultValue == null) ? 0 : defaultValue.hashCode());
+		result = prime * result + Objects.hash(defaultValue);
 		return result;
 	}
 
@@ -62,10 +64,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
 		VarD<?> other = (VarD<?>) obj;
-		if (defaultValue == null) {
-			if (other.defaultValue != null) return false;
-		} else if (!defaultValue.equals(other.defaultValue)) return false;
-		return true;
+		return Objects.equals(defaultValue, other.defaultValue);
 	}
 
 	@Override
