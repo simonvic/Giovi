@@ -12,6 +12,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Struct extends Record {
 
+	// TODO: constants and functions should be associated to the type rather than to the instance
 	private final Map<String, GioviValue<?>> constants;
 	private final Map<String, GioviFunction> functions;
 

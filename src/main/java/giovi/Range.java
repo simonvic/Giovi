@@ -9,6 +9,7 @@ import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
+// TODO: implements iterable
 public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterationStrategy)
 	implements GioviParserVisitResult {
 

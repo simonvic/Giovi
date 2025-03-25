@@ -13,6 +13,8 @@ public sealed class Tuple permits Record {
 
 	private final List<VarD<?>> fields;
 	// TODO: should we use Var instead? Same for record?
+	// Probably not. What about when we'll implement Tuple type?
+	// A function might return => <Int default 69, Int default 420> for example
 
 	public Tuple() {
 		fields = new ArrayList<>();
