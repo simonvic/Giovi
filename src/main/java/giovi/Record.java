@@ -48,7 +48,7 @@ public sealed class Record extends Tuple permits Struct {
 	public String toStringDefinition() {
 		var i = this.entrySet().iterator();
 		if (!i.hasNext()) return "<>";
-		StringBuilder sb = new StringBuilder("Tuple");
+		var sb = new StringBuilder("Record");
 		sb.append('<');
 		while (i.hasNext()) {
 			var next = i.next();

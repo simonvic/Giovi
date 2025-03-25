@@ -44,7 +44,7 @@ public sealed class Tuple permits Record {
 	public String toStringDefinition() {
 		var i = fields.iterator();
 		if (!i.hasNext()) return "<>";
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder("Tuple");
 		sb.append('<');
 		while (i.hasNext()) {
 			sb.append(i.next().getGioviType());
