@@ -116,29 +116,52 @@ public sealed class Record extends Tuple permits Struct {
 	}
 
 	@Override
+	public boolean isWidenableTo(Tuple to) {
+		return to instanceof Record r && r.fields.keySet().containsAll(this.fields.keySet());
+	}
+
+	@Override
 	public Record widenTo(Record to) throws NonWideneable {
+		if (!to.fields.keySet().containsAll(this.fields.keySet())) {
+			throw new NonWideneable("Widening target record signature has less fields");
+		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var widerEntry : to.fields.entrySet()) {
-			var thisField = getField(widerEntry.getKey()).orElseThrow(
-				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
 			var widerField = widerEntry.getValue();
-			widenedFields.put(
-				widerEntry.getKey(),
-				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
+			var widerType = widerField.getGioviType();
+			var narrowField = getField(widerEntry.getKey());
+			if (narrowField.isPresent()) {
+				widenedFields.put(widerEntry.getKey(), new VarD<>(
+					widerType.widen(narrowField.orElseThrow().value().copy()),
+					widerField.defaultValue().copy()));
+			} else {
+				widenedFields.put(widerEntry.getKey(), new VarD<>(
+					widerField.defaultValue().copy(),
+					widerField.defaultValue().copy()));
+			}
 		}
 		return new Record(widenedFields);
 	}
 
 	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
+		if (!to.fields.keySet().containsAll(this.fields.keySet())) {
+			throw new NonWideneable("Widening target record signature has less fields");
+		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
 		for (var widerEntry : to.fields.entrySet()) {
-			var thisField = getField(widerEntry.getKey()).orElseThrow(
-				() -> new NonWideneable(new NoSuchField(widerEntry.getKey())));
 			var widerField = widerEntry.getValue();
-			widenedFields.put(
-				widerEntry.getKey(),
-				thisField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
+			var widerType = widerField.getGioviType();
+			var narrowField = getField(widerEntry.getKey());
+			if (narrowField.isPresent()) {
+				widenedFields.put(widerEntry.getKey(), new VarD<>(
+					widerType.widen(narrowField.orElseThrow().value().copy()),
+					widerField.defaultValue().copy()));
+			} else {
+				widenedFields.put(widerEntry.getKey(), new VarD<>(
+					widerField.defaultValue().copy(),
+					widerField.defaultValue().copy()));
+			}
 		}
 		// TODO: this is wrong; fix once we rework Tuple, Record and Struct
 		return new Struct(to.getTypename(), widenedFields, to.getConstants(), to.getFunctions());
