@@ -96,6 +96,11 @@ public final class Struct extends Record {
 	}
 
 	@Override
+	public boolean isWidenableTo(Tuple to) {
+		return to instanceof Struct s && s.typename.equals(this.typename);
+	}
+
+	@Override
 	public Struct widenTo(Struct to) throws NonWideneable {
 		if (!to.typename.equals(this.typename)) {
 			throw new NonWideneable("Can't widen " + this.typename + " to " + to.typename);
