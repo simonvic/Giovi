@@ -132,7 +132,7 @@ public sealed class Tuple permits Record {
 	// TODO: clarify widening requirements
 
 	public boolean isWidenableTo(Tuple to) {
-		if (this.fields.size() != to.fields.size()) {
+		if (this.fields.size() > to.fields.size()) {
 			return false;
 		}
 		for (int i = 0; i < fields.size(); i++) {
@@ -146,56 +146,84 @@ public sealed class Tuple permits Record {
 	}
 
 	public Tuple widenTo(Tuple to) throws NonWideneable {
-		if (this.fields.size() != to.fields.size()) {
-			throw new NonWideneable("Tuples have different fields count");
+		if (this.fields.size() > to.fields.size()) {
+			throw new NonWideneable("Widening target tuple signature has less fields");
 		}
 		var widenedFields = new ArrayList<VarD<?>>();
-		for (int i = 0; i < fields.size(); i++) {
+		for (int i = 0; i < this.fields.size(); i++) {
 			var narrowField = this.fields.get(i);
 			var widerField = to.fields.get(i);
+			var widerType = widerField.getGioviType();
 			// we widen the field, but use the default value of the wider field
-			widenedFields.add(
-				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
+			widenedFields.add(new VarD<>(
+				widerType.widen(narrowField.value()),
+				widerField.defaultValue().copy()));
+		}
+		// "surplus" fields will be set to the wider field default value
+		for (int i = this.fields.size(); i < to.fields.size(); i++) {
+			var widerField = to.fields.get(i);
+			widenedFields.add(new VarD<>(
+				widerField.defaultValue().copy(),
+				widerField.defaultValue().copy()));
 		}
 		return new Tuple(widenedFields);
 	}
 
 	public Record widenTo(Record to) throws NonWideneable {
-		if (this.fields.size() != to.fields.size()) {
-			throw new NonWideneable("Tuples have different fields count");
+		if (this.fields.size() > to.fields.size()) {
+			throw new NonWideneable("Widening target record signature has less fields");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		int i = 0;
-		for (var entry : to.fields.entrySet()) {
-			final int j = i;
-			var narrowField = this.getField(i)
-				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
-			var widerField = entry.getValue();
-			widenedFields.put(
-				entry.getKey(),
-				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
-			i++;
+		var widerFields = to.fields.entrySet().toArray();
+		for (int i = 0; i < this.fields.size(); i++) {
+			var narrowField = this.fields.get(i);
+			var widerField = (Map.Entry<String, VarD<?>>) widerFields[i];
+			var widerFieldIdentifier = widerField.getKey();
+			var widerType = widerField.getValue().value().getGioviType();
+			// we widen the field, but use the default value of the wider field
+			widenedFields.put(widerFieldIdentifier, new VarD<>(
+				widerType.widen(narrowField.value()),
+				widerField.getValue().defaultValue().copy()));
+		}
+		// "surplus" fields will be set to the wider field default value
+		for (int i = this.fields.size(); i < widerFields.length; i++) {
+			var widerField = (Map.Entry<String, VarD<?>>) widerFields[i];
+			var widerFieldIdentifier = widerField.getKey();
+			var widerType = widerField.getValue().value().getGioviType();
+			// we widen the field, but use the default value of the wider field
+			widenedFields.put(widerFieldIdentifier, new VarD<>(
+				widerField.getValue().defaultValue().copy(),
+				widerField.getValue().defaultValue().copy()));
 		}
 		return new Record(widenedFields);
 	}
 
 	public Struct widenTo(Struct to) throws NonWideneable {
-		if (this.fields.size() != to.fields.size()) {
-			throw new NonWideneable("Tuples have different fields count");
+		if (this.fields.size() > to.fields.size()) {
+			throw new NonWideneable("Widening target struct signature has less fields");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		int i = 0;
-		for (var entry : to.fields.entrySet()) {
-			final int j = i;
-			var narrowField = this.getField(i)
-				.orElseThrow(() -> new NonWideneable(new NoSuchField(j)));
-			var widerField = entry.getValue();
-			widenedFields.put(
-				entry.getKey(),
-				narrowField.widenTo(widerField.getGioviType(), widerField.defaultValue().copy()));
-			i++;
+		var widerFields = to.fields.entrySet().toArray();
+		for (int i = 0; i < this.fields.size(); i++) {
+			var narrowField = this.fields.get(i);
+			var widerField = (Map.Entry<String, VarD<?>>) widerFields[i];
+			var widerFieldIdentifier = widerField.getKey();
+			var widerType = widerField.getValue().value().getGioviType();
+			// we widen the field, but use the default value of the wider field
+			widenedFields.put(widerFieldIdentifier, new VarD<>(
+				widerType.widen(narrowField.value()),
+				widerField.getValue().defaultValue().copy()));
 		}
-		// TODO: this is wrong; fix once we rework Tuple, Record and Struct
+		// "surplus" fields will be set to the wider field default value
+		for (int i = this.fields.size(); i < widerFields.length; i++) {
+			var widerField = (Map.Entry<String, VarD<?>>) widerFields[i];
+			var widerFieldIdentifier = widerField.getKey();
+			var widerType = widerField.getValue().value().getGioviType();
+			// we widen the field, but use the default value of the wider field
+			widenedFields.put(widerFieldIdentifier, new VarD<>(
+				widerField.getValue().defaultValue().copy(),
+				widerField.getValue().defaultValue().copy()));
+		}
 		return new Struct(to.getTypename(), widenedFields, to.getConstants(), to.getFunctions());
 	}
 

@@ -213,6 +213,27 @@ public class TestWidening {
 		}
 
 		@Test
+		void testWidening_toTuple_with_moreFields() throws NonWideneable {
+			var narrow = GioviTuples.of(
+				new Natural(69),
+				69,
+				List.of(69, 420));
+			var type = new GioviTypeTuple(new Tuple(
+				new VarD<>(new GioviInt()),
+				new VarD<>(new GioviReal()),
+				new VarD<>(
+					new GioviList(new GioviTypeReal()),
+					new GioviList(new GioviTypeReal())),
+				new VarD<>(new GioviBool())));
+			assertThat(narrow.widenTo(type).value())
+				.isEqualTo(new Tuple(
+					VarD.of(69),
+					VarD.of(69d),
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+					VarD.of(false)));
+		}
+
+		@Test
 		void widening_toTuple_with_narrowerFields_shouldThrow() throws NonWideneable {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviTuples.of(
 				69,
@@ -255,6 +276,25 @@ public class TestWidening {
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
 				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
+		}
+
+		@Test
+		void testWidening_toRecord_with_moreFields() throws NonWideneable {
+			var narrow = GioviTuples.of(
+				new Natural(69),
+				69,
+				List.of(69, 420));
+			var signature = Records.of(
+				"i", new VarD<>(new GioviInt()),
+				"r", new VarD<>(new GioviReal()),
+				"lr", new VarD<>(new GioviList(new GioviTypeReal())),
+				"b", new VarD<>(new GioviBool()));
+			var type = new GioviTypeRecord(signature);
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(signature, Records.of(
+				"i", new VarD<>(new GioviInt(69)),
+				"r", new VarD<>(new GioviReal(69d)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+				"b", new VarD<>(new GioviBool()))));
 		}
 
 		@Test
@@ -306,6 +346,27 @@ public class TestWidening {
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
 				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
+		}
+
+		@Test
+		void testWidening_toStruct_with_moreFields() throws NonWideneable {
+			var narrow = GioviTuples.of(
+				new Natural(69),
+				69,
+				List.of(69, 420));
+			var signature = Structs.of(
+				"Foo",
+				"i", new VarD<>(new GioviInt()),
+				"r", new VarD<>(new GioviReal()),
+				"lr", new VarD<>(new GioviList(new GioviTypeReal())),
+				"b", new VarD<>(new GioviBool()));
+			var type = new GioviTypeStruct(signature);
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(signature, Structs.of(
+				"Foo",
+				"i", new VarD<>(new GioviInt(69)),
+				"r", new VarD<>(new GioviReal(69d)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+				"b", new VarD<>(new GioviBool()))));
 		}
 
 		@Test
