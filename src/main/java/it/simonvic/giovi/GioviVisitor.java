@@ -1350,27 +1350,36 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTupleCreation(TupleCreationContext ctx) {
-		var fields = new ArrayList<VarD<?>>();
+		int size = ctx.expression().size();
+		var fields = new ArrayList<VarD<?>>(size);
+		var fieldsSignature = new ArrayList<TupleFieldSignature>(size);
 		for (var expressionCtx : ctx.expression()) {
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
-			fields.add(new VarD<>(fieldValue));
+			var fieldType = fieldValue.getGioviType();
+			fields.add(new VarD<>(fieldValue, fieldType.spawn()));
+			fieldsSignature.add(new TupleFieldSignature(fieldType));
 		}
-		var value = new Tuple(fields);
-		return new GioviTuple(GioviTuples.signatureFrom(value), value);
+		return new GioviTuple(
+			new TupleSignature(fieldsSignature),
+			new Tuple(fields));
 
 	}
 
 	@Override
 	public GioviParserVisitResult visitRecordCreation(RecordCreationContext ctx) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
+		int size = ctx.recordEntry().size();
+		var fields = new LinkedHashMap<String, VarD<?>>(size);
+		var fieldsSignature = new LinkedHashMap<String, RecordFieldSignature>(size);
 		for (var entryCtx : ctx.recordEntry()) {
 			var fieldValue = visit(entryCtx.expression()).unwrapAsGioviValue();
-			fields.put(
-				entryCtx.identifier().getText(),
-				new VarD<>(fieldValue));
+			var fieldType = fieldValue.getGioviType();
+			String identifier = entryCtx.identifier().getText();
+			fields.put(identifier, new VarD<>(fieldValue, fieldType.spawn()));
+			fieldsSignature.put(identifier, new RecordFieldSignature(identifier, fieldType));
 		}
-		var value = new Record(fields);
-		return new GioviRecord(GioviRecords.signatureFrom(value), value);
+		return new GioviRecord(
+			new RecordSignature(fieldsSignature),
+			new Record(fields));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type
