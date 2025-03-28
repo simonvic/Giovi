@@ -1213,7 +1213,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.orElseThrow(() -> new GioviException(
 					"Can't inherit from " + parentTypename,
 					new TypeNotFound(parentTypename)));
-			for (var inheritedField : parentDefinition.fields()) {
+			for (var inheritedField : parentDefinition.fields().values()) {
 				fieldDefinitions.put(inheritedField.identifier(), inheritedField);
 			}
 		}
@@ -1249,7 +1249,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
 		var definition = new StructSignature(
 			typename,
-			new ArrayList<>(fieldDefinitions.values()),
+			fieldDefinitions,
 			constants,
 			functions);
 		getCurrentScope().define(definition);

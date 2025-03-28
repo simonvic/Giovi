@@ -8,37 +8,38 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
+// TODO: DRY
 public record StructSignature(
 	String typename,
-	List<RecordFieldSignature> fields,
+	LinkedHashMap<String, RecordFieldSignature> fields,
 	Map<String, GioviValue<?>> constants,
 	Map<String, GioviFunction> functions
 ) {
 
 	public StructSignature(String typename, RecordFieldSignature... fields) {
-		this(typename, Arrays.asList(fields), new LinkedHashMap<>(), new LinkedHashMap<>());
+		this(typename, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
+		for (var field : fields) {
+			if (this.fields.putIfAbsent(field.identifier(), field) != null) {
+				throw new IllegalArgumentException(
+					"Duplicate struct field identifier " + field.identifier());
+			}
+		}
 	}
 
 	@Override
 	public String toString() {
 		if (fields.size() == 0) return typename + "<>";
 		var sb = new StringBuilder(typename + "<");
-		for (int i = 0; i < fields.size() - 1; i++) {
-			var field = fields.get(i);
-			sb.append(field.identifier());
+		var i = this.fields.values().iterator();
+		while (i.hasNext()) {
+			var next = i.next();
+			sb.append(next.identifier());
 			sb.append(" ");
-			sb.append(field.type());
-			sb.append("?");
-			sb.append(field.defaultValue());
-			sb.append(", ");
+			sb.append(next.type());
+			sb.append(" ?");
+			sb.append(next.defaultValue());
+			sb.append(i.hasNext() ? ", " : ">");
 		}
-		var lastField = fields.getLast();
-		sb.append(lastField.identifier());
-		sb.append(" ");
-		sb.append(lastField.type());
-		sb.append("?");
-		sb.append(lastField.defaultValue());
-		sb.append(">");
 		return sb.toString();
 	}
 
@@ -49,7 +50,7 @@ public record StructSignature(
 	 */
 	public Struct spawn() {
 		var fields = new LinkedHashMap<String, VarD<?>>();
-		for (var field : this.fields) {
+		for (var field : this.fields.values()) {
 			fields.put(field.identifier(),
 				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
 		}
@@ -62,9 +63,9 @@ public record StructSignature(
 	 * @return signature
 	 */
 	public StructSignature copy() {
-		var copied = new ArrayList<RecordFieldSignature>(fields.size());
-		for (int i = 0; i < fields.size(); i++) {
-			copied.add(fields.get(i).copy());
+		var copied = new LinkedHashMap<String, RecordFieldSignature>(fields.size());
+		for (var field : fields.values()) {
+			copied.put(field.identifier(), field.copy());
 		}
 		return new StructSignature(this.typename, copied, this.constants, this.functions);
 	}
@@ -76,12 +77,13 @@ public record StructSignature(
 	 */
 	// NOTE: we return Record signature
 	public RecordSignature copy(Range<Integer> range) {
-		// TOOD: DRY
 		// TODO: what about negative ranges? Add bound check
 		var indexes = range.expand();
-		var copied = new ArrayList<RecordFieldSignature>(indexes.size());
+		var copied = new LinkedHashMap<String, RecordFieldSignature>(indexes.size());
+		var fieldsArray = new ArrayList<>(fields.values());
 		for (var i : indexes) {
-			copied.add(fields.get(i).copy());
+			var field = fieldsArray.get(i);
+			copied.put(field.identifier(), field.copy());
 		}
 		return new RecordSignature(copied);
 	}
@@ -95,10 +97,10 @@ public record StructSignature(
 		if (narrow.fields().size() > this.fields.size()) {
 			return false;
 		}
-		for (int i = 0; i < narrow.fields().size(); i++) {
-			var thisFieldType = this.fields.get(i).type();
-			var narrowFieldType = narrow.fields().get(i).type();
-			if (!narrowFieldType.isWidenableTo(thisFieldType)) {
+		var iter = this.fields.values().iterator();
+		for (var narrowField : narrow.fields()) {
+			var thisField = iter.next();
+			if (!narrowField.type().isWidenableTo(thisField.type())) {
 				return false;
 			}
 		}
@@ -114,17 +116,12 @@ public record StructSignature(
 		if (narrow.fields().size() > this.fields.size()) {
 			return false;
 		}
-		var narrowFields = narrow.fields().stream()
-			.collect(Collectors.toMap(f -> f.identifier(), f -> f));
-
-		var widerFields = this.fields.stream()
-			.collect(Collectors.toMap(f -> f.identifier(), f -> f));
-
-		if (!widerFields.keySet().containsAll(narrowFields.keySet())) {
+		var narrowFields = narrow.fields();
+		if (!this.fields.keySet().containsAll(narrowFields.keySet())) {
 			return false;
 		}
 
-		for (var widerFieldSignature : this.fields) {
+		for (var widerFieldSignature : this.fields.values()) {
 			if (!narrowFields.containsKey(widerFieldSignature.identifier())) {
 				continue;
 			}
@@ -145,17 +142,12 @@ public record StructSignature(
 		if (narrow.fields.size() > this.fields.size()) {
 			return false;
 		}
-		var narrowFields = narrow.fields.stream()
-			.collect(Collectors.toMap(f -> f.identifier(), f -> f));
-
-		var widerFields = this.fields.stream()
-			.collect(Collectors.toMap(f -> f.identifier(), f -> f));
-
-		if (!widerFields.keySet().containsAll(narrowFields.keySet())) {
+		var narrowFields = narrow.fields;
+		if (!this.fields.keySet().containsAll(narrowFields.keySet())) {
 			return false;
 		}
 
-		for (var widerFieldSignature : this.fields) {
+		for (var widerFieldSignature : this.fields.values()) {
 			if (!narrowFields.containsKey(widerFieldSignature.identifier())) {
 				continue;
 			}
@@ -179,17 +171,18 @@ public record StructSignature(
 			throw new NonWideneable("Tuple is wider than signature");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		var iter = this.fields.values().iterator();
 		for (int i = 0; i < narrow.getFieldsCount(); i++) {
 			var narrowField = narrow.getField(i).orElseThrow();
-			var widerFieldSignature = this.fields.get(i);
+			var widerFieldSignature = iter.next();
 			// we widen the field, but use the default value of the wider field
 			widenedFields.put(widerFieldSignature.identifier(), new VarD<>(
 				widerFieldSignature.type().widen(narrowField.value()),
 				widerFieldSignature.defaultValue().copy()));
 		}
 		// "surplus" fields will be set to the wider field default value
-		for (int i = narrow.getFieldsCount(); i < this.fields.size(); i++) {
-			var widerFieldSignature = this.fields().get(i);
+		while (iter.hasNext()) {
+			var widerFieldSignature = iter.next();
 			widenedFields.put(widerFieldSignature.identifier(), new VarD<>(
 				widerFieldSignature.defaultValue().copy(),
 				widerFieldSignature.defaultValue().copy()));
@@ -207,12 +200,11 @@ public record StructSignature(
 		if (narrow.getFieldsCount() > this.fields.size()) {
 			throw new NonWideneable("Record is wider than signature");
 		}
-		var widerIdentifiers = this.fields.stream().map(f -> f.identifier()).toList();
-		if (!widerIdentifiers.containsAll(narrow.fields.keySet())) {
+		if (!this.fields.keySet().containsAll(narrow.fields.keySet())) {
 			throw new NonWideneable("Record has field not contained in widening target signature");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		for (var widerField : this.fields) {
+		for (var widerField : this.fields.values()) {
 			GioviValue<?> widenedValue;
 			GioviValue<?> widenedDefaultValue = widerField.defaultValue().copy();
 			var narrowField = narrow.getField(widerField.identifier());
@@ -235,34 +227,11 @@ public record StructSignature(
 	 * @throws NonWideneable
 	 */
 	public Struct widen(Struct narrow) throws NonWideneable {
-		// TODO: clarify requirements
 		if (narrow.getTypename().equals(this.typename)) {
 			return narrow;
 		}
 		throw new NonWideneable(
 			"Can't widen struct " + narrow.getTypename() + " to " + this.typename);
-		//if (narrow.getFieldsCount() > this.fields.size()) {
-		//	throw new NonWideneable("Record is wider than signature");
-		//}
-		//var widerIdentifiers = this.fields.stream().map(f -> f.identifier()).toList();
-		//if (!widerIdentifiers.containsAll(narrow.fields.keySet())) {
-		//	throw new NonWideneable("Record has field not contained in widening target signature");
-		//}
-		//var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		//for (var widerField : this.fields) {
-		//	GioviValue<?> widenedValue;
-		//	GioviValue<?> widenedDefaultValue = widerField.defaultValue().copy();
-		//	var narrowField = narrow.getField(widerField.identifier());
-		//	if (narrowField.isPresent()) {
-		//		widenedValue = widerField.type().widen(narrowField.orElseThrow().value().copy());
-		//	} else {
-		//		widenedValue = widerField.defaultValue().copy();
-		//	}
-		//	widenedFields.put(
-		//		widerField.identifier(),
-		//		new VarD<>(widenedValue, widenedDefaultValue));
-		//}
-		//return new Struct(this.typename, widenedFields, this.constants, this.functions);
 	}
 
 }

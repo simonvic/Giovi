@@ -14,8 +14,8 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 public class GioviRecords {
 
 	public static RecordSignature signatureFrom(Record value) {
-		var fields = new ArrayList<RecordFieldSignature>(value.getFieldsCount());
-		value.forEach((identifier, field) -> fields.add(new RecordFieldSignature(
+		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
+		value.forEach((identifier, field) -> fields.put(identifier, new RecordFieldSignature(
 			identifier,
 			field.value().getGioviType(),
 			field.defaultValue())));

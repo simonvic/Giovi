@@ -40,7 +40,7 @@ public class Natives {
 		}
 
 		// TODO: check if classField/method are static or final?
-		var fields = new ArrayList<RecordFieldSignature>();
+		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		var constants = new HashMap<String, GioviValue<?>>();
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
@@ -52,7 +52,7 @@ public class Natives {
 				// TODO: allow to define a field directly with a Signature
 				var gioviValue = (GioviValue<?>) classField.get(null);
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
-					fields.add(new RecordFieldSignature(
+					fields.put(classField.getName(), new RecordFieldSignature(
 						classField.getName(),
 						gioviValue.getGioviType(),
 						gioviValue.copy()));
