@@ -1,7 +1,6 @@
 package giovi;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import it.simonvic.giovi.VarD;
@@ -62,7 +61,7 @@ public sealed class Record extends Tuple permits Struct {
 
 	@Override
 	public Record copy() {
-		var a = new LinkedHashMap<String, VarD<?>>();
+		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new Record(a);
 	}
@@ -70,9 +69,10 @@ public sealed class Record extends Tuple permits Struct {
 	@Override
 	public Record copy(Range<Integer> range) {
 		var a = new LinkedHashMap<String, VarD<?>>();
+		var fieldNames = new ArrayList<>(this.fields.keySet());
 		range.iterate(i -> {
-			String fieldName = getFieldNames().get(i);
 			VarD<?> fieldValue = getField(i).orElseThrow(() -> new NoSuchField(i));
+			String fieldName = fieldNames.get(i);
 			a.put(fieldName, fieldValue);
 		});
 		return new Record(a);

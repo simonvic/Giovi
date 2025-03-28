@@ -8,7 +8,7 @@ import it.simonvic.giovi.VarD;
 public class Tuples {
 
 	public static Tuple ofNative(Object... fields) {
-		var l = new ArrayList<VarD<?>>();
+		var l = new ArrayList<VarD<?>>(fields.length);
 		for (var field : fields) {
 			l.add(VarD.of(field));
 		}

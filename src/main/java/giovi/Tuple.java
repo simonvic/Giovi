@@ -56,7 +56,7 @@ public sealed class Tuple permits Record {
 	}
 
 	public Tuple copy() {
-		var a = new ArrayList<VarD<?>>();
+		var a = new ArrayList<VarD<?>>(fields.size());
 		this.fields.forEach(value -> a.add(value.copy()));
 		return new Tuple(a);
 	}

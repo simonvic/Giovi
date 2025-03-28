@@ -882,7 +882,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitListCreation(ListCreationContext ctx) {
-		var entries = new ArrayList<Var<?>>();
+		var entries = new ArrayList<Var<?>>(ctx.listEntries().listEntry().size());
 		for (var entryCtx : ctx.listEntries().listEntry()) {
 			var entry = visit(entryCtx);
 			switch (entry) {

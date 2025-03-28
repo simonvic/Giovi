@@ -36,7 +36,7 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 	 * @return tuple
 	 */
 	public Tuple spawn() {
-		var f = new ArrayList<VarD<?>>();
+		var f = new ArrayList<VarD<?>>(fields.size());
 		for (var field : fields) {
 			f.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
 		}
@@ -99,7 +99,7 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 		if (narrow.getFieldsCount() > this.fields.size()) {
 			throw new NonWideneable("Widening target tuple signature has less fields");
 		}
-		var widenedFields = new ArrayList<VarD<?>>();
+		var widenedFields = new ArrayList<VarD<?>>(this.fields.size());
 		for (int i = 0; i < narrow.getFieldsCount(); i++) {
 			var narrowField = narrow.getField(i).orElseThrow();
 			var thisFieldSignature = this.fields.get(i);

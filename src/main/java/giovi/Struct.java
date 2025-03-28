@@ -73,8 +73,8 @@ public final class Struct extends Record {
 
 	@Override
 	public Struct copy() {
-		var a = new LinkedHashMap<String, VarD<?>>();
-		forEach((identifier, value) -> a.put(identifier, value.copy()));
+		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
+		fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new Struct(typename, a, constants, functions);
 	}
 
