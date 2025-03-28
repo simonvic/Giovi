@@ -1203,7 +1203,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructDefinition(StructDefinitionContext ctx) {
 
-		var fieldDefinitions = new LinkedHashMap<String, RecordFieldSignature>();
+		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		String typename = ctx.typename.getText();
 
 		if (ctx.parentTypename != null) {
@@ -1214,33 +1214,21 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					"Can't inherit from " + parentTypename,
 					new TypeNotFound(parentTypename)));
 			for (var inheritedField : parentSignature.fields().values()) {
-				fieldDefinitions.put(inheritedField.identifier(), inheritedField);
+				fields.put(inheritedField.identifier(), inheritedField);
 			}
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
-			var type = visit(fieldCtx.type()).asGioviType();
-			GioviValue<?> defaultValue;
-			try {
-				defaultValue = fieldCtx.defaultDefinition() == null
-					? type.spawn()
-					: type.widen(visit(fieldCtx.defaultDefinition()).asGioviValue());
-			} catch (NonWideneable e) {
-				throw new GioviException(e, "Incompatible default definition");
-			}
-			String fieldIdentifier = fieldCtx.identifier().getText();
-			if (fieldDefinitions.containsKey(fieldIdentifier)) {
-				var inheritedField = fieldDefinitions.get(fieldIdentifier);
-				if (!inheritedField.type().equals(type)) {
+			var field = (RecordFieldSignature) visit(fieldCtx);
+			if (fields.containsKey(field.identifier())) {
+				var inheritedField = fields.get(field.identifier());
+				if (!inheritedField.type().equals(field.type())) {
 					throw new GioviException(
-						"Can't override field " + fieldIdentifier + " with type " + type
+						"Can't override field " + field.identifier() + " with type " + field.type()
 							+ " because inherited with type " + inheritedField.type());
 				}
 			}
-			fieldDefinitions.put(fieldIdentifier, new RecordFieldSignature(
-				fieldIdentifier,
-				type,
-				defaultValue));
+			fields.put(field.identifier(), field);
 			// TODO: maybe add warning about unimplemented recursive structs
 		}
 
@@ -1249,7 +1237,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
 		var definition = new StructSignature(
 			typename,
-			fieldDefinitions,
+			fields,
 			constants,
 			functions);
 		getCurrentScope().define(definition);
@@ -1299,6 +1287,21 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 
 		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitStructFieldDefinition(StructFieldDefinitionContext ctx) {
+		String identifier = ctx.identifier().getText();
+		var type = visit(ctx.type()).asGioviType();
+		GioviValue<?> defaultValue;
+		try {
+			defaultValue = ctx.defaultDefinition() == null
+				? type.spawn()
+				: type.widen(visit(ctx.defaultDefinition()).asGioviValue());
+		} catch (NonWideneable e) {
+			throw new GioviException(e, "Incompatible default definition");
+		}
+		return new RecordFieldSignature(identifier, type, defaultValue);
 	}
 
 	@Override
