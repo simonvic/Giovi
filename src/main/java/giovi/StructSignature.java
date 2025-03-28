@@ -93,26 +93,6 @@ public record StructSignature(
 	 * @param narrow
 	 * @return true if can be widened, false otherwise
 	 */
-	public boolean canWiden(RecordSignature narrow) {
-		return RecordSignature.canWiden(narrow.fields(), this.fields);
-	}
-
-	/**
-	 * Check if the provided signature can be widened to this signature
-	 * @param narrow
-	 * @return true if can be widened, false otherwise
-	 */
-	public boolean canWiden(StructSignature narrow) {
-		// TODO: do we ignore constants and functions? Clarify requirements
-		return RecordSignature.canWiden(narrow.fields, this.fields);
-	}
-
-	/**
-	 * Widen the provided tuple to a Struct described by this signature
-	 * @param narrow
-	 * @return widened struct
-	 * @throws NonWideneable
-	 */
 	public Struct widen(Tuple narrow) throws NonWideneable {
 		return new Struct(
 			this.typename,
@@ -122,7 +102,16 @@ public record StructSignature(
 	}
 
 	/**
-	 * Widen the provided record to a struct described by this signature
+	 * Check if the provided signature can be widened to this signature
+	 * @param narrow
+	 * @return true if can be widened, false otherwise
+	 */
+	public boolean canWiden(RecordSignature narrow) {
+		return RecordSignature.canWiden(narrow.fields(), this.fields);
+	}
+
+	/**
+	 * Widen the provided tuple to a Struct described by this signature
 	 * @param narrow
 	 * @return widened struct
 	 * @throws NonWideneable
@@ -133,6 +122,17 @@ public record StructSignature(
 			RecordSignature.widenRecord(narrow, this.fields),
 			this.constants,
 			this.functions);
+	}
+
+	/**
+	 * Widen the provided record to a struct described by this signature
+	 * @param narrow
+	 * @return widened struct
+	 * @throws NonWideneable
+	 */
+	public boolean canWiden(StructSignature narrow) {
+		// TODO: do we ignore constants and functions? Clarify requirements
+		return RecordSignature.canWiden(narrow.fields, this.fields);
 	}
 
 	/**

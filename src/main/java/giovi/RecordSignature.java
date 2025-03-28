@@ -80,8 +80,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @return true if can be widened, false otherwise
 	 */
-	public boolean canWiden(RecordSignature narrow) {
-		return RecordSignature.canWiden(narrow.fields(), this.fields);
+	public Record widen(Tuple narrow) throws NonWideneable {
+		return new Record(RecordSignature.widenTuple(narrow, this.fields));
 	}
 
 	/**
@@ -90,8 +90,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return widened record
 	 * @throws NonWideneable
 	 */
-	public Record widen(Tuple narrow) throws NonWideneable {
-		return new Record(RecordSignature.widenTuple(narrow, this.fields));
+	public boolean canWiden(RecordSignature narrow) {
+		return RecordSignature.canWiden(narrow.fields(), this.fields);
 	}
 
 	/**
@@ -180,34 +180,6 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @return true if can widen
 	 */
-	public static boolean canWiden(
-		LinkedHashMap<String, RecordFieldSignature> narrow,
-		LinkedHashMap<String, RecordFieldSignature> wide
-	) {
-		if (narrow.size() > wide.size()) {
-			return false;
-		}
-		if (!wide.keySet().containsAll(narrow.keySet())) {
-			return false;
-		}
-		for (var widerFieldSignature : wide.values()) {
-			if (!narrow.containsKey(widerFieldSignature.identifier())) {
-				continue;
-			}
-			var narrowField = narrow.get(widerFieldSignature.identifier());
-			if (!narrowField.type().isWidenableTo(widerFieldSignature.type())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * @param narrow
-	 * @param wide
-	 * @return
-	 * @throws NonWideneable
-	 */
 	public static LinkedHashMap<String, VarD<?>> widenTuple(
 		Tuple narrow,
 		LinkedHashMap<String, RecordFieldSignature> wide
@@ -233,6 +205,34 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 				widerFieldSignature.defaultValue().copy()));
 		}
 		return widenedFields;
+	}
+
+	/**
+	 * @param narrow
+	 * @param wide
+	 * @return
+	 * @throws NonWideneable
+	 */
+	public static boolean canWiden(
+		LinkedHashMap<String, RecordFieldSignature> narrow,
+		LinkedHashMap<String, RecordFieldSignature> wide
+	) {
+		if (narrow.size() > wide.size()) {
+			return false;
+		}
+		if (!wide.keySet().containsAll(narrow.keySet())) {
+			return false;
+		}
+		for (var widerFieldSignature : wide.values()) {
+			if (!narrow.containsKey(widerFieldSignature.identifier())) {
+				continue;
+			}
+			var narrowField = narrow.get(widerFieldSignature.identifier());
+			if (!narrowField.type().isWidenableTo(widerFieldSignature.type())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
