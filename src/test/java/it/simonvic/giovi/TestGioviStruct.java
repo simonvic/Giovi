@@ -17,7 +17,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import giovi.GFunction;
 import giovi.Range;
-import giovi.Struct;
+import giovi.RecordFieldSignature;
+import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
@@ -43,7 +44,7 @@ public class TestGioviStruct {
 			assertThat(visit("""
 				Foo <>
 				""").getCurrentScope().getDefinitionStruct("Foo").get())
-				.isEqualTo(Structs.of("Foo"));
+				.isEqualTo(GioviStructs.signatureOf("Foo"));
 		}
 
 		@Test
@@ -55,11 +56,11 @@ public class TestGioviStruct {
 					foobar Text
 				>
 				""").getCurrentScope().getDefinitionStruct("Foo").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(GioviStructs.signatureOf(
 					"Foo",
-					"foo", VarD.of(0),
-					"bar", VarD.of(false),
-					"foobar", VarD.of("")));
+					"foo", new GioviTypeInt(),
+					"bar", new GioviTypeBool(),
+					"foobar", new GioviTypeText()));
 		}
 
 		@Test
@@ -71,11 +72,11 @@ public class TestGioviStruct {
 					t Text default "hello"
 				>
 				""").getCurrentScope().getDefinitionStruct("Foo").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(new StructSignature(
 					"Foo",
-					"i", VarD.of(69, 69),
-					"b", VarD.of(true, true),
-					"t", VarD.of("hello", "hello")));
+					new RecordFieldSignature("i", new GioviTypeInt(), new GioviInt(69)),
+					new RecordFieldSignature("b", new GioviTypeBool(), new GioviBool(true)),
+					new RecordFieldSignature("t", new GioviTypeText(), new GioviText("hello"))));
 		}
 
 		@Test
@@ -93,19 +94,24 @@ public class TestGioviStruct {
 				""")
 				.getCurrentScope()
 				.getDefinitionStruct("Person").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(GioviStructs.signatureOf(
 					"Person",
-					"name", VarD.of(""),
-					"favoriteColor", VarD.of(Structs.of(
+					"name", new GioviTypeText(),
+					"favoriteColor", new GioviTypeStruct(GioviStructs.signatureOf(
 						"RGB",
-						"r", VarD.of(0),
-						"g", VarD.of(0),
-						"b", VarD.of(0)))));
+						"r", new GioviTypeInt(),
+						"g", new GioviTypeInt(),
+						"b", new GioviTypeInt()))));
 		}
 
 
 		@Test
 		void testDefinitionWithNestedStructFieldAndDefaults() {
+			var rgbSignature = GioviStructs.signatureOf(
+				"RGB",
+				"r", new GioviTypeInt(),
+				"g", new GioviTypeInt(),
+				"b", new GioviTypeInt());
 			assertThat(visit("""
 				RGB <
 					r Int
@@ -123,20 +129,17 @@ public class TestGioviStruct {
 				""")
 				.getCurrentScope()
 				.getDefinitionStruct("Person").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(new StructSignature(
 					"Person",
-					"name", VarD.of(""),
-					"favoriteColor", VarD.of(
-						Structs.of(
+					new RecordFieldSignature("name", new GioviTypeText()),
+					new RecordFieldSignature(
+						"favoriteColor",
+						new GioviTypeStruct(rgbSignature),
+						new GioviStruct(rgbSignature, Structs.of(
 							"RGB",
 							"r", VarD.of(255, 0),
 							"g", VarD.of(250, 0),
-							"b", VarD.of(200, 0)),
-						Structs.of(
-							"RGB",
-							"r", VarD.of(255, 0),
-							"g", VarD.of(250, 0),
-							"b", VarD.of(200, 0)))));
+							"b", VarD.of(200, 0))))));
 		}
 
 		@Test
@@ -151,7 +154,7 @@ public class TestGioviStruct {
 				""")
 				.getCurrentScope()
 				.getDefinitionStruct("Foo").get()
-				.getConstants())
+				.constants())
 				.isEqualTo(Map.of(
 					"BAR", new GioviReal(6.9),
 					"BAZ", GioviLists.of(1, 2, 3)));
@@ -160,13 +163,13 @@ public class TestGioviStruct {
 		@Disabled("Stackoverflow because of cyclic definition")
 		@Test
 		void testConstantsWithSameDeclaringType() {
-			var expectedDefinition = Structs.of(
+			var expectedSignature = GioviStructs.signatureOf(
 				"Foo",
-				"a", VarD.of(0),
-				"b", VarD.of(0));
-			expectedDefinition.getConstants()
-				.put("FOO", new GioviStruct(expectedDefinition, expectedDefinition.copy()));
-			Struct definition = visit("""
+				"a", new GioviTypeInt(),
+				"b", new GioviTypeInt());
+			expectedSignature.constants()
+				.put("FOO", new GioviStruct(expectedSignature, expectedSignature.spawn()));
+			assertThat(visit("""
 				Foo <
 					a Int
 					b Int
@@ -174,9 +177,8 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo").get();
-			assertThat(definition)
-				.isEqualTo(expectedDefinition);
+				.getDefinitionStruct("Foo").orElseThrow())
+				.isEqualTo(expectedSignature);
 		}
 
 		@Disabled("Find a way to test functions equality (different bodyctx)")
@@ -189,9 +191,8 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo")
-				.get()
-				.getFunctions())
+				.getDefinitionStruct("Foo").orElseThrow()
+				.functions())
 				.isEqualTo(Map.of(
 					"foo", new GioviFunction(new GFunction(new FunctionSignature(
 						"foo",
@@ -223,12 +224,12 @@ public class TestGioviStruct {
 					a Int
 				>
 				""").getCurrentScope().getDefinitionStruct("RGBA").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(GioviStructs.signatureOf(
 					"RGBA",
-					"r", VarD.of(0),
-					"g", VarD.of(0),
-					"b", VarD.of(0),
-					"a", VarD.of(0)));
+					"r", new GioviTypeInt(),
+					"g", new GioviTypeInt(),
+					"b", new GioviTypeInt(),
+					"a", new GioviTypeInt()));
 		}
 
 		@Test
@@ -243,12 +244,12 @@ public class TestGioviStruct {
 					a Int default 69
 				>
 				""").getCurrentScope().getDefinitionStruct("RGBA").get())
-				.isEqualTo(Structs.of(
+				.isEqualTo(new StructSignature(
 					"RGBA",
-					"r", VarD.of(255, 255),
-					"g", VarD.of(255, 255),
-					"b", VarD.of(255, 255),
-					"a", VarD.of(69, 69)));
+					new RecordFieldSignature("r", new GioviTypeInt(), new GioviInt(255)),
+					new RecordFieldSignature("g", new GioviTypeInt(), new GioviInt(255)),
+					new RecordFieldSignature("b", new GioviTypeInt(), new GioviInt(255)),
+					new RecordFieldSignature("a", new GioviTypeInt(), new GioviInt(69))));
 		}
 
 		@Test
@@ -269,17 +270,17 @@ public class TestGioviStruct {
 			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB").get();
 			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA").get();
 			assertAll(
-				() -> assertThat(rgb).isEqualTo(Structs.of(
+				() -> assertThat(rgb).isEqualTo(new StructSignature(
 					"RGB",
-					"r", VarD.of(255, 255),
-					"g", VarD.of(255, 255),
-					"b", VarD.of(255, 255))),
-				() -> assertThat(argb).isEqualTo(Structs.of(
+					new RecordFieldSignature("r", new GioviTypeInt(), new GioviInt(255)),
+					new RecordFieldSignature("g", new GioviTypeInt(), new GioviInt(255)),
+					new RecordFieldSignature("b", new GioviTypeInt(), new GioviInt(255)))),
+				() -> assertThat(argb).isEqualTo(new StructSignature(
 					"RGBA",
-					"r", VarD.of(250, 250),
-					"g", VarD.of(200, 200),
-					"b", VarD.of(150, 150),
-					"a", VarD.of(0))));
+					new RecordFieldSignature("r", new GioviTypeInt(), new GioviInt(250)),
+					new RecordFieldSignature("g", new GioviTypeInt(), new GioviInt(200)),
+					new RecordFieldSignature("b", new GioviTypeInt(), new GioviInt(150)),
+					new RecordFieldSignature("a", new GioviTypeInt(), new GioviInt(0)))));
 		}
 
 	}
