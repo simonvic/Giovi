@@ -9,6 +9,8 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeRecord,
 	GioviTypeStruct, GioviTypeFunction {
 
+	// TODO: add constants types GioviType.Int GioviType.Real etc.
+
 	default String getFullyQualifiedName() {
 		return value().getName().replace("Giovi", "");
 	}
