@@ -1,12 +1,13 @@
 package it.simonvic.giovi.util;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import giovi.Record;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
-import giovi.lang.*;
+import giovi.lang.GioviRecord;
+import giovi.lang.GioviTuple;
+import giovi.lang.GioviType;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;

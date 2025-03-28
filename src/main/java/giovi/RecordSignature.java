@@ -2,7 +2,6 @@ package giovi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.stream.Collectors;
 
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
@@ -23,7 +22,6 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	public RecordSignature() {
 		this(new LinkedHashMap<>());
 	}
-
 
 	@Override
 	public String toString() {

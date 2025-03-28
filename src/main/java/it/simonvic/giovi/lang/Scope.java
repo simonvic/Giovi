@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import giovi.Function;
-import giovi.Struct;
 import giovi.StructSignature;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
