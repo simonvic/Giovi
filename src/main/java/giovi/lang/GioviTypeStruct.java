@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
 import giovi.StructSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
@@ -53,12 +54,12 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
-			//case MemberKey(var identifier) when signature.containsField(identifier)
-			//	-> signature.getField(identifier).orElseThrow().copy();
-			//case MemberKey(var identifier) when signature.containsConstant(identifier)
-			//	-> signature.getConstant(identifier);
-			//case MemberKey(var identifier) when signature.containsFunction(identifier)
-			//	-> signature.getFunction(identifier);
+			case MemberKey(var identifier) when signature.containsField(identifier)
+				-> signature.getField(identifier).defaultValue().copy();
+			case MemberKey(var identifier) when signature.containsConstant(identifier)
+				-> signature.getConstant(identifier);
+			case MemberKey(var identifier) when signature.containsFunction(identifier)
+				-> signature.getFunction(identifier);
 			default -> GioviType.super.dot(right);
 		};
 	}

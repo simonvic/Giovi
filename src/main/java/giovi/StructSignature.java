@@ -149,4 +149,28 @@ public record StructSignature(
 			"Can't widen struct " + narrow.getTypename() + " to " + this.typename);
 	}
 
+    public boolean containsField(String identifier) {
+        return fields.containsKey(identifier);
+    }
+
+    public RecordFieldSignature getField(String identifier) {
+		return fields.get(identifier);
+    }
+
+    public boolean containsConstant(String identifier) {
+        return constants.containsKey(identifier);
+    }
+
+    public GioviValue<?> getConstant(String identifier) {
+		return constants.get(identifier);
+    }
+
+    public boolean containsFunction(String identifier) {
+        return functions.containsKey(identifier);
+    }
+
+    public GioviFunction getFunction(String identifier) {
+		return functions.get(identifier);
+    }
+
 }
