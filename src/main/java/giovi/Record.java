@@ -109,10 +109,6 @@ public sealed class Record extends Tuple permits Struct {
 		return new ArrayList<>(fields.keySet());
 	}
 
-	public Set<Entry<String, VarD<?>>> entrySet() {
-		return fields.entrySet();
-	}
-
 	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
