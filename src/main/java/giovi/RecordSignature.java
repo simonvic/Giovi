@@ -120,7 +120,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	}
 
 	/**
-	 * @param fields2
+	 * @param signatureFields
 	 * @return copied fields
 	 */
 	public static LinkedHashMap<String, RecordFieldSignature> copy(
