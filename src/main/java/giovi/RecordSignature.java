@@ -2,6 +2,7 @@ package giovi;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
@@ -45,12 +46,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return record
 	 */
 	public Record spawn() {
-		var fields = new LinkedHashMap<String, VarD<?>>();
-		for (var field : this.fields.values()) {
-			fields.put(field.identifier(),
-				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
-		}
-		return new Record(fields);
+		return new Record(RecordSignature.spawn(this.fields));
 	}
 
 	/**
@@ -58,11 +54,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return signature
 	 */
 	public RecordSignature copy() {
-		var copied = new LinkedHashMap<String, RecordFieldSignature>(fields.size());
-		for (var field : fields.values()) {
-			copied.put(field.identifier(), field.copy());
-		}
-		return new RecordSignature(copied);
+		return new RecordSignature(RecordSignature.copy(this.fields));
 	}
 
 	/**
@@ -71,15 +63,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return signature
 	 */
 	public RecordSignature copy(Range<Integer> range) {
-		// TODO: what about negative ranges? Add bound check
-		var indexes = range.expand();
-		var copied = new LinkedHashMap<String, RecordFieldSignature>(indexes.size());
-		var fieldsArray = new ArrayList<>(fields.values());
-		for (var i : indexes) {
-			var field = fieldsArray.get(i);
-			copied.put(field.identifier(), field.copy());
-		}
-		return new RecordSignature(copied);
+		return new RecordSignature(RecordSignature.copy(this.fields, range));
 	}
 
 	/**
@@ -88,17 +72,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return true if can be widened, false otherwise
 	 */
 	public boolean canWiden(TupleSignature narrow) {
-		if (narrow.fields().size() > this.fields.size()) {
-			return false;
-		}
-		var iter = this.fields.values().iterator();
-		for (var narrowField : narrow.fields()) {
-			var thisField = iter.next();
-			if (!narrowField.type().isWidenableTo(thisField.type())) {
-				return false;
-			}
-		}
-		return true;
+		return RecordSignature.canWiden(narrow.fields(), this.fields);
 	}
 
 	/**
@@ -107,25 +81,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return true if can be widened, false otherwise
 	 */
 	public boolean canWiden(RecordSignature narrow) {
-		if (narrow.fields.size() > this.fields.size()) {
-			return false;
-		}
-
-		var narrowFields = narrow.fields();
-		if (!this.fields.keySet().containsAll(narrowFields.keySet())) {
-			return false;
-		}
-
-		for (var widerFieldSignature : this.fields.values()) {
-			if (!narrowFields.containsKey(widerFieldSignature.identifier())) {
-				continue;
-			}
-			var narrowField = narrowFields.get(widerFieldSignature.identifier());
-			if (!narrowField.type().isWidenableTo(widerFieldSignature.type())) {
-				return false;
-			}
-		}
-		return true;
+		return RecordSignature.canWiden(narrow.fields(), this.fields);
 	}
 
 	/**
@@ -135,11 +91,132 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @throws NonWideneable
 	 */
 	public Record widen(Tuple narrow) throws NonWideneable {
-		if (narrow.getFieldsCount() > this.fields.size()) {
+		return new Record(RecordSignature.widenTuple(narrow, this.fields));
+	}
+
+	/**
+	 * Widen the provided record to a record described by this signature
+	 * @param narrow
+	 * @return widened record
+	 * @throws NonWideneable
+	 */
+	public Record widen(Record narrow) throws NonWideneable {
+		return new Record(RecordSignature.widenRecord(narrow, this.fields));
+	}
+
+	/**
+	 * @param signatureFields
+	 * @return spanwed fields
+	 */
+	public static LinkedHashMap<String, VarD<?>> spawn(
+		LinkedHashMap<String, RecordFieldSignature> signatureFields
+	) {
+		var fields = new LinkedHashMap<String, VarD<?>>();
+		for (var field : signatureFields.values()) {
+			fields.put(field.identifier(),
+				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
+		}
+		return fields;
+	}
+
+	/**
+	 * @param fields2
+	 * @return copied fields
+	 */
+	public static LinkedHashMap<String, RecordFieldSignature> copy(
+		LinkedHashMap<String, RecordFieldSignature> signatureFields
+	) {
+		var copied = new LinkedHashMap<String, RecordFieldSignature>(signatureFields.size());
+		for (var field : signatureFields.values()) {
+			copied.put(field.identifier(), field.copy());
+		}
+		return copied;
+	}
+
+	/**
+	 * @param signatureFields
+	 * @param range
+	 * @return copied fields
+	 */
+	public static LinkedHashMap<String, RecordFieldSignature> copy(
+		LinkedHashMap<String, RecordFieldSignature> signatureFields,
+		Range<Integer> range
+	) {
+		// TODO: what about negative ranges? Add bound check
+		var indexes = range.expand();
+		var copied = new LinkedHashMap<String, RecordFieldSignature>(indexes.size());
+		var fieldsArray = new ArrayList<>(signatureFields.values());
+		for (var i : indexes) {
+			var field = fieldsArray.get(i);
+			copied.put(field.identifier(), field.copy());
+		}
+		return copied;
+	}
+
+	/**
+	 * @param wide
+	 * @param narrow
+	 * @return true if can widen
+	 */
+	public static boolean canWiden(
+		List<TupleFieldSignature> narrow,
+		LinkedHashMap<String, RecordFieldSignature> wide
+	) {
+		if (narrow.size() > wide.size()) {
+			return false;
+		}
+		var iter = wide.values().iterator();
+		for (var narrowField : narrow) {
+			var thisField = iter.next();
+			if (!narrowField.type().isWidenableTo(thisField.type())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @param wide
+	 * @param narrow
+	 * @return true if can widen
+	 */
+	public static boolean canWiden(
+		LinkedHashMap<String, RecordFieldSignature> narrow,
+		LinkedHashMap<String, RecordFieldSignature> wide
+	) {
+		if (narrow.size() > wide.size()) {
+			return false;
+		}
+		if (!wide.keySet().containsAll(narrow.keySet())) {
+			return false;
+		}
+		for (var widerFieldSignature : wide.values()) {
+			if (!narrow.containsKey(widerFieldSignature.identifier())) {
+				continue;
+			}
+			var narrowField = narrow.get(widerFieldSignature.identifier());
+			if (!narrowField.type().isWidenableTo(widerFieldSignature.type())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @param narrow
+	 * @param wide
+	 * @return
+	 * @throws NonWideneable
+	 */
+	public static LinkedHashMap<String, VarD<?>> widenTuple(
+		Tuple narrow,
+		LinkedHashMap<String, RecordFieldSignature> wide
+	) throws NonWideneable {
+		if (narrow.getFieldsCount() > wide.size()) {
 			throw new NonWideneable("Tuple is wider than signature");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		var iter = this.fields.values().iterator();
+		var iter = wide.values().iterator();
 		for (int i = 0; i < narrow.getFieldsCount(); i++) {
 			var narrowField = narrow.getField(i).orElseThrow();
 			var widerFieldSignature = iter.next();
@@ -155,24 +232,27 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 				widerFieldSignature.defaultValue().copy(),
 				widerFieldSignature.defaultValue().copy()));
 		}
-		return new Record(widenedFields);
+		return widenedFields;
 	}
 
 	/**
-	 * Widen the provided record to a record described by this signature
 	 * @param narrow
-	 * @return widened record
+	 * @param wide
+	 * @return
 	 * @throws NonWideneable
 	 */
-	public Record widen(Record narrow) throws NonWideneable {
-		if (narrow.getFieldsCount() > this.fields.size()) {
+	public static LinkedHashMap<String, VarD<?>> widenRecord(
+		Record narrow,
+		LinkedHashMap<String, RecordFieldSignature> wide
+	) throws NonWideneable {
+		if (narrow.getFieldsCount() > wide.size()) {
 			throw new NonWideneable("Record is wider than signature");
 		}
-		if (!this.fields.keySet().containsAll(narrow.fields.keySet())) {
+		if (!wide.keySet().containsAll(narrow.fields.keySet())) {
 			throw new NonWideneable("Record has field not contained in widening target signature");
 		}
 		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		for (var widerField : this.fields.values()) {
+		for (var widerField : wide.values()) {
 			GioviValue<?> widenedValue;
 			GioviValue<?> widenedDefaultValue = widerField.defaultValue().copy();
 			var narrowField = narrow.getField(widerField.identifier());
@@ -185,8 +265,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 				widerField.identifier(),
 				new VarD<>(widenedValue, widenedDefaultValue));
 		}
-		return new Record(widenedFields);
+		return widenedFields;
 	}
-
 
 }
