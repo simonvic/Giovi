@@ -5,8 +5,7 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
-// TODO: change back to classes so we can (ab)use inheritance to avoid reimplementing operators
-public record GioviStruct(Struct signature, Struct value)
+public record GioviStruct(StructSignature signature, Struct value)
 	implements GioviValue<Struct> {
 
 	@Override
@@ -21,7 +20,7 @@ public record GioviStruct(Struct signature, Struct value)
 
 	@Override
 	public Struct defaultValue() {
-		return signature.copy();
+		return signature.spawn();
 	}
 
 	@Override
@@ -37,7 +36,8 @@ public record GioviStruct(Struct signature, Struct value)
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			// TODO: can we assume equal typename means equal definition?
-			case GioviTypeStruct t when t.getTypename().equals(value.getTypename()) -> this;
+			case GioviTypeStruct t when t.signature().typename().equals(this.signature().typename())
+				-> this;
 			default -> GioviValue.super.as(right);
 		};
 	}
@@ -47,7 +47,7 @@ public record GioviStruct(Struct signature, Struct value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviStruct(signature, signature.copy());
+			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
@@ -82,7 +82,7 @@ public record GioviStruct(Struct signature, Struct value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(signature, signature.copy());
+			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
 			case MemberKey(var identifier) when value.containsField(identifier)
 				-> value.getField(identifier).get();
 			case MemberKey(var identifier) when value.containsConstant(identifier)

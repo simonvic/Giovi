@@ -1,17 +1,14 @@
 package giovi.lang;
 
-import giovi.AccessKey;
-import giovi.GioviParserVisitResult;
-import giovi.Range;
-import giovi.Tuple;
+import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTuple(Tuple signature, Tuple value)
+public record GioviTuple(TupleSignature signature, Tuple value)
 	implements GioviValue<Tuple> {
 
 	public GioviTuple() {
-		this(new Tuple(), new Tuple());
+		this(new TupleSignature(), new Tuple());
 	}
 
 	@Override
@@ -21,7 +18,7 @@ public record GioviTuple(Tuple signature, Tuple value)
 
 	@Override
 	public Tuple defaultValue() {
-		return signature.copy();
+		return signature.spawn();
 	}
 
 	@Override
@@ -31,8 +28,7 @@ public record GioviTuple(Tuple signature, Tuple value)
 
 	@Override
 	public GioviTuple copy() {
-		// TODO: unnecessary copy?
-		return new GioviTuple(signature.copy(), value.copy());
+		return new GioviTuple(signature, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -44,7 +40,7 @@ public record GioviTuple(Tuple signature, Tuple value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTuple(signature, signature.copy());
+			case GioviDefault _ -> new GioviTuple(signature, signature.spawn());
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
@@ -77,7 +73,7 @@ public record GioviTuple(Tuple signature, Tuple value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTuple(signature.copy(), signature.copy());
+			case GioviDefault _ -> new GioviTuple(signature, signature.spawn());
 			default -> GioviValue.super.dot(right);
 		};
 	}

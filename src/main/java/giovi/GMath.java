@@ -14,6 +14,7 @@ public class GMath implements GioviObject {
 
 	@Const
 	public static final GioviReal E = new GioviReal(Math.E);
+	//public static final RecordFieldSignature<GioviReal> E = new RecordFieldSignature<>("E", new GioviTypeReal(), new GioviReal(Math.E));
 
 	@Const
 	public static final GioviReal PI = new GioviReal(Math.PI);

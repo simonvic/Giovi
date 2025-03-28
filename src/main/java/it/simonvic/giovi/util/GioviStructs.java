@@ -1,27 +1,34 @@
 package it.simonvic.giovi.util;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import giovi.RecordFieldSignature;
 import giovi.Struct;
-import giovi.lang.GioviRecord;
-import giovi.lang.GioviStruct;
-import giovi.lang.GioviTuple;
+import giovi.StructSignature;
+import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviStructs {
 
-	public static Struct signatureFrom(Struct value) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
-		value.forEach((n, field) -> fields.put(
-			n,
-			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new Struct(value.getTypename(), fields);
+	public static StructSignature signatureFrom(Struct value) {
+		var fields = new ArrayList<RecordFieldSignature>(value.getFieldsCount());
+		value.forEach((identifier, field) -> fields.add(new RecordFieldSignature(
+			identifier,
+			field.value().getGioviType(),
+			field.defaultValue())));
+		return new StructSignature(
+			value.getTypename(),
+			fields,
+			value.getConstants(),
+			value.getFunctions());
 	}
 
 	public static GioviStruct of(String typename) {
-		return new GioviStruct(new Struct(typename), new Struct(typename));
+		var value = new Struct(typename);
+		return new GioviStruct(signatureFrom(value), value);
 	}
 
 	public static GioviStruct of(
@@ -157,5 +164,75 @@ public class GioviStructs {
 		return new GioviStruct(dest.signature(), newStruct);
 	}
 
+	public static StructSignature signatureOf(
+		String typename
+	) {
+		return new StructSignature(typename);
+	}
+
+	public static StructSignature signatureOf(
+		String typename,
+		String i1, GioviType<?> t1
+	) {
+		return new StructSignature(
+			typename,
+			new RecordFieldSignature(i1, t1));
+	}
+
+	public static StructSignature signatureOf(
+		String typename,
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2
+	) {
+		return new StructSignature(
+			typename,
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2));
+	}
+
+	public static StructSignature signatureOf(
+		String typename,
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3
+	) {
+		return new StructSignature(
+			typename,
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3));
+	}
+
+	public static StructSignature signatureOf(
+		String typename,
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3,
+		String i4, GioviType<?> t4
+	) {
+		return new StructSignature(
+			typename,
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3),
+			new RecordFieldSignature(i4, t4));
+	}
+
+	public static StructSignature signatureOf(
+		String typename,
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3,
+		String i4, GioviType<?> t4,
+		String i5, GioviType<?> t5
+	) {
+		return new StructSignature(
+			typename,
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3),
+			new RecordFieldSignature(i4, t4),
+			new RecordFieldSignature(i5, t5));
+	}
 
 }

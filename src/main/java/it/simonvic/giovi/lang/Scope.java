@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import giovi.Function;
 import giovi.Struct;
+import giovi.StructSignature;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
@@ -153,13 +154,13 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
-	private final Map<String, Struct> structDefinitions = new HashMap<>();
+	private final Map<String, StructSignature> structDefinitions = new HashMap<>();
 
-	public void define(Struct definition) {
-		if (structDefinitions.containsKey(definition.getTypename())) {
-			throw new StructAlreadyDefined(definition.getTypename());
+	public void define(StructSignature signature) {
+		if (structDefinitions.containsKey(signature.typename())) {
+			throw new StructAlreadyDefined(signature.typename());
 		}
-		structDefinitions.put(definition.getTypename(), definition);
+		structDefinitions.put(signature.typename(), signature);
 	}
 
 	public boolean isDefinedStruct(String identifier) {
@@ -167,7 +168,7 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public Optional<Struct> getDefinitionStruct(String identifier) {
+	public Optional<StructSignature> getDefinitionStruct(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
 			return Optional.of(structDefinitions.get(identifier));
 		}

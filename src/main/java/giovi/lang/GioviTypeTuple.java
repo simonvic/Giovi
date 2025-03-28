@@ -1,9 +1,14 @@
 package giovi.lang;
 
-import giovi.Tuple;
+import giovi.TupleSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> {
+public record GioviTypeTuple(TupleSignature signature) implements GioviType<GioviTuple> {
+
+	@Override
+	public String toString() {
+		return signature.toString();
+	}
 
 	@Override
 	public Class<? extends GioviTuple> value() {
@@ -16,16 +21,11 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 	}
 
 	@Override
-	public String toString() {
-		return definition.toStringDefinition();
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeStruct(var definition) -> this.definition.isWidenableTo(definition);
-			case GioviTypeRecord(var definition) -> this.definition.isWidenableTo(definition);
-			case GioviTypeTuple(var definition) -> this.definition.isWidenableTo(definition);
+			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
+			case GioviTypeRecord(var signature) -> signature.canWiden(this.signature);
+			case GioviTypeTuple(var signature) -> signature.canWiden(this.signature);
 			default -> false;
 		};
 	}
@@ -33,19 +33,19 @@ public record GioviTypeTuple(Tuple definition) implements GioviType<GioviTuple> 
 	@Override
 	public GioviTuple widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviTuple v -> new GioviTuple(definition, v.value().widenTo(definition));
+			case GioviTuple v -> new GioviTuple(signature, signature.widen(v.value()));
 			default -> throw new NonWideneable(value, this);
 		};
 	}
 
 	@Override
 	public GioviTuple spawn() {
-		return new GioviTuple(definition, definition.copy());
+		return new GioviTuple(signature, signature.spawn());
 	}
 
 	@Override
 	public GioviType<GioviTuple> copy() {
-		return new GioviTypeTuple(definition.copy());
+		return new GioviTypeTuple(signature);
 	}
 
 }

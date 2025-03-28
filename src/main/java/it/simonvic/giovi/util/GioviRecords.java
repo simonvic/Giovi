@@ -1,22 +1,25 @@
 package it.simonvic.giovi.util;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import giovi.Record;
-import giovi.lang.GioviRecord;
-import giovi.lang.GioviTuple;
+import giovi.RecordFieldSignature;
+import giovi.RecordSignature;
+import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviRecords {
 
-	public static Record signatureFrom(Record value) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
-		value.forEach((n, field) -> fields.put(
-			n,
-			new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())));
-		return new Record(fields);
+	public static RecordSignature signatureFrom(Record value) {
+		var fields = new ArrayList<RecordFieldSignature>(value.getFieldsCount());
+		value.forEach((identifier, field) -> fields.add(new RecordFieldSignature(
+			identifier,
+			field.value().getGioviType(),
+			field.defaultValue())));
+		return new RecordSignature(fields);
 	}
 
 	public static <T> GioviRecord of(
@@ -82,6 +85,65 @@ public class GioviRecords {
 		s.put(i5, VarD.of(v5));
 		var value = new Record(s);
 		return new GioviRecord(signatureFrom(value), value);
+	}
+
+	public static RecordSignature signatureOf() {
+		return new RecordSignature();
+	}
+
+	public static RecordSignature signatureOf(
+		String i1, GioviType<?> t1
+	) {
+		return new RecordSignature(
+			new RecordFieldSignature(i1, t1));
+	}
+
+	public static RecordSignature signatureOf(
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2
+	) {
+		return new RecordSignature(
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2));
+	}
+
+	public static RecordSignature signatureOf(
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3
+	) {
+		return new RecordSignature(
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3));
+	}
+
+	public static RecordSignature signatureOf(
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3,
+		String i4, GioviType<?> t4
+	) {
+		return new RecordSignature(
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3),
+			new RecordFieldSignature(i4, t4));
+	}
+
+	public static RecordSignature signatureOf(
+		String i1, GioviType<?> t1,
+		String i2, GioviType<?> t2,
+		String i3, GioviType<?> t3,
+		String i4, GioviType<?> t4,
+		String i5, GioviType<?> t5
+	) {
+		return new RecordSignature(
+			new RecordFieldSignature(i1, t1),
+			new RecordFieldSignature(i2, t2),
+			new RecordFieldSignature(i3, t3),
+			new RecordFieldSignature(i4, t4),
+			new RecordFieldSignature(i5, t5));
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviTuple content) {

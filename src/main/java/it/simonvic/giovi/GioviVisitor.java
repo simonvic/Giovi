@@ -1203,7 +1203,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructDefinition(StructDefinitionContext ctx) {
 
-		var fieldDefinitions = new LinkedHashMap<String, VarD<?>>();
+		var fieldDefinitions = new LinkedHashMap<String, RecordFieldSignature>();
 		String typename = ctx.typename.getText();
 
 		if (ctx.parentTypename != null) {
@@ -1213,23 +1213,43 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.orElseThrow(() -> new GioviException(
 					"Can't inherit from " + parentTypename,
 					new TypeNotFound(parentTypename)));
-			parentDefinition.forEach(
-				(identifier, field) -> fieldDefinitions.put(identifier, field.copy()));
+			for (var inheritedField : parentDefinition.fields()) {
+				fieldDefinitions.put(inheritedField.identifier(), inheritedField);
+			}
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
-			fieldDefinitions.put(
-				fieldCtx.identifier().getText(),
-				spawnType(fieldCtx.type(), fieldCtx.defaultDefinition()));
+			var type = visit(fieldCtx.type()).asGioviType();
+			GioviValue<?> defaultValue;
+			try {
+				defaultValue = fieldCtx.defaultDefinition() == null
+					? type.spawn()
+					: type.widen(visit(fieldCtx.defaultDefinition()).asGioviValue());
+			} catch (NonWideneable e) {
+				throw new GioviException(e, "Incompatible default definition");
+			}
+			String fieldIdentifier = fieldCtx.identifier().getText();
+			if (fieldDefinitions.containsKey(fieldIdentifier)) {
+				var inheritedField = fieldDefinitions.get(fieldIdentifier);
+				if (!inheritedField.type().equals(type)) {
+					throw new GioviException(
+						"Can't override field " + fieldIdentifier + " with type " + type
+							+ " because inherited with type " + inheritedField.type());
+				}
+			}
+			fieldDefinitions.put(fieldIdentifier, new RecordFieldSignature(
+				fieldIdentifier,
+				type,
+				defaultValue));
 			// TODO: maybe add warning about unimplemented recursive structs
 		}
 
 		var constants = new HashMap<String, GioviValue<?>>();
 		var functions = new HashMap<String, GioviFunction>();
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
-		var definition = new Struct(
+		var definition = new StructSignature(
 			typename,
-			fieldDefinitions,
+			new ArrayList<>(fieldDefinitions.values()),
 			constants,
 			functions);
 		getCurrentScope().define(definition);
@@ -1284,17 +1304,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		String typename = ctx.typename.getText();
-		var definition = getCurrentScope()
+		var signature = getCurrentScope()
 			.getDefinitionStruct(typename)
 			.orElseThrow(() -> new GioviException(
 				"Can't create struct " + typename, new TypeNotFound(typename)));
-		var struct = definition.copy();
+		var struct = signature.spawn();
 		if (ctx.tupleCreation() != null) {
 			initStruct(struct, ctx.tupleCreation());
 		} else {
 			initStruct(struct, ctx.recordCreation());
 		}
-		return new GioviStruct(definition, struct);
+		return new GioviStruct(signature, struct);
 	}
 
 	private void initStruct(Struct struct, RecordCreationContext fieldsCtx) {

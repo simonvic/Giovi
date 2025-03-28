@@ -6,7 +6,6 @@ import java.util.function.BiConsumer;
 
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
-import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class Record extends Tuple permits Struct {
@@ -43,23 +42,6 @@ public sealed class Record extends Tuple permits Struct {
 			sb.append(',').append(' ');
 		}
 	}
-
-	@Override
-	public String toStringDefinition() {
-		var i = this.entrySet().iterator();
-		if (!i.hasNext()) return "<>";
-		var sb = new StringBuilder("Record");
-		sb.append('<');
-		while (i.hasNext()) {
-			var next = i.next();
-			sb.append(next.getKey());
-			sb.append(" ");
-			sb.append(next.getValue().getGioviType());
-			sb.append(i.hasNext() ? ", " : ">");
-		}
-		return sb.toString();
-	}
-
 
 	@Override
 	public int hashCode() {
@@ -115,58 +97,6 @@ public sealed class Record extends Tuple permits Struct {
 		return true;
 	}
 
-	@Override
-	public boolean isWidenableTo(Tuple to) {
-		return to instanceof Record r && r.fields.keySet().containsAll(this.fields.keySet());
-	}
-
-	@Override
-	public Record widenTo(Record to) throws NonWideneable {
-		if (!to.fields.keySet().containsAll(this.fields.keySet())) {
-			throw new NonWideneable("Widening target record signature has less fields");
-		}
-		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		for (var widerEntry : to.fields.entrySet()) {
-			var widerField = widerEntry.getValue();
-			var widerType = widerField.getGioviType();
-			var narrowField = getField(widerEntry.getKey());
-			if (narrowField.isPresent()) {
-				widenedFields.put(widerEntry.getKey(), new VarD<>(
-					widerType.widen(narrowField.orElseThrow().value().copy()),
-					widerField.defaultValue().copy()));
-			} else {
-				widenedFields.put(widerEntry.getKey(), new VarD<>(
-					widerField.defaultValue().copy(),
-					widerField.defaultValue().copy()));
-			}
-		}
-		return new Record(widenedFields);
-	}
-
-	@Override
-	public Struct widenTo(Struct to) throws NonWideneable {
-		if (!to.fields.keySet().containsAll(this.fields.keySet())) {
-			throw new NonWideneable("Widening target record signature has less fields");
-		}
-		var widenedFields = new LinkedHashMap<String, VarD<?>>();
-		for (var widerEntry : to.fields.entrySet()) {
-			var widerField = widerEntry.getValue();
-			var widerType = widerField.getGioviType();
-			var narrowField = getField(widerEntry.getKey());
-			if (narrowField.isPresent()) {
-				widenedFields.put(widerEntry.getKey(), new VarD<>(
-					widerType.widen(narrowField.orElseThrow().value().copy()),
-					widerField.defaultValue().copy()));
-			} else {
-				widenedFields.put(widerEntry.getKey(), new VarD<>(
-					widerField.defaultValue().copy(),
-					widerField.defaultValue().copy()));
-			}
-		}
-		// TODO: this is wrong; fix once we rework Tuple, Record and Struct
-		return new Struct(to.getTypename(), widenedFields, to.getConstants(), to.getFunctions());
-	}
-
 	public boolean containsField(String identifier) {
 		return fields.containsKey(identifier);
 	}
@@ -177,10 +107,6 @@ public sealed class Record extends Tuple permits Struct {
 
 	public List<String> getFieldNames() {
 		return new ArrayList<>(fields.keySet());
-	}
-
-	public VarD<?> get(String identifier) {
-		return fields.get(identifier);
 	}
 
 	public Set<Entry<String, VarD<?>>> entrySet() {

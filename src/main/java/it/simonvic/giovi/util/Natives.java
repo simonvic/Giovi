@@ -1,13 +1,14 @@
 package it.simonvic.giovi.util;
 
 import java.lang.reflect.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import giovi.JFunction;
-import giovi.Struct;
+import giovi.RecordFieldSignature;
+import giovi.StructSignature;
 import giovi.lang.*;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
@@ -16,13 +17,13 @@ import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
 
-	public static Struct structSignatureOf(Class<?> clazz) {
+	public static StructSignature structSignatureOf(Class<?> clazz) {
 		// Find field marked as signature...
 		for (Field field : clazz.getFields()) {
 			var annotation = field.getAnnotation(Native.Struct.Signature.class);
 			if (annotation != null) {
 				try {
-					return (Struct) field.get(null);
+					return (StructSignature) field.get(null);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
 					continue;
 				}
@@ -32,14 +33,14 @@ public class Natives {
 		return Natives.structSignatureFrom(clazz);
 	}
 
-	public static Struct structSignatureFrom(Class<?> clazz) {
+	public static StructSignature structSignatureFrom(Class<?> clazz) {
 		String typename = clazz.getAnnotation(Native.Struct.class).typename();
 		if (typename.isEmpty()) {
 			typename = clazz.getSimpleName();
 		}
 
 		// TODO: check if classField/method are static or final?
-		var fields = new LinkedHashMap<String, VarD<?>>();
+		var fields = new ArrayList<RecordFieldSignature>();
 		var constants = new HashMap<String, GioviValue<?>>();
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
@@ -48,9 +49,13 @@ public class Natives {
 				continue;
 			}
 			try {
+				// TODO: allow to define a field directly with a Signature
 				var gioviValue = (GioviValue<?>) classField.get(null);
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
-					fields.put(classField.getName(), new VarD<>(gioviValue, gioviValue.copy()));
+					fields.add(new RecordFieldSignature(
+						classField.getName(),
+						gioviValue.getGioviType(),
+						gioviValue.copy()));
 				} else if (classField.isAnnotationPresent(Native.Const.class)) {
 					constants.put(classField.getName(), gioviValue);
 				}
@@ -66,7 +71,11 @@ public class Natives {
 			}
 		}
 
-		return new Struct(typename, fields, constants, functions);
+		return new StructSignature(
+			typename,
+			fields,
+			constants,
+			functions);
 	}
 
 	// TODO: not robust enough

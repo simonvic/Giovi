@@ -1,13 +1,13 @@
 package giovi.lang;
 
-import giovi.Record;
+import giovi.RecordSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeRecord(Record definition) implements GioviType<GioviRecord> {
+public record GioviTypeRecord(RecordSignature signature) implements GioviType<GioviRecord> {
 
 	@Override
 	public String toString() {
-		return definition.toStringDefinition();
+		return signature.toString();
 	}
 
 	@Override
@@ -23,8 +23,8 @@ public record GioviTypeRecord(Record definition) implements GioviType<GioviRecor
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeStruct(var definition) -> this.definition.isWidenableTo(definition);
-			case GioviTypeRecord(var definition) -> this.definition.isWidenableTo(definition);
+			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
+			case GioviTypeRecord(var signature) -> signature.canWiden(this.signature);
 			default -> false;
 		};
 	}
@@ -32,20 +32,20 @@ public record GioviTypeRecord(Record definition) implements GioviType<GioviRecor
 	@Override
 	public GioviRecord widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviTuple v -> new GioviRecord(definition, v.value().widenTo(definition));
-			case GioviRecord v -> new GioviRecord(definition, v.value().widenTo(definition));
+			case GioviTuple v -> new GioviRecord(signature, signature.widen(v.value()));
+			case GioviRecord v -> new GioviRecord(signature, signature.widen(v.value()));
 			default -> throw new NonWideneable(value, this);
 		};
 	}
 
 	@Override
 	public GioviRecord spawn() {
-		return new GioviRecord(definition, definition.copy());
+		return new GioviRecord(signature, signature.spawn());
 	}
 
 	@Override
 	public GioviTypeRecord copy() {
-		return new GioviTypeRecord(definition.copy());
+		return new GioviTypeRecord(signature.copy());
 	}
 
 }

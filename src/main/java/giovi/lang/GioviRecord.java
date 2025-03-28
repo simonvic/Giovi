@@ -1,21 +1,16 @@
 package giovi.lang;
 
-import giovi.AccessKey;
-import giovi.GioviParserVisitResult;
-import giovi.MemberKey;
-import giovi.Range;
+import giovi.*;
 import giovi.Record;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 
-public record GioviRecord(Record signature, Record value)
+public record GioviRecord(RecordSignature signature, Record value)
 	implements GioviValue<Record> {
 
-	// TODO: find a way to avoid casting everytime, without having to maintain a double reference
-
 	public GioviRecord() {
-		this(new Record(), new Record());
+		this(new RecordSignature(), new Record());
 	}
 
 	@Override
@@ -25,7 +20,7 @@ public record GioviRecord(Record signature, Record value)
 
 	@Override
 	public Record defaultValue() {
-		return signature.copy();
+		return signature.spawn();
 	}
 
 	@Override
@@ -47,7 +42,7 @@ public record GioviRecord(Record signature, Record value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviRecord(signature, signature.copy());
+			case GioviDefault _ -> new GioviRecord(signature, signature.spawn());
 			case GioviTuple v -> GioviRecords.redirection(this, v);
 			case GioviRecord v -> GioviRecords.redirection(this, v);
 			default -> GioviValue.super.redirection(content);

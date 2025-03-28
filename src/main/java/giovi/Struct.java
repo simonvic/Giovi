@@ -8,7 +8,6 @@ import java.util.Objects;
 import giovi.lang.GioviFunction;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Struct extends Record {
 
@@ -54,22 +53,6 @@ public final class Struct extends Record {
 	}
 
 	@Override
-	public String toStringDefinition() {
-		var i = this.entrySet().iterator();
-		if (!i.hasNext()) return typename + "<>";
-		StringBuilder sb = new StringBuilder(typename);
-		sb.append('<');
-		while (i.hasNext()) {
-			var next = i.next();
-			sb.append(next.getKey());
-			sb.append(" ");
-			sb.append(next.getValue().getGioviType());
-			sb.append(i.hasNext() ? ", " : ">");
-		}
-		return sb.toString();
-	}
-
-	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
@@ -93,19 +76,6 @@ public final class Struct extends Record {
 		var a = new LinkedHashMap<String, VarD<?>>();
 		forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new Struct(typename, a, constants, functions);
-	}
-
-	@Override
-	public boolean isWidenableTo(Tuple to) {
-		return to instanceof Struct s && s.typename.equals(this.typename);
-	}
-
-	@Override
-	public Struct widenTo(Struct to) throws NonWideneable {
-		if (!to.typename.equals(this.typename)) {
-			throw new NonWideneable("Can't widen " + this.typename + " to " + to.typename);
-		}
-		return super.widenTo(to);
 	}
 
 	public boolean containsConstant(String identifier) {

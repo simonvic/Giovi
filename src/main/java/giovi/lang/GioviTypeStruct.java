@@ -1,19 +1,14 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import giovi.MemberKey;
-import giovi.Struct;
+import giovi.StructSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruct> {
-
-	public String getTypename() {
-		return definition.getTypename();
-	}
+public record GioviTypeStruct(StructSignature signature) implements GioviType<GioviStruct> {
 
 	@Override
 	public String toString() {
-		return definition.toStringDefinition();
+		return signature.toString();
 	}
 
 	@Override
@@ -29,7 +24,7 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeStruct t -> t.definition.isWidenableTo(this.definition);
+			case GioviTypeStruct v -> v.signature.canWiden(this.signature);
 			default -> false;
 		};
 	}
@@ -37,34 +32,33 @@ public record GioviTypeStruct(Struct definition) implements GioviType<GioviStruc
 	@Override
 	public GioviStruct widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviTuple v -> new GioviStruct(definition, v.value().widenTo(definition));
-			case GioviRecord v -> new GioviStruct(definition, v.value().widenTo(definition));
-			case GioviStruct v -> new GioviStruct(definition, v.value().widenTo(definition));
+			case GioviTuple v -> new GioviStruct(signature, signature.widen(v.value()));
+			case GioviRecord v -> new GioviStruct(signature, signature.widen(v.value()));
+			case GioviStruct v -> new GioviStruct(signature, signature.widen(v.value()));
 			default -> throw new NonWideneable(value, this);
 		};
 	}
 
 	@Override
 	public GioviStruct spawn() {
-		return new GioviStruct(definition, definition.copy());
+		return new GioviStruct(signature, signature.spawn());
 	}
 
 	@Override
 	public GioviTypeStruct copy() {
-		// TODO: unnecessary copy?
-		return new GioviTypeStruct(definition.copy());
+		return new GioviTypeStruct(signature);
 	}
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(definition, definition.copy());
-			case MemberKey(var identifier) when definition.containsField(identifier)
-				-> definition.get(identifier).copy();
-			case MemberKey(var identifier) when definition.containsConstant(identifier)
-				-> definition.getConstant(identifier);
-			case MemberKey(var identifier) when definition.containsFunction(identifier)
-				-> definition.getFunction(identifier);
+			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
+			//case MemberKey(var identifier) when signature.containsField(identifier)
+			//	-> signature.getField(identifier).orElseThrow().copy();
+			//case MemberKey(var identifier) when signature.containsConstant(identifier)
+			//	-> signature.getConstant(identifier);
+			//case MemberKey(var identifier) when signature.containsFunction(identifier)
+			//	-> signature.getFunction(identifier);
 			default -> GioviType.super.dot(right);
 		};
 	}
