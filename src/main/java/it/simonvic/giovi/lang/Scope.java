@@ -167,14 +167,14 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public Optional<StructSignature> getDefinitionStruct(String identifier) {
+	public Optional<StructSignature> getStructSignature(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
 			return Optional.of(structDefinitions.get(identifier));
 		}
 		if (parent == null) {
 			return Optional.empty();
 		}
-		return parent.getDefinitionStruct(identifier);
+		return parent.getStructSignature(identifier);
 	}
 
 }

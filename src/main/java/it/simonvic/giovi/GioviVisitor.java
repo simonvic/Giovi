@@ -1208,12 +1208,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		if (ctx.parentTypename != null) {
 			String parentTypename = ctx.parentTypename.getText();
-			var parentDefinition = getCurrentScope()
-				.getDefinitionStruct(parentTypename)
+			var parentSignature = getCurrentScope()
+				.getStructSignature(parentTypename)
 				.orElseThrow(() -> new GioviException(
 					"Can't inherit from " + parentTypename,
 					new TypeNotFound(parentTypename)));
-			for (var inheritedField : parentDefinition.fields().values()) {
+			for (var inheritedField : parentSignature.fields().values()) {
 				fieldDefinitions.put(inheritedField.identifier(), inheritedField);
 			}
 		}
@@ -1305,7 +1305,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		String typename = ctx.typename.getText();
 		var signature = getCurrentScope()
-			.getDefinitionStruct(typename)
+			.getStructSignature(typename)
 			.orElseThrow(() -> new GioviException(
 				"Can't create struct " + typename, new TypeNotFound(typename)));
 		var struct = signature.spawn();
@@ -1382,7 +1382,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			case "Bool" -> new GioviTypeBool();
 			case "Text" -> new GioviTypeText();
 			default -> new GioviTypeStruct(getCurrentScope()
-				.getDefinitionStruct(typename)
+				.getStructSignature(typename)
 				.orElseThrow(() -> new TypeNotFound(typename)));
 		};
 	}

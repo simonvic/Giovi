@@ -43,7 +43,7 @@ public class TestGioviStruct {
 		void testEmptyStruct() {
 			assertThat(visit("""
 				Foo <>
-				""").getCurrentScope().getDefinitionStruct("Foo").get())
+				""").getCurrentScope().getStructSignature("Foo").get())
 				.isEqualTo(GioviStructs.signatureOf("Foo"));
 		}
 
@@ -55,7 +55,7 @@ public class TestGioviStruct {
 					bar Bool
 					foobar Text
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo").get())
+				""").getCurrentScope().getStructSignature("Foo").get())
 				.isEqualTo(GioviStructs.signatureOf(
 					"Foo",
 					"foo", new GioviTypeInt(),
@@ -71,7 +71,7 @@ public class TestGioviStruct {
 					b Bool default true
 					t Text default "hello"
 				>
-				""").getCurrentScope().getDefinitionStruct("Foo").get())
+				""").getCurrentScope().getStructSignature("Foo").get())
 				.isEqualTo(new StructSignature(
 					"Foo",
 					new RecordFieldSignature("i", new GioviTypeInt(), new GioviInt(69)),
@@ -93,7 +93,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Person").get())
+				.getStructSignature("Person").get())
 				.isEqualTo(GioviStructs.signatureOf(
 					"Person",
 					"name", new GioviTypeText(),
@@ -128,7 +128,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Person").get())
+				.getStructSignature("Person").get())
 				.isEqualTo(new StructSignature(
 					"Person",
 					new RecordFieldSignature("name", new GioviTypeText()),
@@ -153,7 +153,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo").get()
+				.getStructSignature("Foo").get()
 				.constants())
 				.isEqualTo(Map.of(
 					"BAR", new GioviReal(6.9),
@@ -177,7 +177,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo").orElseThrow())
+				.getStructSignature("Foo").orElseThrow())
 				.isEqualTo(expectedSignature);
 		}
 
@@ -191,7 +191,7 @@ public class TestGioviStruct {
 				>
 				""")
 				.getCurrentScope()
-				.getDefinitionStruct("Foo").orElseThrow()
+				.getStructSignature("Foo").orElseThrow()
 				.functions())
 				.isEqualTo(Map.of(
 					"foo", new GioviFunction(new GFunction(new FunctionSignature(
@@ -223,7 +223,7 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA").get())
+				""").getCurrentScope().getStructSignature("RGBA").get())
 				.isEqualTo(GioviStructs.signatureOf(
 					"RGBA",
 					"r", new GioviTypeInt(),
@@ -243,7 +243,7 @@ public class TestGioviStruct {
 				RGB : RGBA <
 					a Int default 69
 				>
-				""").getCurrentScope().getDefinitionStruct("RGBA").get())
+				""").getCurrentScope().getStructSignature("RGBA").get())
 				.isEqualTo(new StructSignature(
 					"RGBA",
 					new RecordFieldSignature("r", new GioviTypeInt(), new GioviInt(255)),
@@ -267,8 +267,8 @@ public class TestGioviStruct {
 					a Int
 				>
 				""");
-			var rgb = visitor.getCurrentScope().getDefinitionStruct("RGB").get();
-			var argb = visitor.getCurrentScope().getDefinitionStruct("RGBA").get();
+			var rgb = visitor.getCurrentScope().getStructSignature("RGB").get();
+			var argb = visitor.getCurrentScope().getStructSignature("RGBA").get();
 			assertAll(
 				() -> assertThat(rgb).isEqualTo(new StructSignature(
 					"RGB",
