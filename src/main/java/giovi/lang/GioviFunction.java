@@ -3,6 +3,8 @@ package giovi.lang;
 import giovi.Function;
 import giovi.GFunction;
 import giovi.GioviParserVisitResult;
+import giovi.JFunction;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviFunction(Function value) implements GioviValue<Function> {
 
@@ -38,6 +40,9 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
+		if (this.value instanceof JFunction) {
+			return GioviValue.super.redirection(content);
+		}
 		return switch (content) {
 			case GioviDefault _ -> new GioviFunction(defaultValue());
 			case GioviFunction v when v.value.signature().equals(this.value.signature())
