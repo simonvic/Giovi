@@ -1,5 +1,6 @@
 package giovi.lang;
 
+import giovi.Function;
 import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -28,15 +29,23 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		// TODO: clarify requirements
-		return type instanceof GioviTypeFunction f && this.signature.equals(f.signature);
+		return type instanceof GioviTypeFunction f && f.signature.canWiden(this.signature);
 	}
 
 	@Override
 	public GioviFunction widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviFunction v when v.value().signature().equals(this.signature) -> v;
-			// TODO: clarify requirements. Should (Natural) => Int be wideneable to (Int) => Real ?
+
+			case GioviFunction(Function f) when f.signature().equals(this.signature)
+				-> new GioviFunction(f.copy());
+
+			case GioviFunction(GFunction(var signature, var bodyCtx))
+				-> new GioviFunction(new GFunction(this.signature.widen(signature), bodyCtx));
+
+			// TODO: how to handle widening with native functions?
+			// case GioviFunction(JFunction(var method, var signature))
+			// 	-> new GioviFunction(new JFunction(method, this.signature.widen(signature)));
+
 			default -> throw new NonWideneable(value, this);
 		};
 	}

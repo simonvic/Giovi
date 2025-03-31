@@ -45,14 +45,18 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 		}
 		return switch (content) {
 			case GioviDefault _ -> new GioviFunction(defaultValue());
-			case GioviFunction v when v.value.signature().equals(this.value.signature())
-				-> new GioviFunction(v.value.copy());
 
-			// equal parameters and return type
-			case GioviFunction v when v.value.signature().parameters()
-				.equals(value.signature().parameters())
-				&& v.value.signature().returnType().equals(value.signature().returnType())
-				-> new GioviFunction(v.value.copy());
+			case GioviFunction(Function f) when f.signature().equals(this.value.signature())
+				-> new GioviFunction(f.copy());
+
+			case GioviFunction(GFunction(var signature, var bodyCtx)) -> {
+				try {
+					yield new GioviFunction(
+						new GFunction(this.value.signature().widen(signature), bodyCtx));
+				} catch (NonWideneable e) {
+					yield GioviValue.super.redirection(content);
+				}
+			}
 
 			default -> GioviValue.super.redirection(content);
 		};

@@ -6,6 +6,7 @@ import java.util.List;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeVoid;
+import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record FunctionSignature(
 	String identifier,
@@ -78,6 +79,33 @@ public record FunctionSignature(
 
 	public FormalParameter getParameter(String identifier) {
 		return parameters.parameters().get(identifier);
+	}
+
+	/**
+	 * Check if the provided signature can be widened to this signature
+	 * @param narrow
+	 * @return true if can be widened
+	 */
+	public boolean canWiden(FunctionSignature narrow) {
+		return this.parameters.canWiden(narrow.parameters)
+			&& narrow.returnType.isWidenableTo(this.returnType);
+	}
+
+	/**
+	 * Widen the provided signature to this signature
+	 * @param narrow
+	 * @return
+	 * @throws NonWideneable
+	 */
+	public FunctionSignature widen(FunctionSignature narrow) throws NonWideneable {
+		if (!narrow.returnType.isWidenableTo(this.returnType)) {
+			throw new NonWideneable(
+				"Can't widen return type " + narrow.returnType + " to " + this.returnType);
+		}
+		return new FunctionSignature(
+			this.identifier,
+			this.parameters.widen(narrow.parameters),
+			this.returnType); // TODO: this should be this.returnType.getGioviType().widen(narrow.returnType));
 	}
 
 }

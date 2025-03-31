@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import giovi.*;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.util.*;
 
 public class TestWidening {
@@ -571,6 +572,135 @@ public class TestWidening {
 
 	@Nested
 	class TestGioviFunction {
+
+		@Test
+		void testWidening_toEqualGFunction_with_noParams_and_noReturnType() throws NonWideneable {
+			assertThat(GioviFunctions.of("foo")
+				.widenTo(GioviFunctions.typeOf("foo")))
+				.isEqualTo(GioviFunctions.of("foo"));
+		}
+
+		@Test
+		void testWidening_toEqualGFunction_with_params_and_returnType() throws NonWideneable {
+			assertThat(GioviFunctions
+				.of(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal()))
+				.widenTo(GioviFunctions.typeOf(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal()))))
+				.isEqualTo(GioviFunctions.of(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal())));
+		}
+
+		@Test
+		void testWidening_toGFunction_with_widerParams_and_widerReturnType() throws NonWideneable {
+			assertThat(GioviFunctions
+				.of(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal()))
+				.widenTo(GioviFunctions.typeOf(
+					new GioviTypeInt(),
+					"foo",
+					new FormalParameter("a", new GioviTypeReal()),
+					new FormalParameter("b", new GioviTypeReal()))))
+				.isEqualTo(GioviFunctions.of(
+					new GioviTypeInt(),
+					"foo",
+					new FormalParameter("a", new GioviTypeReal()),
+					new FormalParameter("b", new GioviTypeReal())));
+		}
+
+		@Test
+		void testWidening_toGFunction_with_moreParams_and_returnType() throws NonWideneable {
+			assertThat(GioviFunctions
+				.of(
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()))
+				.widenTo(GioviFunctions.typeOf(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal()))))
+				.isEqualTo(GioviFunctions.of(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal())));
+		}
+
+		@Test
+		void testWidening_toGFunction_with_moreAndWiderParams_and_widerReturnType()
+			throws NonWideneable {
+			assertThat(GioviFunctions
+				.of(
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()))
+				.widenTo(GioviFunctions.typeOf(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeReal()),
+					new FormalParameter("b", new GioviTypeReal()))))
+				.isEqualTo(GioviFunctions.of(
+					new GioviTypeNatural(),
+					"foo",
+					new FormalParameter("a", new GioviTypeReal()),
+					new FormalParameter("b", new GioviTypeReal())));
+		}
+
+		@Test
+		void widening_toGFunction_with_lessParams_shouldThrow() {
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
+				.of(
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()),
+					new FormalParameter("b", new GioviTypeReal()))
+				.widenTo(GioviFunctions.typeOf(
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()))));
+		}
+
+		@Test
+		void widening_toGFunction_with_narrowerParams_shouldThrow() {
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
+				.of(
+					"foo",
+					new FormalParameter("a", new GioviTypeInt()))
+				.widenTo(GioviFunctions.typeOf(
+					"foo",
+					new FormalParameter("a", new GioviTypeNatural()))));
+		}
+
+		@Test
+		void widening_toGFunction_with_narrowerReturnType_shouldThrow() {
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
+				.of(
+					new GioviTypeInt(),
+					"foo")
+				.widenTo(GioviFunctions.typeOf(
+					new GioviTypeNatural(),
+					"foo")));
+		}
+
+		@Test
+		void widening_toGFunction_with_noReturnType_shouldThrow() {
+			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
+				.of(
+					new GioviTypeInt(),
+					"foo")
+				.widenTo(GioviFunctions.typeOf(
+					"foo")));
+		}
+
 	}
 
 	@Nested
