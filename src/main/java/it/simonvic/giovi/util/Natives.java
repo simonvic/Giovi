@@ -49,7 +49,9 @@ public class Natives {
 			}
 			try {
 				// TODO: allow to define a field directly with a Signature
-				var gioviValue = (GioviValue<?>) classField.get(null);
+				if (!(classField.get(null) instanceof GioviValue gioviValue)) {
+					continue;
+				}
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
 					fields.put(classField.getName(), new RecordFieldSignature(
 						classField.getName(),
