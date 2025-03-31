@@ -9,7 +9,7 @@ public record FormalParameter(
 	String label,
 	String identifier,
 	GioviType<?> type,
-	VarD<?> param,
+	VarD<?> param, // TODO: replace with just a GioviValue
 	boolean isOptional
 ) implements GioviParserVisitResult {
 
