@@ -1,12 +1,10 @@
 package giovi;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import giovi.lang.GioviFunction;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record StructSignature(

@@ -3,9 +3,6 @@ package it.simonvic.giovi.lang;
 import java.util.LinkedHashMap;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.GioviType;
-import it.simonvic.giovi.Var;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record FormalParameters(
