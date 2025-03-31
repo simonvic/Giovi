@@ -27,6 +27,9 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 
 	@Override
 	public GioviVoid widen(GioviValue<?> value) throws NonWideneable {
+		if (value instanceof GioviVoid v) {
+			return v;
+		}
 		throw new NonWideneable(value, this);
 	}
 
