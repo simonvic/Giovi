@@ -82,7 +82,7 @@ public class Natives {
 	// TODO: not robust enough
 	public static FunctionSignature functionSignatureFrom(Method method) {
 		String identifier = method.getName();
-		GioviType<?> returnType = gioviTypeFrom(method);
+		GioviType<?> returnType = gioviReturnTypeFrom(method);
 		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
 			var annotation = param.getAnnotation(Native.Func.Param.class);
@@ -136,8 +136,8 @@ public class Natives {
 		throw new RuntimeException("Can't find giovi type from " + clazz);
 	}
 
-	private static GioviType<?> gioviTypeFrom(Method method) {
-		var typeAnnotation = method.getAnnotation(Native.Type.class);
+	private static GioviType<?> gioviReturnTypeFrom(Method method) {
+		var typeAnnotation = method.getAnnotatedReturnType().getAnnotation(Native.Type.class);
 		if (typeAnnotation == null) {
 			return new GioviTypeVoid();
 		}
