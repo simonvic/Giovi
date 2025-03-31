@@ -33,6 +33,12 @@ public sealed interface GioviType<T extends GioviValue<?>>
 
 	// TODO: add isWider(type) or isNarrowableTo(type)
 
+	/**
+	 * Widen the provided value to a value whose type is described by this class
+	 * @param value
+	 * @return widened value
+	 * @throws NonWideneable
+	 */
 	T widen(GioviValue<?> value) throws NonWideneable;
 
 	T spawn();
