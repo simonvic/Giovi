@@ -49,6 +49,8 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 			case GioviFunction(Function f) when f.signature().equals(this.value.signature())
 				-> new GioviFunction(f.copy());
 
+			// TODO: this might all be wrong! Consider the domain of the functions
+
 			case GioviFunction(GFunction(var signature, var bodyCtx)) -> {
 				try {
 					yield new GioviFunction(
