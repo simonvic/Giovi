@@ -100,24 +100,30 @@ public class Giovi {
 			return;
 		}
 
+		String moduleName;
 		CharStream charStream;
 		if (cli.hasOption(OPT_FROM_ARG)) {
 			charStream = CharStreams.fromString(cli.getOptionValue(OPT_FROM_ARG));
+			moduleName = "";
 		} else {
 			if (cli.getArgs().length < 1) {
 				printHelp();
 				return;
 			}
 			String arg = cli.getArgs()[0];
-			charStream = CharStreams.fromStream(arg.equals("-")
-				? System.in
-				: new FileInputStream(arg));
+			if (arg.equals("-")) {
+				charStream = CharStreams.fromStream(System.in);
+				moduleName = "";
+			} else {
+				charStream = CharStreams.fromStream(new FileInputStream(arg));
+				moduleName = arg;
+			}
 		}
 
 		var lexer = new GioviLexer(charStream);
 		var parser = new GioviParser(new CommonTokenStream(lexer));
 		var tree = parser.begin();
-		var visitor = new GioviVisitor();
+		var visitor = new GioviVisitor(moduleName);
 		try {
 			visitor.visit(tree);
 		} catch (GioviException ex) {

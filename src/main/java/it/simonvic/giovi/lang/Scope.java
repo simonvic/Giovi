@@ -10,6 +10,8 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
 
+// TODO: add StructScope? Especially when we'll implement nested structs definition
+// TODO: unify "ScopeResource" behaviour for constants, variables, functions etc.
 public class Scope {
 
 
@@ -141,6 +143,11 @@ public class Scope {
 		functions.put(function.signature().identifier(), function);
 	}
 
+	public boolean isDeclaredFunction(String identifier) {
+		return functions.containsKey(identifier)
+			|| (parent != null && parent.isDeclaredFunction(identifier));
+	}
+
 	public Optional<Function> getFunction(String identifier) {
 		if (!functions.containsKey(identifier)) {
 			if (parent == null) {
@@ -176,5 +183,33 @@ public class Scope {
 		}
 		return parent.getStructSignature(identifier);
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// Modules
+
+	// TODO: store Module rather than ModuleScope directly ?
+	private final Map<String, ModuleScope> modules = new HashMap<>();
+
+	public void declare(ModuleScope module) {
+		if (modules.containsKey(module.identifier())) {
+			throw new ModuleAlreadyDeclared(module.identifier());
+		}
+		modules.put(module.identifier(), module);
+	}
+
+	public boolean isDeclaredModule(String identifier) {
+		return modules.containsKey(identifier)
+			|| (parent != null && parent.isDeclaredModule(identifier));
+	}
+
+	public Optional<ModuleScope> getModule(String identifier) {
+		if (!modules.containsKey(identifier)) {
+			if (parent == null) {
+				return Optional.empty();
+			}
+			return parent.getModule(identifier);
+		}
+		return Optional.of(modules.get(identifier));
+	}
+
 
 }

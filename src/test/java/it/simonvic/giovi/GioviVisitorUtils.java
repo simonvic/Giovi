@@ -8,6 +8,7 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.ModuleScope;
 
 public class GioviVisitorUtils {
 
@@ -20,11 +21,11 @@ public class GioviVisitorUtils {
 	}
 
 	public static GioviVisitor visit(String code) {
-		return visit(new GioviVisitor(), code);
+		return visit(new GioviVisitor("test"), code);
 	}
 
 	public static GioviParserVisitResult visitExpression(String code) {
-		return visitExpression(new GioviVisitor(), code);
+		return visitExpression(new GioviVisitor("test"), code);
 	}
 
 	public static boolean visitNativeBool(String code) {
@@ -57,7 +58,7 @@ public class GioviVisitorUtils {
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(String code) {
-		return visitFunctionDeclaration(new GioviVisitor(), code);
+		return visitFunctionDeclaration(new GioviVisitor("test"), code);
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(GioviVisitor visitor, String code) {

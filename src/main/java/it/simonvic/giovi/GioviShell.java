@@ -11,7 +11,7 @@ public class GioviShell {
 
 	public void run() throws RecognitionException {
 		var console = System.console();
-		var visitor = new GioviVisitor();
+		var visitor = new GioviVisitor("shell");
 		System.out.print("┃ ");
 		String line;
 		while ((line = console.readLine()) != null) {

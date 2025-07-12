@@ -12,9 +12,44 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.ModuleScope;
 import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
+
+	public static void scanModule(ModuleScope module, Class<?> clazz) {
+		for (Field classField : clazz.getFields()) {
+			if (!Modifier.isStatic(classField.getModifiers())) {
+				System.err.println(
+					"Non static fields are not supported. Ignoring " + classField);
+				continue;
+			}
+			try {
+				// TODO: allow to define a field directly with a Signature
+				if (!(classField.get(null) instanceof GioviValue gioviValue)) {
+					continue;
+				}
+				if (classField.isAnnotationPresent(Native.Const.class)) {
+					module.declareConstant(classField.getName(), gioviValue);
+				}
+				// TODO: scan @Variable?
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		for (Method method : clazz.getMethods()) {
+			if (method.isAnnotationPresent(Native.Func.class)) {
+				module.declare(new JFunction(method));
+			}
+		}
+
+		for (var nestedClass : clazz.getClasses()) {
+			if (nestedClass.isAnnotationPresent(Native.Struct.class)) {
+				module.define(structSignatureOf(nestedClass));
+			}
+		}
+	}
 
 	public static StructSignature structSignatureOf(Class<?> clazz) {
 		// Find field marked as signature...

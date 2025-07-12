@@ -1,5 +1,6 @@
 package it.simonvic.giovi;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -10,10 +11,16 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.*;
 import giovi.Record;
 import giovi.lang.*;
+import it.simonvic.giovi.antlr.GioviLexer;
+import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.delegates.SwitchStatementDelegate;
@@ -23,21 +30,28 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.exceptions.TypeNotFound;
 import it.simonvic.giovi.lang.*;
 import it.simonvic.giovi.lang.annotation.Native;
-import it.simonvic.giovi.util.*;
+import it.simonvic.giovi.util.GioviTypes;
+import it.simonvic.giovi.util.Natives;
+import it.simonvic.giovi.util.TextProcessor;
+import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	private static void scanAPIs() throws URISyntaxException, IOException {
-		String packageFolder = "giovi";
-		URI packageURI = ClassLoader.getSystemClassLoader().getResource(packageFolder).toURI();
-		Path packagePath = packageURI.getScheme().equals("file")
-			? Path.of(packageURI)
-			: FileSystems.newFileSystem(packageURI, Map.of()).getPath(packageFolder);
+	private static ModuleScope scanGioviModule() throws URISyntaxException, IOException {
+		var gioviModule = new ModuleScope(ROOT_MODULE, "giovi");
 
-		Files.walk(packagePath, 69)
+		URI packageURI = ClassLoader.getSystemClassLoader()
+			.getResource(gioviModule.identifier())
+			.toURI();
+
+		Path gioviPackagePath = (packageURI.getScheme().equals("file"))
+			? Path.of(packageURI)
+			: FileSystems.newFileSystem(packageURI, Map.of()).getPath(gioviModule.identifier());
+
+		var gioviModuleClasses = Files.walk(gioviPackagePath, 69)
 			.map(path -> path.toString())
 			.filter(pathName -> pathName.endsWith(".class"))
-			.map(pathName -> {
+			.<Class<?>>map(pathName -> {
 				try {
 					return Class.forName(pathName
 						.replace(".class", "")
@@ -48,24 +62,47 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					throw new RuntimeException(e);
 				}
 			})
-			.filter(c -> c.isAnnotationPresent(Native.Struct.class))
-			.distinct()
-			.map(Natives::structSignatureOf)
-			.forEach(GLOBAL_SCOPE::define);
+			.filter(c -> c.isAnnotationPresent(Native.Module.class))
+			// .distinct() // TODO: needed?
+			.toList();
+
+		for (var gioviModuleClass : gioviModuleClasses) {
+			ModuleScope parentModule = gioviModule;
+			String[] moduleIdentifiers = gioviModuleClass.getName().split("(\\.|\\$)"); // NOTE: $ is used for nested classes
+			for (int i = 1; i < moduleIdentifiers.length; i++) { // NOTE: first module ("giovi") is skipped
+				String moduleIdentifier = moduleIdentifiers[i];
+				var moduleOpt = parentModule.getModule(moduleIdentifier);
+				if (moduleOpt.isPresent()) {
+					parentModule = moduleOpt.orElseThrow();
+				} else {
+					var newModule = new ModuleScope(parentModule, moduleIdentifier);
+					parentModule.declare(newModule);
+					parentModule = newModule;
+				}
+			}
+			Natives.scanModule(parentModule, gioviModuleClass);
+		}
+		return gioviModule;
 	}
 
-	private static final Scope GLOBAL_SCOPE = new Scope();
+	private static final ModuleScope ROOT_MODULE = new ModuleScope("");
+	private static final ModuleScope GIOVI_MODULE;
 
 	static {
 		try {
-			scanAPIs();
+			GIOVI_MODULE = scanGioviModule();
+			ROOT_MODULE.declare(GIOVI_MODULE);
 		} catch (URISyntaxException | IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	protected final Scanner scanner = new Scanner(System.in);
-	private Scope currentScope = new Scope(GLOBAL_SCOPE);
+	private Scope currentScope;
+
+	public GioviVisitor(String moduleIdentifier) {
+		this.currentScope = new ModuleScope(ROOT_MODULE, moduleIdentifier);
+	}
 
 	public Scope getCurrentScope() {
 		return currentScope;
@@ -92,6 +129,46 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// STATEMENTS
+
+	@Override
+	public GioviParserVisitResult visitImportStatement(ImportStatementContext ctx) {
+		for (var importEntryCtx : ctx.importEntry()) {
+			visit(importEntryCtx);
+		}
+		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
+		// TODO: lookup local modules first, then file modules
+		String modulePath = ctx.anyIdentifier()
+			.stream()
+			.map(AnyIdentifierContext::getText)
+			.collect(Collectors.joining("/"));
+		try {
+			var lexer = new GioviLexer(
+				CharStreams.fromStream(new FileInputStream(modulePath + ".giovi")));
+			var parser = new GioviParser(new CommonTokenStream(lexer));
+			var tree = parser.begin();
+			String moduleIdentifier = ctx.anyIdentifier().getLast().getText();
+			var visitor = new GioviVisitor(moduleIdentifier);
+			return visitor.visit(tree);
+			// TODO: implement alias
+		} catch (Exception ex) {
+			throw new GioviException(ex);
+		}
+	}
+
+	@Override
+	public GioviParserVisitResult visitModuleDeclaration(ModuleDeclarationContext ctx) {
+		// FIXME: cycle
+		var module = new ModuleScope(getCurrentScope(), ctx.anyIdentifier().getText());
+		getCurrentScope().declare(module);
+		setCurrentScope(module);
+		visit(ctx.body);
+		exitScope();
+		return module;
+	}
 
 	@Override
 	public GioviParserVisitResult visitIfStatement(IfStatementContext ctx) {
@@ -853,6 +930,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (funcOpt.isPresent()) {
 			return new GioviFunction(funcOpt.get());
 		}
+
+		// TODO: should we search from currentScope or only allow absolute paths by looking from ROOT_MODULE?
+		var moduleOpt = getCurrentScope().getModule(identifier);
+		if (moduleOpt.isPresent()) {
+			return moduleOpt.orElseThrow();
+		}
 		throw new GioviException("No variable nor function defined with name " + identifier);
 	}
 
@@ -1306,11 +1389,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
-		String typename = ctx.typename.getText();
-		var signature = getCurrentScope()
-			.getStructSignature(typename)
-			.orElseThrow(() -> new GioviException(
-				"Can't create struct " + typename, new TypeNotFound(typename)));
+		StructSignature signature;
+		if (ctx.typeQualified() != null) {
+			signature = ((GioviTypeStruct) visit(ctx.typeQualified())).signature();
+		} else {
+			String typename = ctx.typeIdentifier().getText();
+			signature = getCurrentScope()
+				.getStructSignature(typename)
+				.orElseThrow(() -> new GioviException(
+					"Can't create struct " + typename, new TypeNotFound(typename)));
+		}
 		var struct = signature.spawn();
 		if (ctx.tupleCreation() != null) {
 			initStruct(struct, ctx.tupleCreation());
@@ -1386,6 +1474,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTypeIdentifier(TypeIdentifierContext ctx) {
+		// TODO: Foo.Bar doesn't resolve Foo as module
 		String typename = ctx.getText();
 		return switch (typename) {
 			case "Natural" -> new GioviTypeNatural();
@@ -1397,6 +1486,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.getStructSignature(typename)
 				.orElseThrow(() -> new TypeNotFound(typename)));
 		};
+	}
+
+	@Override
+	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
+		String typename = ctx.typename.getText();
+		ModuleScope parentModule = ROOT_MODULE;
+		for (var moduleIdentifierCtx : ctx.anyIdentifier()) {
+			String moduleIdentifier = moduleIdentifierCtx.getText();
+			parentModule = parentModule.getModule(moduleIdentifier)
+				.orElseThrow(
+					() -> new GioviException("Can't find find module " + moduleIdentifier));
+		}
+		// TODO: should we allow primitive types too? giovi.Int, giovi.Range, giovi.Tuple
+		return new GioviTypeStruct(parentModule
+			.getStructSignature(typename)
+			.orElseThrow(() -> new TypeNotFound(typename)));
 	}
 
 	@Override
