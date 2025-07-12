@@ -105,6 +105,10 @@ public sealed class Record extends Tuple permits Struct {
 		return Optional.ofNullable(fields.get(identifier));
 	}
 
+	// public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier) {
+	// 	return Optional.ofNullable((VarD<G>) fields.get(identifier));
+	// }
+
 	public List<String> getFieldNames() {
 		return new ArrayList<>(fields.keySet());
 	}

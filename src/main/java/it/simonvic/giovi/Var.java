@@ -39,6 +39,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	}
 
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
+	// TODO: or use safe generic getField
 	public void setValueWithRedirection(GioviParserVisitResult value) {
 		try {
 			this.value = (T) redirection(value);
