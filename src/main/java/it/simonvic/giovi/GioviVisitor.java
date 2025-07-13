@@ -164,9 +164,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		// FIXME: cycle
 		var module = new ModuleScope(getCurrentScope(), ctx.anyIdentifier().getText());
 		getCurrentScope().declare(module);
-		setCurrentScope(module);
-		visit(ctx.body);
-		exitScope();
 		return module;
 	}
 
