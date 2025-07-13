@@ -143,6 +143,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		// TODO: lookup local modules first, then file modules
 		String modulePath = ctx.anyIdentifier()
 			.stream()
+			.filter(identifierCtx -> !identifierCtx.equals(ctx.alias))
 			.map(AnyIdentifierContext::getText)
 			.collect(Collectors.joining("/"));
 		try {
@@ -152,8 +153,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var tree = parser.begin();
 			String moduleIdentifier = ctx.anyIdentifier().getLast().getText();
 			var visitor = new GioviVisitor(moduleIdentifier);
+			this.getCurrentScope().declare((ModuleScope) visitor.getCurrentScope());
+			// NOTE: initial currentScope should always be a module scope
 			return visitor.visit(tree);
-			// TODO: implement alias
 		} catch (Exception ex) {
 			throw new GioviException(ex);
 		}
