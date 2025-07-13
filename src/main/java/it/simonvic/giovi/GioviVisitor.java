@@ -916,8 +916,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitIdentifier(IdentifierContext ctx) {
 		String identifier = ctx.getText();
-		// TODO: eventually check if `self` is defined and get the member
+
+		// TODO: once we add ScopeResources, move the logic to the scope
+
 		var varOpt = getCurrentScope().getVariable(identifier);
+		// TODO: eventually check if `self` is defined and get the member
 		if (varOpt.isPresent()) {
 			return varOpt.get();
 		}
@@ -933,7 +936,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (moduleOpt.isPresent()) {
 			return moduleOpt.orElseThrow();
 		}
-		throw new GioviException("No variable nor function defined with name " + identifier);
+
+		// TODO(grammar): since we use `::` prefix to refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
+		throw new GioviException("No variable, function or module defined with name " + identifier);
 	}
 
 	@Override
