@@ -6,7 +6,7 @@ import java.util.Optional;
 
 import giovi.Function;
 import giovi.StructSignature;
-import giovi.lang.GioviValue;
+import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
 
@@ -211,5 +211,24 @@ public class Scope {
 		return Optional.of(modules.get(identifier));
 	}
 
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// Types
+
+	public Optional<GioviType<?>> getType(String typename) {
+		return switch (typename) {
+			case "Natural" -> Optional.of(new GioviTypeNatural());
+			case "Int" -> Optional.of(new GioviTypeInt());
+			case "Real" -> Optional.of(new GioviTypeReal());
+			case "Bool" -> Optional.of(new GioviTypeBool());
+			case "Text" -> Optional.of(new GioviTypeText());
+			default -> {
+				var structSignatureOpt = getStructSignature(typename);
+				if (structSignatureOpt.isPresent()) {
+					yield Optional.of(new GioviTypeStruct(structSignatureOpt.orElseThrow()));
+				}
+				yield Optional.empty();
+			}
+		};
+	}
 
 }

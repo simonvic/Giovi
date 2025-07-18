@@ -141,17 +141,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
 		// TODO: lookup local modules first, then file modules
-		String modulePath = ctx.anyIdentifier()
+		String modulePath = ctx.identifier()
 			.stream()
 			.filter(identifierCtx -> !identifierCtx.equals(ctx.alias))
-			.map(AnyIdentifierContext::getText)
+			.map(IdentifierContext::getText)
 			.collect(Collectors.joining("/"));
 		try {
 			var lexer = new GioviLexer(
 				CharStreams.fromStream(new FileInputStream(modulePath + ".giovi")));
 			var parser = new GioviParser(new CommonTokenStream(lexer));
 			var tree = parser.begin();
-			String moduleIdentifier = ctx.anyIdentifier().getLast().getText();
+			String moduleIdentifier = ctx.identifier().getLast().getText();
 			var visitor = new GioviVisitor(moduleIdentifier);
 			this.getCurrentScope().declare((ModuleScope) visitor.getCurrentScope());
 			// NOTE: initial currentScope should always be a module scope
@@ -164,7 +164,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitModuleDeclaration(ModuleDeclarationContext ctx) {
 		// FIXME: cycle
-		var module = new ModuleScope(getCurrentScope(), ctx.anyIdentifier().getText());
+		var module = new ModuleScope(getCurrentScope(), ctx.identifier().getText());
 		getCurrentScope().declare(module);
 		return module;
 	}
@@ -287,8 +287,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					case IteratorPlaceholderContext _ -> iterate(expanded, bodyCtx, _ -> {});
 
 					case IteratorUnaryContext entryCtx -> iterate(expanded, bodyCtx, entry -> {
+						String identifier = entryCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							entryCtx.unaryIterator().identifier().getText(),
+							identifier,
 							new VarD<>(entry.value().copy()));
 					});
 
@@ -303,8 +304,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					case IteratorPlaceholderContext _ -> iterate(list, bodyCtx, _ -> {});
 
 					case IteratorUnaryContext entryCtx -> iterate(list, bodyCtx, entry -> {
+						String identifier = entryCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							entryCtx.unaryIterator().identifier().getText(),
+							identifier,
 							new VarD<>(entry.value().copy()));
 					});
 
@@ -323,8 +325,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					case IteratorPlaceholderContext _ -> iterate(map, bodyCtx, (_, _) -> {});
 
 					case IteratorUnaryContext keyCtx -> iterate(map, bodyCtx, (key, _) -> {
+						String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							keyCtx.unaryIterator().identifier().getText(),
+							keyIdentifier,
 							new VarD<>(key.value().copy()));
 					});
 
@@ -395,8 +398,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 						case IteratorUnaryContext valueCtx -> (body, k, v) -> {
 							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
+							String valueIdentifier = valueCtx.unaryIterator().identifier()
+								.getText();
 							getCurrentScope().declare(
-								valueCtx.unaryIterator().identifier().getText(),
+								valueIdentifier,
 								new VarD<>(v.value().copy()));
 							visit(body);
 						};
@@ -456,7 +461,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 */
 	private void deconstruct(Var<?> aggregate, IteratorAggregateContext aggregateCtx) {
 		if (aggregateCtx.whole != null) {
-			getCurrentScope().declare(aggregateCtx.whole.identifier().getText(),
+			getCurrentScope().declare(
+				aggregateCtx.whole.getText(),
 				new VarD<>(aggregate.value()));
 		}
 		switch (aggregate.value()) {
@@ -515,7 +521,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						throw new GioviException(
 							"Can't deconstruct nested aggregate without a whole identifier");
 					}
-					String fieldIdentifier = aCtx.whole.identifier().getText();
+					String fieldIdentifier = aCtx.whole.getText();
 					var field = struct.value().getField(fieldIdentifier)
 						.orElseThrow(() -> new GioviException(
 							"Can't deconstruct",
@@ -676,7 +682,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
 		var constant = spawnType(ctx.type(), null);
 		constant.setValueWithRedirection(visit(ctx.expression()));
-		getCurrentScope().declareConstant(ctx.constantIdentifier().getText(), constant.value());
+		getCurrentScope().declareConstant(ctx.identifier().getText(), constant.value());
 		return constant;
 	}
 
@@ -821,8 +827,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
-		if (ctx.anyIdentifier() != null) {
-			return lhs.dot(new MemberKey(ctx.anyIdentifier().getText()));
+		if (ctx.identifier() != null) {
+			return lhs.dot(new MemberKey(ctx.identifier().getText()));
 		}
 		if (ctx.DEFAULT() != null) {
 			return lhs.dot(new GioviDefault());
@@ -926,11 +932,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (varOpt.isPresent()) {
 			return varOpt.get();
 		}
+
+		var constOpt = getCurrentScope().getConstantValue(identifier);
+		if (constOpt.isPresent()) {
+			return constOpt.orElseThrow();
+		}
+
 		// TODO: now that we have invocations properly parsed, we could remove
 		// this and use ref operator when needed
 		var funcOpt = getCurrentScope().getFunction(identifier);
 		if (funcOpt.isPresent()) {
 			return new GioviFunction(funcOpt.get());
+		}
+
+		var typeOpt = getCurrentScope().getType(identifier);
+		if (typeOpt.isPresent()) {
+			return typeOpt.orElseThrow();
 		}
 
 		// TODO: should we search from currentScope or only allow absolute paths by looking from ROOT_MODULE?
@@ -940,14 +957,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 
 		// TODO(grammar): since we use `::` prefix to refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
-		throw new GioviException("No variable, function or module defined with name " + identifier);
-	}
-
-	@Override
-	public GioviParserVisitResult visitConstantIdentifier(ConstantIdentifierContext ctx) {
-		return getCurrentScope()
-			.getConstantValue(ctx.getText())
-			.orElseThrow(() -> new GioviException("Constant not declared: " + ctx.getText()));
+		throw new GioviException(
+			"No variable, constant, function, type or module found with name " + identifier);
 	}
 
 	@Override
@@ -1337,7 +1348,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var constant = spawnType(constCtx.type(), null);
 			constant.setValueWithRedirection(visit(constCtx.expression()));
 			constants.put(
-				constCtx.constantIdentifier().getText(),
+				constCtx.identifier().getText(),
 				constant.value());
 		}
 
@@ -1397,7 +1408,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.typeQualified() != null) {
 			signature = ((GioviTypeStruct) visit(ctx.typeQualified())).signature();
 		} else {
-			String typename = ctx.typeIdentifier().getText();
+			String typename = ctx.identifier().getText();
 			signature = getCurrentScope()
 				.getStructSignature(typename)
 				.orElseThrow(() -> new GioviException(
@@ -1477,31 +1488,27 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type
 
 	@Override
-	public GioviParserVisitResult visitTypeIdentifier(TypeIdentifierContext ctx) {
-		// TODO: Foo.Bar doesn't resolve Foo as module
-		String typename = ctx.getText();
-		return switch (typename) {
-			case "Natural" -> new GioviTypeNatural();
-			case "Int" -> new GioviTypeInt();
-			case "Real" -> new GioviTypeReal();
-			case "Bool" -> new GioviTypeBool();
-			case "Text" -> new GioviTypeText();
-			default -> new GioviTypeStruct(getCurrentScope()
-				.getStructSignature(typename)
-				.orElseThrow(() -> new TypeNotFound(typename)));
-		};
+	public GioviParserVisitResult visitType(TypeContext ctx) {
+		if (ctx.identifier() != null) {
+			String typename = ctx.identifier().getText();
+			return getCurrentScope()
+				.getType(typename)
+				.orElseThrow(() -> new TypeNotFound(typename));
+		}
+		return visitChildren(ctx);
 	}
 
 	@Override
 	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
-		String typename = ctx.typename.getText();
 		ModuleScope parentModule = ROOT_MODULE;
-		for (var moduleIdentifierCtx : ctx.anyIdentifier()) {
+		for (int i = 0; i < ctx.identifier().size() - 1; i++) { // NOTE: last identifier is the typename
+			var moduleIdentifierCtx = ctx.identifier(i);
 			String moduleIdentifier = moduleIdentifierCtx.getText();
 			parentModule = parentModule.getModule(moduleIdentifier)
 				.orElseThrow(
 					() -> new GioviException("Can't find find module " + moduleIdentifier));
 		}
+		String typename = ctx.typename.getText();
 		// TODO: should we allow primitive types too? giovi.Int, giovi.Range, giovi.Tuple
 		return new GioviTypeStruct(parentModule
 			.getStructSignature(typename)
