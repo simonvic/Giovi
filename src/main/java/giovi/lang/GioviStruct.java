@@ -35,9 +35,7 @@ public record GioviStruct(StructSignature signature, Struct value)
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			// TODO: can we assume equal typename means equal definition? No because of modules
-			case GioviTypeStruct t when t.signature().typename().equals(this.signature().typename())
-				-> this;
+			case GioviTypeStruct t when t.signature().equals(this.signature()) -> this;
 			default -> GioviValue.super.as(right);
 		};
 	}
