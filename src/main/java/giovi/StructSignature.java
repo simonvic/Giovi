@@ -8,6 +8,7 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record StructSignature(
+	// TODO: should module be part of signature?
 	String typename,
 	LinkedHashMap<String, RecordFieldSignature> fields,
 	Map<String, GioviValue<?>> constants,
