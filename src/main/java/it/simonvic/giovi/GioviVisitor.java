@@ -102,6 +102,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	public GioviVisitor(String moduleIdentifier) {
 		this.currentScope = new ModuleScope(ROOT_MODULE, moduleIdentifier);
+		this.currentScope.declare(GIOVI_MODULE);
 	}
 
 	public Scope getCurrentScope() {

@@ -81,7 +81,7 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Variables
 
-	private final Map<String, VarD<?>> variables = new HashMap<>();
+	protected final Map<String, VarD<?>> variables = new HashMap<>();
 
 	public void declare(String identifier, VarD<?> var) {
 		if (variables.containsKey(identifier)) {
@@ -108,7 +108,7 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Constants
 
-	private final Map<String, GioviValue<?>> constants = new HashMap<>();
+	protected final Map<String, GioviValue<?>> constants = new HashMap<>();
 
 	public void declareConstant(String identifier, GioviValue<?> value) {
 		if (constants.containsKey(identifier)) {
@@ -135,7 +135,7 @@ public class Scope {
 	//////////////////////////////////////////////////////////////////////////////////////////////// Functions
 
 	// TODO: when implementing overloading, use a Set
-	private final Map<String, Function> functions = new HashMap<>();
+	protected final Map<String, Function> functions = new HashMap<>();
 
 	public void declare(Function function) {
 		if (functions.containsKey(function.signature().identifier())) {
@@ -161,7 +161,7 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
-	private final Map<String, StructSignature> structDefinitions = new HashMap<>();
+	protected final Map<String, StructSignature> structDefinitions = new HashMap<>();
 
 	public void define(StructSignature signature) {
 		if (structDefinitions.containsKey(signature.typename())) {
@@ -188,7 +188,7 @@ public class Scope {
 	//////////////////////////////////////////////////////////////////////////////////////////////// Modules
 
 	// TODO: store Module rather than ModuleScope directly ?
-	private final Map<String, ModuleScope> modules = new HashMap<>();
+	protected final Map<String, ModuleScope> modules = new HashMap<>();
 
 	public void declare(ModuleScope module) {
 		if (modules.containsKey(module.identifier())) {
