@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import giovi.JFunction;
+import giovi.Module;
 import giovi.RecordFieldSignature;
 import giovi.StructSignature;
 import giovi.lang.*;
@@ -12,12 +13,11 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.ModuleScope;
 import it.simonvic.giovi.lang.annotation.Native;
 
 public class Natives {
 
-	public static void scanModule(ModuleScope module, Class<?> clazz) {
+	public static void scanModule(Module module, Class<?> clazz) {
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
 				System.err.println(
@@ -30,7 +30,7 @@ public class Natives {
 					continue;
 				}
 				if (classField.isAnnotationPresent(Native.Const.class)) {
-					module.declareConstant(classField.getName(), gioviValue);
+					module.scope().declareConstant(classField.getName(), gioviValue);
 				}
 				// TODO: scan @Variable?
 			} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -40,13 +40,13 @@ public class Natives {
 
 		for (Method method : clazz.getMethods()) {
 			if (method.isAnnotationPresent(Native.Func.class)) {
-				module.declare(new JFunction(method));
+				module.scope().declare(new JFunction(method));
 			}
 		}
 
 		for (var nestedClass : clazz.getClasses()) {
 			if (nestedClass.isAnnotationPresent(Native.Struct.class)) {
-				module.define(structSignatureOf(nestedClass));
+				module.scope().define(structSignatureOf(nestedClass));
 			}
 		}
 	}

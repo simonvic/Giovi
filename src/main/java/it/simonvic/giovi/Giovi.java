@@ -116,6 +116,8 @@ public class Giovi {
 				moduleName = "";
 			} else {
 				charStream = CharStreams.fromStream(new FileInputStream(arg));
+				// TODO: properly handle file name to module name transformation
+				// this leads to incompatible module names (i.e. someFile.giovi)
 				moduleName = arg;
 			}
 		}

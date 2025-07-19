@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import giovi.Function;
 import giovi.GioviParserVisitResult;
+import giovi.Module;
 import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
@@ -187,10 +188,9 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Modules
 
-	// TODO: store Module rather than ModuleScope directly ?
-	protected final Map<String, ModuleScope> modules = new HashMap<>();
+	protected final Map<String, Module> modules = new HashMap<>();
 
-	public void declare(ModuleScope module) {
+	public void declare(Module module) {
 		if (modules.containsKey(module.identifier())) {
 			throw new ModuleAlreadyDeclared(module.identifier());
 		}
@@ -202,7 +202,7 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredModule(identifier));
 	}
 
-	public Optional<ModuleScope> getModule(String identifier) {
+	public Optional<Module> getModule(String identifier) {
 		if (!modules.containsKey(identifier)) {
 			if (parent == null) {
 				return Optional.empty();

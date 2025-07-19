@@ -1,6 +1,5 @@
 package it.simonvic.giovi;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
@@ -17,6 +16,10 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.*;
+import giovi.Module;
+import giovi.Module.FileModule;
+import giovi.Module.InnerModule;
+import giovi.Module.NativeModule;
 import giovi.Record;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviLexer;
@@ -37,8 +40,8 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	private static ModuleScope scanGioviModule() throws URISyntaxException, IOException {
-		var gioviModule = new ModuleScope(ROOT_MODULE, "giovi");
+	private static Module scanGioviModule() throws URISyntaxException, IOException {
+		var gioviModule = new NativeModule("giovi", ROOT_MODULE);
 
 		URI packageURI = ClassLoader.getSystemClassLoader()
 			.getResource(gioviModule.identifier())
@@ -67,16 +70,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			.toList();
 
 		for (var gioviModuleClass : gioviModuleClasses) {
-			ModuleScope parentModule = gioviModule;
+			Module parentModule = gioviModule;
 			String[] moduleIdentifiers = gioviModuleClass.getName().split("(\\.|\\$)"); // NOTE: $ is used for nested classes
 			for (int i = 1; i < moduleIdentifiers.length; i++) { // NOTE: first module ("giovi") is skipped
 				String moduleIdentifier = moduleIdentifiers[i];
-				var moduleOpt = parentModule.getModule(moduleIdentifier);
+				var moduleOpt = parentModule.scope().getModule(moduleIdentifier);
 				if (moduleOpt.isPresent()) {
 					parentModule = moduleOpt.orElseThrow();
 				} else {
-					var newModule = new ModuleScope(parentModule, moduleIdentifier);
-					parentModule.declare(newModule);
+					var newModule = new NativeModule(moduleIdentifier, parentModule);
+					parentModule.scope().declare(newModule);
 					parentModule = newModule;
 				}
 			}
@@ -85,13 +88,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return gioviModule;
 	}
 
-	private static final ModuleScope ROOT_MODULE = new ModuleScope("");
-	private static final ModuleScope GIOVI_MODULE;
+	private static final Module ROOT_MODULE = new NativeModule("");
+	private static final Module GIOVI_MODULE;
 
 	static {
 		try {
 			GIOVI_MODULE = scanGioviModule();
-			ROOT_MODULE.declare(GIOVI_MODULE);
+			ROOT_MODULE.scope().declare(GIOVI_MODULE);
 		} catch (URISyntaxException | IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -99,10 +102,20 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	protected final Scanner scanner = new Scanner(System.in);
 	private Scope currentScope;
+	private final Module module;
 
 	public GioviVisitor(String moduleIdentifier) {
-		this.currentScope = new ModuleScope(ROOT_MODULE, moduleIdentifier);
+		this(new NativeModule(moduleIdentifier, ROOT_MODULE));
+	}
+
+	public GioviVisitor(Module module) {
+		this.module = module;
+		this.currentScope = module.scope();
 		this.currentScope.declare(GIOVI_MODULE);
+	}
+
+	public Module getModule() {
+		return module;
 	}
 
 	public Scope getCurrentScope() {
@@ -142,30 +155,33 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
 		// TODO: lookup local modules first, then file modules
-		String modulePath = ctx.identifier()
+
+		var moduleURI = URI.create(ctx.identifier()
 			.stream()
 			.filter(identifierCtx -> !identifierCtx.equals(ctx.alias))
 			.map(IdentifierContext::getText)
-			.collect(Collectors.joining("/"));
+			.collect(Collectors.joining("/"))
+			.concat(".giovi"));
 		try {
-			var lexer = new GioviLexer(
-				CharStreams.fromStream(new FileInputStream(modulePath + ".giovi")));
+			var lexer = new GioviLexer(CharStreams.fromFileName(moduleURI.toString()));
 			var parser = new GioviParser(new CommonTokenStream(lexer));
 			var tree = parser.begin();
 			String moduleIdentifier = ctx.identifier().getLast().getText();
-			var visitor = new GioviVisitor(moduleIdentifier);
-			this.getCurrentScope().declare((ModuleScope) visitor.getCurrentScope());
-			// NOTE: initial currentScope should always be a module scope
-			return visitor.visit(tree);
+			var module = new FileModule(moduleIdentifier, ROOT_MODULE, moduleURI);
+			var visitor = new GioviVisitor(module);
+			visitor.visit(tree);
+			this.getCurrentScope().declare(module);
 		} catch (Exception ex) {
 			throw new GioviException(ex);
 		}
+		return null;
 	}
 
 	@Override
 	public GioviParserVisitResult visitModuleDeclaration(ModuleDeclarationContext ctx) {
 		// FIXME: cycle
-		var module = new ModuleScope(getCurrentScope(), ctx.identifier().getText());
+		String moduleIdentifier = ctx.identifier().getText();
+		var module = new InnerModule(moduleIdentifier, this.module, ctx.body);
 		getCurrentScope().declare(module);
 		return module;
 	}
@@ -1470,17 +1486,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
-		ModuleScope parentModule = ROOT_MODULE;
+		Module parentModule = ROOT_MODULE;
 		for (int i = 0; i < ctx.identifier().size() - 1; i++) { // NOTE: last identifier is the typename
 			var moduleIdentifierCtx = ctx.identifier(i);
 			String moduleIdentifier = moduleIdentifierCtx.getText();
-			parentModule = parentModule.getModule(moduleIdentifier)
+			parentModule = parentModule.scope().getModule(moduleIdentifier)
 				.orElseThrow(
 					() -> new GioviException("Can't find find module " + moduleIdentifier));
 		}
 		String typename = ctx.typename.getText();
 		// TODO: should we allow primitive types too? giovi.Int, giovi.Range, giovi.Tuple
-		return new GioviTypeStruct(parentModule
+		return new GioviTypeStruct(parentModule.scope()
 			.getStructSignature(typename)
 			.orElseThrow(() -> new TypeNotFound(typename)));
 	}

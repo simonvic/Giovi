@@ -3,51 +3,18 @@ package it.simonvic.giovi.lang;
 import java.util.Optional;
 
 import giovi.GioviParserVisitResult;
-import giovi.MemberKey;
 import giovi.lang.GioviFunction;
 import giovi.lang.GioviTypeStruct;
 
-public class ModuleScope extends Scope implements GioviParserVisitResult {
+public class ModuleScope extends Scope {
 
-	private final String identifier;
-
-	/**
-	 * @param parent
-	 * @param identifier
-	 */
-	public ModuleScope(Scope parent, String identifier) {
-		super(parent);
-		this.identifier = identifier;
-	}
-
-	/**
-	 * @param parent
-	 */
-	public ModuleScope(String identifier) {
+	public ModuleScope() {
 		super();
-		this.identifier = identifier;
 	}
 
-	public String identifier() {
-		return identifier;
+	public ModuleScope(ModuleScope scope) {
+		super(scope);
 	}
-
-	@Override
-	public String toString() {
-		return (getParent() != null ? getParent().toString() : "") + "$" + identifier;
-	}
-
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof MemberKey(var identifier)) {
-			var symbolOpt = getSymbol(identifier);
-			if (symbolOpt.isPresent()) {
-				return symbolOpt.orElseThrow();
-			}
-		}
-		return GioviParserVisitResult.super.dot(right);
-	}
-
 
 	@Override
 	public Optional<GioviParserVisitResult> getSymbol(String identifier) {

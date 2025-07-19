@@ -8,7 +8,6 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.ModuleScope;
 
 public class GioviVisitorUtils {
 
