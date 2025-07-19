@@ -233,8 +233,13 @@ public class Scope {
 		return Optional.empty();
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
+	/// Breadth-first search of a symbol.
+	/// The following order will be used when looking up the symbol:
+	///   - variables
+	///   - constants
+	///   - functions
+	///   - types
+	///   - modules
 	public Optional<GioviParserVisitResult> getSymbol(String identifier) {
 		if (variables.containsKey(identifier)) {
 			return Optional.of(variables.get(identifier));
@@ -244,7 +249,7 @@ public class Scope {
 			return Optional.of(constants.get(identifier));
 		}
 
-		// TODO(grammar): since we use `::` prefix to refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
+		// TODO(grammar): since we use `::` prefix to explicitly refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
 		if (functions.containsKey(identifier)) {
 			return Optional.of(new GioviFunction(functions.get(identifier)));
 		}
