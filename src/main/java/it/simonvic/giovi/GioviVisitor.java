@@ -924,41 +924,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitIdentifier(IdentifierContext ctx) {
 		String identifier = ctx.getText();
-
-		// TODO: once we add ScopeResources, move the logic to the scope
-
-		var varOpt = getCurrentScope().getVariable(identifier);
-		// TODO: eventually check if `self` is defined and get the member
-		if (varOpt.isPresent()) {
-			return varOpt.get();
-		}
-
-		var constOpt = getCurrentScope().getConstantValue(identifier);
-		if (constOpt.isPresent()) {
-			return constOpt.orElseThrow();
-		}
-
-		// TODO: now that we have invocations properly parsed, we could remove
-		// this and use ref operator when needed
-		var funcOpt = getCurrentScope().getFunction(identifier);
-		if (funcOpt.isPresent()) {
-			return new GioviFunction(funcOpt.get());
-		}
-
-		var typeOpt = getCurrentScope().getType(identifier);
-		if (typeOpt.isPresent()) {
-			return typeOpt.orElseThrow();
-		}
-
-		// TODO: should we search from currentScope or only allow absolute paths by looking from ROOT_MODULE?
-		var moduleOpt = getCurrentScope().getModule(identifier);
-		if (moduleOpt.isPresent()) {
-			return moduleOpt.orElseThrow();
-		}
-
-		// TODO(grammar): since we use `::` prefix to refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
-		throw new GioviException(
-			"No variable, constant, function, type or module found with name " + identifier);
+		return getCurrentScope()
+			.getSymbol(identifier)
+			.orElseThrow(() -> new GioviException(
+				"No variable, constant, function, type or module found with name " + identifier));
 	}
 
 	@Override

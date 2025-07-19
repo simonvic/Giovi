@@ -37,20 +37,13 @@ public class ModuleScope extends Scope implements GioviParserVisitResult {
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		return switch (right) {
-			// TODO: unify "member lookup of unkown type" so we don't end up with different behaviours
-			case MemberKey(var identifier) when isDeclaredVariable(identifier)
-				-> getVariable(identifier).orElseThrow();
-			case MemberKey(var identifier) when isDefinedStruct(identifier)
-				-> new GioviTypeStruct(getStructSignature(identifier).orElseThrow());
-			case MemberKey(var identifier) when isDeclaredFunction(identifier)
-				-> new GioviFunction(getFunction(identifier).orElseThrow());
-			case MemberKey(var identifier) when isDeclaredModule(identifier)
-				-> getModule(identifier).orElseThrow();
-			case MemberKey(var identifier) when isDeclaredConstant(identifier)
-				-> getConstantValue(identifier).orElseThrow();
-			default -> GioviParserVisitResult.super.dot(right);
-		};
+		if (right instanceof MemberKey(var identifier)) {
+			var symbolOpt = getSymbol(identifier);
+			if (symbolOpt.isPresent()) {
+				return symbolOpt.orElseThrow();
+			}
+		}
+		return GioviParserVisitResult.super.dot(right);
 	}
 
 

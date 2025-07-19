@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import giovi.Function;
+import giovi.GioviParserVisitResult;
 import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
@@ -214,21 +215,57 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Types
 
+	public static final Map<String, GioviTypePrimitive<?>> primitiveTypes = Map.of(
+		"Natural", new GioviTypeNatural(),
+		"Int", new GioviTypeInt(),
+		"Real", new GioviTypeReal(),
+		"Bool", new GioviTypeBool(),
+		"Text", new GioviTypeText());
+
 	public Optional<GioviType<?>> getType(String typename) {
-		return switch (typename) {
-			case "Natural" -> Optional.of(new GioviTypeNatural());
-			case "Int" -> Optional.of(new GioviTypeInt());
-			case "Real" -> Optional.of(new GioviTypeReal());
-			case "Bool" -> Optional.of(new GioviTypeBool());
-			case "Text" -> Optional.of(new GioviTypeText());
-			default -> {
-				var structSignatureOpt = getStructSignature(typename);
-				if (structSignatureOpt.isPresent()) {
-					yield Optional.of(new GioviTypeStruct(structSignatureOpt.orElseThrow()));
-				}
-				yield Optional.empty();
-			}
-		};
+		if (primitiveTypes.containsKey(typename)) {
+			return Optional.of(primitiveTypes.get(typename));
+		}
+		var structSignatureOpt = getStructSignature(typename);
+		if (structSignatureOpt.isPresent()) {
+			return Optional.of(new GioviTypeStruct(structSignatureOpt.orElseThrow()));
+		}
+		return Optional.empty();
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public Optional<GioviParserVisitResult> getSymbol(String identifier) {
+		if (variables.containsKey(identifier)) {
+			return Optional.of(variables.get(identifier));
+		}
+
+		if (constants.containsKey(identifier)) {
+			return Optional.of(constants.get(identifier));
+		}
+
+		// TODO(grammar): since we use `::` prefix to refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
+		if (functions.containsKey(identifier)) {
+			return Optional.of(new GioviFunction(functions.get(identifier)));
+		}
+
+		if (primitiveTypes.containsKey(identifier)) {
+			return Optional.of(primitiveTypes.get(identifier));
+		}
+
+		if (structDefinitions.containsKey(identifier)) {
+			return Optional.of(new GioviTypeStruct(structDefinitions.get(identifier)));
+		}
+
+		if (modules.containsKey(identifier)) {
+			return Optional.of(modules.get(identifier));
+		}
+
+		if (parent != null) {
+			return parent.getSymbol(identifier);
+		}
+
+		return Optional.empty();
 	}
 
 }
