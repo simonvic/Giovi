@@ -1,14 +1,11 @@
 package giovi;
 
 import java.net.URI;
-import java.nio.file.Path;
 
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.ModuleScope;
 
 public sealed interface Module extends GioviParserVisitResult {
-
-	String identifier();
 
 	Module parent();
 
@@ -32,16 +29,11 @@ public sealed interface Module extends GioviParserVisitResult {
 	) implements Module {
 
 		public NativeModule(String identifier, Module parent) {
-			this(
-				identifier,
-				parent,
-				(parent != null)
-					? new ModuleScope(parent.scope())
-					: new ModuleScope());
+			this(identifier, parent, new ModuleScope(parent.scope()));
 		}
 
 		public NativeModule(String identifier) {
-			this(identifier, null);
+			this(identifier, null, new ModuleScope());
 		}
 
 		@Override
@@ -52,33 +44,36 @@ public sealed interface Module extends GioviParserVisitResult {
 	}
 
 	public static record FileModule(
-		String identifier,
+		URI uri,
 		Module parent,
-		ModuleScope scope,
-		URI uri
+		ModuleScope scope
 	) implements Module {
 
-		public FileModule(String identifier, Module parent, URI uri) {
-			this(identifier, parent, new ModuleScope(parent.scope()), uri);
+		public FileModule(URI uri, Module parent) {
+			this(uri, parent, new ModuleScope(parent.scope()));
+		}
+
+		public FileModule(URI uri) {
+			this(uri, null, new ModuleScope());
 		}
 
 		@Override
 		public String toString() {
-			return (parent() != null ? parent().toString() : "") + "/" + identifier;
+			return (parent() != null ? parent().toString() : "") + "/" + uri;
 		}
 
 	}
 
 
 	public static record InnerModule(
-		String identifier,
 		Module parent,
 		ModuleScope scope,
+		String identifier,
 		BlockContext bodyCtx
 	) implements Module {
 
-		public InnerModule(String identifier, Module parent, BlockContext bodyCtx) {
-			this(identifier, parent, new ModuleScope(parent.scope()), bodyCtx);
+		public InnerModule(Module parent, String identifier, BlockContext bodyCtx) {
+			this(parent, new ModuleScope(parent.scope()), identifier, bodyCtx);
 		}
 
 		@Override

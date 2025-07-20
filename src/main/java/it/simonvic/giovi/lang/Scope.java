@@ -7,6 +7,8 @@ import java.util.Optional;
 import giovi.Function;
 import giovi.GioviParserVisitResult;
 import giovi.Module;
+import giovi.Module.InnerModule;
+import giovi.Module.NativeModule;
 import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
@@ -190,11 +192,26 @@ public class Scope {
 
 	protected final Map<String, Module> modules = new HashMap<>();
 
-	public void declare(Module module) {
-		if (modules.containsKey(module.identifier())) {
-			throw new ModuleAlreadyDeclared(module.identifier());
+    public void declare(NativeModule module) {
+        declare(module.identifier(), module);
+    }
+
+    public void declare(InnerModule module) {
+        declare(module.identifier(), module);
+    }
+
+	public void declare(String identifier, Module module) {
+		if (modules.containsKey(identifier)) {
+			// TODO: lmao
+			var declaredModule = modules.get(identifier);
+			if (declaredModule instanceof InnerModule(_, _, _, var declaredBodyCtx)
+				&& module instanceof InnerModule(_, _, _, var bodyCtx)
+				&& declaredBodyCtx == bodyCtx) {
+				return;
+			}
+			throw new ModuleAlreadyDeclared(identifier);
 		}
-		modules.put(module.identifier(), module);
+		modules.put(identifier, module);
 	}
 
 	public boolean isDeclaredModule(String identifier) {

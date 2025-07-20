@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -40,7 +39,7 @@ import it.simonvic.giovi.util.VisitorUtils;
 
 public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
-	private static Module scanGioviModule() throws URISyntaxException, IOException {
+	private static NativeModule scanGioviModule() throws URISyntaxException, IOException {
 		var gioviModule = new NativeModule("giovi", ROOT_MODULE);
 
 		URI packageURI = ClassLoader.getSystemClassLoader()
@@ -79,7 +78,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					parentModule = moduleOpt.orElseThrow();
 				} else {
 					var newModule = new NativeModule(moduleIdentifier, parentModule);
-					parentModule.scope().declare(newModule);
+					parentModule.scope().declare(moduleIdentifier, newModule);
 					parentModule = newModule;
 				}
 			}
@@ -88,8 +87,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return gioviModule;
 	}
 
-	private static final Module ROOT_MODULE = new NativeModule("");
-	private static final Module GIOVI_MODULE;
+	private static final NativeModule ROOT_MODULE = new NativeModule("");
+	private static final NativeModule GIOVI_MODULE;
 
 	static {
 		try {
@@ -154,36 +153,86 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
-		// TODO: lookup local modules first, then file modules
-
-		var moduleURI = URI.create(ctx.identifier()
-			.stream()
-			.filter(identifierCtx -> !identifierCtx.equals(ctx.alias))
-			.map(IdentifierContext::getText)
-			.collect(Collectors.joining("/"))
-			.concat(".giovi"));
-		try {
-			var lexer = new GioviLexer(CharStreams.fromFileName(moduleURI.toString()));
-			var parser = new GioviParser(new CommonTokenStream(lexer));
-			var tree = parser.begin();
-			String moduleIdentifier = ctx.identifier().getLast().getText();
-			var module = new FileModule(moduleIdentifier, ROOT_MODULE, moduleURI);
-			var visitor = new GioviVisitor(module);
-			visitor.visit(tree);
-			this.getCurrentScope().declare(module);
-		} catch (Exception ex) {
-			throw new GioviException(ex);
+		var module = (Module) visit(ctx.importEntryPath());
+		if (ctx.alias != null) {
+			getCurrentScope().declare(ctx.alias.getText(), module);
 		}
 		return null;
 	}
 
 	@Override
+	public GioviParserVisitResult visitImportEntryPath(ImportEntryPathContext ctx) {
+		Module parentModule = this.module;
+		if (ctx.EXACT_TEXT_LITERAL() != null) {
+			String identifier = ctx.EXACT_TEXT_LITERAL().getText();
+			var fileModule = new FileModule(
+				URI.create(identifier.substring(1).substring(0, identifier.length() - 2)),
+				parentModule);
+			try {
+				doImportModule(fileModule);
+			} catch (IOException e) {
+				throw new GioviException(e);
+			}
+			if (ctx.identifier().isEmpty()) {
+				return fileModule;
+			}
+			parentModule = fileModule;
+		}
+		// NOTE: last identifier is the actual module
+		for (int i = 0; i < ctx.identifier().size() - 1; i++) {
+			String identifier = ctx.identifier(i).getText();
+			parentModule = parentModule.scope()
+				.getModule(identifier)
+				.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
+		}
+		String identifier = ctx.identifier().getLast().getText();
+		var module = (InnerModule) parentModule.scope()
+			.getModule(identifier)
+			.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
+		doImportModule(module);
+		return module;
+	}
+
+	private void doImportModule(FileModule module) throws IOException {
+		var lexer = new GioviLexer(CharStreams.fromFileName(module.uri().toString()));
+		var parser = new GioviParser(new CommonTokenStream(lexer));
+		var tree = parser.begin();
+		var visitor = new GioviVisitor(module);
+		visitor.visit(tree);
+	}
+
+	private void doImportModule(InnerModule module) {
+		var visitor = new GioviVisitor(module);
+		visitor.visit(module.bodyCtx());
+	}
+
+
+	@Override
 	public GioviParserVisitResult visitModuleDeclaration(ModuleDeclarationContext ctx) {
 		// FIXME: cycle
 		String moduleIdentifier = ctx.identifier().getText();
-		var module = new InnerModule(moduleIdentifier, this.module, ctx.body);
+		var module = new InnerModule(this.module, moduleIdentifier, ctx.body);
 		getCurrentScope().declare(module);
+		scanInnerModules(module, true);
 		return module;
+	}
+
+	private static void scanInnerModules(InnerModule parentModule, boolean recurse) {
+		var innerModulesCtx = parentModule.bodyCtx().statement().stream()
+			.filter(statement -> statement.moduleDeclaration() != null)
+			.map(statement -> statement.moduleDeclaration())
+			.toList();
+		for (var innerModuleDeclarationCtx : innerModulesCtx) {
+			String innerModuleIdentifier = innerModuleDeclarationCtx.identifier().getText();
+			var innerModule = new InnerModule(
+				parentModule,
+				innerModuleIdentifier,
+				innerModuleDeclarationCtx.body);
+			parentModule.scope().declare(innerModule);
+			if (recurse) {
+				scanInnerModules(innerModule, recurse);
+			}
+		}
 	}
 
 	@Override
