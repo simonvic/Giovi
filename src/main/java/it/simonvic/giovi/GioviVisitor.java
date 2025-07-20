@@ -166,8 +166,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (ctx.EXACT_TEXT_LITERAL() != null) {
 			String identifier = ctx.EXACT_TEXT_LITERAL().getText();
 			var fileModule = new FileModule(
-				URI.create(identifier.substring(1).substring(0, identifier.length() - 2)),
-				parentModule);
+				URI.create(identifier.substring(1, identifier.length() - 1)));
 			try {
 				doImportModule(fileModule);
 			} catch (IOException e) {
