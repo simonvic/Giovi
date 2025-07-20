@@ -185,11 +185,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
 		}
 		String identifier = ctx.identifier().getLast().getText();
-		var module = (InnerModule) parentModule.scope()
+		var module = parentModule.scope()
 			.getModule(identifier)
 			.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
-		doImportModule(module);
+		switch (module) {
+			case InnerModule innerModule -> doImportModule(innerModule);
+			case NativeModule nativeModule -> doImportModule(nativeModule);
+			case FileModule _ -> throw new GioviException("wtf!");
+		}
 		return module;
+	}
+
+	private void doImportModule(NativeModule module) {
+		// how?
 	}
 
 	private void doImportModule(FileModule module) throws IOException {
