@@ -1542,7 +1542,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
-		Module parentModule = ROOT_MODULE;
+		Module parentModule = this.module;
 		for (int i = 0; i < ctx.identifier().size() - 1; i++) { // NOTE: last identifier is the typename
 			var moduleIdentifierCtx = ctx.identifier(i);
 			String moduleIdentifier = moduleIdentifierCtx.getText();
