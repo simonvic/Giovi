@@ -78,7 +78,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					parentModule = moduleOpt.orElseThrow();
 				} else {
 					var newModule = new NativeModule(moduleIdentifier, parentModule);
-					parentModule.scope().declare(moduleIdentifier, newModule);
+					parentModule.scope().declare(newModule);
 					parentModule = newModule;
 				}
 			}

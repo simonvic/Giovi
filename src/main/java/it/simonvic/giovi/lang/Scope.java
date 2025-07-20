@@ -192,23 +192,25 @@ public class Scope {
 
 	protected final Map<String, Module> modules = new HashMap<>();
 
-    public void declare(NativeModule module) {
-        declare(module.identifier(), module);
-    }
+	public void declare(NativeModule module) {
+		declare(module.identifier(), module);
+	}
 
-    public void declare(InnerModule module) {
-        declare(module.identifier(), module);
-    }
+	public void declare(InnerModule module) {
+		var declaredModule = modules.get(module.identifier());
+		if (declaredModule != null) {
+			if (declaredModule instanceof InnerModule(_, _, _, var bodyCtx)
+				&& bodyCtx == module.bodyCtx()) {
+				// NOTE: module already declared with early eager inner module scan
+				return;
+			}
+			throw new ModuleAlreadyDeclared(module.identifier());
+		}
+		modules.put(module.identifier(), module);
+	}
 
 	public void declare(String identifier, Module module) {
 		if (modules.containsKey(identifier)) {
-			// TODO: lmao
-			var declaredModule = modules.get(identifier);
-			if (declaredModule instanceof InnerModule(_, _, _, var declaredBodyCtx)
-				&& module instanceof InnerModule(_, _, _, var bodyCtx)
-				&& declaredBodyCtx == bodyCtx) {
-				return;
-			}
 			throw new ModuleAlreadyDeclared(identifier);
 		}
 		modules.put(identifier, module);
