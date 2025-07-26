@@ -1430,6 +1430,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitStructFieldDefinition(StructFieldDefinitionContext ctx) {
 		String identifier = ctx.identifier().getText();
+		if (ctx.SELF() != null) {
+			return new RecordFieldSignature(identifier, new GioviTypeSelf());
+		}
 		var type = visit(ctx.type()).asGioviType();
 		GioviValue<?> defaultValue;
 		try {

@@ -45,7 +45,7 @@ public record GioviStruct(StructSignature signature, Struct value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
+			case GioviDefault _,GioviSelf _ -> new GioviStruct(signature, signature.spawn());
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
@@ -81,8 +81,14 @@ public record GioviStruct(StructSignature signature, Struct value)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
-			case MemberKey(var identifier) when value.containsField(identifier)
-				-> value.getField(identifier).get();
+			case MemberKey(var identifier) when value.containsField(identifier) -> {
+				var fieldVar = value.getField(identifier).orElseThrow();
+				if (fieldVar.value() instanceof GioviSelf) {
+					// init field
+					fieldVar.redirection(new GioviStruct(signature, signature.spawn()));
+				}
+				yield fieldVar;
+			}
 			case MemberKey(var identifier) when signature.containsConstant(identifier)
 				-> signature.getConstant(identifier);
 			case MemberKey(var identifier) when signature.containsFunction(identifier)

@@ -283,6 +283,70 @@ public class TestGioviStruct {
 					new RecordFieldSignature("a", new GioviTypeInt(), new GioviInt(0)))));
 		}
 
+		@Nested
+		class Recursive {
+
+			@Test
+			void recursiveStructs() {
+				visit("""
+
+					Node <
+						label Text
+						next self
+
+						self toText() => Text {
+							text Text
+							self.label ->+ text
+							if self.next.label != Node.label do {
+								"->" ->+ text
+								self.next.toText() ->+ text
+							}
+							=> text
+						}
+
+						self toTextLazy() => Text {
+							text Text
+							self.label ->+ text
+							zelf Node <- self
+							if zelf.next.label != Node.label do {
+								"->" ->+ text
+								zelf.next.toTextLazy() ->+ text
+							}
+							=> text
+						}
+					>
+
+					Node -> _out
+					"lazy" -> _out
+					root Node <- Node.<label: "root">
+					root.next.next.next.next.label <- "foo"
+					root.toTextLazy() -> _out
+					root.next.label <- "a"
+					root.toTextLazy() -> _out
+					root.next.next.label <- "b"
+					root.toTextLazy() -> _out
+					root.next.next.next.label <- "c"
+					root.toTextLazy() -> _out
+					"-------" -> _out
+
+					"eager" -> _out
+					root <- Node.<label: "root">
+					root.next.next.next.next.label <- "foo"
+					root.toText() -> _out
+					root.next.label <- "a"
+					root.toText() -> _out
+					root.next.next.label <- "b"
+					root.toText() -> _out
+					root.next.next.next.label <- "c"
+					root.toText() -> _out
+					"-------" -> _out
+
+					""");
+			}
+
+
+		}
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// CREATIONS

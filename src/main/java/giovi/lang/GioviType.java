@@ -7,7 +7,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 public sealed interface GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<? extends T>>
 	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeRecord,
-	GioviTypeStruct, GioviTypeFunction {
+	GioviTypeStruct, GioviTypeSelf, GioviTypeFunction {
 
 	// TODO: add constants types GioviType.Int GioviType.Real etc.
 
