@@ -15,6 +15,10 @@ public record StructSignature(
 	Map<String, GioviFunction> functions
 ) {
 
+	public StructSignature(String typename, LinkedHashMap<String, RecordFieldSignature> fields) {
+		this(typename, fields, new LinkedHashMap<>(), new LinkedHashMap<>());
+	}
+
 	public StructSignature(String typename, RecordFieldSignature... fields) {
 		this(typename, new LinkedHashMap<>(), new LinkedHashMap<>(), new LinkedHashMap<>());
 		for (var field : fields) {
@@ -48,12 +52,7 @@ public record StructSignature(
 	 * @return struct
 	 */
 	public Struct spawn() {
-		// TODO: we should copy constants and functions as well, or maybe keep just signatures here and then spawn
-		return new Struct(
-			this.typename,
-			RecordSignature.spawn(this.fields),
-			this.constants,
-			this.functions);
+		return new Struct(this.typename, RecordSignature.spawn(this.fields));
 	}
 
 	/**
@@ -93,11 +92,7 @@ public record StructSignature(
 	 * @return true if can be widened, false otherwise
 	 */
 	public Struct widen(Tuple narrow) throws NonWideneable {
-		return new Struct(
-			this.typename,
-			RecordSignature.widenTuple(narrow, this.fields),
-			this.constants,
-			this.functions);
+		return new Struct(this.typename, RecordSignature.widenTuple(narrow, this.fields));
 	}
 
 	/**
@@ -116,11 +111,7 @@ public record StructSignature(
 	 * @throws NonWideneable
 	 */
 	public Struct widen(Record narrow) throws NonWideneable {
-		return new Struct(
-			this.typename,
-			RecordSignature.widenRecord(narrow, this.fields),
-			this.constants,
-			this.functions);
+		return new Struct(this.typename, RecordSignature.widenRecord(narrow, this.fields));
 	}
 
 	/**
@@ -148,28 +139,28 @@ public record StructSignature(
 			"Can't widen struct " + narrow.getTypename() + " to " + this.typename);
 	}
 
-    public boolean containsField(String identifier) {
-        return fields.containsKey(identifier);
-    }
+	public boolean containsField(String identifier) {
+		return fields.containsKey(identifier);
+	}
 
-    public RecordFieldSignature getField(String identifier) {
+	public RecordFieldSignature getField(String identifier) {
 		return fields.get(identifier);
-    }
+	}
 
-    public boolean containsConstant(String identifier) {
-        return constants.containsKey(identifier);
-    }
+	public boolean containsConstant(String identifier) {
+		return constants.containsKey(identifier);
+	}
 
-    public GioviValue<?> getConstant(String identifier) {
+	public GioviValue<?> getConstant(String identifier) {
 		return constants.get(identifier);
-    }
+	}
 
-    public boolean containsFunction(String identifier) {
-        return functions.containsKey(identifier);
-    }
+	public boolean containsFunction(String identifier) {
+		return functions.containsKey(identifier);
+	}
 
-    public GioviFunction getFunction(String identifier) {
+	public GioviFunction getFunction(String identifier) {
 		return functions.get(identifier);
-    }
+	}
 
 }

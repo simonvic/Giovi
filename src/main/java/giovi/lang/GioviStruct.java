@@ -83,10 +83,10 @@ public record GioviStruct(StructSignature signature, Struct value)
 			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
 			case MemberKey(var identifier) when value.containsField(identifier)
 				-> value.getField(identifier).get();
-			case MemberKey(var identifier) when value.containsConstant(identifier)
-				-> value.getConstant(identifier);
-			case MemberKey(var identifier) when value.containsFunction(identifier)
-				-> value.getFunction(identifier);
+			case MemberKey(var identifier) when signature.containsConstant(identifier)
+				-> signature.getConstant(identifier);
+			case MemberKey(var identifier) when signature.containsFunction(identifier)
+				-> signature.getFunction(identifier);
 			default -> GioviValue.super.dot(right);
 		};
 	}

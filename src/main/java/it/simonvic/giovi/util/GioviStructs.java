@@ -23,9 +23,7 @@ public class GioviStructs {
 			field.defaultValue())));
 		return new StructSignature(
 			value.getTypename(),
-			fields,
-			value.getConstants(),
-			value.getFunctions());
+			fields);
 	}
 
 	public static GioviStruct of(String typename) {
