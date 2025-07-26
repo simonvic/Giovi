@@ -7,13 +7,12 @@ import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Type;
-import it.simonvic.giovi.lang.annotation.Native.TypeNative;
 
 @Module
 public class Ansi {
 
 	@Const
-	public static final @Type(GioviTypeText.class) GioviText ESC = new GioviText("\u001B");
+	public static final GioviText ESC = new GioviText("\u001B");
 
 	@Func
 	public static @Type(GioviTypeText.class) GioviText moveTo(
@@ -92,7 +91,7 @@ public class Ansi {
 
 	@Func
 	public static @Type(GioviTypeText.class) GioviText fg(
-		@Param("color") @TypeNative(Rgb.class) GioviStruct color
+		@Param("color") @Type(nativ = Rgb.class) GioviStruct color
 	) {
 		return new GioviText(String.format(
 			"%s[38;2;%s;%s;%sm",
@@ -104,7 +103,7 @@ public class Ansi {
 
 	@Func
 	public static @Type(GioviTypeText.class) GioviText bg(
-		@Param("color") @TypeNative(Rgb.class) GioviStruct color
+		@Param("color") @Type(nativ = Rgb.class) GioviStruct color
 	) {
 		return new GioviText(String.format(
 			"%s[48;2;%s;%s;%sm",

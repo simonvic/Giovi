@@ -13,7 +13,6 @@ import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
 import it.simonvic.giovi.lang.annotation.Native.Type;
-import it.simonvic.giovi.lang.annotation.Native.TypeNative;
 import it.simonvic.giovi.util.Natives;
 
 @Module
@@ -28,7 +27,7 @@ public class Color {
 	}
 
 	@Func
-	public static @TypeNative(Rgb.class) GioviStruct rgb(
+	public static @Type(nativ = Rgb.class) GioviStruct rgb(
 		@Param("r") @Type(GioviTypeInt.class) GioviInt r,
 		@Param("g") @Type(GioviTypeInt.class) GioviInt g,
 		@Param("b") @Type(GioviTypeInt.class) GioviInt b
@@ -43,7 +42,7 @@ public class Color {
 	}
 
 	@Func
-	public static @TypeNative(Rgba.class) GioviStruct rgba(
+	public static @Type(nativ = Rgba.class) GioviStruct rgba(
 		@Param("r") @Type(GioviTypeInt.class) GioviInt r,
 		@Param("g") @Type(GioviTypeInt.class) GioviInt g,
 		@Param("b") @Type(GioviTypeInt.class) GioviInt b,

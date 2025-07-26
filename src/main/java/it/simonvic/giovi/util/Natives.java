@@ -14,6 +14,8 @@ import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
+import it.simonvic.giovi.lang.annotation.Native.TypeList;
+import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
 public class Natives {
 
@@ -160,35 +162,67 @@ public class Natives {
 	}
 
 	private static GioviType<?> gioviTypeFrom(Native.Type annotation) {
-		Class<? extends GioviType<?>> clazz = annotation.value();
-		if (GioviTypePrimitive.class.isAssignableFrom(clazz)) {
+		Class<? extends GioviTypePrimitive<?>> clazz = annotation.value();
+		if (clazz != GioviTypeVoid.class) {
 			try {
 				return clazz.getConstructor().newInstance();
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				throw new RuntimeException(e);
 			}
 		}
-		throw new RuntimeException("Can't find giovi type from " + clazz);
+		return new GioviTypeStruct(structSignatureOf(annotation.nativ()));
+	}
+
+	private static GioviType<?> gioviTypeFrom(TypeList typeListAnnotation) {
+		return new GioviTypeList(gioviTypeFrom(typeListAnnotation.value()));
+	}
+
+	private static GioviType<?> gioviTypeFrom(TypeMap typeMapAnnotation) {
+		return new GioviTypeMap(
+			gioviTypeFrom(typeMapAnnotation.key()),
+			gioviTypeFrom(typeMapAnnotation.val()));
 	}
 
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
-		var typeAnnotation = method.getAnnotatedReturnType().getAnnotation(Native.Type.class);
-		if (typeAnnotation == null) {
-			return new GioviTypeVoid();
+		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
+
+		var typeListAnnotation = annotatedReturnType.getAnnotation(TypeList.class);
+		if (typeListAnnotation != null) {
+			return gioviTypeFrom(typeListAnnotation);
 		}
-		return gioviTypeFrom(typeAnnotation);
+
+		var typeMapAnnotation = annotatedReturnType.getAnnotation(TypeMap.class);
+		if (typeMapAnnotation != null) {
+			return gioviTypeFrom(typeMapAnnotation);
+		}
+
+		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
+		var typeAnnotation = annotatedReturnType.getAnnotation(Native.Type.class);
+		if (typeAnnotation != null) {
+			return gioviTypeFrom(typeAnnotation);
+		}
+
+		return new GioviTypeVoid();
 	}
 
 	private static GioviType<?> gioviTypeFrom(Parameter param) {
+		var typeListAnnotation = param.getAnnotation(Native.TypeList.class);
+		if (typeListAnnotation != null) {
+			return gioviTypeFrom(typeListAnnotation);
+		}
+
+		var typeMapAnnotation = param.getAnnotation(Native.TypeMap.class);
+		if (typeMapAnnotation != null) {
+			return gioviTypeFrom(typeMapAnnotation);
+		}
+
+		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
 		var typeAnnotation = param.getAnnotation(Native.Type.class);
 		if (typeAnnotation != null) {
 			return gioviTypeFrom(typeAnnotation);
 		}
 
-		var nativeTypeAnnotation = param.getAnnotation(Native.TypeNative.class);
-		if (nativeTypeAnnotation != null) {
-			return new GioviTypeStruct(structSignatureOf(nativeTypeAnnotation.value()));
-		}
 		return new GioviTypeVoid();
 	}
 

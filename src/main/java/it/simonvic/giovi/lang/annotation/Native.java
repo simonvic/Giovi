@@ -2,7 +2,8 @@ package it.simonvic.giovi.lang.annotation;
 
 import java.lang.annotation.*;
 
-import giovi.lang.GioviType;
+import giovi.lang.GioviTypePrimitive;
+import giovi.lang.GioviTypeVoid;
 
 /// For a full implementation this depends on:
 /// 1. ~Struct constants~
@@ -21,7 +22,8 @@ public interface Native {
 	@Documented
 	public @interface Module {
 
-        boolean autoimport() default true;
+		boolean autoimport() default true;
+
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -89,16 +91,29 @@ public interface Native {
 	@Documented
 	public @interface Type {
 
-		Class<? extends GioviType<?>> value();
+		Class<? extends GioviTypePrimitive<?>> value() default GioviTypeVoid.class;
+
+		Class<?> nativ() default Object.class;
 
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Documented
-	public @interface TypeNative {
+	public @interface TypeList {
 
-		Class<?> value();
+		Type value();
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Documented
+	public @interface TypeMap {
+
+		Type key();
+
+		Type val();
 
 	}
 
