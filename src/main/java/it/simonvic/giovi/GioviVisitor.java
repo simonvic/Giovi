@@ -201,6 +201,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	private void doImportModule(FileModule module) throws IOException {
+		// TODO: allow http scheme? :mind_blow:
 		var lexer = new GioviLexer(CharStreams.fromFileName(module.uri().toString()));
 		var parser = new GioviParser(new CommonTokenStream(lexer));
 		var tree = parser.begin();
