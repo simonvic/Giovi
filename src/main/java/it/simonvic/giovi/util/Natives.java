@@ -125,12 +125,16 @@ public class Natives {
 			var annotation = param.getAnnotation(Native.Func.Param.class);
 			if (annotation == null) continue;
 			String paramName = annotation.value();
+
+			var labelAnnotation = param.getAnnotation(Native.Func.Param.Label.class);
+			String label = (labelAnnotation != null) ? labelAnnotation.value() : paramName;
+
 			GioviType<?> paramType = gioviTypeFrom(param);
 
 			FormalParameter formalParam;
 			var optionalAnnotation = param.getAnnotation(Native.Func.Param.Optional.class);
 			if (optionalAnnotation == null) {
-				formalParam = new FormalParameter(paramName, paramType);
+				formalParam = new FormalParameter(label, paramName, paramType);
 			} else {
 				GioviValue<?> defaultValue;
 				String defaultMethodSource = optionalAnnotation.value();

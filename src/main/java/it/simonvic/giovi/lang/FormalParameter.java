@@ -25,6 +25,10 @@ public record FormalParameter(
 		this(identifier, identifier, type, new VarD<>(type.spawn()), false);
 	}
 
+	public FormalParameter(String label, String identifier, GioviType<?> type) {
+		this(label, identifier, type, new VarD<>(type.spawn()), false);
+	}
+
 	@Override
 	public String toString() {
 		var sb = new StringBuilder();
