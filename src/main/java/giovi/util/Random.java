@@ -25,4 +25,13 @@ public class Random {
 		return new GioviBool(random.nextBoolean());
 	}
 
+	@Func
+	public static @Type(GioviTypeText.class) GioviText text() {
+		return new GioviText(random.ints('a', 'z' + 1)
+			.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+			.limit(8)
+			.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+			.toString());
+	}
+
 }
