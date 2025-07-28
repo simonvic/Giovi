@@ -1313,7 +1313,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.signature().returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
-				if (returnType.value() == GioviVoid.class) {
+				if (!(returnedValue instanceof GioviVoid)
+					&& returnType.value() == GioviVoid.class) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
