@@ -1377,12 +1377,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var constants = new HashMap<String, GioviValue<?>>();
 		var functions = new HashMap<String, GioviFunction>();
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
-		var definition = new StructSignature(
+		var structSignature = new StructSignature(
 			typename,
 			fields,
 			constants,
 			functions);
-		getCurrentScope().define(definition);
+		getCurrentScope().define(structSignature);
 
 		// TODO: should we allow cyclic references?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
@@ -1401,7 +1401,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 
 		// TODO: eventually replace with an incomplete type (GioviTypeSelf or GioviTypeVoid)
-		var selfType = new GioviTypeStruct(definition);
+		var selfType = new GioviTypeStruct(structSignature);
 		for (var funcCtx : ctx.structBodyDefinition().selfFunctionDeclaration()) {
 			var signatureCtx = funcCtx.selfFunctionSignature();
 
