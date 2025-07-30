@@ -14,6 +14,10 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviTuples {
 
+	public static GioviTypeTuple typeFrom(Tuple v) {
+		return new GioviTypeTuple(signatureFrom(v));
+	}
+
 	// TODO: delete this
 	public static TupleSignature signatureFrom(Tuple value) {
 		var fields = new ArrayList<TupleFieldSignature>(value.getFieldsCount());
@@ -25,7 +29,7 @@ public class GioviTuples {
 
 	public static GioviTuple of(Object... fields) {
 		var value = Tuples.ofNative(fields);
-		return new GioviTuple(signatureFrom(value), value);
+		return new GioviTuple(typeFrom(value), value);
 	}
 
 	public static GioviTypeTuple typeOf(GioviType<?>... types) {
@@ -42,7 +46,7 @@ public class GioviTuples {
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
 			.setValueWithRedirection(f.value()));
-		return new GioviTuple(dest.signature(), newTuple);
+		return new GioviTuple(dest.type(), newTuple);
 	}
 
 }

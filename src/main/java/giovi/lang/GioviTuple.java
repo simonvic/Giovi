@@ -4,11 +4,11 @@ import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviTuples;
 
-public record GioviTuple(TupleSignature signature, Tuple value)
+public record GioviTuple(GioviTypeTuple type, Tuple value)
 	implements GioviValue<Tuple> {
 
 	public GioviTuple() {
-		this(new TupleSignature(), new Tuple());
+		this(new GioviTypeTuple(), new Tuple());
 	}
 
 	@Override
@@ -18,17 +18,17 @@ public record GioviTuple(TupleSignature signature, Tuple value)
 
 	@Override
 	public Tuple defaultValue() {
-		return signature.spawn();
+		return type.spawn().value();
 	}
 
 	@Override
 	public GioviTypeTuple getGioviType() {
-		return new GioviTypeTuple(signature);
+		return type;
 	}
 
 	@Override
 	public GioviTuple copy() {
-		return new GioviTuple(signature, value.copy());
+		return new GioviTuple(type, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -40,7 +40,7 @@ public record GioviTuple(TupleSignature signature, Tuple value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviTuple(signature, signature.spawn());
+			case GioviDefault _ -> type.spawn();
 			case GioviTuple v -> GioviTuples.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
 		};
@@ -73,7 +73,7 @@ public record GioviTuple(TupleSignature signature, Tuple value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviTuple(signature, signature.spawn());
+			case GioviDefault _ -> type.spawn();
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -86,9 +86,9 @@ public record GioviTuple(TupleSignature signature, Tuple value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				default -> GioviValue.super.access(right);
 			};
-			case Range(Integer start, Integer end, Integer step, _)
+			case Range(Integer _, _, _, _)
 				-> new GioviTuple(
-					this.signature.copy((Range<Integer>) right),
+					new GioviTypeTuple(this.type.signature().copy((Range<Integer>) right)),
 					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)

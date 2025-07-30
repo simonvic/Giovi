@@ -1508,7 +1508,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			fieldsSignature.add(new TupleFieldSignature(fieldType));
 		}
 		return new GioviTuple(
-			new TupleSignature(fieldsSignature),
+			new GioviTypeTuple(new TupleSignature(fieldsSignature)),
 			new Tuple(fields));
 
 	}
