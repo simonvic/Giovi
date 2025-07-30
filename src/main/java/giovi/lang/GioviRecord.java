@@ -6,11 +6,11 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 
-public record GioviRecord(RecordSignature signature, Record value)
+public record GioviRecord(GioviTypeRecord type, Record value)
 	implements GioviValue<Record> {
 
 	public GioviRecord() {
-		this(new RecordSignature(), new Record());
+		this(new GioviTypeRecord(), new Record());
 	}
 
 	@Override
@@ -20,17 +20,17 @@ public record GioviRecord(RecordSignature signature, Record value)
 
 	@Override
 	public Record defaultValue() {
-		return signature.spawn();
+		return type.spawn().value();
 	}
 
 	@Override
 	public GioviTypeRecord getGioviType() {
-		return new GioviTypeRecord(signature);
+		return type;
 	}
 
 	@Override
 	public GioviRecord copy() {
-		return new GioviRecord(signature, value.copy());
+		return new GioviRecord(type, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -42,7 +42,7 @@ public record GioviRecord(RecordSignature signature, Record value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviRecord(signature, signature.spawn());
+			case GioviDefault _ -> type.spawn();
 			case GioviTuple v -> GioviRecords.redirection(this, v);
 			case GioviRecord v -> GioviRecords.redirection(this, v);
 			default -> GioviValue.super.redirection(content);
@@ -91,9 +91,9 @@ public record GioviRecord(RecordSignature signature, Record value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
-			case Range(Integer start, Integer end, Integer step, _)
+			case Range(Integer _, _, _, _)
 				-> new GioviRecord(
-					this.signature.copy((Range<Integer>) right),
+					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
 					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)

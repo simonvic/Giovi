@@ -8,11 +8,16 @@ import giovi.RecordSignature;
 import giovi.lang.GioviRecord;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviType;
+import giovi.lang.GioviTypeRecord;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviRecords {
+
+	public static GioviTypeRecord typeFrom(Record v) {
+		return new GioviTypeRecord(signatureFrom(v));
+	}
 
 	public static RecordSignature signatureFrom(Record value) {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
@@ -29,7 +34,7 @@ public class GioviRecords {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		var value = new Record(s);
-		return new GioviRecord(signatureFrom(value), value);
+		return new GioviRecord(typeFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -40,7 +45,7 @@ public class GioviRecords {
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
 		var value = new Record(s);
-		return new GioviRecord(signatureFrom(value), value);
+		return new GioviRecord(typeFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -53,7 +58,7 @@ public class GioviRecords {
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
 		var value = new Record(s);
-		return new GioviRecord(signatureFrom(value), value);
+		return new GioviRecord(typeFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -68,7 +73,7 @@ public class GioviRecords {
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
 		var value = new Record(s);
-		return new GioviRecord(signatureFrom(value), value);
+		return new GioviRecord(typeFrom(value), value);
 	}
 
 	public static <T> GioviRecord of(
@@ -85,7 +90,7 @@ public class GioviRecords {
 		s.put(i4, VarD.of(v4));
 		s.put(i5, VarD.of(v5));
 		var value = new Record(s);
-		return new GioviRecord(signatureFrom(value), value);
+		return new GioviRecord(typeFrom(value), value);
 	}
 
 	public static RecordSignature signatureOf() {
@@ -155,7 +160,7 @@ public class GioviRecords {
 		content.value().forEachIndexed((i, f) -> newRecord
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
 			.setValueWithRedirection(f.value()));
-		return new GioviRecord(dest.signature(), newRecord);
+		return new GioviRecord(dest.type(), newRecord);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviRecord content) {
@@ -163,7 +168,7 @@ public class GioviRecords {
 		content.value().forEach((s, f) -> newRecord
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
 			.setValueWithRedirection(f.value()));
-		return new GioviRecord(dest.signature(), newRecord);
+		return new GioviRecord(dest.type(), newRecord);
 	}
 
 }

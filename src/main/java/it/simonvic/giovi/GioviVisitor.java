@@ -1526,7 +1526,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			fieldsSignature.put(identifier, new RecordFieldSignature(identifier, fieldType));
 		}
 		return new GioviRecord(
-			new RecordSignature(fieldsSignature),
+			new GioviTypeRecord(new RecordSignature(fieldsSignature)),
 			new Record(fields));
 	}
 

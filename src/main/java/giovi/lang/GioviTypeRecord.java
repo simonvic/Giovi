@@ -5,6 +5,10 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeRecord(RecordSignature signature) implements GioviType<GioviRecord> {
 
+	public GioviTypeRecord() {
+		this(new RecordSignature());
+	}
+
 	@Override
 	public String toString() {
 		return signature.toString();
@@ -32,15 +36,15 @@ public record GioviTypeRecord(RecordSignature signature) implements GioviType<Gi
 	@Override
 	public GioviRecord widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviTuple v -> new GioviRecord(signature, signature.widen(v.value()));
-			case GioviRecord v -> new GioviRecord(signature, signature.widen(v.value()));
+			case GioviTuple v -> new GioviRecord(this, signature.widen(v.value()));
+			case GioviRecord v -> new GioviRecord(this, signature.widen(v.value()));
 			default -> throw new NonWideneable(value, this);
 		};
 	}
 
 	@Override
 	public GioviRecord spawn() {
-		return new GioviRecord(signature, signature.spawn());
+		return new GioviRecord(this, signature.spawn());
 	}
 
 	@Override
