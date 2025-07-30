@@ -1350,12 +1350,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		if (ctx.parentTypename != null) {
 			String parentTypename = ctx.parentTypename.getText();
-			var parentSignature = getCurrentScope()
-				.getStructSignature(parentTypename)
+			var parentType = getCurrentScope()
+				.getStructType(parentTypename)
 				.orElseThrow(() -> new GioviException(
 					"Can't inherit from " + parentTypename,
 					new TypeNotFound(parentTypename)));
-			for (var inheritedField : parentSignature.fields().values()) {
+			for (var inheritedField : parentType.signature().fields().values()) {
 				fields.put(inheritedField.identifier(), inheritedField);
 			}
 		}
@@ -1382,7 +1382,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			fields,
 			constants,
 			functions);
-		getCurrentScope().define(structSignature);
+		var structType = new GioviTypeStruct(structSignature);
+		getCurrentScope().define(structType);
 
 		// TODO: should we allow cyclic references?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
@@ -1448,23 +1449,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
-		StructSignature signature;
+		GioviTypeStruct typeStruct;
 		if (ctx.typeQualified() != null) {
-			signature = ((GioviTypeStruct) visit(ctx.typeQualified())).signature();
+			typeStruct = ((GioviTypeStruct) visit(ctx.typeQualified()));
 		} else {
 			String typename = ctx.identifier().getText();
-			signature = getCurrentScope()
-				.getStructSignature(typename)
+			typeStruct = getCurrentScope()
+				.getStructType(typename)
 				.orElseThrow(() -> new GioviException(
 					"Can't create struct " + typename, new TypeNotFound(typename)));
 		}
-		var struct = signature.spawn();
+		var struct = typeStruct.signature().spawn();
 		if (ctx.tupleCreation() != null) {
 			initStruct(struct, ctx.tupleCreation());
 		} else {
 			initStruct(struct, ctx.recordCreation());
 		}
-		return new GioviStruct(signature, struct);
+		return new GioviStruct(typeStruct, struct);
 	}
 
 	private void initStruct(Struct struct, RecordCreationContext fieldsCtx) {
@@ -1554,9 +1555,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		String typename = ctx.typename.getText();
 		// TODO: should we allow primitive types too? giovi.Int, giovi.Range, giovi.Tuple
-		return new GioviTypeStruct(parentModule.scope()
-			.getStructSignature(typename)
-			.orElseThrow(() -> new TypeNotFound(typename)));
+		return parentModule.scope()
+			.getStructType(typename)
+			.orElseThrow(() -> new TypeNotFound(typename));
 	}
 
 	@Override

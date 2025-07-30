@@ -5,15 +5,16 @@ import java.util.LinkedHashMap;
 import giovi.RecordFieldSignature;
 import giovi.Struct;
 import giovi.StructSignature;
-import giovi.lang.GioviRecord;
-import giovi.lang.GioviStruct;
-import giovi.lang.GioviTuple;
-import giovi.lang.GioviType;
+import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviStructs {
+
+	public static GioviTypeStruct typeFrom(Struct value) {
+		return new GioviTypeStruct(signatureFrom(value));
+	}
 
 	public static StructSignature signatureFrom(Struct value) {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
@@ -28,7 +29,7 @@ public class GioviStructs {
 
 	public static GioviStruct of(String typename) {
 		var value = new Struct(typename);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static GioviStruct of(
@@ -38,7 +39,7 @@ public class GioviStructs {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, v1);
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static GioviStruct of(
@@ -50,7 +51,7 @@ public class GioviStructs {
 		s.put(i1, v1);
 		s.put(i2, v2);
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static GioviStruct of(
@@ -64,7 +65,7 @@ public class GioviStructs {
 		s.put(i2, v2);
 		s.put(i3, v3);
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static GioviStruct of(
@@ -80,7 +81,7 @@ public class GioviStructs {
 		s.put(i3, v3);
 		s.put(i4, v4);
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static <T> GioviStruct ofNative(
@@ -90,7 +91,7 @@ public class GioviStructs {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static <T> GioviStruct ofNative(
@@ -102,7 +103,7 @@ public class GioviStructs {
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static <T> GioviStruct ofNative(
@@ -116,7 +117,7 @@ public class GioviStructs {
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static <T> GioviStruct ofNative(
@@ -132,7 +133,7 @@ public class GioviStructs {
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
 		var value = new Struct(typename, s);
-		return new GioviStruct(signatureFrom(value), value);
+		return new GioviStruct(typeFrom(value), value);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviTuple content) {
@@ -143,7 +144,7 @@ public class GioviStructs {
 		content.value().forEachIndexed((i, f) -> newStruct
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
 			.setValueWithRedirection(f.value()));
-		return new GioviStruct(dest.signature(), newStruct);
+		return new GioviStruct(dest.type(), newStruct);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviRecord content) {
@@ -153,7 +154,7 @@ public class GioviStructs {
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
 			.setValueWithRedirection(f.value()));
-		return new GioviStruct(dest.signature(), newStruct);
+		return new GioviStruct(dest.type(), newStruct);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviStruct content) {
@@ -161,7 +162,7 @@ public class GioviStructs {
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
 			.setValueWithRedirection(f.value()));
-		return new GioviStruct(dest.signature(), newStruct);
+		return new GioviStruct(dest.type(), newStruct);
 	}
 
 	public static StructSignature signatureOf(

@@ -33,16 +33,16 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	@Override
 	public GioviStruct widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviTuple v -> new GioviStruct(signature, signature.widen(v.value()));
-			case GioviRecord v -> new GioviStruct(signature, signature.widen(v.value()));
-			case GioviStruct v -> new GioviStruct(signature, signature.widen(v.value()));
+			case GioviTuple v -> new GioviStruct(this, signature.widen(v.value()));
+			case GioviRecord v -> new GioviStruct(this, signature.widen(v.value()));
+			case GioviStruct v -> new GioviStruct(this, signature.widen(v.value()));
 			default -> throw new NonWideneable(value, this);
 		};
 	}
 
 	@Override
 	public GioviStruct spawn() {
-		return new GioviStruct(signature, signature.spawn());
+		return new GioviStruct(this, signature.spawn());
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
+			case GioviDefault _ -> this.spawn();
 			case MemberKey(var identifier) when signature.containsField(identifier)
 				-> signature.getField(identifier).defaultValue().copy();
 			case MemberKey(var identifier) when signature.containsConstant(identifier)

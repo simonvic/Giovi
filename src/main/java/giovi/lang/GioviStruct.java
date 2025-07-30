@@ -5,7 +5,7 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
-public record GioviStruct(StructSignature signature, Struct value)
+public record GioviStruct(GioviTypeStruct type, Struct value)
 	implements GioviValue<Struct> {
 
 	@Override
@@ -15,17 +15,17 @@ public record GioviStruct(StructSignature signature, Struct value)
 
 	@Override
 	public GioviTypeStruct getGioviType() {
-		return new GioviTypeStruct(signature);
+		return type;
 	}
 
 	@Override
 	public Struct defaultValue() {
-		return signature.spawn();
+		return type.spawn().value();
 	}
 
 	@Override
 	public GioviStruct copy() {
-		return new GioviStruct(signature, value.copy());
+		return new GioviStruct(type, value.copy());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -35,7 +35,7 @@ public record GioviStruct(StructSignature signature, Struct value)
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviTypeStruct t when t.signature().equals(this.signature()) -> this;
+			case GioviTypeStruct t when t.equals(this.type) -> this;
 			default -> GioviValue.super.as(right);
 		};
 	}
@@ -45,7 +45,7 @@ public record GioviStruct(StructSignature signature, Struct value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _,GioviSelf _ -> new GioviStruct(signature, signature.spawn());
+			case GioviDefault _,GioviSelf _ -> type.spawn();
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
@@ -80,19 +80,19 @@ public record GioviStruct(StructSignature signature, Struct value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviStruct(signature, signature.spawn());
+			case GioviDefault _ -> type.spawn();
 			case MemberKey(var identifier) when value.containsField(identifier) -> {
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.value() instanceof GioviSelf) {
 					// init field
-					fieldVar.redirection(new GioviStruct(signature, signature.spawn()));
+					fieldVar.redirection(type.spawn());
 				}
 				yield fieldVar;
 			}
-			case MemberKey(var identifier) when signature.containsConstant(identifier)
-				-> signature.getConstant(identifier);
-			case MemberKey(var identifier) when signature.containsFunction(identifier)
-				-> signature.getFunction(identifier);
+			case MemberKey(var identifier) when type.signature().containsConstant(identifier)
+				-> type.signature().getConstant(identifier);
+			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
+				-> type.signature().getFunction(identifier);
 			default -> GioviValue.super.dot(right);
 		};
 	}
@@ -105,9 +105,9 @@ public record GioviStruct(StructSignature signature, Struct value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
-			case Range(Integer start, Integer end, Integer step, _)
+			case Range(Integer _, _, _, _)
 				-> new GioviRecord(
-					this.signature.copy((Range<Integer>) right),
+					this.type.signature().copy((Range<Integer>) right),
 					this.value.copy((Range<Integer>) right));
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)

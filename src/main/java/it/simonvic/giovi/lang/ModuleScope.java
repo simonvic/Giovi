@@ -37,7 +37,7 @@ public class ModuleScope extends Scope {
 		}
 
 		if (structDefinitions.containsKey(identifier)) {
-			return Optional.of(new GioviTypeStruct(structDefinitions.get(identifier)));
+			return Optional.of(structDefinitions.get(identifier));
 		}
 
 		if (modules.containsKey(identifier)) {

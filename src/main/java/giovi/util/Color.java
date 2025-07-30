@@ -1,10 +1,10 @@
 package giovi.util;
 
-import giovi.Struct;
 import giovi.StructSignature;
 import giovi.lang.GioviInt;
 import giovi.lang.GioviStruct;
 import giovi.lang.GioviTypeInt;
+import giovi.lang.GioviTypeStruct;
 import giovi.util.Color.Foo.Rgba;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.Const;
@@ -32,13 +32,12 @@ public class Color {
 		@Param("g") @Type(GioviTypeInt.class) GioviInt g,
 		@Param("b") @Type(GioviTypeInt.class) GioviInt b
 	) {
-		StructSignature signature = Natives.structSignatureOf(Rgb.class);
-		Struct value = signature.spawn();
+		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgb.class)).spawn();
 		// TODO: use safe getField
-		value.getField("r").orElseThrow().setValueWithRedirection(r);
-		value.getField("g").orElseThrow().setValueWithRedirection(g);
-		value.getField("b").orElseThrow().setValueWithRedirection(b);
-		return new GioviStruct(signature, value);
+		struct.value().getField("r").orElseThrow().setValueWithRedirection(r);
+		struct.value().getField("g").orElseThrow().setValueWithRedirection(g);
+		struct.value().getField("b").orElseThrow().setValueWithRedirection(b);
+		return struct;
 	}
 
 	@Func
@@ -48,14 +47,13 @@ public class Color {
 		@Param("b") @Type(GioviTypeInt.class) GioviInt b,
 		@Param("a") @Type(GioviTypeInt.class) GioviInt a
 	) {
-		StructSignature signature = Natives.structSignatureOf(Rgba.class);
-		Struct value = signature.spawn();
+		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgba.class)).spawn();
 		// TODO: use safe getField
-		value.getField("r").orElseThrow().setValueWithRedirection(r);
-		value.getField("g").orElseThrow().setValueWithRedirection(g);
-		value.getField("b").orElseThrow().setValueWithRedirection(b);
-		value.getField("a").orElseThrow().setValueWithRedirection(a);
-		return new GioviStruct(signature, value);
+		struct.value().getField("r").orElseThrow().setValueWithRedirection(r);
+		struct.value().getField("g").orElseThrow().setValueWithRedirection(g);
+		struct.value().getField("b").orElseThrow().setValueWithRedirection(b);
+		struct.value().getField("a").orElseThrow().setValueWithRedirection(a);
+		return struct;
 	}
 
 	/**

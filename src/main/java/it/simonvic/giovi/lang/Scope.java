@@ -9,7 +9,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Module;
 import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
-import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
@@ -164,13 +163,13 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Structs
 
-	protected final Map<String, StructSignature> structDefinitions = new HashMap<>();
+	protected final Map<String, GioviTypeStruct> structDefinitions = new HashMap<>();
 
-	public void define(StructSignature signature) {
-		if (structDefinitions.containsKey(signature.typename())) {
-			throw new StructAlreadyDefined(signature.typename());
+	public void define(GioviTypeStruct type) {
+		if (structDefinitions.containsKey(type.signature().typename())) {
+			throw new StructAlreadyDefined(type.signature().typename());
 		}
-		structDefinitions.put(signature.typename(), signature);
+		structDefinitions.put(type.signature().typename(), type);
 	}
 
 	public boolean isDefinedStruct(String identifier) {
@@ -178,14 +177,14 @@ public class Scope {
 			|| (parent != null && parent.isDefinedStruct(identifier));
 	}
 
-	public Optional<StructSignature> getStructSignature(String identifier) {
+	public Optional<GioviTypeStruct> getStructType(String identifier) {
 		if (structDefinitions.containsKey(identifier)) {
 			return Optional.of(structDefinitions.get(identifier));
 		}
 		if (parent == null) {
 			return Optional.empty();
 		}
-		return parent.getStructSignature(identifier);
+		return parent.getStructType(identifier);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Modules
@@ -245,9 +244,9 @@ public class Scope {
 		if (primitiveTypes.containsKey(typename)) {
 			return Optional.of(primitiveTypes.get(typename));
 		}
-		var structSignatureOpt = getStructSignature(typename);
+		var structSignatureOpt = getStructType(typename);
 		if (structSignatureOpt.isPresent()) {
-			return Optional.of(new GioviTypeStruct(structSignatureOpt.orElseThrow()));
+			return Optional.of(structSignatureOpt.orElseThrow());
 		}
 		return Optional.empty();
 	}
@@ -278,7 +277,7 @@ public class Scope {
 		}
 
 		if (structDefinitions.containsKey(identifier)) {
-			return Optional.of(new GioviTypeStruct(structDefinitions.get(identifier)));
+			return Optional.of(structDefinitions.get(identifier));
 		}
 
 		if (modules.containsKey(identifier)) {

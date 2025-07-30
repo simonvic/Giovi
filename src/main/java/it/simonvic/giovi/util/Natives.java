@@ -48,7 +48,7 @@ public class Natives {
 
 		for (var nestedClass : clazz.getClasses()) {
 			if (nestedClass.isAnnotationPresent(Native.Struct.class)) {
-				module.scope().define(structSignatureOf(nestedClass));
+				module.scope().define(structTypeOf(nestedClass));
 			}
 		}
 	}
@@ -228,6 +228,10 @@ public class Natives {
 		}
 
 		return new GioviTypeVoid();
+	}
+
+	public static GioviTypeStruct structTypeOf(Class<?> clazz) {
+		return new GioviTypeStruct(Natives.structSignatureOf(clazz));
 	}
 
 

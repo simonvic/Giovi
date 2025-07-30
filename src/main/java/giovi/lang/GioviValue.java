@@ -28,7 +28,7 @@ public sealed interface GioviValue<T>
 			case String v -> new GioviText(v);
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
-			case Struct v -> new GioviStruct(GioviStructs.signatureFrom(v), v);
+			case Struct v -> new GioviStruct(GioviStructs.typeFrom(v), v);
 			case Record v -> new GioviRecord(GioviRecords.signatureFrom(v), v);
 			case Tuple v -> new GioviTuple(GioviTuples.signatureFrom(v), v);
 			case Function v -> new GioviFunction(v);
