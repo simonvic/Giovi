@@ -14,7 +14,7 @@ public class OperatorNotSupported extends GioviException {
 			Operator %s (%s) not supported
 				by:   %s
 				with: %s
-			""".formatted(op, op.label, rhs, lhs)); // TODO: swap rhs and lhs
+			""".formatted(op, op.label, lhs, rhs));
 	}
 
 	public OperatorNotSupported(GioviParserVisitResult r, GioviToken op) {
