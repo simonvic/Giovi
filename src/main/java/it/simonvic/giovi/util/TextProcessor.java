@@ -154,6 +154,7 @@ public class TextProcessor {
 	}
 
 	public static String unescapeEscapes(String text) {
+		text = text.replaceAll(Pattern.quote("\\\\"), Matcher.quoteReplacement("\\"));
 		text = text.replaceAll(Pattern.quote("\\s"), "\s");
 		text = text.replaceAll(Pattern.quote("\\t"), "\t");
 		text = text.replaceAll(Pattern.quote("\\n"), "\n");
