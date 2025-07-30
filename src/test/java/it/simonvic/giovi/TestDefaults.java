@@ -32,7 +32,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(new Natural(69));
+				.isEqualTo(new Natural(69));
 		}
 
 		@Test
@@ -45,7 +45,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(69);
+				.isEqualTo(69);
 		}
 
 		@Test
@@ -58,7 +58,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(6.9);
+				.isEqualTo(6.9);
 		}
 
 		@Test
@@ -71,7 +71,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(true);
+				.isEqualTo(true);
 		}
 
 		@Test
@@ -84,7 +84,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo("foo");
+				.isEqualTo("foo");
 		}
 
 		@Test
@@ -97,7 +97,7 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(GioviLists.of(1, 2, 3).value());
+				.isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
 
 		@Test
@@ -110,9 +110,9 @@ public class TestDefaults {
 				.get()
 				.defaultValue()
 				.value())
-					.isEqualTo(Map.of(
-						Var.of(1), Var.of(true),
-						Var.of(2), Var.of(false)));
+				.isEqualTo(Map.of(
+					Var.of(1), Var.of(true),
+					Var.of(2), Var.of(false)));
 		}
 
 		@Test
@@ -210,8 +210,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.get()
-					.isEqualTo(VarD.of(new Natural(69), new Natural(69)));
+				.get()
+				.isEqualTo(VarD.of(new Natural(69), new Natural(69)));
 		}
 
 		@Test
@@ -223,8 +223,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.get()
-					.isEqualTo(VarD.of(69, 69));
+				.get()
+				.isEqualTo(VarD.of(69, 69));
 		}
 
 		@Test
@@ -236,8 +236,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.get()
-					.isEqualTo(VarD.of(6.9, 6.9));
+				.get()
+				.isEqualTo(VarD.of(6.9, 6.9));
 		}
 
 		@Test
@@ -249,8 +249,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.get()
-					.isEqualTo(VarD.of(true, true));
+				.get()
+				.isEqualTo(VarD.of(true, true));
 		}
 
 		@Test
@@ -262,8 +262,8 @@ public class TestDefaults {
 				""")
 				.getCurrentScope()
 				.getVariable("x"))
-					.get()
-					.isEqualTo(VarD.of("foo", "foo"));
+				.get()
+				.isEqualTo(VarD.of("foo", "foo"));
 		}
 
 		@Test
@@ -277,7 +277,7 @@ public class TestDefaults {
 				.getVariable("x")
 				.get()
 				.value())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				.isEqualTo(GioviLists.of(1, 2, 3));
 		}
 
 		@Test
@@ -290,13 +290,13 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.get())
-					.isEqualTo(VarD.of(
-						Map.of(
-							1, true,
-							2, false),
-						Map.of(
-							1, true,
-							2, false)));
+				.isEqualTo(VarD.of(
+					Map.of(
+						1, true,
+						2, false),
+					Map.of(
+						1, true,
+						2, false)));
 		}
 
 		@Test
@@ -331,20 +331,20 @@ public class TestDefaults {
 				.get()
 				.value()
 				.value())
-					.isEqualTo(Structs.of(
-						"Foo",
-						"foo", VarD.of("foo"),
-						"bar", VarD.of(
-							Structs.of("Bar",
-								"baz", VarD.of("baz"),
-								"foobar", new VarD<>(
-									GioviLists.of(1, 2, 3),
-									new GioviList(new GioviTypeInt()))),
-							Structs.of("Bar",
-								"baz", VarD.of(""),
-								"foobar", new VarD<>(
-									new GioviList(new GioviTypeInt()),
-									new GioviList(new GioviTypeInt()))))));
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", VarD.of("foo"),
+					"bar", VarD.of(
+						Structs.of("Bar",
+							"baz", VarD.of("baz"),
+							"foobar", new VarD<>(
+								GioviLists.of(1, 2, 3),
+								new GioviList(new GioviTypeInt()))),
+						Structs.of("Bar",
+							"baz", VarD.of(""),
+							"foobar", new VarD<>(
+								new GioviList(new GioviTypeInt()),
+								new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
@@ -453,20 +453,20 @@ public class TestDefaults {
 				""")
 				.asGioviValue()
 				.value())
-					.isEqualTo(Structs.of(
-						"Foo",
-						"foo", VarD.of("foo"),
-						"bar", VarD.of(
-							Structs.of("Bar",
-								"baz", VarD.of("baz"),
-								"foobar", new VarD<>(
-									GioviLists.of(1, 2, 3),
-									new GioviList(new GioviTypeInt()))),
-							Structs.of("Bar",
-								"baz", VarD.of(""),
-								"foobar", new VarD<>(
-									new GioviList(new GioviTypeInt()),
-									new GioviList(new GioviTypeInt()))))));
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", VarD.of("foo"),
+					"bar", VarD.of(
+						Structs.of("Bar",
+							"baz", VarD.of("baz"),
+							"foobar", new VarD<>(
+								GioviLists.of(1, 2, 3),
+								new GioviList(new GioviTypeInt()))),
+						Structs.of("Bar",
+							"baz", VarD.of(""),
+							"foobar", new VarD<>(
+								new GioviList(new GioviTypeInt()),
+								new GioviList(new GioviTypeInt()))))));
 		}
 
 	}
@@ -531,9 +531,9 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				[Text:Int].default
 				"""))
-				.isEqualTo(new GioviMap(
+				.isEqualTo(new GioviMap(new GioviTypeMap(
 					new GioviTypeText(),
-					new GioviTypeInt()));
+					new GioviTypeInt())));
 		}
 
 		@Test
@@ -557,19 +557,19 @@ public class TestDefaults {
 				""")
 				.asGioviValue()
 				.value())
-					.isEqualTo(Structs.of(
-						"Foo",
-						"foo", VarD.of("foo", "foo"),
-						"bar", VarD.of(Structs.of("Bar",
-							"baz", VarD.of("baz", "baz"),
-							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3)))),
-						"foobar", VarD.of(
-							Structs.of("Bar",
-								"baz", VarD.of("BAZ", "baz"),
-								"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))),
-							Structs.of("Bar",
-								"baz", VarD.of("BAZ", "baz"),
-								"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
+				.isEqualTo(Structs.of(
+					"Foo",
+					"foo", VarD.of("foo", "foo"),
+					"bar", VarD.of(Structs.of("Bar",
+						"baz", VarD.of("baz", "baz"),
+						"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3)))),
+					"foobar", VarD.of(
+						Structs.of("Bar",
+							"baz", VarD.of("BAZ", "baz"),
+							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))),
+						Structs.of("Bar",
+							"baz", VarD.of("BAZ", "baz"),
+							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
 		}
 
 

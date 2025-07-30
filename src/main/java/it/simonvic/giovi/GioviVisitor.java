@@ -1042,7 +1042,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
 		var map = new LinkedHashMap<Var<?>, Var<?>>();
 		if (ctx.mapEntries() == null) {
-			return new GioviMap(new GioviTypeVoid(), new GioviTypeVoid(), map);
+			return new GioviMap(new GioviTypeMap(new GioviTypeVoid(), new GioviTypeVoid()), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
@@ -1051,7 +1051,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());
-		return new GioviMap(keyType, elementType, map);
+		return new GioviMap(new GioviTypeMap(keyType, elementType), map);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// FUNCTIONS

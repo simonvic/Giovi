@@ -32,25 +32,22 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return switch (type) {
-			case GioviTypeMap t
-				-> getKeyType().isWidenableTo(t.getKeyType())
-					&& getElementType().isWidenableTo(t.getElementType());
-			default -> false;
-		};
+		return type instanceof
+
+		GioviTypeMap(var keyType, var elementType)
+			&& this.keyType.isWidenableTo(keyType)
+			&& this.elementType.isWidenableTo(elementType);
 	}
 
 	@Override
 	public GioviMap widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviMap v -> {
-				var widened = new GioviMap(this.keyType, this.elementType);
-				for (var vEntry : v.value().entrySet()) {
-					widened.value().put(
-						new Var<>(this.keyType.widen(vEntry.getKey().value())),
-						new Var<>(this.elementType.widen(vEntry.getValue().value())));
+			case GioviMap(_, var v) -> {
+				try {
+					yield new GioviMap(this, v);
+				} catch (IllegalArgumentException ex) {
+					throw new NonWideneable(ex);
 				}
-				yield widened;
 			}
 			default -> throw new NonWideneable(value, this);
 		};
@@ -58,7 +55,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 
 	@Override
 	public GioviMap spawn() {
-		return new GioviMap(this.keyType, this.elementType);
+		return new GioviMap(this);
 	}
 
 	@Override
@@ -69,7 +66,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviMap(keyType, elementType);
+			return new GioviMap(this);
 		}
 		return GioviType.super.dot(right);
 	}

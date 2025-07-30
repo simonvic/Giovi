@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import giovi.lang.GioviMap;
+import giovi.lang.GioviTypeMap;
 import it.simonvic.giovi.Var;
 
 public class GioviMaps {
@@ -12,8 +13,9 @@ public class GioviMaps {
 		var entries = new LinkedHashMap<Var<?>, Var<?>>();
 		map.forEach((k, v) -> entries.put(Var.of(k), Var.of(v)));
 		return new GioviMap(
-			GioviTypes.inferGioviType(entries.keySet()),
-			GioviTypes.inferGioviType(entries.values()),
+			new GioviTypeMap(
+				GioviTypes.inferGioviType(entries.keySet()),
+				GioviTypes.inferGioviType(entries.values())),
 			entries);
 	}
 
