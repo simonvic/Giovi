@@ -9,7 +9,7 @@ import it.simonvic.giovi.exceptions.RedirectionException;
 
 // TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
 
-public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
+public class Var<T extends GioviValue<?>> implements GioviParserVisitResult, Typed {
 
 	public static <T> Var<? extends GioviValue<?>> of(T value) {
 		return new Var<>(GioviValue.of(value));
@@ -73,6 +73,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return true;
 	}
 
+	@Override
 	public GioviType<?> getGioviType() {
 		return value.getGioviType();
 	}

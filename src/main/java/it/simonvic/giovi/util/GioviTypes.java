@@ -4,16 +4,16 @@ import java.util.Collection;
 
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeVoid;
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.Typed;
 import it.simonvic.giovi.exceptions.GioviException;
 
 public class GioviTypes {
 
-	public static GioviType<?> inferGioviType(Collection<Var<?>> entries) {
+	public static GioviType<?> inferGioviType(Collection<? extends Typed> entries) {
 		if (entries.isEmpty()) return new GioviTypeVoid(); // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
-		for (Var<?> entry : entries) {
+		for (var entry : entries) {
 			next = entry.getGioviType();
 			if (inferred == null) {
 				inferred = next;

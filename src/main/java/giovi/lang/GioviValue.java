@@ -7,6 +7,7 @@ import java.util.Map;
 
 import giovi.*;
 import giovi.Record;
+import it.simonvic.giovi.Typed;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -15,7 +16,7 @@ import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.util.*;
 
 public sealed interface GioviValue<T>
-	extends GioviObject
+	extends GioviObject, Typed
 	permits GioviPrimitive, GioviList, GioviMap, GioviTuple, GioviRecord, GioviStruct, GioviSelf,
 	GioviFunction {
 
@@ -53,12 +54,6 @@ public sealed interface GioviValue<T>
 	 * @return default value of the type
 	 */
 	T defaultValue();
-
-	/**
-	 * Get the Type (in Giovi space) of this value
-	 * @return Type
-	 */
-	GioviType<? extends GioviValue<T>> getGioviType();
 
 	/**
 	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
