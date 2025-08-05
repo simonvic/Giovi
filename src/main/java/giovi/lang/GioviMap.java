@@ -15,8 +15,8 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviMap(
 	GioviTypeMap type,
-	LinkedHashMap<Var<?>, Var<?>> value
-) implements GioviValue<LinkedHashMap<Var<?>, Var<?>>> {
+	LinkedHashMap<GioviValue<?>, Var<?>> value
+) implements GioviValue<LinkedHashMap<GioviValue<?>, Var<?>>> {
 
 	public GioviMap(GioviTypeMap type) {
 		this(type, new LinkedHashMap<>());
@@ -24,7 +24,7 @@ public record GioviMap(
 
 	public GioviMap(
 		GioviTypeMap type,
-		LinkedHashMap<Var<?>, Var<?>> value
+		LinkedHashMap<GioviValue<?>, Var<?>> value
 	) {
 		this.type = type;
 		this.value = new LinkedHashMap<>();
@@ -40,7 +40,7 @@ public record GioviMap(
 	}
 
 	@Override
-	public LinkedHashMap<Var<?>, Var<?>> defaultValue() {
+	public LinkedHashMap<GioviValue<?>, Var<?>> defaultValue() {
 		return new LinkedHashMap<>();
 	}
 
@@ -50,7 +50,7 @@ public record GioviMap(
 	 * @param element
 	 * @throws IllegalArgumentException
 	 */
-	private void put(Var<?> key, Var<?> element) throws IllegalArgumentException {
+	private void put(GioviValue<?> key, Var<?> element) throws IllegalArgumentException {
 		// TODO: remove widening here and handle manually
 		try {
 			value.put(
@@ -61,25 +61,25 @@ public record GioviMap(
 		}
 	}
 
-	private void putAll(Map<Var<?>, Var<?>> map) throws IllegalArgumentException {
+	private void putAll(Map<GioviValue<?>, Var<?>> map) throws IllegalArgumentException {
 		map.forEach(this::put);
 	}
 
 	// TODO: return optional or default value (@candidate) (or maybe Void for better performance)
-	public Var<?> get(Var<?> key) {
+	public Var<?> get(GioviValue<?> key) {
 		if (!value.containsKey(key)) {
 			// return new Var<>(new GioviVoid());
 			// return new Var<>(elementType.spawn());
-			throw new KeyNotPresent(this, key.value());
+			throw new KeyNotPresent(this, key);
 		}
 		return value.get(key);
 	}
 
-	private void removeAll(Map<Var<?>, Var<?>> entries) {
+	private void removeAll(Map<GioviValue<?>, Var<?>> entries) {
 		entries.forEach(value::remove);
 	}
 
-	private void removeAllWidened(Map<Var<?>, Var<?>> entries) {
+	private void removeAllWidened(Map<GioviValue<?>, Var<?>> entries) {
 		try {
 			for (var entry : entries.entrySet()) {
 				value.remove(
@@ -139,7 +139,7 @@ public record GioviMap(
 		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(type);
 			this.value.forEach((k, e) -> map.put(
-				k.as(t.getKeyType()).asVar(),
+				k.as(t.getKeyType()).asGioviValue(),
 				e.as(t.getElementType()).asVar()));
 			return map;
 		}
@@ -182,7 +182,7 @@ public record GioviMap(
 				-> removeAllWidened(value);
 			case GioviValue<?> v -> {
 				try {
-					value.remove(new Var<>(this.type.keyType().widen(v)));
+					value.remove(v.widenTo(this.type.keyType()));
 				} catch (NonWideneable e) {
 					return GioviValue.super.redirectionMinus(right);
 				}
@@ -264,10 +264,13 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviValue<?> gioviValue -> get(new Var<>(gioviValue));
+			case GioviValue<?> gioviValue -> get(gioviValue);
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value().size());
-				case KEYS -> new GioviList(type.keyType(), new ArrayList<>(value().keySet()));
+				// FIXME: keys should be copied (e.g. structs as keys can be mutated)
+				case KEYS -> new GioviList(
+					type.keyType(),
+					value().keySet().stream().<Var<?>>map(v -> new Var<>(v)).toList());
 				case VALUES -> new GioviList(type.elementType(), new ArrayList<>(value().values()));
 			};
 			default -> GioviValue.super.access(right);

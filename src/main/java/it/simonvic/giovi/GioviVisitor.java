@@ -400,9 +400,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 					case IteratorUnaryContext keyCtx -> iterate(map, bodyCtx, (key, _) -> {
 						String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
-						getCurrentScope().declare(
-							keyIdentifier,
-							new VarD<>(key.value().copy()));
+						getCurrentScope().declare(keyIdentifier, new VarD<>(key.copy()));
 					});
 
 					case IteratorMapContext c -> iterate(map, bodyCtx, c.key, c.value);
@@ -433,7 +431,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		IteratorContext keyIteratorCtx,
 		IteratorContext valueIteratorCtx
 	) {
-		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> iterationBody;
+		TriConsumer<StatementOrBlockContext, GioviValue<?>, Var<?>> iterationBody;
 		try {
 			iterationBody = switch (keyIteratorCtx) {
 
@@ -466,12 +464,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 					yield switch (valueIteratorCtx) {
 						case IteratorPlaceholderContext _ -> (body, k, _) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
+							getCurrentScope().declare(keyIdentifier, new VarD<>(k.copy()));
 							visit(body);
 						};
 
 						case IteratorUnaryContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
+							getCurrentScope().declare(keyIdentifier, new VarD<>(k.copy()));
 							String valueIdentifier = valueCtx.unaryIterator().identifier()
 								.getText();
 							getCurrentScope().declare(
@@ -481,13 +479,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 						};
 
 						case IteratorAggregateContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
+							getCurrentScope().declare(keyIdentifier, new VarD<>(k.copy()));
 							deconstruct(v.copy(), valueCtx);
 							visit(body);
 						};
 
 						case IteratorMapContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.value().copy()));
+							getCurrentScope().declare(keyIdentifier, new VarD<>(k.copy()));
 							if (v.value() instanceof GioviMap nestedMap) {
 								iterate(nestedMap, body, valueCtx.key, valueCtx.value);
 							}
@@ -534,10 +532,19 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param aggregateCtx
 	 */
 	private void deconstruct(Var<?> aggregate, IteratorAggregateContext aggregateCtx) {
+		deconstruct(aggregate.value(), aggregateCtx);
+	}
+
+	/**
+	 * Deconstruct an aggregate value and declare the variables
+	 * @param aggregate
+	 * @param aggregateCtx
+	 */
+	private void deconstruct(GioviValue<?> aggregate, IteratorAggregateContext aggregateCtx) {
 		if (aggregateCtx.whole != null) {
 			getCurrentScope().declare(
 				aggregateCtx.whole.getText(),
-				new VarD<>(aggregate.value()));
+				new VarD<>(aggregate));
 		}
 		switch (aggregate.value()) {
 			case GioviStruct struct -> deconstruct(struct, aggregateCtx);
@@ -642,7 +649,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void iterate(
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
-		BiConsumer<Var<?>, Var<?>> preamble
+		BiConsumer<GioviValue<?>, Var<?>> preamble
 	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
@@ -668,7 +675,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void iterate(
 		GioviMap map,
 		StatementOrBlockContext statementOrBlockCtx,
-		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> loopBody
+		TriConsumer<StatementOrBlockContext, GioviValue<?>, Var<?>> loopBody
 	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
@@ -1040,14 +1047,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
-		var map = new LinkedHashMap<Var<?>, Var<?>>();
+		var map = new LinkedHashMap<GioviValue<?>, Var<?>>();
 		if (ctx.mapEntries() == null) {
 			return new GioviMap(new GioviTypeMap(new GioviTypeVoid(), new GioviTypeVoid()), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
 			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
-			map.put(new Var<>(key), new Var<>(element));
+			map.put(key, new Var<>(element));
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());

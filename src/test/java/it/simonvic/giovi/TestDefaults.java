@@ -111,8 +111,8 @@ public class TestDefaults {
 				.defaultValue()
 				.value())
 				.isEqualTo(Map.of(
-					Var.of(1), Var.of(true),
-					Var.of(2), Var.of(false)));
+					GioviValue.of(1), Var.of(true),
+					GioviValue.of(2), Var.of(false)));
 		}
 
 		@Test
