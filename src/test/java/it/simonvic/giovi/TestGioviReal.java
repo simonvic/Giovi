@@ -29,7 +29,9 @@ public class TestGioviReal {
 			0o105r, 69.0
 			0o207_454r, 69420.0
 			1e10, 1e10
+			0x45r, 69.0
 			0x1p69, 0x1p69
+			0x1p69r, 0x1p69
 			""")
 		void testLiteral(String code, Double expected) {
 			assertThat(visitExpression(code).asNativeReal()).isEqualTo(expected);
