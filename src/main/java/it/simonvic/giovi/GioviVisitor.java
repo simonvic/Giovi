@@ -754,9 +754,22 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
-		var constant = spawnType(ctx.type(), null);
-		constant.setValueWithRedirection(visit(ctx.expression()));
-		getCurrentScope().declareConstant(ctx.identifier().getText(), constant.value());
+		GioviValue<?> constant;
+		try {
+			constant = doVisitConstant(ctx);
+		} catch (NonWideneable e) {
+			throw new GioviException(e, "Incompatible constant type");
+		}
+		getCurrentScope().declareConstant(ctx.identifier().getText(), constant);
+		return constant;
+	}
+
+	private GioviValue<?> doVisitConstant(ConstantDeclarationContext ctx) throws NonWideneable {
+		var constant = visit(ctx.expression()).unwrapAsGioviValue();
+		if (ctx.type() != null) {
+			var type = visit(ctx.type()).asGioviType();
+			constant = constant.widenTo(type);
+		}
 		return constant;
 	}
 
@@ -1387,11 +1400,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		// TODO: should we allow cyclic references?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
-			var constant = spawnType(constCtx.type(), null);
-			constant.setValueWithRedirection(visit(constCtx.expression()));
-			constants.put(
-				constCtx.identifier().getText(),
-				constant.value());
+			GioviValue<?> constant;
+			try {
+				constant = doVisitConstant(constCtx);
+			} catch (NonWideneable e) {
+				throw new GioviException(e, "Incompatible constant type");
+			}
+			constants.put(constCtx.identifier().getText(), constant);
 		}
 
 		for (var funcCtx : ctx.structBodyDefinition().functionDeclaration()) {

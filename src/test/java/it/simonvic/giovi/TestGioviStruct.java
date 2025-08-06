@@ -156,8 +156,8 @@ public class TestGioviStruct {
 				Foo <
 					a Int
 					b Int
-					constant BAR Real <- 6.9
-					constant BAZ [Int] <- [1 2 3]
+					const BAR Real <- 6.9
+					const BAZ [Int] <- [1 2 3]
 				>
 				""")
 				.getCurrentScope()
@@ -182,7 +182,7 @@ public class TestGioviStruct {
 				Foo <
 					a Int
 					b Int
-					constant FOO Foo <- Foo.<>
+					const FOO Foo <- Foo.<>
 				>
 				""")
 				.getCurrentScope()
