@@ -1,5 +1,7 @@
 package it.simonvic.giovi;
 
+import java.util.Objects;
+
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
@@ -39,10 +41,9 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	}
 
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
-	// TODO: or use safe generic getField
 	public void setValueWithRedirection(GioviParserVisitResult value) {
 		try {
-			this.value = (T) redirection(value);
+			redirection(value);
 		} catch (OperatorNotSupported ex) {
 			throw new RedirectionException(ex);
 		}
@@ -55,10 +56,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return Objects.hash(value);
 	}
 
 	@Override
@@ -67,10 +65,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Var<?> other = (Var<?>) obj;
-		if (value == null) {
-			if (other.value != null) return false;
-		} else if (!value.equals(other.value)) return false;
-		return true;
+		return Objects.equals(value, other.value);
 	}
 
 	public GioviType<?> getGioviType() {
