@@ -1,6 +1,5 @@
 package giovi.util;
 
-import giovi.lang.GioviObject;
 import giovi.lang.GioviReal;
 import giovi.lang.GioviTypeReal;
 import it.simonvic.giovi.lang.annotation.Native.Const;
@@ -10,7 +9,7 @@ import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Type;
 
 @Module
-public class Math implements GioviObject {
+public class Math {
 
 	@Const
 	public static final GioviReal E = new GioviReal(java.lang.Math.E);
