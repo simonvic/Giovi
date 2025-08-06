@@ -33,10 +33,9 @@ public class Color {
 		@Param("b") @Type(GioviTypeInt.class) GioviInt b
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgb.class)).spawn();
-		// TODO: use safe getField
-		struct.value().getField("r").orElseThrow().setValueWithRedirection(r);
-		struct.value().getField("g").orElseThrow().setValueWithRedirection(g);
-		struct.value().getField("b").orElseThrow().setValueWithRedirection(b);
+		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
+		struct.value().<GioviInt>getField("g").orElseThrow().setValue(g);
+		struct.value().<GioviInt>getField("b").orElseThrow().setValue(b);
 		return struct;
 	}
 
@@ -48,11 +47,10 @@ public class Color {
 		@Param("a") @Type(GioviTypeInt.class) GioviInt a
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgba.class)).spawn();
-		// TODO: use safe getField
-		struct.value().getField("r").orElseThrow().setValueWithRedirection(r);
-		struct.value().getField("g").orElseThrow().setValueWithRedirection(g);
-		struct.value().getField("b").orElseThrow().setValueWithRedirection(b);
-		struct.value().getField("a").orElseThrow().setValueWithRedirection(a);
+		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
+		struct.value().<GioviInt>getField("g").orElseThrow().setValue(g);
+		struct.value().<GioviInt>getField("b").orElseThrow().setValue(b);
+		struct.value().<GioviInt>getField("a").orElseThrow().setValue(a);
 		return struct;
 	}
 

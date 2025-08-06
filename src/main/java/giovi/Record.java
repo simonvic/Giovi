@@ -3,6 +3,7 @@ package giovi;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
@@ -101,13 +102,10 @@ public sealed class Record extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	public Optional<VarD<?>> getField(String identifier) {
-		return Optional.ofNullable(fields.get(identifier));
+	public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier) {
+		// TODO: return empty if class cast exception?
+		return Optional.ofNullable((VarD<G>) fields.get(identifier));
 	}
-
-	// public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier) {
-	// 	return Optional.ofNullable((VarD<G>) fields.get(identifier));
-	// }
 
 	public List<String> getFieldNames() {
 		return new ArrayList<>(fields.keySet());
