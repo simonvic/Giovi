@@ -39,7 +39,7 @@ public class TestGioviNatural {
 
 		@Test
 		void testMaxValue() {
-			assertThat(visitExpression("2147483647").asNativeNatural())
+			assertThat(visitExpression("2147483647n").asNativeNatural())
 				.isEqualTo(new Natural(Integer.MAX_VALUE));
 		}
 
