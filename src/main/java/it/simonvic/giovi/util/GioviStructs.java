@@ -143,7 +143,7 @@ public class GioviStructs {
 		var newStruct = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newStruct
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviStruct(dest.type(), newStruct);
 	}
 
@@ -153,7 +153,7 @@ public class GioviStructs {
 		var newStruct = dest.value().copy();
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviStruct(dest.type(), newStruct);
 	}
 
@@ -161,7 +161,7 @@ public class GioviStructs {
 		var newStruct = dest.value().copy();
 		content.value().forEach((s, f) -> newStruct
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviStruct(dest.type(), newStruct);
 	}
 

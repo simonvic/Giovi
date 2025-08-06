@@ -755,9 +755,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitConstantDeclaration(ConstantDeclarationContext ctx) {
-		var constant = spawnType(ctx.type(), null);
-		constant.setValueWithRedirection(visit(ctx.expression()));
-		getCurrentScope().declareConstant(ctx.identifier().getText(), constant.value());
+		var constant = visit(ctx.expression()).unwrapAsGioviValue();
+		var type = visit(ctx.type()).asGioviType();
+		try {
+			constant = constant.widenTo(type);
+		} catch (NonWideneable e) {
+			throw new GioviException(e);
+		}
+		getCurrentScope().declareConstant(ctx.identifier().getText(), constant);
 		return constant;
 	}
 
@@ -1242,7 +1247,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				continue;
 			}
 
-			actualParam.setValueWithRedirection(actualParamExpression);
+			actualParam.setValueUnsafe(actualParamExpression);
 			params.put(formalParamIdentifier, actualParam);
 		}
 		return params;
@@ -1282,7 +1287,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				params.put(formalParamIdentifier, actualParam);
 			} else {
-				actualParam.setValueWithRedirection(actualParamExpression);
+				actualParam.setValueUnsafe(actualParamExpression);
 				params.put(formalParamIdentifier, actualParam);
 			}
 			undeclaredParameters.remove(formalParam.label());
@@ -1388,11 +1393,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		// TODO: should we allow cyclic references?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
-			var constant = spawnType(constCtx.type(), null);
-			constant.setValueWithRedirection(visit(constCtx.expression()));
-			constants.put(
-				constCtx.identifier().getText(),
-				constant.value());
+			var constant = visit(constCtx.expression()).unwrapAsGioviValue();
+			var type = visit(constCtx.type()).asGioviType();
+			try {
+				constant = constant.widenTo(type);
+			} catch (NonWideneable e) {
+				throw new GioviException(e);
+			}
+			constants.put(constCtx.identifier().getText(), constant);
 		}
 
 		for (var funcCtx : ctx.structBodyDefinition().functionDeclaration()) {
@@ -1473,8 +1481,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (var fieldCtx : fieldsCtx.recordEntry()) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
 			var fieldValue = visit(fieldCtx.expression());
-			struct.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
-				.setValueWithRedirection(fieldValue);
+			struct.getField(fieldIdentifier)
+				.orElseThrow(() -> new NoSuchField(fieldIdentifier))
+				.setValueUnsafe(fieldValue);
 		}
 	}
 
@@ -1492,8 +1501,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		for (int i = 0; i < expressionsCount; i++) {
 			final int j = i;
 			var fieldValue = visit(expressions.get(i));
-			struct.getField(i).orElseThrow(() -> new NoSuchField(j))
-				.setValueWithRedirection(fieldValue);
+			struct.getField(i)
+				.orElseThrow(() -> new NoSuchField(j))
+				.setValueUnsafe(fieldValue);
 		}
 	}
 

@@ -45,7 +45,7 @@ public class GioviTuples {
 		var newTuple = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newTuple
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviTuple(dest.type(), newTuple);
 	}
 

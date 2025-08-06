@@ -38,9 +38,8 @@ public class Var<T extends GioviValue<?>> implements Op.All {
 		this.value = value;
 	}
 
-	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
-	// TODO: or use safe generic getField
-	public void setValueWithRedirection(GioviParserVisitResult value) {
+	@Deprecated
+	public void setValueUnsafe(GioviParserVisitResult value) {
 		redirection(value);
 	}
 

@@ -159,7 +159,7 @@ public class GioviRecords {
 		var newRecord = dest.value().copy();
 		content.value().forEachIndexed((i, f) -> newRecord
 			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviRecord(dest.type(), newRecord);
 	}
 
@@ -167,7 +167,7 @@ public class GioviRecords {
 		var newRecord = dest.value().copy();
 		content.value().forEach((s, f) -> newRecord
 			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+			.setValueUnsafe(f.value()));
 		return new GioviRecord(dest.type(), newRecord);
 	}
 
