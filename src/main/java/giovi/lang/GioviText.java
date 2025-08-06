@@ -37,19 +37,14 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		if (right instanceof GioviTypePrimitive<?> t) {
-			var typeClass = t.value();
-			if (typeClass == GioviText.class) return new GioviText(this.value);
-			if (typeClass == GioviBool.class) return GioviBool.valueOf(this.value);
-			try {
-				if (typeClass == GioviInt.class) return GioviInt.valueOf(this.value);
-				if (typeClass == GioviReal.class) return GioviReal.valueOf(this.value);
-				if (typeClass == GioviNatural.class) return GioviNatural.valueOf(this.value);
-			} catch (NumberFormatException ex) {
-				throw new GioviException(ex);
-			}
-		}
-		return GioviPrimitive.super.as(right);
+		return switch (right) {
+			case GioviTypeText _ -> new GioviText(this.value);
+			case GioviTypeBool _ -> GioviBool.valueOf(this.value);
+			case GioviTypeNatural _ -> GioviNatural.valueOf(this.value);
+			case GioviTypeInt _ -> GioviInt.valueOf(this.value);
+			case GioviTypeReal _ -> GioviReal.valueOf(this.value);
+			default -> GioviPrimitive.super.as(right);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
