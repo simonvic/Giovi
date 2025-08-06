@@ -106,30 +106,35 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	// TODO: setting the value in a redirection is different than the GioviValue
 	// implementation and might lead to a double setting of the value
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) this.value.redirection(content);
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) this.value.redirectionPlus(content);
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) this.value.redirectionMinus(content);
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) this.value.redirectionMultiply(content);
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) this.value.redirectionDivide(content);

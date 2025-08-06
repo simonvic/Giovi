@@ -31,6 +31,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	 * The default value will be set to its type's default value
 	 * @param value
 	 */
+	@SuppressWarnings("unchecked")
 	public VarD(T value) {
 		this(value, (T) value.getGioviType().spawn());
 	}
@@ -38,6 +39,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	/**
 	 * @return the defaultValue
 	 */
+	@SuppressWarnings("unchecked")
 	public T defaultValue() {
 		return (T) defaultValue.copy(); // return copy to ensure immutability
 	}
@@ -88,6 +90,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		};
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
@@ -97,6 +100,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
@@ -106,6 +110,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
@@ -115,6 +120,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
@@ -124,6 +130,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return this.value;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
