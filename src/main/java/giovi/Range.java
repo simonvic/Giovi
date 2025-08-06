@@ -53,11 +53,11 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 			throw new GioviException("A step must be a valid number but got " + step);
 		}
 
-		Number stepNumber = step == null ? null : step.asNativeNumber();
+		Number stepNumber = step == null ? null : step.asGioviNumber().value();
 		if (start instanceof GioviReal || end instanceof GioviReal || step instanceof GioviReal) {
 			return Range.of(
-				start.asNativeNumber().doubleValue(),
-				end.asNativeNumber().doubleValue(),
+				start.asGioviNumber().value().doubleValue(),
+				end.asGioviNumber().value().doubleValue(),
 				stepNumber == null ? 1d : stepNumber.doubleValue());
 		}
 

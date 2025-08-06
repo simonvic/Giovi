@@ -18,9 +18,9 @@ public interface GioviParserVisitResult {
 	default GioviList asGioviList() { return (GioviList) this; }
 	default GioviMap asGioviMap() { return (GioviMap) this; }
 	default GioviNumber<?> asGioviNumber() { return (GioviNumber<?>) this; }
-	default GioviNatural asGioviNatural() { return asGioviNumber().naturalValue(); }
-	default GioviInt asGioviInt() { return asGioviNumber().intValue(); }
-	default GioviReal asGioviReal() { return asGioviNumber().realValue(); }
+	default GioviNatural asGioviNatural() { return (GioviNatural) this; }
+	default GioviInt asGioviInt() { return (GioviInt) this; }
+	default GioviReal asGioviReal() { return (GioviReal) this; }
 	default GioviBool asGioviBool() { return (GioviBool) this; }
 	default GioviText asGioviText() { return (GioviText) this; }
 	default GioviFunction asGioviFunction() { return (GioviFunction) this; }
@@ -34,6 +34,7 @@ public interface GioviParserVisitResult {
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return asGioviFunction().value(); }
 	default Var<?> asVar() { return (Var<?>) this; }
+	// @formatter:on
 
 	/**
 	 * To be used ONLY when we know we can discard/ignore the default value of a variable
@@ -45,7 +46,6 @@ public interface GioviParserVisitResult {
 		};
 	}
 
-	// @formatter:on
 
 }
 
