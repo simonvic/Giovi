@@ -286,7 +286,10 @@ public sealed interface Op extends GioviParserVisitResult {
 	non-sealed interface Access extends Op {
 
 		default GioviParserVisitResult access(GioviParserVisitResult right) {
-			throw new OperatorNotSupported(this, GioviToken.AT, right);
+			return switch (right) {
+				case Var<?> v -> access(v.value());
+				default -> throw new OperatorNotSupported(this, GioviToken.AT, right);
+			};
 		}
 
 	}
