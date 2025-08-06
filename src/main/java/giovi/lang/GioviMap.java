@@ -138,9 +138,9 @@ public record GioviMap(
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(type);
-			this.value.forEach((k, e) -> map.put(
-				k.as(t.getKeyType()).asVar(),
-				e.as(t.getElementType()).asVar()));
+			this.value.forEach((k, e) -> map.value.put(
+				new Var<>(k.as(t.getKeyType()).asGioviValue()),
+				new Var<>(e.as(t.getElementType()).asGioviValue())));
 			return map;
 		}
 		return GioviValue.super.as(right);

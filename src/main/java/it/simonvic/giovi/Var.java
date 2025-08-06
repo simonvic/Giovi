@@ -88,7 +88,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviType<?> t -> new Var<>(value.as(t).asGioviValue());
+			case GioviType<?> t -> value.as(t);
 			default -> GioviParserVisitResult.super.as(right);
 		};
 	}

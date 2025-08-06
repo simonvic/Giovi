@@ -83,9 +83,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviType<?> t -> new VarD<>(
-				value.as(t).asGioviValue(),
-				defaultValue.as(t).asGioviValue());
+			case GioviType<?> t -> value.as(t);
 			default -> super.as(right);
 		};
 	}

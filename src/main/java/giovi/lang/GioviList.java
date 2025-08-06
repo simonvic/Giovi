@@ -110,7 +110,9 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeList t) {
 			var newGioviList = t.spawn();
-			this.value.forEach(v -> newGioviList.add(v.as(t.getEntryType()).asVar()));
+			for (var entry : this.value) {
+				newGioviList.value.add(new Var<>(entry.as(t.getEntryType()).asGioviValue()));
+			}
 			return newGioviList;
 		}
 		return GioviValue.super.as(right);
