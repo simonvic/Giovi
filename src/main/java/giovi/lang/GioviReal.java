@@ -12,10 +12,13 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 		s = s.replace("r", "") // r suffix
 			.replace("_", ""); // separators
 		if (s.startsWith("0b")) {
-			return new GioviReal(Double.parseDouble(s.replace("0b", "")));
+			return new GioviReal((double) Integer.parseInt(s.replace("0b", ""), 2));
 		}
 		if (s.startsWith("0o")) {
-			return new GioviReal(Double.parseDouble(s.replace("0o", "")));
+			return new GioviReal((double) Integer.parseInt(s.replace("0o", ""), 8));
+		}
+		if (s.startsWith("0x") && !s.contains("p")) {
+			return new GioviReal((double) Integer.parseInt(s.replace("0x", ""), 16));
 		}
 		return new GioviReal(Double.valueOf(s));
 	}
