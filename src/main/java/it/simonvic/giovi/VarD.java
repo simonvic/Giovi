@@ -146,5 +146,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return super.dot(right);
 	}
 
+	// TODO: other operations should handle default as well
+	// e.g. someVar + default should be someVar + someVar.default
 
 }
