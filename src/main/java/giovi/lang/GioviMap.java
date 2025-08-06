@@ -9,14 +9,18 @@ import java.util.Map;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Op;
+import it.simonvic.giovi.Op.*;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public record GioviMap(
 	GioviTypeMap type,
 	LinkedHashMap<Var<?>, Var<?>> value
-) implements GioviValue<LinkedHashMap<Var<?>, Var<?>>> {
+) implements GioviValue<LinkedHashMap<Var<?>, Var<?>>>,
+	As, Redirection, RedirectionPlus, RedirectionMinus, Equal, Contains, IsContained, Access, Dot {
 
 	public GioviMap(GioviTypeMap type) {
 		this(type, new LinkedHashMap<>());
@@ -139,11 +143,11 @@ public record GioviMap(
 		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(type);
 			this.value.forEach((k, e) -> map.put(
-				k.as(t.getKeyType()).asVar(),
-				e.as(t.getElementType()).asVar()));
+				new Var<>(Op.as(k, t.getKeyType()).asGioviValue()),
+				new Var<>(Op.as(e, t.getElementType()).asGioviValue())));
 			return map;
 		}
-		return GioviValue.super.as(right);
+		return As.super.as(right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
@@ -159,7 +163,7 @@ public record GioviMap(
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type)
 				-> new GioviMap(this.type, copyOf(value));
 
-			default -> GioviValue.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -168,7 +172,7 @@ public record GioviMap(
 		switch (right) {
 			case GioviDefault _ -> putAll(defaultValue());
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> putAll(value);
-			default -> GioviValue.super.redirectionPlus(right);
+			default -> RedirectionPlus.super.redirectionPlus(right);
 		}
 		return this;
 	}
@@ -184,10 +188,10 @@ public record GioviMap(
 				try {
 					value.remove(new Var<>(this.type.keyType().widen(v)));
 				} catch (NonWideneable e) {
-					return GioviValue.super.redirectionMinus(right);
+					return RedirectionMinus.super.redirectionMinus(right);
 				}
 			}
-			default -> GioviValue.super.redirectionMinus(right);
+			default -> RedirectionMinus.super.redirectionMinus(right);
 		}
 		return this;
 	}
@@ -219,18 +223,22 @@ public record GioviMap(
 					var otherEntry = otherIterator.next();
 					var thisKey = thisEntry.getKey();
 					var otherKey = otherEntry.getKey();
-					if (!thisKey.equal(otherKey).asNativeBool()) {
-						yield new GioviBool(false);
-					}
-					var thisValue = thisEntry.getValue();
-					var otherValue = otherEntry.getValue();
-					if (!thisValue.equal(otherValue).asNativeBool()) {
+					try {
+						if (!Op.equal(thisKey, otherKey).asNativeBool()) {
+							yield new GioviBool(false);
+						}
+						var thisValue = thisEntry.getValue();
+						var otherValue = otherEntry.getValue();
+						if (!Op.equal(thisValue, otherValue).asNativeBool()) {
+							yield new GioviBool(false);
+						}
+					} catch (OperatorNotSupported _) {
 						yield new GioviBool(false);
 					}
 				}
 				yield new GioviBool(true);
 			}
-			default -> GioviValue.super.equal(right);
+			default -> Equal.super.equal(right);
 		};
 	}
 
@@ -241,7 +249,8 @@ public record GioviMap(
 				for (var entry : value.entrySet()) {
 					var key = entry.getKey();
 					if (!this.value.containsKey(key)
-						|| !this.value.get(key).equal(entry.getValue()).asNativeBool()) {
+						|| !Op.equal(this.value.get(key), entry.getValue())
+							.asNativeBool()) {
 						yield new GioviBool(false);
 					}
 				}
@@ -249,13 +258,13 @@ public record GioviMap(
 			}
 			case GioviValue<?> v -> {
 				for (var key : value.keySet()) {
-					if (key.equal(v).asNativeBool()) {
+					if (Op.equal(key, v).asNativeBool()) {
 						yield new GioviBool(true);
 					}
 				}
 				yield new GioviBool(false);
 			}
-			default -> GioviValue.super.contains(right);
+			default -> Contains.super.contains(right);
 		};
 	}
 
@@ -270,7 +279,7 @@ public record GioviMap(
 				case KEYS -> new GioviList(type.keyType(), new ArrayList<>(value().keySet()));
 				case VALUES -> new GioviList(type.elementType(), new ArrayList<>(value().values()));
 			};
-			default -> GioviValue.super.access(right);
+			default -> Access.super.access(right);
 		};
 	}
 
@@ -279,7 +288,7 @@ public record GioviMap(
 		if (right instanceof GioviDefault) {
 			return new GioviMap(type);
 		}
-		return GioviValue.super.dot(right);
+		return Dot.super.dot(right);
 	}
 
 }

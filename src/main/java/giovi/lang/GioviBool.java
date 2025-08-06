@@ -1,8 +1,10 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Op.*;
 
-public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
+public record GioviBool(Boolean value)
+	implements GioviPrimitive<Boolean>, As, Redirection, Not, And, Or, Equal, NotEqual, Dot {
 
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
@@ -40,7 +42,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviTypeBool _ -> new GioviBool(this.value);
-			default -> GioviPrimitive.super.as(right);
+			default -> As.super.as(right);
 		};
 	}
 
@@ -51,7 +53,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 		return switch (content) {
 			case GioviDefault _ -> new GioviBool(defaultValue());
 			case GioviBool(var v) -> new GioviBool(v);
-			default -> GioviPrimitive.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -70,7 +72,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value && defaultValue());
 			case GioviBool(var v) -> new GioviBool(value && v);
 			// case IntValue(var v) -> new BoolValue(value && v.asBool());
-			default -> GioviPrimitive.super.and(right);
+			default -> And.super.and(right);
 		};
 	}
 
@@ -80,7 +82,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value || defaultValue());
 			case GioviBool(var v) -> new GioviBool(value || v);
 			// case IntValue(var v) -> new BoolValue(value || v.asBool());
-			default -> GioviPrimitive.super.or(right);
+			default -> Or.super.or(right);
 		};
 	}
 
@@ -92,13 +94,13 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviBool(var v) -> new GioviBool(value.equals(v));
 			// case IntValue(var v) -> new BoolValue(value == v.asBool());
-			default -> GioviPrimitive.super.equal(right);
+			default -> Equal.super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
+		return equal(right).asGioviBool().not();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
@@ -108,7 +110,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 		if (right instanceof GioviDefault) {
 			return new GioviBool();
 		}
-		return GioviPrimitive.super.dot(right);
+		return Dot.super.dot(right);
 	}
 
 }

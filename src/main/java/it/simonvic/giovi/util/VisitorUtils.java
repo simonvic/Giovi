@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviBool;
 import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.Op;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
@@ -13,8 +14,8 @@ public class VisitorUtils {
 
 	public static GioviParserVisitResult prefixed(GioviToken prefix, GioviParserVisitResult value) {
 		return switch (prefix) {
-			case PLUS -> value.positive();
-			case MINUS -> value.negative();
+			case PLUS -> Op.positive(value);
+			case MINUS -> Op.negative(value);
 			default -> throw new OperatorNotSupported(value, prefix);
 		};
 	}
@@ -25,8 +26,8 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case PLUS -> left.plus(right);
-			case MINUS -> left.minus(right);
+			case PLUS -> Op.plus(left, right);
+			case MINUS -> Op.minus(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -37,9 +38,9 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case MULT -> left.multiply(right);
-			case DIV -> left.divide(right);
-			case MODULO -> left.modulo(right);
+			case MULT -> Op.multiply(left, right);
+			case DIV -> Op.divide(left, right);
+			case MODULO -> Op.modulo(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -50,10 +51,10 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case LESS_EQUAL -> left.lessEqual(right);
-			case GREATER_EQUAL -> left.greaterEqual(right);
-			case GREATER -> left.greater(right);
-			case LESS -> left.less(right);
+			case LESS_EQUAL -> Op.lessEqual(left, right);
+			case GREATER_EQUAL -> Op.greaterEqual(left, right);
+			case GREATER -> Op.greater(left, right);
+			case LESS -> Op.less(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -64,8 +65,8 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case AND, AND_SYM -> left.and(right);
-			case OR, OR_SYM -> left.or(right);
+			case AND, AND_SYM -> Op.and(left, right);
+			case OR, OR_SYM -> Op.or(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -100,8 +101,8 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case EQUAL -> left.equal(right);
-			case NOT_EQUAL -> left.notEqual(right);
+			case EQUAL -> Op.equal(left, right);
+			case NOT_EQUAL -> Op.notEqual(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -112,8 +113,8 @@ public class VisitorUtils {
 		GioviParserVisitResult right
 	) {
 		return switch (operator) {
-			case CONTAINED, IN -> left.isContained(right);
-			case CONTAINS -> left.contains(right);
+			case CONTAINED, IN -> Op.isContained(left, right);
+			case CONTAINS -> Op.contains(left, right);
 			default -> throw new OperatorNotSupported(left, operator, right);
 		};
 	}
@@ -124,11 +125,11 @@ public class VisitorUtils {
 		GioviParserVisitResult destination
 	) {
 		return switch (operator) {
-			case REDIR, REDIR_RTL -> destination.redirection(content);
-			case REDIR_PLUS, REDIR_PLUS_RTL -> destination.redirectionPlus(content);
-			case REDIR_MINUS, REDIR_MINUS_RTL -> destination.redirectionMinus(content);
-			case REDIR_MULT, REDIR_MULT_RTL -> destination.redirectionMultiply(content);
-			case REDIR_DIV, REDIR_DIV_RTL -> destination.redirectionDivide(content);
+			case REDIR, REDIR_RTL -> Op.redirection(destination, content);
+			case REDIR_PLUS, REDIR_PLUS_RTL -> Op.redirectionPlus(destination, content);
+			case REDIR_MINUS, REDIR_MINUS_RTL -> Op.redirectionMinus(destination, content);
+			case REDIR_MULT, REDIR_MULT_RTL -> Op.redirectionMultiply(destination, content);
+			case REDIR_DIV, REDIR_DIV_RTL -> Op.redirectionDivide(destination, content);
 			default -> throw new RedirectionException("Unknown redirection operator: " + operator);
 		};
 	}

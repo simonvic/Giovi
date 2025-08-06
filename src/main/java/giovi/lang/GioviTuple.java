@@ -1,11 +1,16 @@
 package giovi.lang;
 
-import giovi.*;
+import giovi.AccessKey;
+import giovi.GioviParserVisitResult;
+import giovi.Range;
+import giovi.Tuple;
+import it.simonvic.giovi.Op.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviTuples;
 
 public record GioviTuple(GioviTypeTuple type, Tuple value)
-	implements GioviValue<Tuple> {
+	implements GioviValue<Tuple>,
+	Redirection, Equal, NotEqual, Dot, Access {
 
 	public GioviTuple() {
 		this(new GioviTypeTuple(), new Tuple());
@@ -42,7 +47,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 		return switch (content) {
 			case GioviDefault _ -> type.spawn();
 			case GioviTuple v -> GioviTuples.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -59,13 +64,13 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> Equal.super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
+		return equal(right).asGioviBool().not();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
@@ -74,7 +79,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> type.spawn();
-			default -> GioviValue.super.dot(right);
+			default -> Dot.super.dot(right);
 		};
 	}
 
@@ -84,7 +89,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				default -> GioviValue.super.access(right);
+				default -> Access.super.access(right);
 			};
 			case Range(Integer _, _, _, _)
 				-> new GioviTuple(
@@ -93,7 +98,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> Access.super.access(right);
 		};
 	}
 

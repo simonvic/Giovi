@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import it.simonvic.giovi.Op;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
@@ -104,7 +105,7 @@ public sealed class Tuple permits Record {
 			var thisField = this.fields.get(i);
 			var otherField = other.fields.get(i);
 			try {
-				if (!thisField.equal(otherField).asNativeBool()) {
+				if (!Op.equal(thisField, otherField).asNativeBool()) {
 					return false;
 				}
 			} catch (OperatorNotSupported e) {

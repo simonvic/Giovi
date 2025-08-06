@@ -4,9 +4,12 @@ import giovi.Function;
 import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import giovi.JFunction;
+import it.simonvic.giovi.Op.Dot;
+import it.simonvic.giovi.Op.Redirection;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviFunction(Function value) implements GioviValue<Function> {
+public record GioviFunction(Function value)
+	implements GioviValue<Function>, Redirection, Dot {
 
 	public GioviFunction() {
 		this(Function.EMPTY);
@@ -41,7 +44,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		if (this.value instanceof JFunction) {
-			return GioviValue.super.redirection(content);
+			return Redirection.super.redirection(content);
 		}
 		return switch (content) {
 			case GioviDefault _ -> new GioviFunction(defaultValue());
@@ -56,11 +59,11 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 					yield new GioviFunction(
 						new GFunction(this.value.signature().widen(signature), bodyCtx));
 				} catch (NonWideneable e) {
-					yield GioviValue.super.redirection(content);
+					yield Redirection.super.redirection(content);
 				}
 			}
 
-			default -> GioviValue.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -77,7 +80,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 		if (right instanceof GioviDefault) {
 			return new GioviFunction();
 		}
-		return GioviValue.super.dot(right);
+		return Dot.super.dot(right);
 	}
 
 }

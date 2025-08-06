@@ -2,10 +2,11 @@ package giovi;
 
 import java.net.URI;
 
+import it.simonvic.giovi.Op;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.ModuleScope;
 
-public sealed interface Module extends GioviParserVisitResult {
+public sealed interface Module extends Op.Dot {
 
 	Module parent();
 
@@ -19,7 +20,7 @@ public sealed interface Module extends GioviParserVisitResult {
 				return symbolOpt.orElseThrow();
 			}
 		}
-		return GioviParserVisitResult.super.dot(right);
+		return Dot.super.dot(right);
 	}
 
 	public static record NativeModule(

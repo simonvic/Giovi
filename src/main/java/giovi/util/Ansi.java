@@ -96,9 +96,9 @@ public class Ansi {
 		return new GioviText(String.format(
 			"%s[38;2;%s;%s;%sm",
 			ESC,
-			color.value().getField("r").orElseThrow().unwrapAsGioviValue(),
-			color.value().getField("g").orElseThrow().unwrapAsGioviValue(),
-			color.value().getField("b").orElseThrow().unwrapAsGioviValue()));
+			color.value().getField("r").orElseThrow().value(),
+			color.value().getField("g").orElseThrow().value(),
+			color.value().getField("b").orElseThrow().value()));
 	}
 
 	@Func
@@ -108,9 +108,9 @@ public class Ansi {
 		return new GioviText(String.format(
 			"%s[48;2;%s;%s;%sm",
 			ESC,
-			color.value().getField("r").orElseThrow().unwrapAsGioviValue(),
-			color.value().getField("g").orElseThrow().unwrapAsGioviValue(),
-			color.value().getField("b").orElseThrow().unwrapAsGioviValue()));
+			color.value().getField("r").orElseThrow().value(),
+			color.value().getField("g").orElseThrow().value(),
+			color.value().getField("b").orElseThrow().value()));
 	}
 
 	@Func

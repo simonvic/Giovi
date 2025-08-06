@@ -1,8 +1,9 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Op.Redirection;
 
-public record GioviSelf() implements GioviValue<Void> {
+public record GioviSelf() implements GioviValue<Void>, Redirection {
 
 	@Override
 	public String toString() {

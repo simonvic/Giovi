@@ -3,6 +3,7 @@ package giovi;
 import java.util.*;
 import java.util.function.BiConsumer;
 
+import it.simonvic.giovi.Op;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
@@ -87,7 +88,7 @@ public sealed class Record extends Tuple permits Struct {
 				if (otherFieldOpt.isEmpty()) {
 					return false;
 				}
-				if (!entry.getValue().equal(otherFieldOpt.get()).asNativeBool()) {
+				if (!Op.equal(entry.getValue(), otherFieldOpt.get()).asNativeBool()) {
 					return false;
 				}
 			} catch (OperatorNotSupported e) {

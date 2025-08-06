@@ -1,6 +1,5 @@
 package giovi.lang;
 
-import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
@@ -41,14 +40,6 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 	@Override
 	public GioviTypeBool copy() {
 		return new GioviTypeBool();
-	}
-
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviBool();
-		}
-		return GioviTypePrimitive.super.dot(right);
 	}
 
 }

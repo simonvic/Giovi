@@ -214,11 +214,6 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
-	}
-
-	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value < defaultValue());

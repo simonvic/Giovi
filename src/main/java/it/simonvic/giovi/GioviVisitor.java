@@ -288,7 +288,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				var type = visit(typeCheckCtx.type());
 				// TODO: clafiry requirements. Should a type check be a type = type or a widening check?
 				// A widening check could be useful for struct/tuple matching and destructing
-				var castedSubject = subject.as(type);
+				var castedSubject = Op.as(subject, type);
 				VarD<?> casted = switch (castedSubject) {
 					case VarD<?> v -> v.copy();
 					case Var<?> v -> new VarD<>(v.value());
@@ -693,7 +693,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			return visit(ctx.invocation());
 		}
 		var instance = visit(ctx.expression());
-		var member = instance.dot(new MemberKey(ctx.invocation().identifier().getText()));
+		var member = Op.dot(instance, new MemberKey(ctx.invocation().identifier().getText()));
 		return doVisitInvocation(instance, member, ctx.invocation().actualParameters());
 	}
 
@@ -710,7 +710,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx
 	) {
-		visit(ctx.dest).redirection(visit(ctx.content));
+		Op.redirection(visit(ctx.dest), visit(ctx.content));
 		return null;
 	}
 
@@ -718,7 +718,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToVarDeclarationRTL(
 		RedirectionToVarDeclarationRTLContext ctx
 	) {
-		visit(ctx.dest).redirection(visit(ctx.content));
+		Op.redirection(visit(ctx.dest), visit(ctx.content));
 		return null;
 	}
 
@@ -846,7 +846,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		String identifier = ctx.identifier().getText();
 		if (ctx.expression() != null) {
 			var lhs = visit(ctx.expression());
-			var member = lhs.dot(new MemberKey(identifier));
+			var member = Op.dot(lhs, new MemberKey(identifier));
 			if (member instanceof GioviFunction gioviFunction) {
 				return gioviFunction;
 			}
@@ -895,27 +895,27 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionAccess(ExpressionAccessContext ctx) {
-		return visit(ctx.expression()).access(visit(ctx.accessKey()));
+		return Op.access(visit(ctx.expression()), visit(ctx.accessKey()));
 	}
 
 	@Override
 	public GioviParserVisitResult visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
 		if (ctx.identifier() != null) {
-			return lhs.dot(new MemberKey(ctx.identifier().getText()));
+			return Op.dot(lhs, new MemberKey(ctx.identifier().getText()));
 		}
 		if (ctx.DEFAULT() != null) {
-			return lhs.dot(new GioviDefault());
+			return Op.dot(lhs, new GioviDefault());
 		}
 		return doVisitInvocation(
 			lhs,
-			lhs.dot(new MemberKey(ctx.invocation().identifier().getText())),
+			Op.dot(lhs, new MemberKey(ctx.invocation().identifier().getText())),
 			ctx.invocation().actualParameters());
 	}
 
 	@Override
 	public GioviParserVisitResult visitExpressionPower(ExpressionPowerContext ctx) {
-		return visit(ctx.expression(0)).power(visit(ctx.expression(1)));
+		return Op.power(visit(ctx.expression(0)), visit(ctx.expression(1)));
 	}
 
 	@Override
@@ -928,7 +928,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitExpressionNot(ExpressionNotContext ctx) {
-		return visit(ctx.expression()).not();
+		return Op.not(visit(ctx.expression()));
 	}
 
 	@Override
@@ -954,14 +954,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			GioviToken.of(ctx.bop.getText()),
 			visit(ctx.expression(1)));
 		if (ctx.NOT() != null) {
-			return containment.not();
+			return Op.not(containment);
 		}
 		return containment;
 	}
 
 	@Override
 	public GioviParserVisitResult visitExpressionCast(ExpressionCastContext ctx) {
-		return visit(ctx.expression()).as(visit(ctx.type()));
+		return Op.as(visit(ctx.expression()), visit(ctx.type()));
 	}
 
 	@Override

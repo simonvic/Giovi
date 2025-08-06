@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviFunction;
-import giovi.lang.GioviTypeStruct;
 
 public class ModuleScope extends Scope {
 

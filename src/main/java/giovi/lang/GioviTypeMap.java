@@ -1,7 +1,6 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)

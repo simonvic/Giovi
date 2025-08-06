@@ -1,11 +1,13 @@
 package giovi.lang;
 
+import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Op.Dot;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 // TODO: is generic needed? Why not just extends GioviPrimitive<Class<? extends GioviValue<?>>>
 // TODO: better integrate types with values instead of having two separate hierarchies (maybe with nested Annotated classes?)
 public sealed interface GioviType<T extends GioviValue<?>>
-	extends GioviPrimitive<Class<? extends T>>
+	extends GioviPrimitive<Class<? extends T>>, Dot
 	permits GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeTuple, GioviTypeRecord,
 	GioviTypeStruct, GioviTypeSelf, GioviTypeFunction {
 
@@ -45,5 +47,14 @@ public sealed interface GioviType<T extends GioviValue<?>>
 
 	@Override
 	GioviType<T> copy();
+
+
+	@Override
+	default GioviParserVisitResult dot(GioviParserVisitResult right) {
+		if (right instanceof GioviDefault) {
+			return spawn();
+		}
+		return Dot.super.dot(right);
+	}
 
 }

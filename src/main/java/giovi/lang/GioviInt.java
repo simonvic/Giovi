@@ -209,11 +209,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
-	}
-
-	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value < defaultValue());

@@ -1,13 +1,18 @@
 package giovi.lang;
 
-import giovi.*;
+import giovi.AccessKey;
+import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
+import giovi.Range;
 import giovi.Record;
+import it.simonvic.giovi.Op.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 
 public record GioviRecord(GioviTypeRecord type, Record value)
-	implements GioviValue<Record> {
+	implements GioviValue<Record>,
+	Redirection, Equal, NotEqual, Dot, Access {
 
 	public GioviRecord() {
 		this(new GioviTypeRecord(), new Record());
@@ -45,7 +50,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 			case GioviDefault _ -> type.spawn();
 			case GioviTuple v -> GioviRecords.redirection(this, v);
 			case GioviRecord v -> GioviRecords.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -62,13 +67,13 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> Equal.super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
+		return equal(right).asGioviBool().not();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
@@ -79,7 +84,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 			case GioviDefault _ -> new GioviRecord();
 			case MemberKey(var identifier)
 				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
-			default -> GioviValue.super.dot(right);
+			default -> Dot.super.dot(right);
 		};
 	}
 
@@ -98,7 +103,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> Access.super.access(right);
 		};
 	}
 

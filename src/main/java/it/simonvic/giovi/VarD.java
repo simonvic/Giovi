@@ -3,7 +3,9 @@ package it.simonvic.giovi;
 import java.util.Objects;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.*;
+import giovi.lang.GioviDefault;
+import giovi.lang.GioviType;
+import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public class VarD<T extends GioviValue<?>> extends Var<T> {
@@ -80,19 +82,14 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviType<?> t -> new VarD<>(
-				value.as(t).asGioviValue(),
-				defaultValue.as(t).asGioviValue());
-			default -> super.as(right);
-		};
+		return Op.as(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirection(defaultValue);
-			default -> super.redirection(content);
+			case GioviDefault _ -> Op.redirection(this.value, defaultValue);
+			default -> Op.redirection(this.value, content);
 		};
 		return this.value;
 	}
@@ -100,8 +97,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionPlus(defaultValue);
-			default -> super.redirectionPlus(content);
+			case GioviDefault _ -> Op.redirectionPlus(this.value, defaultValue);
+			default -> Op.redirectionPlus(this.value, content);
 		};
 		return this.value;
 	}
@@ -109,8 +106,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMinus(defaultValue);
-			default -> super.redirectionMinus(content);
+			case GioviDefault _ -> Op.redirectionMinus(this.value, defaultValue);
+			default -> Op.redirectionMinus(this.value, content);
 		};
 		return this.value;
 	}
@@ -118,8 +115,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMultiply(defaultValue);
-			default -> super.redirectionMultiply(content);
+			case GioviDefault _ -> Op.redirectionMultiply(this.value, defaultValue);
+			default -> Op.redirectionMultiply(this.value, content);
 		};
 		return this.value;
 	}
@@ -127,8 +124,8 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionDivide(defaultValue);
-			default -> super.redirectionDivide(content);
+			case GioviDefault _ -> Op.redirectionDivide(this.value, defaultValue);
+			default -> Op.redirectionDivide(this.value, content);
 		};
 		return this.value;
 	}
@@ -138,7 +135,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		if (right instanceof GioviDefault) {
 			return defaultValue;
 		}
-		return super.dot(right);
+		return Op.dot(this.value, right);
 	}
 
 

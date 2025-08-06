@@ -1,12 +1,14 @@
 package giovi.lang;
 
 import giovi.*;
+import it.simonvic.giovi.Op;
+import it.simonvic.giovi.Op.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
 public record GioviStruct(GioviTypeStruct type, Struct value)
-	implements GioviValue<Struct> {
+	implements GioviValue<Struct>, As, Redirection, Equal, NotEqual, Dot, Access {
 
 	@Override
 	public String toString() {
@@ -36,7 +38,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviTypeStruct t when t.equals(this.type) -> this;
-			default -> GioviValue.super.as(right);
+			default -> As.super.as(right);
 		};
 	}
 
@@ -49,7 +51,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> Redirection.super.redirection(content);
 		};
 	}
 
@@ -66,13 +68,13 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> Equal.super.equal(right);
 		};
 	}
 
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
+		return equal(right).asGioviBool().not();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
@@ -85,7 +87,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.value() instanceof GioviSelf) {
 					// init field
-					fieldVar.redirection(type.spawn());
+					Op.redirection(fieldVar, type.spawn());
 				}
 				yield fieldVar;
 			}
@@ -93,7 +95,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 				-> type.signature().getConstant(identifier);
 			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
 				-> type.signature().getFunction(identifier);
-			default -> GioviValue.super.dot(right);
+			default -> Dot.super.dot(right);
 		};
 	}
 
@@ -112,7 +114,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> Access.super.access(right);
 		};
 	}
 

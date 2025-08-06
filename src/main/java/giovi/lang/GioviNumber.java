@@ -1,9 +1,14 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.Op.*;
 
 public sealed interface GioviNumber<T extends Number>
-	extends GioviPrimitive<T>
+	extends GioviPrimitive<T>,
+	As, Redirection, RedirectionPlus, RedirectionMinus, RedirectionMultiply,
+	RedirectionDivide,
+	Positive, Negative, Plus, Minus, Multiply, Divide, Modulo, Power, Equal, NotEqual, Less,
+	LessEqual, Greater, GreaterEqual, Dot
 	permits GioviNatural, GioviInt, GioviReal {
 
 	GioviNatural naturalValue();
@@ -18,8 +23,13 @@ public sealed interface GioviNumber<T extends Number>
 			case GioviTypeReal _ -> realValue();
 			case GioviTypeInt _ -> intValue();
 			case GioviTypeNatural _ -> naturalValue();
-			default -> GioviPrimitive.super.as(right);
+			default -> As.super.as(right);
 		};
+	}
+
+	@Override
+	default public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		return equal(right).asGioviBool().not();
 	}
 
 }

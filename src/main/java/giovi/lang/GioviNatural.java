@@ -199,12 +199,6 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).not();
-	}
-
-
-	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() < defaultValue().intValue());

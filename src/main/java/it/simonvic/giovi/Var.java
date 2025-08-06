@@ -4,12 +4,11 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.RedirectionException;
 
 // TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
 
-public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
+// TODO: relax upper bound to GioviParserVisitResult? (In case we want to handle ranges and such)
+public class Var<T extends GioviValue<?>> implements Op.All {
 
 	public static <T> Var<? extends GioviValue<?>> of(T value) {
 		return new Var<>(GioviValue.of(value));
@@ -41,11 +40,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
 	// TODO: or use safe generic getField
 	public void setValueWithRedirection(GioviParserVisitResult value) {
-		try {
-			this.value = (T) redirection(value);
-		} catch (OperatorNotSupported ex) {
-			throw new RedirectionException(ex);
-		}
+		redirection(value);
 	}
 
 	@Override
@@ -92,10 +87,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviType<?> t -> new Var<>(value.as(t).asGioviValue());
-			default -> GioviParserVisitResult.super.as(right);
-		};
+		return Op.as(this.value, right);
 	}
 
 
@@ -108,31 +100,31 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirection(content);
+		this.value = (T) Op.redirection(this.value, content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionPlus(content);
+		this.value = (T) Op.redirectionPlus(this.value, content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionMinus(content);
+		this.value = (T) Op.redirectionMinus(this.value, content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionMultiply(content);
+		this.value = (T) Op.redirectionMultiply(this.value, content);
 		return this.value;
 	}
 
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionDivide(content);
+		this.value = (T) Op.redirectionDivide(this.value, content);
 		return this.value;
 	}
 
@@ -140,60 +132,42 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	@Override
 	public GioviParserVisitResult positive() {
-		return value.positive();
+		return Op.positive(this.value);
 	}
 
 	@Override
 	public GioviParserVisitResult negative() {
-		return value.negative();
+		return Op.negative(this.value);
 	}
 
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.plus(v.value());
-			default -> value.plus(right);
-		};
+		return Op.plus(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.minus(v.value());
-			default -> value.minus(right);
-		};
+		return Op.minus(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.multiply(v.value());
-			default -> value.multiply(right);
-		};
+		return Op.multiply(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.divide(v.value());
-			default -> value.divide(right);
-		};
+		return Op.divide(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.modulo(v.value());
-			default -> value.modulo(right);
-		};
+		return Op.modulo(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.power(v.value());
-			default -> value.power(right);
-		};
+		return Op.power(this.value, right);
 	}
 
 
@@ -201,106 +175,70 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	@Override
 	public GioviParserVisitResult not() {
-		return value.not();
+		return Op.not(this.value);
 	}
 
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.and(v.value());
-			default -> value.and(right);
-		};
+		return Op.and(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.or(v.value());
-			default -> value.or(right);
-		};
+		return Op.or(this.value, right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.equal(v.value());
-			default -> value.equal(right);
-		};
+		return Op.equal(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.notEqual(v.value());
-			default -> value.notEqual(right);
-		};
+		return Op.notEqual(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.less(v.value());
-			default -> value.less(right);
-		};
+		return Op.less(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.lessEqual(v.value());
-			default -> value.lessEqual(right);
-		};
+		return Op.lessEqual(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.greater(v.value());
-			default -> value.greater(right);
-		};
+		return Op.greater(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.greaterEqual(v.value());
-			default -> value.greaterEqual(right);
-		};
+		return Op.greaterEqual(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.contains(v.value());
-			default -> value.contains(right);
-		};
+		return Op.contains(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult isContained(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.isContained(v.value());
-			default -> value.isContained(right);
-		};
+		return Op.isContained(this.value, right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.access(v.value());
-			default -> value.access(right);
-		};
+		return Op.access(this.value, right);
 	}
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> value.dot(v.value());
-			default -> value.dot(right);
-		};
+		return Op.dot(this.value, right);
 	}
 
 
