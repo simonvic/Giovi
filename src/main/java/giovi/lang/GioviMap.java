@@ -203,7 +203,7 @@ public record GioviMap(
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviMap v -> {
@@ -224,12 +224,12 @@ public record GioviMap(
 					var thisKey = thisEntry.getKey();
 					var otherKey = otherEntry.getKey();
 					try {
-						if (!Op.equal(thisKey, otherKey).asNativeBool()) {
+						if (!Op.equal(thisKey, otherKey).value()) {
 							yield new GioviBool(false);
 						}
 						var thisValue = thisEntry.getValue();
 						var otherValue = otherEntry.getValue();
-						if (!Op.equal(thisValue, otherValue).asNativeBool()) {
+						if (!Op.equal(thisValue, otherValue).value()) {
 							yield new GioviBool(false);
 						}
 					} catch (OperatorNotSupported _) {
@@ -249,8 +249,7 @@ public record GioviMap(
 				for (var entry : value.entrySet()) {
 					var key = entry.getKey();
 					if (!this.value.containsKey(key)
-						|| !Op.equal(this.value.get(key), entry.getValue())
-							.asNativeBool()) {
+						|| !Op.equal(this.value.get(key), entry.getValue()).value()) {
 						yield new GioviBool(false);
 					}
 				}
@@ -258,7 +257,7 @@ public record GioviMap(
 			}
 			case GioviValue<?> v -> {
 				for (var key : value.keySet()) {
-					if (Op.equal(key, v).asNativeBool()) {
+					if (Op.equal(key, v).value()) {
 						yield new GioviBool(true);
 					}
 				}

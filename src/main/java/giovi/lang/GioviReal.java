@@ -203,7 +203,7 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviNatural(var v) -> new GioviBool(value == v.doubleValue());

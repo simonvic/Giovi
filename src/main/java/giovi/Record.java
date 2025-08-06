@@ -88,7 +88,7 @@ public sealed class Record extends Tuple permits Struct {
 				if (otherFieldOpt.isEmpty()) {
 					return false;
 				}
-				if (!Op.equal(entry.getValue(), otherFieldOpt.get()).asNativeBool()) {
+				if (!Op.equal(entry.getValue(), otherFieldOpt.get()).value()) {
 					return false;
 				}
 			} catch (OperatorNotSupported e) {

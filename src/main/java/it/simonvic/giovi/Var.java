@@ -1,6 +1,7 @@
 package it.simonvic.giovi;
 
 import giovi.GioviParserVisitResult;
+import giovi.lang.GioviBool;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -191,12 +192,12 @@ public class Var<T extends GioviValue<?>> implements Op.All {
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return Op.equal(this.value, right);
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+	public GioviBool notEqual(GioviParserVisitResult right) {
 		return Op.notEqual(this.value, right);
 	}
 

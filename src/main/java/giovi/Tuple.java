@@ -105,7 +105,7 @@ public sealed class Tuple permits Record {
 			var thisField = this.fields.get(i);
 			var otherField = other.fields.get(i);
 			try {
-				if (!Op.equal(thisField, otherField).asNativeBool()) {
+				if (!Op.equal(thisField, otherField).value()) {
 					return false;
 				}
 			} catch (OperatorNotSupported e) {

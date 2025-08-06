@@ -58,7 +58,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
@@ -69,8 +69,8 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).asGioviBool().not();
+	public GioviBool notEqual(GioviParserVisitResult right) {
+		return new GioviBool(!equal(right).value());
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access

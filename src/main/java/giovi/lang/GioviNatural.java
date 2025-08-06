@@ -188,7 +188,7 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.intValue() == defaultValue().intValue());
 			case GioviNatural(var v) -> new GioviBool(value.intValue() == v.intValue());

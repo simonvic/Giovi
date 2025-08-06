@@ -182,7 +182,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviList v -> {
@@ -208,8 +208,8 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).asGioviBool().not();
+	public GioviBool notEqual(GioviParserVisitResult right) {
+		return new GioviBool(!equal(right).value());
 	}
 
 	@Override
@@ -250,7 +250,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> Access.super.access(right);
 			};
-			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
+			case Range<?> range when range instanceof Range(Integer _, _, _, _) -> {
 				var gioviList = new GioviList(this.entryType.copy());
 				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 				yield gioviList;

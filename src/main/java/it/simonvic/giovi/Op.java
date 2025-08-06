@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import giovi.GioviParserVisitResult;
 import giovi.JFunction;
 import giovi.MemberKey;
+import giovi.lang.GioviBool;
 import giovi.lang.GioviFunction;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
@@ -199,8 +200,7 @@ public sealed interface Op extends GioviParserVisitResult {
 
 	non-sealed interface Equal extends Op {
 
-		// TODO: return bool
-		default GioviParserVisitResult equal(GioviParserVisitResult right) {
+		default GioviBool equal(GioviParserVisitResult right) {
 			return switch (right) {
 				case Var<?> v -> equal(v.value());
 				default -> throw new OperatorNotSupported(this, GioviToken.EQUAL, right);
@@ -211,7 +211,7 @@ public sealed interface Op extends GioviParserVisitResult {
 
 	non-sealed interface NotEqual extends Op {
 
-		default GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		default GioviBool notEqual(GioviParserVisitResult right) {
 			return switch (right) {
 				case Var<?> v -> notEqual(v.value());
 				default -> throw new OperatorNotSupported(this, GioviToken.NOT_EQUAL, right);
@@ -493,7 +493,7 @@ public sealed interface Op extends GioviParserVisitResult {
 		throw new OperatorNotSupported(lhs, GioviToken.OR, rhs);
 	}
 
-	public static GioviParserVisitResult equal(
+	public static GioviBool equal(
 		GioviParserVisitResult lhs,
 		GioviParserVisitResult rhs
 	) {
@@ -503,7 +503,7 @@ public sealed interface Op extends GioviParserVisitResult {
 		throw new OperatorNotSupported(lhs, GioviToken.EQUAL, rhs);
 	}
 
-	public static GioviParserVisitResult notEqual(
+	public static GioviBool notEqual(
 		GioviParserVisitResult lhs,
 		GioviParserVisitResult rhs
 	) {

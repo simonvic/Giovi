@@ -28,8 +28,8 @@ public sealed interface GioviNumber<T extends Number>
 	}
 
 	@Override
-	default public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).asGioviBool().not();
+	default public GioviBool notEqual(GioviParserVisitResult right) {
+		return new GioviBool(!equal(right).value());
 	}
 
 }

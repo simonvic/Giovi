@@ -133,7 +133,7 @@ public record GioviText(String value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.compareTo(defaultValue()) == 0);
 			case GioviText(var v) -> new GioviBool(value.compareTo(v) == 0);
@@ -142,8 +142,8 @@ public record GioviText(String value)
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).asGioviBool().not();
+	public GioviBool notEqual(GioviParserVisitResult right) {
+		return new GioviBool(!equal(right).value());
 	}
 
 	@Override

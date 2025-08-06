@@ -89,7 +89,7 @@ public record GioviBool(Boolean value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// relational
 
 	@Override
-	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+	public GioviBool equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
 			case GioviBool(var v) -> new GioviBool(value.equals(v));
@@ -99,8 +99,8 @@ public record GioviBool(Boolean value)
 	}
 
 	@Override
-	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
-		return equal(right).asGioviBool().not();
+	public GioviBool notEqual(GioviParserVisitResult right) {
+		return equal(right).not().asGioviBool();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
