@@ -1,7 +1,9 @@
 package it.simonvic.giovi.util;
 
 import java.lang.reflect.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import giovi.JFunction;
 import giovi.Module;
@@ -15,7 +17,6 @@ import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
-import it.simonvic.giovi.lang.annotation.Native.Struct;
 import it.simonvic.giovi.lang.annotation.Native.TypeList;
 import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
