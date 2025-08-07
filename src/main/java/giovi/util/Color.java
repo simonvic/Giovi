@@ -19,18 +19,13 @@ import it.simonvic.giovi.util.Natives;
 public class Color {
 
 	@Const
-	public static final @Type(GioviTypeInt.class) GioviInt WHITE = new GioviInt(0xFFFFFF);
-
-	@Func
-	public static void foo() {
-		System.out.println("foo");
-	}
+	public static final GioviInt WHITE = new GioviInt(0xFFFFFF);
 
 	@Func
 	public static @Type(nativ = Rgb.class) GioviStruct rgb(
-		@Param("r") @Type(GioviTypeInt.class) GioviInt r,
-		@Param("g") @Type(GioviTypeInt.class) GioviInt g,
-		@Param("b") @Type(GioviTypeInt.class) GioviInt b
+		GioviInt r,
+		GioviInt g,
+		GioviInt b
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgb.class)).spawn();
 		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
@@ -41,10 +36,10 @@ public class Color {
 
 	@Func
 	public static @Type(nativ = Rgba.class) GioviStruct rgba(
-		@Param("r") @Type(GioviTypeInt.class) GioviInt r,
-		@Param("g") @Type(GioviTypeInt.class) GioviInt g,
-		@Param("b") @Type(GioviTypeInt.class) GioviInt b,
-		@Param("a") @Type(GioviTypeInt.class) GioviInt a
+		GioviInt r,
+		GioviInt g,
+		GioviInt b,
+		GioviInt a
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgba.class)).spawn();
 		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
@@ -61,15 +56,12 @@ public class Color {
 	public static class Rgb {
 
 		@Field
-		@Type(GioviTypeInt.class)
 		public static final GioviInt r = new GioviInt(255);
 
 		@Field
-		@Type(GioviTypeInt.class)
 		public static final GioviInt g = new GioviInt(255);
 
 		@Field
-		@Type(GioviTypeInt.class)
 		public static final GioviInt b = new GioviInt(255);
 
 		// @Const
@@ -107,7 +99,6 @@ public class Color {
 		public static class Rgba extends Rgb {
 
 			@Field
-			@Type(GioviTypeInt.class)
 			public static final GioviInt a = new GioviInt(255);
 
 		}
