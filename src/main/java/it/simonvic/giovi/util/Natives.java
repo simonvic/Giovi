@@ -17,6 +17,7 @@ import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
+import it.simonvic.giovi.lang.annotation.Native.Self;
 import it.simonvic.giovi.lang.annotation.Native.TypeList;
 import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
@@ -141,6 +142,10 @@ public class Natives {
 		GioviType<?> returnType = gioviReturnTypeFrom(method);
 		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
+			if (param.isAnnotationPresent(Native.Self.class)) {
+				parameters.put("self", new FormalParameter("self", new GioviTypeSelf()));
+				continue;
+			}
 			var annotation = param.getAnnotation(Native.Func.Param.class);
 			String paramName = (annotation != null && !annotation.value().isBlank())
 				? annotation.value()
@@ -226,6 +231,10 @@ public class Natives {
 		}
 
 		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
+
+		if (annotatedReturnType.isAnnotationPresent(Self.class)) {
+			return new GioviTypeSelf();
+		}
 
 		var typeListAnnotation = annotatedReturnType.getAnnotation(TypeList.class);
 		if (typeListAnnotation != null) {

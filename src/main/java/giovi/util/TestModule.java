@@ -112,6 +112,40 @@ public class TestModule {
 
 	}
 
+	@Struct
+	public static class Node {
+
+		@Field
+		public static GioviText data = new GioviText();
+
+		@Field
+		public static GioviSelf next = new GioviSelf();
+
+		@Func
+		public static GioviText toText(@Self GioviStruct self) {
+			System.out.println("hello from print");
+			System.out.println(self);
+			return new GioviText(self.toString());
+		}
+
+		@Func
+		public static @Self GioviStruct newSelf() {
+			return new GioviStruct(new GioviTypeStruct(_SIGNATURE), _SIGNATURE.spawn());
+		}
+
+		@Func
+		public static @Self GioviStruct capitalize(@Self GioviStruct self) {
+			var dataField = self.value().<GioviText>getField("data").orElseThrow();
+			dataField.setValue(new GioviText(dataField.value().value().toUpperCase()));
+			return self;
+		}
+
+		@Native.Struct.Signature
+		private static final StructSignature _SIGNATURE = Natives
+			.structSignatureFrom(Node.class);
+
+	}
+
 
 }
 

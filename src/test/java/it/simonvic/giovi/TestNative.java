@@ -121,4 +121,22 @@ public class TestNative {
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
 
+	@Test
+	void test_struct_recursive() {
+		visit(
+			"""
+			root giovi.util.TestModule.Node
+			root.data <- "root"
+
+			root.next.next.next -> _out
+			root -> _out
+			root.toText -> _out
+			root.toText() -> _out
+			giovi.util.TestModule.Node.newSelf -> _out
+			giovi.util.TestModule.Node.newSelf() -> _out
+			root.capitalize -> _out
+			root.capitalize() -> _out
+
+			""");
+	}
 }
