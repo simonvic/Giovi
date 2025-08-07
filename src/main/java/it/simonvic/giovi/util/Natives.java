@@ -9,6 +9,7 @@ import giovi.Module;
 import giovi.RecordFieldSignature;
 import giovi.StructSignature;
 import giovi.lang.*;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
@@ -190,6 +191,10 @@ public class Natives {
 	}
 
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
+		if (method.getReturnType().equals(Void.TYPE)) {
+			return new GioviTypeVoid();
+		}
+
 		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
 
 		var typeListAnnotation = annotatedReturnType.getAnnotation(TypeList.class);
@@ -208,7 +213,7 @@ public class Natives {
 			return gioviTypeFrom(typeAnnotation);
 		}
 
-		return new GioviTypeVoid();
+		throw new GioviException("Can't find type for return type " + method);
 	}
 
 	private static GioviType<?> gioviTypeFrom(Parameter param) {
