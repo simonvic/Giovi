@@ -2,7 +2,9 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import giovi.Natural;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeReal.class)
 public record GioviReal(Double value) implements GioviNumber<Double> {
 
 	public static GioviReal valueOf(String s) throws NumberFormatException {

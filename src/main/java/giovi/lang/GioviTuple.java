@@ -1,9 +1,14 @@
 package giovi.lang;
 
-import giovi.*;
+import giovi.AccessKey;
+import giovi.GioviParserVisitResult;
+import giovi.Range;
+import giovi.Tuple;
 import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.GioviTuples;
 
+@DescribedBy(GioviTypeTuple.class)
 public record GioviTuple(GioviTypeTuple type, Tuple value)
 	implements GioviValue<Tuple> {
 

@@ -1,7 +1,9 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeSelf.class)
 public record GioviSelf() implements GioviValue<Void> {
 
 	@Override

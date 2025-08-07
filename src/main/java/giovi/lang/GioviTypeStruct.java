@@ -4,7 +4,9 @@ import giovi.GioviParserVisitResult;
 import giovi.MemberKey;
 import giovi.StructSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviStruct.class)
 public record GioviTypeStruct(StructSignature signature) implements GioviType<GioviStruct> {
 
 	@Override

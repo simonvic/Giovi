@@ -2,8 +2,10 @@ package it.simonvic.giovi.lang.annotation;
 
 import java.lang.annotation.*;
 
+import giovi.lang.GioviType;
 import giovi.lang.GioviTypePrimitive;
 import giovi.lang.GioviTypeVoid;
+import giovi.lang.GioviValue;
 
 /// For a full implementation this depends on:
 /// 1. ~Struct constants~
@@ -16,6 +18,26 @@ import giovi.lang.GioviTypeVoid;
 /// 7. ~Import statements~
 /// 8. Some sort of generic typing
 public interface Native {
+
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Documented
+	public @interface DescribedBy {
+
+		Class<? extends GioviType<?>> value();
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	@Documented
+	public @interface Describes {
+
+		Class<? extends GioviValue<?>> value();
+
+	}
+
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
@@ -100,6 +122,7 @@ public interface Native {
 	public @interface Type {
 
 		Class<? extends GioviTypePrimitive<?>> value() default GioviTypeVoid.class;
+		// TODO: use a dummy Type instead of Void which might be used for real
 
 		Class<?> nativ() default Object.class;
 

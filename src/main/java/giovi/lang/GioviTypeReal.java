@@ -3,7 +3,9 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.Const;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviReal.class)
 public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
 	@Override

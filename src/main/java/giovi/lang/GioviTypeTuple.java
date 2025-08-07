@@ -2,7 +2,9 @@ package giovi.lang;
 
 import giovi.TupleSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviTuple.class)
 public record GioviTypeTuple(TupleSignature signature) implements GioviType<GioviTuple> {
 
 	public GioviTypeTuple() {

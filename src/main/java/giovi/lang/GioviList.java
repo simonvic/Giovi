@@ -10,7 +10,9 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeList.class)
 public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	implements GioviValue<List<Var<?>>> {
 

@@ -1,9 +1,11 @@
 package giovi.lang;
 
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
 
 /// Lazily fetched type, used in incomplete type declarations
+@Describes(GioviSelf.class)
 public record GioviTypeSelf() implements GioviType<GioviSelf> {
 
 	@Override

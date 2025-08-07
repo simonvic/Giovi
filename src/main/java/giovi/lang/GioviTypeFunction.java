@@ -5,7 +5,9 @@ import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviFunction.class)
 public record GioviTypeFunction(FunctionSignature signature) implements GioviType<GioviFunction> {
 
 	public FunctionSignature getSignature() {

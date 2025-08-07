@@ -1,7 +1,9 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeBool.class)
 public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
 	public static GioviBool valueOf(String s) {

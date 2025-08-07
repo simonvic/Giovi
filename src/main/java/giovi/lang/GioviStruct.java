@@ -2,9 +2,11 @@ package giovi.lang;
 
 import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
+@DescribedBy(GioviTypeStruct.class)
 public record GioviStruct(GioviTypeStruct type, Struct value)
 	implements GioviValue<Struct> {
 

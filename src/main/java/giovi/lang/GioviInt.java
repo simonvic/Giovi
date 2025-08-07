@@ -2,7 +2,9 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import giovi.Natural;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeInt.class)
 public record GioviInt(Integer value) implements GioviNumber<Integer> {
 
 	public static GioviInt valueOf(String s) throws NumberFormatException {

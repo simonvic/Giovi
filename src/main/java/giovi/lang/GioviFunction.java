@@ -5,7 +5,9 @@ import giovi.GFunction;
 import giovi.GioviParserVisitResult;
 import giovi.JFunction;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeFunction.class)
 public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	public GioviFunction() {

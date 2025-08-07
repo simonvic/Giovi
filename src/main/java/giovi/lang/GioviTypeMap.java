@@ -1,9 +1,10 @@
 package giovi.lang;
 
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviMap.class)
 public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	implements GioviType<GioviMap> {
 

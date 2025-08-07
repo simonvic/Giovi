@@ -12,7 +12,9 @@ import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeMap.class)
 public record GioviMap(
 	GioviTypeMap type,
 	LinkedHashMap<Var<?>, Var<?>> value

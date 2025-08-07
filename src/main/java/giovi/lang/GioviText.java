@@ -7,8 +7,9 @@ import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
-import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
+@DescribedBy(GioviTypeText.class)
 public record GioviText(String value) implements GioviPrimitive<String> {
 
 	public GioviText() {

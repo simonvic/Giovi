@@ -2,7 +2,9 @@ package giovi.lang;
 
 import giovi.RecordSignature;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviRecord.class)
 public record GioviTypeRecord(RecordSignature signature) implements GioviType<GioviRecord> {
 
 	public GioviTypeRecord() {

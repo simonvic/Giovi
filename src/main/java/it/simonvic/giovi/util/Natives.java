@@ -15,6 +15,7 @@ import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.lang.annotation.Native.TypeList;
 import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
@@ -54,6 +55,11 @@ public class Natives {
 		}
 	}
 
+	/**
+	 * Find signature field in a class or build it
+	 * @param clazz
+	 * @return
+	 */
 	public static StructSignature structSignatureOf(Class<?> clazz) {
 		// Find field marked as signature...
 		for (Field field : clazz.getFields()) {
@@ -70,6 +76,11 @@ public class Natives {
 		return Natives.structSignatureFrom(clazz);
 	}
 
+	/**
+	 * Build function signature from a class
+	 * @param clazz
+	 * @return
+	 */
 	public static StructSignature structSignatureFrom(Class<?> clazz) {
 		String typename = clazz.getAnnotation(Native.Struct.class).typename();
 		if (typename.isEmpty()) {
@@ -180,6 +191,18 @@ public class Natives {
 		return new GioviTypeStruct(structSignatureOf(annotation.nativ()));
 	}
 
+	private static GioviType<?> gioviTypeFrom(Class<? extends GioviType<?>> clazz) {
+		if (clazz != GioviTypeVoid.class) {
+			try {
+				return clazz.getConstructor().newInstance();
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return new GioviTypeStruct(structSignatureOf(clazz));
+	}
+
 	private static GioviType<?> gioviTypeFrom(TypeList typeListAnnotation) {
 		return new GioviTypeList(gioviTypeFrom(typeListAnnotation.value()));
 	}
@@ -213,6 +236,11 @@ public class Natives {
 			return gioviTypeFrom(typeAnnotation);
 		}
 
+		var descriptor = method.getReturnType().getAnnotation(DescribedBy.class);
+		if (descriptor != null) {
+			return gioviTypeFrom(descriptor.value());
+		}
+
 		throw new GioviException("Can't find type for return type " + method);
 	}
 
@@ -231,6 +259,11 @@ public class Natives {
 		var typeAnnotation = param.getAnnotation(Native.Type.class);
 		if (typeAnnotation != null) {
 			return gioviTypeFrom(typeAnnotation);
+		}
+
+		var descriptor = param.getType().getAnnotation(DescribedBy.class);
+		if (descriptor != null) {
+			return gioviTypeFrom(descriptor.value());
 		}
 
 		throw new GioviException(

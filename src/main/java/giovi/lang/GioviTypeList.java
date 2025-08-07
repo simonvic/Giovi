@@ -3,7 +3,9 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviList.class)
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	implements GioviType<GioviList> {
 

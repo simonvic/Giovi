@@ -2,7 +2,9 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.annotation.Native.Describes;
 
+@Describes(GioviNatural.class)
 public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 
 	@Override
