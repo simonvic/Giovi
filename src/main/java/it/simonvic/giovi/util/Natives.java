@@ -233,7 +233,9 @@ public class Natives {
 			return gioviTypeFrom(typeAnnotation);
 		}
 
-		return new GioviTypeVoid();
+		throw new GioviException(
+			"Can't find type for parameter: " + param
+				+ " in " + param.getDeclaringExecutable());
 	}
 
 	public static GioviTypeStruct structTypeOf(Class<?> clazz) {
