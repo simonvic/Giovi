@@ -12,8 +12,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.JFunction;
+import giovi.RecordFieldSignature;
+import giovi.StructSignature;
 import giovi.lang.*;
 import giovi.util.Color.Rgb;
+import giovi.util.TestModule.TestStruct;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
@@ -23,28 +27,7 @@ public class TestNative {
 	@Test
 	void foo() {
 		visit("""
-			_out <- giovi.util.Math.PI
-			_out <- giovi.util.Math.floor(2.5)
-			_out <- giovi.util.Math.floor(2.5)
-			_out <- giovi.util.Random.integer()
-			_out <- giovi.util.Color.WHITE
-			_out <- giovi.util.Color.rgb(1, 2, 3)
-			_out <- giovi.util.Color.rgba(1, 2, 3, 255)
-			_out <- giovi.util.Color.Rgb.<>
-			_out <- giovi.util.TestModule.TEST_CONST
-			_out <- giovi.util.TestModule.complex
-			_out <- giovi.util.TestModule.complex(
-				i: 420,
-				s: giovi.util.Color.Rgb.<>,
-				l: [1 2 3],
-				m : ["a":<1 1 1> "b":<2 2 2> "c":<3 3 3>]
-			)
-			# _out <- giovi.util.TestModule.getMap
-			# _out <- giovi.util.TestModule.getMap()
-			_out <- giovi.util.TestModule.getRgb
-			_out <- giovi.util.TestModule.getRgb()
-			_out <- giovi.util.TestModule.getListOfRgb
-			_out <- giovi.util.TestModule.getListOfRgb()
+			_out <- giovi.util.TestModule.TestStruct.<>
 			""");
 	}
 
@@ -100,6 +83,42 @@ public class TestNative {
 	void testFunctionSignatures(String code, FunctionSignature signature) {
 		assertThat(visitExpression(code).asGioviFunction().value().signature())
 			.isEqualTo(signature);
+	}
+
+	@Test
+	void test_struct() throws NoSuchMethodException {
+		var expectedSignature = new StructSignature(
+			"TestStruct",
+			new RecordFieldSignature("i", new GioviTypeInt()),
+			new RecordFieldSignature("t", new GioviTypeText(), new GioviText("some default")),
+			new RecordFieldSignature("l", new GioviTypeList(new GioviTypeInt())),
+			new RecordFieldSignature("m", new GioviTypeMap(
+				new GioviTypeText(),
+				new GioviTypeInt())));
+		expectedSignature.constants().put("SOME_CONST", new GioviInt(69));
+		expectedSignature.functions().put(
+			"someFunc",
+			new GioviFunction(new JFunction(TestStruct.class.getMethod("someFunc"))));
+		var actualSignature = visitExpression("giovi.util.TestModule.TestStruct");
+		assertThat(actualSignature)
+			.isEqualTo(new GioviTypeStruct(expectedSignature));
+	}
+
+	// TODO: clarify requirements. Should functions and constants be inherited?
+
+	@Test
+	void test_struct_extended() {
+		var expectedSignature = new StructSignature(
+			"TestStructExtends",
+			new RecordFieldSignature("i", new GioviTypeInt()),
+			new RecordFieldSignature("t", new GioviTypeText(), new GioviText("some default")),
+			new RecordFieldSignature("l", new GioviTypeList(new GioviTypeInt())),
+			new RecordFieldSignature("m", new GioviTypeMap(
+				new GioviTypeText(),
+				new GioviTypeInt())),
+			new RecordFieldSignature("i2", new GioviTypeInt(), new GioviInt(420)));
+		assertThat(visitExpression("giovi.util.TestModule.TestSubModule.TestStructExtends"))
+			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
 
 }

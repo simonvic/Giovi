@@ -3,9 +3,11 @@ package giovi.util;
 import giovi.StructSignature;
 import giovi.lang.*;
 import giovi.util.Color.Rgb;
+import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Module;
+import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
 import it.simonvic.giovi.util.Natives;
 
 @Module
@@ -53,6 +55,7 @@ public class TestModule {
 		return new GioviInt(69);
 	}
 
+	// TODO: can't repeat Type
 	// @Func
 	// public static @TypeMap(
 	// 	key = @Type(GioviTypeText.class),
@@ -61,17 +64,54 @@ public class TestModule {
 	// 	return GioviMaps.of("a", 1, "b", 2, "c", 3);
 	// }
 
-	@Func
-	public static @Type(nativ = Rgb.class) GioviStruct getRgb() {
-		return new GioviTypeStruct(Natives.structSignatureOf(Rgb.class)).spawn();
+	@Struct
+	public static class TestStruct {
+
+		@Field
+		public static final GioviInt i = new GioviInt();
+
+		@Field
+		public static final GioviText t = new GioviText("some default");
+
+		@Field
+		public static final GioviList l = new GioviList(new GioviTypeInt());
+
+		@Field
+		public static final GioviMap m = new GioviMap(new GioviTypeMap(
+			new GioviTypeText(),
+			new GioviTypeInt()));
+
+		@Const
+		public static final GioviInt SOME_CONST = new GioviInt(69);
+
+		@Func
+		public static GioviText someFunc() {
+			return new GioviText("hello from someFunc");
+		}
+
+		@Native.Struct.Signature
+		private static final StructSignature _SIGNATURE = Natives
+			.structSignatureFrom(TestStruct.class);
+
 	}
 
-	@Func
-	public static @TypeList(@Type(nativ = Rgb.class)) GioviList getListOfRgb() {
-		StructSignature signature = Natives.structSignatureOf(Rgb.class);
-		var t = new GioviTypeList(new GioviTypeStruct(signature), 3);
-		return t.spawn();
+	@Module
+	public static class TestSubModule {
+
+		@Native.Struct(inherit = TestStruct.class)
+		public static class TestStructExtends {
+
+			@Field
+			public static final GioviInt i2 = new GioviInt(420);
+
+			@Native.Struct.Signature
+			private static final StructSignature _SIGNATURE = Natives
+				.structSignatureFrom(TestStructExtends.class);
+
+		}
+
 	}
+
 
 }
 
