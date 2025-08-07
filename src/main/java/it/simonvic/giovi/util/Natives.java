@@ -123,8 +123,9 @@ public class Natives {
 		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
 			var annotation = param.getAnnotation(Native.Func.Param.class);
-			if (annotation == null) continue;
-			String paramName = annotation.value();
+			String paramName = (annotation != null && !annotation.value().isBlank())
+				? annotation.value()
+				: param.getName();
 
 			var labelAnnotation = param.getAnnotation(Native.Func.Param.Label.class);
 			String label = (labelAnnotation != null) ? labelAnnotation.value() : paramName;
