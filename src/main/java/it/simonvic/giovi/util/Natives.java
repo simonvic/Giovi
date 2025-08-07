@@ -1,8 +1,7 @@
 package it.simonvic.giovi.util;
 
 import java.lang.reflect.*;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 import giovi.JFunction;
 import giovi.Module;
@@ -62,7 +61,7 @@ public class Natives {
 	 */
 	public static StructSignature structSignatureOf(Class<?> clazz) {
 		// Find field marked as signature...
-		for (Field field : clazz.getFields()) {
+		for (Field field : List.of(clazz.getFields()).reversed()) { // NOTE: signature is usually the last field
 			var annotation = field.getAnnotation(Native.Struct.Signature.class);
 			if (annotation != null) {
 				try {
