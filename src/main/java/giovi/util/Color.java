@@ -3,13 +3,10 @@ package giovi.util;
 import giovi.StructSignature;
 import giovi.lang.GioviInt;
 import giovi.lang.GioviStruct;
-import giovi.lang.GioviTypeInt;
 import giovi.lang.GioviTypeStruct;
-import giovi.util.Color.Foo.Rgba;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.Const;
 import it.simonvic.giovi.lang.annotation.Native.Func;
-import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
 import it.simonvic.giovi.lang.annotation.Native.Type;
@@ -92,16 +89,15 @@ public class Color {
 
 	}
 
-	@Module
-	public static class Foo {
 
-		@Native.Struct
-		public static class Rgba extends Rgb {
+	@Native.Struct(inherit = Rgb.class)
+	public static class Rgba {
 
-			@Field
-			public static final GioviInt a = new GioviInt(255);
+		@Field
+		public static final GioviInt a = new GioviInt(255);
 
-		}
+		@Native.Struct.Signature
+		private static final StructSignature _SIGNATURE = Natives.structSignatureFrom(Rgba.class);
 
 	}
 

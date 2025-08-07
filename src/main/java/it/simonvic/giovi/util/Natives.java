@@ -15,6 +15,7 @@ import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
+import it.simonvic.giovi.lang.annotation.Native.Struct;
 import it.simonvic.giovi.lang.annotation.Native.TypeList;
 import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
@@ -81,13 +82,18 @@ public class Natives {
 	 * @return
 	 */
 	public static StructSignature structSignatureFrom(Class<?> clazz) {
-		String typename = clazz.getAnnotation(Native.Struct.class).typename();
+		var structAnnotation = clazz.getAnnotation(Native.Struct.class);
+		String typename = structAnnotation.typename();
 		if (typename.isEmpty()) {
 			typename = clazz.getSimpleName();
 		}
 
 		// TODO: check if classField/method are static or final?
 		var fields = new LinkedHashMap<String, RecordFieldSignature>();
+		if (!structAnnotation.inherit().equals(Object.class)) {
+			var inheritedSignature = structSignatureOf(structAnnotation.inherit());
+			fields.putAll(inheritedSignature.fields());
+		}
 		var constants = new HashMap<String, GioviValue<?>>();
 		// TODO: allow java Records
 		for (Field classField : clazz.getFields()) {

@@ -60,6 +60,7 @@ public interface Native {
 	public @interface Struct {
 
 		String typename() default "";
+		Class<?> inherit() default Object.class;
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)
