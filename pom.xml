@@ -10,8 +10,9 @@
 	<packaging>jar</packaging>
 
 	<properties>
-		<maven.compiler.release>24</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.release>24</maven.compiler.release>
+		<maven.compiler.parameters>true</maven.compiler.parameters>
 	</properties>
 
 	<dependencies>
@@ -129,6 +130,9 @@
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.5.3</version>
+				<configuration>
+					<compilerArgs>-parameters</compilerArgs>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
