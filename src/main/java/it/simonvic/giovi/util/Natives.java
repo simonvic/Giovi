@@ -89,6 +89,7 @@ public class Natives {
 		// TODO: check if classField/method are static or final?
 		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		var constants = new HashMap<String, GioviValue<?>>();
+		// TODO: allow java Records
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
 				System.err.println(
