@@ -894,4 +894,46 @@ public class TestGioviStruct {
 
 	}
 
+	@Nested
+	class Recursion {
+
+
+		@Test
+		void foo() {
+			visit("""
+			Node <
+				data Text
+				next self
+			>
+			n Node <- <data: "root">
+			n.next.data <- "1"
+			n.next.next.data <- "2"
+			n.next.next.next.data <- "3"
+			n -> _out
+			repeat if n.data != default {
+				n.data -> _out
+				n <- n.next
+			}
+			""");
+		}
+
+		@Test
+		void bar() {
+			visit("""
+			Node <
+				label Text
+				next self
+				self foo() => self {
+					self -> _out
+					self.next.foo -> _out
+					=> self
+				}
+			>
+			root Node
+			root.foo() -> _out
+			""");
+		}
+
+	}
+
 }
