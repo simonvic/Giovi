@@ -40,7 +40,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		this.value = value;
 	}
 
-	// TODO: temporary shorthand. Eventually remove and handle manually the redirection
+	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
 	public void setValueWithRedirection(GioviParserVisitResult value) {
 		try {
 			redirection(value);
