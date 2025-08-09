@@ -1331,7 +1331,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					returnType = getCurrentScope().getVariable("self").orElseThrow().getGioviType();
 				}
 				if (!(returnedValue instanceof GioviVoid)
-					&& returnType.value() == GioviVoid.class) {
+					&& returnType instanceof GioviTypeVoid) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type");
 				}
