@@ -1144,9 +1144,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		Function function = gioviFunction.value();
 		enterFunctionScope();
-		LinkedHashMap<String, VarD<?>> actualParams = setupFunctionParameters(
-			parametersCtx,
-			function.signature());
+		LinkedHashMap<String, VarD<?>> actualParams;
+		try {
+			actualParams = setupFunctionParameters(
+				parametersCtx,
+				function.signature());
+		} catch (NonWideneable e) {
+			throw new GioviException(e, "Invokation error");
+		}
 		if (function.signature().hasParameter("self")) {
 			// TODO: passing by reference yields much better performance, but
 			// it's different from other params getting passed by value.
@@ -1185,11 +1190,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * Visit function call parameters and declare actual parameters
 	 * @param actualParamsContext Function call context
 	 * @param signature Function signature
+	 * @throws NonWideneable
 	 */
 	private LinkedHashMap<String, VarD<?>> setupFunctionParameters(
 		ActualParametersContext actualParamsContext,
 		FunctionSignature signature
-	) {
+	) throws NonWideneable {
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
 		List<ActualParameterContext> actualParameters = new ArrayList<>(
@@ -1203,18 +1209,18 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		} else {
 			return setupNamedFunctionParameters(actualParameters, signature);
 		}
-
 	}
 
 	/**
 	 * Visit function call positional parameters and declare actual parameters
 	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
+	 * @throws NonWideneable
 	 */
 	private LinkedHashMap<String, VarD<?>> setupFunctionParametersIteratively(
 		List<ActualParameterContext> actualParamCtxList,
 		FunctionSignature signature
-	) {
+	) throws NonWideneable {
 		var formalParamsArray = signature.getParametersList();
 		int formalParamsCount = formalParamsArray.size();
 		int actualParamsCount = actualParamCtxList.size();
@@ -1254,7 +1260,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				continue;
 			}
 
-			actualParam.setValueWithRedirection(actualParamExpression);
+			actualParam.setValueWithWidening(actualParamExpression.unwrapAsGioviValue());
 			params.put(formalParamIdentifier, actualParam);
 		}
 		return params;
@@ -1264,11 +1270,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * Visit function call named parameters and declare actual parameters
 	 * @param actualParamCtxList Function call context
 	 * @param signature Function signature
+	 * @throws NonWideneable
 	 */
 	private LinkedHashMap<String, VarD<?>> setupNamedFunctionParameters(
 		List<ActualParameterContext> actualParamCtxList,
 		FunctionSignature signature
-	) {
+	) throws NonWideneable {
 
 		// cache actual params contexts mapped by their invocation label
 		var cachedCtxs = new LinkedHashMap<String, ActualParameterContext>();
@@ -1278,7 +1285,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		var params = new LinkedHashMap<String, VarD<?>>();
 		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().byLabel());
-		cachedCtxs.forEach((actualParamLabel, actualParamCtx) -> {
+		for (var cachedCtxEntry : cachedCtxs.entrySet()) {
+			var actualParamLabel = cachedCtxEntry.getKey();
+			var actualParamCtx = cachedCtxEntry.getValue();
 			if (!signature.hasParameterLabeled(actualParamLabel)) {
 				throw new GioviException(
 					"Unknown parameter labeled " + actualParamLabel + " in " + signature);
@@ -1294,11 +1303,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (actualParamExpression instanceof GioviDefault) { // TODO: use GioviPlaceholder
 				params.put(formalParamIdentifier, actualParam);
 			} else {
-				actualParam.setValueWithRedirection(actualParamExpression);
+				actualParam.setValueWithWidening(actualParamExpression.unwrapAsGioviValue());
 				params.put(formalParamIdentifier, actualParam);
 			}
 			undeclaredParameters.remove(formalParam.label());
-		});
+		}
 
 		// no more actual params found, expecting remaining formal parameters to be optional
 		undeclaredParameters.forEach((formalParamIdentifier, formalParam) -> {
@@ -1477,10 +1486,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					"Can't create struct " + typename, new TypeNotFound(typename)));
 		}
 		var struct = typeStruct.signature().spawn();
-		if (ctx.tupleCreation() != null) {
-			initStruct(typeStruct, struct, ctx.tupleCreation());
-		} else {
-			initStruct(typeStruct, struct, ctx.recordCreation());
+		try {
+			if (ctx.tupleCreation() != null) {
+				initStruct(typeStruct, struct, ctx.tupleCreation());
+			} else {
+				initStruct(typeStruct, struct, ctx.recordCreation());
+			}
+		} catch (NonWideneable e) {
+			throw new GioviException(e, "Can't create struct");
 		}
 		return new GioviStruct(typeStruct, struct);
 	}
@@ -1489,20 +1502,21 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviTypeStruct structType,
 		Struct struct,
 		RecordCreationContext fieldsCtx
-	) {
+	) throws NonWideneable {
 		for (var fieldCtx : fieldsCtx.recordEntry()) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
 			var newFieldValue = visit(fieldCtx.expression());
 			var field = struct.getField(fieldIdentifier)
 				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
-			if (field.value() instanceof GioviSelf) {
-				field.setValueUnsafe(structType.spawn());
-			}
-			field.setValueWithRedirection(newFieldValue);
+			doInitStructField(structType, field, newFieldValue);
 		}
 	}
 
-	private void initStruct(GioviTypeStruct structType, Struct struct, TupleCreationContext ctx) {
+	private void initStruct(
+		GioviTypeStruct structType,
+		Struct struct,
+		TupleCreationContext ctx
+	) throws NonWideneable {
 		List<ExpressionContext> expressions = ctx.expression();
 		if (expressions == null || expressions.isEmpty()) {
 			return;
@@ -1517,11 +1531,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			final int j = i;
 			var newFieldValue = visit(expressions.get(i));
 			var field = struct.getField(i).orElseThrow(() -> new NoSuchField(j));
-			if (field.value() instanceof GioviSelf) {
-				// initialize recursive field
-				field.setValueUnsafe(structType.spawn());
-			}
+			doInitStructField(structType, field, newFieldValue);
+		}
+	}
+
+	private void doInitStructField(
+		GioviTypeStruct structType,
+		VarD<?> field,
+		GioviParserVisitResult newFieldValue
+	) throws NonWideneable {
+		if (field.value() instanceof GioviSelf) {
+			// initialize recursive field
+			field.setValueUnsafe(structType.spawn());
+		}
+		if (newFieldValue instanceof GioviDefault) {
 			field.setValueWithRedirection(newFieldValue);
+		} else {
+			field.setValueWithWidening(newFieldValue.unwrapAsGioviValue());
 		}
 	}
 

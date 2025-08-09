@@ -44,6 +44,10 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		this.value = (T) value;
 	}
 
+	public void setValueWithWidening(GioviValue<?> value) throws NonWideneable {
+		this.value = (T) value.widenTo(this.value.getGioviType());
+	}
+
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
 	public void setValueWithRedirection(GioviParserVisitResult value) {
 		try {
