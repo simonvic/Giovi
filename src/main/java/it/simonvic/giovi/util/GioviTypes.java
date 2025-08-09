@@ -3,14 +3,14 @@ package it.simonvic.giovi.util;
 import java.util.Collection;
 
 import giovi.lang.GioviType;
-import giovi.lang.GioviTypeVoid;
+import giovi.lang.GioviVoid;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 
 public class GioviTypes {
 
 	public static GioviType<?> inferGioviType(Collection<Var<?>> entries) {
-		if (entries.isEmpty()) return new GioviTypeVoid(); // TODO: emh... lol
+		if (entries.isEmpty()) return GioviVoid.TYPE; // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
 		for (Var<?> entry : entries) {

@@ -45,7 +45,7 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(new GioviTypeVoid()));
+					.isEqualTo(GioviVoid.TYPE));
 		}
 
 		@Test

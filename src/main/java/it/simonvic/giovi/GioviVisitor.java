@@ -1055,7 +1055,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
 		var map = new LinkedHashMap<Var<?>, Var<?>>();
 		if (ctx.mapEntries() == null) {
-			return new GioviMap(new GioviTypeMap(new GioviTypeVoid(), new GioviTypeVoid()), map);
+			return new GioviMap(new GioviTypeMap(GioviVoid.TYPE, GioviVoid.TYPE), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
@@ -1090,7 +1090,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		GioviType<?> returnType = ctx.returnType != null
 			? visit(ctx.returnType).asGioviType()
-			: new GioviTypeVoid();
+			: GioviVoid.TYPE;
 
 		return new FunctionSignature("", parameters, returnType);
 	}
@@ -1434,7 +1434,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			} else if (signatureCtx.returnSelf != null) {
 				returnType = selfType;
 			} else {
-				returnType = new GioviTypeVoid();
+				returnType = GioviVoid.TYPE;
 			}
 
 			var signature = new FunctionSignature(identifier, parameters, returnType);
@@ -1448,7 +1448,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructFieldDefinition(StructFieldDefinitionContext ctx) {
 		String identifier = ctx.identifier().getText();
 		if (ctx.SELF() != null) {
-			return new RecordFieldSignature(identifier, new GioviTypeSelf());
+			return new RecordFieldSignature(identifier, GioviSelf.TYPE);
 		}
 		var type = visit(ctx.type()).asGioviType();
 		GioviValue<?> defaultValue;

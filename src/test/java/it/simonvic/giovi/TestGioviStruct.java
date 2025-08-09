@@ -207,7 +207,7 @@ public class TestGioviStruct {
 					"foo", new GioviFunction(new GFunction(new FunctionSignature(
 						"foo",
 						new FormalParameters(),
-						new GioviTypeVoid()))),
+						GioviVoid.TYPE))),
 					"bar", new GioviFunction(new GFunction(new FunctionSignature(
 						"bar",
 						new FormalParameters(

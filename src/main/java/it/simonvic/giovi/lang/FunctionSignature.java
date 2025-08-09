@@ -5,7 +5,7 @@ import java.util.List;
 
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
-import giovi.lang.GioviTypeVoid;
+import giovi.lang.GioviVoid;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record FunctionSignature(
@@ -17,10 +17,10 @@ public record FunctionSignature(
 	public static final FunctionSignature EMPTY = new FunctionSignature(
 		"",
 		new FormalParameters(),
-		new GioviTypeVoid());
+		GioviVoid.TYPE);
 
 	public FunctionSignature(String identifier) {
-		this(identifier, new FormalParameters(), new GioviTypeVoid());
+		this(identifier, new FormalParameters(), GioviVoid.TYPE);
 	}
 
 	public FunctionSignature(String identifier, GioviType<?> returnType) {
@@ -31,7 +31,7 @@ public record FunctionSignature(
 		String identifier,
 		FormalParameters parameters
 	) {
-		this(identifier, parameters, new GioviTypeVoid());
+		this(identifier, parameters, GioviVoid.TYPE);
 	}
 
 	@Override

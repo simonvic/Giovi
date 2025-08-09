@@ -46,7 +46,7 @@ public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimi
 
 	@Override
 	public GioviType<T> spawn() {
-		return (GioviType<T>) new GioviTypeVoid();
+		return (GioviType<T>) GioviVoid.TYPE;
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimi
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviTypeVoid(); // TODO: emh...
+			return GioviVoid.TYPE; // TODO: emh...
 		}
 		return GioviTypePrimitive.super.dot(right);
 	}

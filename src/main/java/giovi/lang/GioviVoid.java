@@ -5,6 +5,8 @@ package giovi.lang;
 // we could also return void from a function to return a default value
 public record GioviVoid() implements GioviPrimitive<Void> {
 
+	public static final GioviTypeVoid TYPE = new GioviTypeVoid();
+
 	@Override
 	public Void value() {
 		return null;
@@ -27,7 +29,7 @@ public record GioviVoid() implements GioviPrimitive<Void> {
 
 	@Override
 	public GioviTypeVoid getGioviType() {
-		return new GioviTypeVoid();
+		return GioviVoid.TYPE;
 	}
 
 	@Override
