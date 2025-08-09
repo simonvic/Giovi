@@ -22,21 +22,21 @@ public class TestWidening {
 		@Test
 		void testWideningNaturalToNatural() throws NonWideneable {
 			assertThat(new GioviNatural(new Natural(69))
-				.widenTo(new GioviTypeNatural()))
+				.widenTo(GioviNatural.TYPE))
 				.isEqualTo(new GioviNatural(new Natural(69)));
 		}
 
 		@Test
 		void testWideningNaturalToInt() throws NonWideneable {
 			assertThat(new GioviNatural(new Natural(69))
-				.widenTo(new GioviTypeInt()))
+				.widenTo(GioviInt.TYPE))
 				.isEqualTo(new GioviInt(69));
 		}
 
 		@Test
 		void testWideningNaturalToReal() throws NonWideneable {
 			assertThat(new GioviNatural(new Natural(69))
-				.widenTo(new GioviTypeReal()))
+				.widenTo(GioviReal.TYPE))
 				.isEqualTo(new GioviReal(69d));
 		}
 
@@ -48,14 +48,14 @@ public class TestWidening {
 		@Test
 		void testWideningIntToInt() throws NonWideneable {
 			assertThat(new GioviInt(69)
-				.widenTo(new GioviTypeInt()))
+				.widenTo(GioviInt.TYPE))
 				.isEqualTo(new GioviInt(69));
 		}
 
 		@Test
 		void testWideningIntToReal() throws NonWideneable {
 			assertThat(new GioviInt(69)
-				.widenTo(new GioviTypeReal()))
+				.widenTo(GioviReal.TYPE))
 				.isEqualTo(new GioviReal(69d));
 		}
 
@@ -67,7 +67,7 @@ public class TestWidening {
 		@Test
 		void testWideningRealToReal() throws NonWideneable {
 			assertThat(new GioviReal(69d)
-				.widenTo(new GioviTypeReal()))
+				.widenTo(GioviReal.TYPE))
 				.isEqualTo(new GioviReal(69d));
 		}
 
@@ -79,7 +79,7 @@ public class TestWidening {
 		@Test
 		void testWideningTextToText() throws NonWideneable {
 			assertThat(new GioviText("hello")
-				.widenTo(new GioviTypeText()))
+				.widenTo(GioviText.TYPE))
 				.isEqualTo(new GioviText("hello"));
 		}
 
@@ -91,7 +91,7 @@ public class TestWidening {
 		@Test
 		void testWideningBoolToBool() throws NonWideneable {
 			assertThat(new GioviBool(true)
-				.widenTo(new GioviTypeBool()))
+				.widenTo(GioviBool.TYPE))
 				.isEqualTo(new GioviBool(true));
 		}
 
@@ -103,7 +103,7 @@ public class TestWidening {
 		@Test
 		void testWideningIntListToRealList() throws NonWideneable {
 			assertThat(GioviLists.of(1, 2, 3)
-				.widenTo(new GioviTypeList(new GioviTypeReal())))
+				.widenTo(new GioviTypeList(GioviReal.TYPE)))
 				.isEqualTo(GioviLists.of(1d, 2d, 3d));
 		}
 
@@ -111,7 +111,7 @@ public class TestWidening {
 		void wideningRealListToIntList_shouldThrow() {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(
 				() -> GioviLists.of(1d, 2d, 3d)
-					.widenTo(new GioviTypeList(new GioviTypeInt())));
+					.widenTo(new GioviTypeList(GioviInt.TYPE)));
 		}
 
 		@Test
@@ -119,7 +119,7 @@ public class TestWidening {
 			assertThat(GioviLists.of(
 				List.of(1, 2, 3),
 				List.of(1, 2, 3))
-				.widenTo(new GioviTypeList(new GioviTypeList(new GioviTypeReal()))))
+				.widenTo(new GioviTypeList(new GioviTypeList(GioviReal.TYPE))))
 				.isEqualTo(GioviLists.of(
 					List.of(1d, 2d, 3d),
 					List.of(1d, 2d, 3d)));
@@ -131,7 +131,7 @@ public class TestWidening {
 				() -> GioviLists.of(
 					List.of(1d, 2d, 3d),
 					List.of(1d, 2d, 3d))
-					.widenTo(new GioviTypeList(new GioviTypeList(new GioviTypeInt()))));
+					.widenTo(new GioviTypeList(new GioviTypeList(GioviInt.TYPE))));
 		}
 
 	}
@@ -145,7 +145,7 @@ public class TestWidening {
 				"a", 1,
 				"b", 2,
 				"c", 3)
-				.widenTo(new GioviTypeMap(new GioviTypeText(), new GioviTypeReal())))
+				.widenTo(new GioviTypeMap(GioviText.TYPE, GioviReal.TYPE)))
 				.isEqualTo(GioviMaps.of(
 					"a", 1d,
 					"b", 2d,
@@ -159,7 +159,7 @@ public class TestWidening {
 					"a", 1d,
 					"b", 2d,
 					"c", 3d)
-					.widenTo(new GioviTypeMap(new GioviTypeInt(), new GioviTypeInt())));
+					.widenTo(new GioviTypeMap(GioviInt.TYPE, GioviInt.TYPE)));
 		}
 
 	}
@@ -182,9 +182,9 @@ public class TestWidening {
 				true,
 				"foo");
 			var type = GioviTuples.typeOf(
-				new GioviTypeInt(),
-				new GioviTypeBool(),
-				new GioviTypeText());
+				GioviInt.TYPE,
+				GioviBool.TYPE,
+				GioviText.TYPE);
 			assertThat(narrow.widenTo(type)).isEqualTo(GioviTuples.of(
 				69,
 				true,
@@ -198,14 +198,14 @@ public class TestWidening {
 				69,
 				List.of(69, 420));
 			var type = GioviTuples.typeOf(
-				new GioviTypeInt(),
-				new GioviTypeReal(),
-				new GioviTypeList(new GioviTypeReal()));
+				GioviInt.TYPE,
+				GioviReal.TYPE,
+				new GioviTypeList(GioviReal.TYPE));
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(new Tuple(
 					VarD.of(69),
 					VarD.of(69d),
-					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal()))));
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE))));
 		}
 
 		@Test
@@ -215,15 +215,15 @@ public class TestWidening {
 				69,
 				List.of(69, 420));
 			var type = GioviTuples.typeOf(
-				new GioviTypeInt(),
-				new GioviTypeReal(),
-				new GioviTypeList(new GioviTypeReal()),
-				new GioviTypeBool());
+				GioviInt.TYPE,
+				GioviReal.TYPE,
+				new GioviTypeList(GioviReal.TYPE),
+				GioviBool.TYPE);
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(new Tuple(
 					VarD.of(69),
 					VarD.of(69d),
-					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
 					VarD.of(false)));
 		}
 
@@ -234,9 +234,9 @@ public class TestWidening {
 				69d,
 				List.of(69d, 420d))
 				.widenTo(GioviTuples.typeOf(
-					new GioviTypeNatural(),
-					new GioviTypeInt(),
-					new GioviTypeList(new GioviTypeInt()))));
+					GioviNatural.TYPE,
+					GioviInt.TYPE,
+					new GioviTypeList(GioviInt.TYPE))));
 		}
 
 		@Test
@@ -246,13 +246,13 @@ public class TestWidening {
 				69,
 				List.of(69, 420));
 			var type = new GioviTypeRecord(GioviRecords.signatureOf(
-				"n", new GioviTypeNatural(),
-				"i", new GioviTypeInt(),
-				"li", new GioviTypeList(new GioviTypeInt())));
+				"n", GioviNatural.TYPE,
+				"i", GioviInt.TYPE,
+				"li", new GioviTypeList(GioviInt.TYPE)));
 			assertThat(narrow.widenTo(type).value()).isEqualTo(Records.of(
 				"n", new VarD<>(new GioviNatural(new Natural(69))),
 				"i", new VarD<>(new GioviInt(69)),
-				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt()))));
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE))));
 		}
 
 		@Test
@@ -262,13 +262,13 @@ public class TestWidening {
 				69,
 				List.of(69, 420));
 			var type = new GioviTypeRecord(GioviRecords.signatureOf(
-				"i", new GioviTypeInt(),
-				"r", new GioviTypeReal(),
-				"lr", new GioviTypeList(new GioviTypeReal())));
+				"i", GioviInt.TYPE,
+				"r", GioviReal.TYPE,
+				"lr", new GioviTypeList(GioviReal.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
 		}
 
 		@Test
@@ -278,14 +278,14 @@ public class TestWidening {
 				69,
 				List.of(69, 420));
 			var type = new GioviTypeRecord(GioviRecords.signatureOf(
-				"i", new GioviTypeInt(),
-				"r", new GioviTypeReal(),
-				"lr", new GioviTypeList(new GioviTypeReal()),
-				"b", new GioviTypeBool()));
+				"i", GioviInt.TYPE,
+				"r", GioviReal.TYPE,
+				"lr", new GioviTypeList(GioviReal.TYPE),
+				"b", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
 				"b", new VarD<>(new GioviBool()))));
 		}
 
@@ -296,9 +296,9 @@ public class TestWidening {
 				69d,
 				List.of(69d, 420d))
 				.widenTo(new GioviTypeRecord(GioviRecords.signatureOf(
-					"n", new GioviTypeNatural(),
-					"i", new GioviTypeInt(),
-					"li", new GioviTypeList(new GioviTypeInt())))));
+					"n", GioviNatural.TYPE,
+					"i", GioviInt.TYPE,
+					"li", new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 
@@ -310,14 +310,14 @@ public class TestWidening {
 				List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"n", new GioviTypeNatural(),
-				"i", new GioviTypeInt(),
-				"li", new GioviTypeList(new GioviTypeInt())));
+				"n", GioviNatural.TYPE,
+				"i", GioviInt.TYPE,
+				"li", new GioviTypeList(GioviInt.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"n", new VarD<>(new GioviNatural(new Natural(69))),
 				"i", new VarD<>(new GioviInt(69)),
-				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
 		}
 
 		@Test
@@ -328,14 +328,14 @@ public class TestWidening {
 				List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"i", new GioviTypeInt(),
-				"r", new GioviTypeReal(),
-				"lr", new GioviTypeList(new GioviTypeReal())));
+				"i", GioviInt.TYPE,
+				"r", GioviReal.TYPE,
+				"lr", new GioviTypeList(GioviReal.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
 		}
 
 		@Test
@@ -346,15 +346,15 @@ public class TestWidening {
 				List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"i", new GioviTypeInt(),
-				"r", new GioviTypeReal(),
-				"lr", new GioviTypeList(new GioviTypeReal()),
-				"b", new GioviTypeBool()));
+				"i", GioviInt.TYPE,
+				"r", GioviReal.TYPE,
+				"lr", new GioviTypeList(GioviReal.TYPE),
+				"b", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
 				"b", new VarD<>(new GioviBool()))));
 		}
 
@@ -366,9 +366,9 @@ public class TestWidening {
 				List.of(69d, 420d))
 				.widenTo(new GioviTypeStruct(GioviStructs.signatureOf(
 					"Foo",
-					"n", new GioviTypeNatural(),
-					"i", new GioviTypeInt(),
-					"li", new GioviTypeList(new GioviTypeInt())))));
+					"n", GioviNatural.TYPE,
+					"i", GioviInt.TYPE,
+					"li", new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 
@@ -399,13 +399,13 @@ public class TestWidening {
 				"b", 69,
 				"c", List.of(69, 420));
 			var type = new GioviTypeRecord(GioviRecords.signatureOf(
-				"a", new GioviTypeNatural(),
-				"b", new GioviTypeInt(),
-				"c", new GioviTypeList(new GioviTypeInt())));
+				"a", GioviNatural.TYPE,
+				"b", GioviInt.TYPE,
+				"c", new GioviTypeList(GioviInt.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
 		}
 
 		@Test
@@ -415,9 +415,9 @@ public class TestWidening {
 				"b", 69,
 				"c", List.of(69, 420))
 				.widenTo(new GioviTypeRecord(GioviRecords.signatureOf(
-					"x", new GioviTypeNatural(),
-					"y", new GioviTypeInt(),
-					"z", new GioviTypeList(new GioviTypeInt())))));
+					"x", GioviNatural.TYPE,
+					"y", GioviInt.TYPE,
+					"z", new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 		@Test
@@ -427,14 +427,14 @@ public class TestWidening {
 				"b", 69,
 				"c", List.of(69, 420));
 			var type = new GioviTypeRecord(GioviRecords.signatureOf(
-				"a", new GioviTypeNatural(),
-				"b", new GioviTypeInt(),
-				"c", new GioviTypeList(new GioviTypeInt()),
-				"d", new GioviTypeBool()));
+				"a", GioviNatural.TYPE,
+				"b", GioviInt.TYPE,
+				"c", new GioviTypeList(GioviInt.TYPE),
+				"d", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())),
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)),
 				"d", new VarD<>(new GioviBool()))));
 		}
 
@@ -446,14 +446,14 @@ public class TestWidening {
 				"c", List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"a", new GioviTypeInt(),
-				"b", new GioviTypeReal(),
-				"c", new GioviTypeList(new GioviTypeReal())));
+				"a", GioviInt.TYPE,
+				"b", GioviReal.TYPE,
+				"c", new GioviTypeList(GioviReal.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"a", new VarD<>(new GioviInt(69)),
 				"b", new VarD<>(new GioviReal(69d)),
-				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())))));
+				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
 		}
 
 		@Test
@@ -464,9 +464,9 @@ public class TestWidening {
 				"c", List.of(69, 420))
 				.widenTo(new GioviTypeStruct(GioviStructs.signatureOf(
 					"Foo",
-					"x", new GioviTypeNatural(),
-					"y", new GioviTypeInt(),
-					"z", new GioviTypeList(new GioviTypeInt())))));
+					"x", GioviNatural.TYPE,
+					"y", GioviInt.TYPE,
+					"z", new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 		@Test
@@ -477,15 +477,15 @@ public class TestWidening {
 				"c", List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"a", new GioviTypeInt(),
-				"b", new GioviTypeReal(),
-				"c", new GioviTypeList(new GioviTypeReal()),
-				"d", new GioviTypeBool()));
+				"a", GioviInt.TYPE,
+				"b", GioviReal.TYPE,
+				"c", new GioviTypeList(GioviReal.TYPE),
+				"d", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"a", new VarD<>(new GioviInt(69)),
 				"b", new VarD<>(new GioviReal(69d)),
-				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeReal())),
+				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
 				"d", new VarD<>(new GioviBool()))));
 		}
 
@@ -531,14 +531,14 @@ public class TestWidening {
 				"c", List.of(69, 420));
 			var type = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"a", new GioviTypeNatural(),
-				"b", new GioviTypeInt(),
-				"c", new GioviTypeList(new GioviTypeInt())));
+				"a", GioviNatural.TYPE,
+				"b", GioviInt.TYPE,
+				"c", new GioviTypeList(GioviInt.TYPE)));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviStruct(type, Structs.of(
 				"Foo",
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeInt())))));
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
 		}
 
 		// TODO: clarify requirements about widening between different struct types
@@ -552,9 +552,9 @@ public class TestWidening {
 				"c", List.of(69, 420))
 				.widenTo(new GioviTypeStruct(GioviStructs.signatureOf(
 					"Bar",
-					"a", new GioviTypeNatural(),
-					"b", new GioviTypeInt(),
-					"c", new GioviTypeList(new GioviTypeInt())))));
+					"a", GioviNatural.TYPE,
+					"b", GioviInt.TYPE,
+					"c", new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 
@@ -574,40 +574,40 @@ public class TestWidening {
 		void testWidening_toEqualGFunction_with_params_and_returnType() throws NonWideneable {
 			assertThat(GioviFunctions
 				.of(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal()))
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))
 				.widenTo(GioviFunctions.typeOf(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal()))))
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))))
 				.isEqualTo(GioviFunctions.of(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal())));
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE)));
 		}
 
 		@Test
 		void testWidening_toGFunction_with_widerParams_and_widerReturnType() throws NonWideneable {
 			assertThat(GioviFunctions
 				.of(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal()))
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))
 				.widenTo(GioviFunctions.typeOf(
-					new GioviTypeInt(),
+					GioviInt.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeReal()),
-					new FormalParameter("b", new GioviTypeReal()))))
+					new FormalParameter("a", GioviReal.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))))
 				.isEqualTo(GioviFunctions.of(
-					new GioviTypeInt(),
+					GioviInt.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeReal()),
-					new FormalParameter("b", new GioviTypeReal())));
+					new FormalParameter("a", GioviReal.TYPE),
+					new FormalParameter("b", GioviReal.TYPE)));
 		}
 
 		@Test
@@ -615,17 +615,17 @@ public class TestWidening {
 			assertThat(GioviFunctions
 				.of(
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()))
+					new FormalParameter("a", GioviInt.TYPE))
 				.widenTo(GioviFunctions.typeOf(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal()))))
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))))
 				.isEqualTo(GioviFunctions.of(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal())));
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE)));
 		}
 
 		@Test
@@ -634,17 +634,17 @@ public class TestWidening {
 			assertThat(GioviFunctions
 				.of(
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()))
+					new FormalParameter("a", GioviInt.TYPE))
 				.widenTo(GioviFunctions.typeOf(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeReal()),
-					new FormalParameter("b", new GioviTypeReal()))))
+					new FormalParameter("a", GioviReal.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))))
 				.isEqualTo(GioviFunctions.of(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo",
-					new FormalParameter("a", new GioviTypeReal()),
-					new FormalParameter("b", new GioviTypeReal())));
+					new FormalParameter("a", GioviReal.TYPE),
+					new FormalParameter("b", GioviReal.TYPE)));
 		}
 
 		@Test
@@ -652,11 +652,11 @@ public class TestWidening {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
 				.of(
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()),
-					new FormalParameter("b", new GioviTypeReal()))
+					new FormalParameter("a", GioviInt.TYPE),
+					new FormalParameter("b", GioviReal.TYPE))
 				.widenTo(GioviFunctions.typeOf(
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()))));
+					new FormalParameter("a", GioviInt.TYPE))));
 		}
 
 		@Test
@@ -664,20 +664,20 @@ public class TestWidening {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
 				.of(
 					"foo",
-					new FormalParameter("a", new GioviTypeInt()))
+					new FormalParameter("a", GioviInt.TYPE))
 				.widenTo(GioviFunctions.typeOf(
 					"foo",
-					new FormalParameter("a", new GioviTypeNatural()))));
+					new FormalParameter("a", GioviNatural.TYPE))));
 		}
 
 		@Test
 		void widening_toGFunction_with_narrowerReturnType_shouldThrow() {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
 				.of(
-					new GioviTypeInt(),
+					GioviInt.TYPE,
 					"foo")
 				.widenTo(GioviFunctions.typeOf(
-					new GioviTypeNatural(),
+					GioviNatural.TYPE,
 					"foo")));
 		}
 
@@ -685,7 +685,7 @@ public class TestWidening {
 		void widening_toGFunction_with_noReturnType_shouldThrow() {
 			assertThatExceptionOfType(NonWideneable.class).isThrownBy(() -> GioviFunctions
 				.of(
-					new GioviTypeInt(),
+					GioviInt.TYPE,
 					"foo")
 				.widenTo(GioviFunctions.typeOf(
 					"foo")));

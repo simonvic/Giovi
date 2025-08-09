@@ -88,7 +88,7 @@ public class TestGioviList {
 				""").asGioviList().value())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
-					.isEqualTo(new GioviTypeReal()));
+					.isEqualTo(GioviReal.TYPE));
 		}
 
 		@Test
@@ -97,7 +97,7 @@ public class TestGioviList {
 				[ [1 2 3] [1 2 3] ]
 				""").asGioviList()
 				.getEntryType())
-				.isEqualTo(new GioviTypeList(new GioviTypeInt()));
+				.isEqualTo(new GioviTypeList(GioviInt.TYPE));
 		}
 
 		@Test
@@ -106,7 +106,7 @@ public class TestGioviList {
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList()
 				.getEntryType())
-				.isEqualTo(new GioviTypeList(new GioviTypeReal()));
+				.isEqualTo(new GioviTypeList(GioviReal.TYPE));
 		}
 
 		@Test
@@ -120,7 +120,7 @@ public class TestGioviList {
 				""").asGioviList().value())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
-					.isEqualTo(new GioviTypeList(new GioviTypeReal())));
+					.isEqualTo(new GioviTypeList(GioviReal.TYPE)));
 		}
 
 		@Test
@@ -614,7 +614,7 @@ public class TestGioviList {
 					""").asGioviList().value())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
-						.isEqualTo(new GioviTypeReal()));
+						.isEqualTo(GioviReal.TYPE));
 			}
 
 			@Test
@@ -624,7 +624,7 @@ public class TestGioviList {
 					""").asGioviList().value())
 					.allSatisfy(entry -> assertThat(entry
 						.getGioviType())
-						.isEqualTo(new GioviTypeInt()));
+						.isEqualTo(GioviInt.TYPE));
 			}
 
 			@Test

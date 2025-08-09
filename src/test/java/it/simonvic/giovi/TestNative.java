@@ -38,44 +38,44 @@ public class TestNative {
 				new FunctionSignature("minimal")),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", new GioviTypeText())),
+				new FunctionSignature("onlyReturn", GioviText.TYPE)),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", new GioviTypeText())),
+				new FunctionSignature("onlyReturn", GioviText.TYPE)),
 			Arguments.of(
 				"giovi.util.TestModule.manyParams",
 				new FunctionSignature(
 					"manyParams",
 					new FormalParameters(
-						new FormalParameter("t", new GioviTypeText()),
-						new FormalParameter("i", new GioviTypeInt()),
-						new FormalParameter("r", new GioviTypeReal())))),
+						new FormalParameter("t", GioviText.TYPE),
+						new FormalParameter("i", GioviInt.TYPE),
+						new FormalParameter("r", GioviReal.TYPE)))),
 			Arguments.of(
 				"giovi.util.TestModule.paramWithLabel",
 				new FunctionSignature(
 					"paramWithLabel",
 					new FormalParameters(
-						new FormalParameter("label", "t", new GioviTypeText())))),
+						new FormalParameter("label", "t", GioviText.TYPE)))),
 			Arguments.of(
 				"giovi.util.TestModule.oneParamWithReturn",
 				new FunctionSignature(
 					"oneParamWithReturn",
 					new FormalParameters(
-						new FormalParameter("t", new GioviTypeText())),
-					new GioviTypeText())),
+						new FormalParameter("t", GioviText.TYPE)),
+					GioviText.TYPE)),
 			Arguments.of(
 				"giovi.util.TestModule.complex",
 				new FunctionSignature(
 					"complex",
 					new FormalParameters(
-						new FormalParameter("i", new GioviTypeInt()),
+						new FormalParameter("i", GioviInt.TYPE),
 						new FormalParameter("s", new GioviTypeStruct(structSignatureOf(Rgb.class))),
-						new FormalParameter("l", new GioviTypeList(new GioviTypeInt())),
+						new FormalParameter("l", new GioviTypeList(GioviInt.TYPE)),
 						new FormalParameter("m",
 							new GioviTypeMap(
-								new GioviTypeText(),
+								GioviText.TYPE,
 								new GioviTypeStruct(structSignatureOf(Rgb.class))))),
-					new GioviTypeInt())));
+					GioviInt.TYPE)));
 	}
 
 	@ParameterizedTest
@@ -89,12 +89,12 @@ public class TestNative {
 	void test_struct() throws NoSuchMethodException {
 		var expectedSignature = new StructSignature(
 			"TestStruct",
-			new RecordFieldSignature("i", new GioviTypeInt()),
-			new RecordFieldSignature("t", new GioviTypeText(), new GioviText("some default")),
-			new RecordFieldSignature("l", new GioviTypeList(new GioviTypeInt())),
+			new RecordFieldSignature("i", GioviInt.TYPE),
+			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
+			new RecordFieldSignature("l", new GioviTypeList(GioviInt.TYPE)),
 			new RecordFieldSignature("m", new GioviTypeMap(
-				new GioviTypeText(),
-				new GioviTypeInt())));
+				GioviText.TYPE,
+				GioviInt.TYPE)));
 		expectedSignature.constants().put("SOME_CONST", new GioviInt(69));
 		expectedSignature.functions().put(
 			"someFunc",
@@ -110,13 +110,13 @@ public class TestNative {
 	void test_struct_extended() {
 		var expectedSignature = new StructSignature(
 			"TestStructExtends",
-			new RecordFieldSignature("i", new GioviTypeInt()),
-			new RecordFieldSignature("t", new GioviTypeText(), new GioviText("some default")),
-			new RecordFieldSignature("l", new GioviTypeList(new GioviTypeInt())),
+			new RecordFieldSignature("i", GioviInt.TYPE),
+			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
+			new RecordFieldSignature("l", new GioviTypeList(GioviInt.TYPE)),
 			new RecordFieldSignature("m", new GioviTypeMap(
-				new GioviTypeText(),
-				new GioviTypeInt())),
-			new RecordFieldSignature("i2", new GioviTypeInt(), new GioviInt(420)));
+				GioviText.TYPE,
+				GioviInt.TYPE)),
+			new RecordFieldSignature("i2", GioviInt.TYPE, new GioviInt(420)));
 		assertThat(visitExpression("giovi.util.TestModule.TestSubModule.TestStructExtends"))
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
@@ -139,4 +139,5 @@ public class TestNative {
 
 			""");
 	}
+
 }

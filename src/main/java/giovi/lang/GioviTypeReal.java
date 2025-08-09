@@ -43,7 +43,7 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
 	@Override
 	public GioviTypeReal copy() {
-		return new GioviTypeReal();
+		return GioviReal.TYPE;
 	}
 
 	@Override

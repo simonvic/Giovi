@@ -19,54 +19,54 @@ public class TestGioviType {
 	static Stream<Arguments> produceEqualTypes() {
 		return Stream.of(
 			Arguments.of(
-				new GioviTypeNatural(),
-				new GioviTypeNatural()),
+				GioviNatural.TYPE,
+				GioviNatural.TYPE),
 			Arguments.of(
-				new GioviTypeInt(),
-				new GioviTypeInt()),
+				GioviInt.TYPE,
+				GioviInt.TYPE),
 			Arguments.of(
-				new GioviTypeReal(),
-				new GioviTypeReal()),
+				GioviReal.TYPE,
+				GioviReal.TYPE),
 			Arguments.of(
-				new GioviTypeText(),
-				new GioviTypeText()),
+				GioviText.TYPE,
+				GioviText.TYPE),
 			Arguments.of(
-				new GioviTypeBool(),
-				new GioviTypeBool()),
+				GioviBool.TYPE,
+				GioviBool.TYPE),
 			Arguments.of(
-				new GioviTypeList(new GioviTypeInt()),
-				new GioviTypeList(new GioviTypeInt())),
+				new GioviTypeList(GioviInt.TYPE),
+				new GioviTypeList(GioviInt.TYPE)),
 			Arguments.of(
 				new GioviTypeMap(
-					new GioviTypeInt(),
-					new GioviTypeText()),
+					GioviInt.TYPE,
+					GioviText.TYPE),
 				new GioviTypeMap(
-					new GioviTypeInt(),
-					new GioviTypeText())));
+					GioviInt.TYPE,
+					GioviText.TYPE)));
 	}
 
 	static Stream<Arguments> produceNotEqualTypes() {
 		return Stream.of(
 			Arguments.of(
-				new GioviTypeNatural(),
-				new GioviTypeInt()),
+				GioviNatural.TYPE,
+				GioviInt.TYPE),
 			Arguments.of(
-				new GioviTypeInt(),
-				new GioviTypeReal()),
+				GioviInt.TYPE,
+				GioviReal.TYPE),
 			Arguments.of(
-				new GioviTypeReal(),
-				new GioviTypeBool()),
+				GioviReal.TYPE,
+				GioviBool.TYPE),
 			Arguments.of(
-				new GioviTypeBool(),
-				new GioviTypeText()),
+				GioviBool.TYPE,
+				GioviText.TYPE),
 			Arguments.of(
-				new GioviTypeText(),
-				new GioviTypeList(new GioviTypeInt())),
+				GioviText.TYPE,
+				new GioviTypeList(GioviInt.TYPE)),
 			Arguments.of(
-				new GioviTypeList(new GioviTypeInt()),
+				new GioviTypeList(GioviInt.TYPE),
 				new GioviTypeMap(
-					new GioviTypeInt(),
-					new GioviTypeText())));
+					GioviInt.TYPE,
+					GioviText.TYPE)));
 	}
 
 	@ParameterizedTest
@@ -91,7 +91,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviNatural(new Natural(69))
-					.as(new GioviTypeNatural())
+					.as(GioviNatural.TYPE)
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -100,7 +100,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviNatural(new Natural(69))
-					.as(new GioviTypeInt())
+					.as(GioviInt.TYPE)
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -109,10 +109,11 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviNatural(new Natural(69))
-					.as(new GioviTypeReal())
+					.as(GioviReal.TYPE)
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
+
 		}
 
 		@Nested
@@ -122,7 +123,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviInt(69)
-					.as(new GioviTypeNatural())
+					.as(GioviNatural.TYPE)
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -131,7 +132,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviInt(69)
-					.as(new GioviTypeInt())
+					.as(GioviInt.TYPE)
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -140,10 +141,11 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviInt(69)
-					.as(new GioviTypeReal())
+					.as(GioviReal.TYPE)
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
+
 		}
 
 		@Nested
@@ -153,7 +155,7 @@ public class TestGioviType {
 			void toNatural() {
 				var expected = new GioviNatural(new Natural(69));
 				var actual = new GioviReal(69d)
-					.as(new GioviTypeNatural())
+					.as(GioviNatural.TYPE)
 					.asGioviNatural();
 				assertEquals(expected, actual);
 			}
@@ -162,7 +164,7 @@ public class TestGioviType {
 			void toInt() {
 				var expected = new GioviInt(69);
 				var actual = new GioviReal(69d)
-					.as(new GioviTypeInt())
+					.as(GioviInt.TYPE)
 					.asGioviInt();
 				assertEquals(expected, actual);
 			}
@@ -171,10 +173,11 @@ public class TestGioviType {
 			void toReal() {
 				var expected = new GioviReal(69d);
 				var actual = new GioviReal(69d)
-					.as(new GioviTypeReal())
+					.as(GioviReal.TYPE)
 					.asGioviReal();
 				assertEquals(expected, actual);
 			}
+
 		}
 
 		@Nested
@@ -184,7 +187,7 @@ public class TestGioviType {
 			void toText() {
 				var expected = new GioviText("hello world");
 				var actual = new GioviText("hello world")
-					.as(new GioviTypeText())
+					.as(GioviText.TYPE)
 					.asGioviText();
 				assertEquals(expected, actual);
 			}
@@ -198,7 +201,7 @@ public class TestGioviType {
 			void toBool() {
 				var expected = new GioviBool(true);
 				var actual = new GioviBool(true)
-					.as(new GioviTypeBool())
+					.as(GioviBool.TYPE)
 					.asGioviBool();
 				assertEquals(expected, actual);
 			}

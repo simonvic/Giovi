@@ -42,7 +42,7 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 
 	@Override
 	public GioviTypeText copy() {
-		return new GioviTypeText();
+		return GioviText.TYPE;
 	}
 
 	@Override

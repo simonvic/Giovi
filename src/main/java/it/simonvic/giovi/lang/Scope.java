@@ -233,12 +233,14 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Types
 
+	// TODO: move to GioviType
+
 	public static final Map<String, GioviTypePrimitive<?>> primitiveTypes = Map.of(
-		"Natural", new GioviTypeNatural(),
-		"Int", new GioviTypeInt(),
-		"Real", new GioviTypeReal(),
-		"Bool", new GioviTypeBool(),
-		"Text", new GioviTypeText());
+		"Natural", GioviNatural.TYPE,
+		"Int", GioviInt.TYPE,
+		"Real", GioviReal.TYPE,
+		"Bool", GioviBool.TYPE,
+		"Text", GioviText.TYPE);
 
 	public Optional<GioviType<?>> getType(String typename) {
 		if (primitiveTypes.containsKey(typename)) {

@@ -7,6 +7,8 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeNatural.class)
 public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 
+	public static final GioviTypeNatural TYPE = new GioviTypeNatural();
+
 	public static GioviNatural valueOf(String s) throws NumberFormatException {
 		return new GioviNatural(Natural.valueOf(s));
 	}
@@ -27,7 +29,7 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 
 	@Override
 	public GioviTypeNatural getGioviType() {
-		return new GioviTypeNatural();
+		return GioviNatural.TYPE;
 	}
 
 	@Override

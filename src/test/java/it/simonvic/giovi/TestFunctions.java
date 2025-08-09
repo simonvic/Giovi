@@ -57,7 +57,7 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(new GioviTypeInt()));
+					.isEqualTo(GioviInt.TYPE));
 		}
 
 		@Test
@@ -69,7 +69,7 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviTypeInt())));
+					paramOf("a", GioviInt.TYPE)));
 
 		}
 
@@ -83,8 +83,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviTypeInt()),
-					paramOf("b", new GioviTypeReal())));
+					paramOf("a", GioviInt.TYPE),
+					paramOf("b", GioviReal.TYPE)));
 		}
 
 		@Test
@@ -155,8 +155,8 @@ public class TestFunctions {
 				"""))
 				.isEqualTo(signatureOf(
 					"someFunction",
-					paramOf("a", new GioviTypeInt()),
-					paramOf("b", new GioviTypeReal()),
+					paramOf("a", GioviInt.TYPE),
+					paramOf("b", GioviReal.TYPE),
 					paramOf("c", true)));
 		}
 
@@ -172,7 +172,7 @@ public class TestFunctions {
 				.isEqualTo(signatureOf(
 					"someFunction",
 					paramOf("a", 69),
-					paramOf("b", new GioviTypeReal()),
+					paramOf("b", GioviReal.TYPE),
 					paramOf("c", true)));
 		}
 

@@ -25,7 +25,7 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeInt _, GioviTypeReal _ -> true;
+			case GioviTypeInt _,GioviTypeReal _ -> true;
 			default -> false;
 		};
 	}
@@ -46,7 +46,7 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 
 	@Override
 	public GioviTypeInt copy() {
-		return new GioviTypeInt();
+		return GioviInt.TYPE;
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeBool.class)
 public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
+	public static final GioviTypeBool TYPE = new GioviTypeBool();
+
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
 	}
@@ -26,7 +28,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
 	@Override
 	public GioviTypeBool getGioviType() {
-		return new GioviTypeBool();
+		return GioviBool.TYPE;
 	}
 
 	@Override

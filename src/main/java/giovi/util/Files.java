@@ -20,7 +20,7 @@ public class Files {
 	public static @TypeList(@Type(GioviTypeText.class)) GioviList lines(
 		GioviText path
 	) throws IOException {
-		return new GioviList(new GioviTypeText(), java.nio.file.Files
+		return new GioviList(GioviText.TYPE, java.nio.file.Files
 			.lines(Path.of(path.value()))
 			.map(GioviText::new)
 			.<Var<?>>map(Var::new)

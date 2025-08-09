@@ -12,6 +12,8 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeText.class)
 public record GioviText(String value) implements GioviPrimitive<String> {
 
+	public static final GioviTypeText TYPE = new GioviTypeText();
+
 	public GioviText() {
 		this("");
 	}
@@ -28,7 +30,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 
 	@Override
 	public GioviTypeText getGioviType() {
-		return new GioviTypeText();
+		return GioviText.TYPE;
 	}
 
 	@Override
@@ -114,7 +116,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviText(var v) -> new GioviList(
-				new GioviTypeText(),
+				GioviText.TYPE,
 				new ArrayList<>(Stream.of(value
 					.split(v)) // TODO: sanitize v, it should not be treated as regex
 					.map(this::toVar)
@@ -203,7 +205,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				case COUNT -> new GioviInt(value.length());
 				case KEYS -> Range.of(0, value.length() - 1, 1);
 				case VALUES -> new GioviList(
-					new GioviTypeText(),
+					GioviText.TYPE,
 					new ArrayList<>(value.chars().boxed().map(this::toVar).toList()));
 			};
 			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
