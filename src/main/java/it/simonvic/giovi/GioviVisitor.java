@@ -1326,6 +1326,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			if (getCurrentScope().shouldReturn()) {
 				var returnType = func.signature().returnType();
 				var returnedValue = getCurrentScope().getReturnValue();
+				if (returnType instanceof GioviTypeSelf) {
+					// HACK: is there a more elegant way of retrieving self type?
+					returnType = getCurrentScope().getVariable("self").orElseThrow().getGioviType();
+				}
 				if (!(returnedValue instanceof GioviVoid)
 					&& returnType.value() == GioviVoid.class) {
 					throw new GioviException(
@@ -1384,9 +1388,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 			}
 			fields.put(field.identifier(), field);
-			// TODO: maybe add warning about unimplemented recursive structs
 		}
 
+		// TODO: define before fields visit, but define it as larval type so all future references can be replaced by a Self
 		var constants = new HashMap<String, GioviValue<?>>();
 		var functions = new HashMap<String, GioviFunction>();
 		// TODO: double check that we don't lose constants and functions definitions somewhere else
@@ -1398,7 +1402,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var structType = new GioviTypeStruct(structSignature);
 		getCurrentScope().define(structType);
 
-		// TODO: should we allow cyclic references?
 		for (var constCtx : ctx.structBodyDefinition().constantDeclaration()) {
 			GioviValue<?> constant;
 			try {
@@ -1416,8 +1419,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				new GioviFunction(new GFunction(signature, funcCtx.body)));
 		}
 
-		// TODO: eventually replace with an incomplete type (GioviTypeSelf or GioviTypeVoid)
-		var selfType = new GioviTypeStruct(structSignature);
 		for (var funcCtx : ctx.structBodyDefinition().selfFunctionDeclaration()) {
 			var signatureCtx = funcCtx.selfFunctionSignature();
 
@@ -1425,14 +1426,15 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 			var parameters = (FormalParameters) visit(signatureCtx.formalParameters());
 			if (funcCtx.selfFunctionSignature().self != null) {
-				parameters.parameters().putFirst("self", new FormalParameter("self", selfType));
+				parameters.parameters()
+					.putFirst("self", new FormalParameter("self", GioviSelf.TYPE));
 			}
 
 			GioviType<?> returnType;
 			if (signatureCtx.returnType != null) {
 				returnType = visit(signatureCtx.returnType).asGioviType();
 			} else if (signatureCtx.returnSelf != null) {
-				returnType = selfType;
+				returnType = GioviSelf.TYPE;
 			} else {
 				returnType = GioviVoid.TYPE;
 			}
@@ -1466,7 +1468,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
 		GioviTypeStruct typeStruct;
 		if (ctx.typeQualified() != null) {
-			typeStruct = ((GioviTypeStruct) visit(ctx.typeQualified()));
+			typeStruct = (GioviTypeStruct) visit(ctx.typeQualified());
 		} else {
 			String typename = ctx.identifier().getText();
 			typeStruct = getCurrentScope()
