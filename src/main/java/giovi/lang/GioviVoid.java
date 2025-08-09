@@ -1,8 +1,11 @@
 package giovi.lang;
 
+import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
+
 // TODO: what if we make Void the variadic netrual element for all operations?
 // TODO: eventually it should be used instead of Default and Placeholder
 // we could also return void from a function to return a default value
+@DescribedBy(GioviTypeVoid.class)
 public record GioviVoid() implements GioviPrimitive<Void> {
 
 	public static final GioviTypeVoid TYPE = new GioviTypeVoid();
