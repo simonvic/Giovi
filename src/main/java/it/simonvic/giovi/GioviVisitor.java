@@ -1478,23 +1478,31 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var struct = typeStruct.signature().spawn();
 		if (ctx.tupleCreation() != null) {
-			initStruct(struct, ctx.tupleCreation());
+			initStruct(typeStruct, struct, ctx.tupleCreation());
 		} else {
-			initStruct(struct, ctx.recordCreation());
+			initStruct(typeStruct, struct, ctx.recordCreation());
 		}
 		return new GioviStruct(typeStruct, struct);
 	}
 
-	private void initStruct(Struct struct, RecordCreationContext fieldsCtx) {
+	private void initStruct(
+		GioviTypeStruct structType,
+		Struct struct,
+		RecordCreationContext fieldsCtx
+	) {
 		for (var fieldCtx : fieldsCtx.recordEntry()) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
-			var fieldValue = visit(fieldCtx.expression());
-			struct.getField(fieldIdentifier).orElseThrow(() -> new NoSuchField(fieldIdentifier))
-				.setValueWithRedirection(fieldValue);
+			var newFieldValue = visit(fieldCtx.expression());
+			var field = struct.getField(fieldIdentifier)
+				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
+			if (field.value() instanceof GioviSelf) {
+				field.setValueUnsafe(structType.spawn());
+			}
+			field.setValueWithRedirection(newFieldValue);
 		}
 	}
 
-	private void initStruct(Struct struct, TupleCreationContext ctx) {
+	private void initStruct(GioviTypeStruct structType, Struct struct, TupleCreationContext ctx) {
 		List<ExpressionContext> expressions = ctx.expression();
 		if (expressions == null || expressions.isEmpty()) {
 			return;
@@ -1507,9 +1515,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		for (int i = 0; i < expressionsCount; i++) {
 			final int j = i;
-			var fieldValue = visit(expressions.get(i));
-			struct.getField(i).orElseThrow(() -> new NoSuchField(j))
-				.setValueWithRedirection(fieldValue);
+			var newFieldValue = visit(expressions.get(i));
+			var field = struct.getField(i).orElseThrow(() -> new NoSuchField(j));
+			if (field.value() instanceof GioviSelf) {
+				// initialize recursive field
+				field.setValueUnsafe(structType.spawn());
+			}
+			field.setValueWithRedirection(newFieldValue);
 		}
 	}
 

@@ -301,6 +301,64 @@ public class TestGioviStruct {
 		class Recursive {
 
 			@Test
+			void test_instantiation_default() {
+				visit("""
+					Node <data Text, next self>
+					Node.<> -> _out
+					""");
+			}
+
+			@Test
+			void test_instantiation_withFields() {
+				visit("""
+					Node <data Text, next self>
+					Node.<data: "root"> -> _out
+					""");
+			}
+
+			@Test
+			void test_instantiation_withSelfField() {
+				visit("""
+					Node <data Text, next self>
+					Node.<"root", Node.<>> -> _out
+					Node.<data: "root", next: Node.<>> -> _out
+					Node.<data: "root", next: <data: "child">> -> _out
+					""");
+			}
+
+			@Test
+			void test_redirection_default() {
+				visit("""
+					Node <data Text, next self>
+					root Node <- Node.<>
+					""");
+			}
+
+			@Test
+			void test_redirection_withField() {
+				visit("""
+					Node <data Text, next self>
+					root Node <- Node.<data: "root">
+					""");
+			}
+
+			@Test
+			void test_redirection_withSelfField() {
+				visit("""
+					Node <data Text, next self>
+					root Node <- <
+						data: "root",
+						next: <
+							data: "child1"
+							next: <
+								data: "child2"
+							>
+						>
+					>
+					""");
+			}
+
+			@Test
 			void recursiveStructs() {
 				visit("""
 

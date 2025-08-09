@@ -40,6 +40,10 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		this.value = value;
 	}
 
+	public void setValueUnsafe(GioviValue<?> value) {
+		this.value = (T) value;
+	}
+
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
 	public void setValueWithRedirection(GioviParserVisitResult value) {
 		try {
