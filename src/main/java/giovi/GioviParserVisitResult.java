@@ -24,6 +24,7 @@ public interface GioviParserVisitResult {
 
 	// Redirection methods will produce a new value based on the assignement
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR, content); }
+	// TODO: default to Operator and then redirection?
 	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_PLUS, content); }
 	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MINUS, content); }
 	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MULT, content); }
