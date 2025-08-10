@@ -102,10 +102,19 @@ public sealed class Record extends Tuple permits Struct {
 		return fields.containsKey(identifier);
 	}
 
-	// FIXME: type safer this ass
-	public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier) {
+	public Optional<VarD<?>> getField(String identifier) {
+		return Optional.ofNullable((VarD<?>) fields.get(identifier));
+	}
+
+	@SuppressWarnings("unchecked")
+	public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier, Class<G> clazz) {
+		var field = fields.get(identifier);
+		if (field == null) {
+			return Optional.empty();
+		}
+		clazz.cast(field.value());
 		// TODO: return empty if class cast exception?
-		return Optional.ofNullable((VarD<G>) fields.get(identifier));
+		return Optional.ofNullable((VarD<G>) field);
 	}
 
 	public List<String> getFieldNames() {

@@ -25,9 +25,9 @@ public class Color {
 		GioviInt b
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgb.class)).spawn();
-		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
-		struct.value().<GioviInt>getField("g").orElseThrow().setValue(g);
-		struct.value().<GioviInt>getField("b").orElseThrow().setValue(b);
+		struct.value().getField("r", GioviInt.class).orElseThrow().setValue(r);
+		struct.value().getField("g", GioviInt.class).orElseThrow().setValue(g);
+		struct.value().getField("b", GioviInt.class).orElseThrow().setValue(b);
 		return struct;
 	}
 
@@ -39,10 +39,10 @@ public class Color {
 		GioviInt a
 	) {
 		var struct = new GioviTypeStruct(Natives.structSignatureOf(Rgba.class)).spawn();
-		struct.value().<GioviInt>getField("r").orElseThrow().setValue(r);
-		struct.value().<GioviInt>getField("g").orElseThrow().setValue(g);
-		struct.value().<GioviInt>getField("b").orElseThrow().setValue(b);
-		struct.value().<GioviInt>getField("a").orElseThrow().setValue(a);
+		struct.value().getField("r", GioviInt.class).orElseThrow().setValue(r);
+		struct.value().getField("g", GioviInt.class).orElseThrow().setValue(g);
+		struct.value().getField("b", GioviInt.class).orElseThrow().setValue(b);
+		struct.value().getField("a", GioviInt.class).orElseThrow().setValue(a);
 		return struct;
 	}
 
