@@ -140,49 +140,49 @@ public class GioviStructs {
 		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
-		var newStruct = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (int i = 0; i < content.value().getFieldsCount(); i++) {
 			final int j = i;
-			var tupleField = content.value().getField(j).orElseThrow();
-			var newRecordField = newStruct.getField(j).orElseThrow(() -> new NoSuchField(j));
-			if (newRecordField.value() instanceof GioviSelf) {
-				newRecordField.setValueUnsafe(dest.type().spawn());
+			var contentField = content.value().getField(j).orElseThrow();
+			var newField = newDest.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newRecordField.setValueWithRedirection(tupleField.value());
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviStruct(dest.type(), newStruct);
+		return new GioviStruct(dest.type(), newDest);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviRecord content) {
 		// TODO: check requirements and candidate about fields override
 		// the new struct should be dest.signature().spawn()
-		var newStruct = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (var contentEntry : content.value().entrySet()) {
 			var fieldIdentifier = contentEntry.getKey();
 			var contentField = contentEntry.getValue();
-			var newRecordField = newStruct.getField(fieldIdentifier)
+			var newField = newDest.getField(fieldIdentifier)
 				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
-			if (newRecordField.value() instanceof GioviSelf) {
-				newRecordField.setValueUnsafe(dest.type().spawn());
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newRecordField.setValueWithRedirection(contentField);
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviStruct(dest.type(), newStruct);
+		return new GioviStruct(dest.type(), newDest);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviStruct content) {
-		var newStruct = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (var contentEntry : content.value().entrySet()) {
 			var fieldIdentifier = contentEntry.getKey();
 			var contentField = contentEntry.getValue();
-			var newRecordField = newStruct.getField(fieldIdentifier)
+			var newField = newDest.getField(fieldIdentifier)
 				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
-			if (newRecordField.value() instanceof GioviSelf) {
-				newRecordField.setValueUnsafe(dest.type().spawn());
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newRecordField.setValueWithRedirection(contentField);
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviStruct(dest.type(), newStruct);
+		return new GioviStruct(dest.type(), newDest);
 	}
 
 	public static StructSignature signatureOf(

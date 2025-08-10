@@ -153,32 +153,32 @@ public class GioviRecords {
 		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
-		var newRecord = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (int i = 0; i < content.value().getFieldsCount(); i++) {
 			final int j = i;
-			var tupleField = content.value().getField(j).orElseThrow();
-			var newRecordField = newRecord.getField(j).orElseThrow(() -> new NoSuchField(j));
-			if (newRecordField.value() instanceof GioviSelf) {
-				newRecordField.setValueUnsafe(dest.type().spawn());
+			var contentField = content.value().getField(j).orElseThrow();
+			var newField = newDest.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newRecordField.setValueWithRedirection(tupleField.value());
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviRecord(dest.type(), newRecord);
+		return new GioviRecord(dest.type(), newDest);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviRecord content) {
-		var newRecord = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (var contentEntry : content.value().entrySet()) {
 			var fieldIdentifier = contentEntry.getKey();
 			var contentField = contentEntry.getValue();
-			var newRecordField = newRecord.getField(fieldIdentifier)
+			var newField = newDest.getField(fieldIdentifier)
 				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
-			if (newRecordField.value() instanceof GioviSelf) {
-				newRecordField.setValueUnsafe(dest.type().spawn());
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newRecordField.setValueWithRedirection(contentField);
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviRecord(dest.type(), newRecord);
+		return new GioviRecord(dest.type(), newDest);
 	}
 
 }

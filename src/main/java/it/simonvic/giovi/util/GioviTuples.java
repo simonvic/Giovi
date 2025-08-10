@@ -43,17 +43,17 @@ public class GioviTuples {
 		if (content.value().getFieldsCount() != dest.value().getFieldsCount()) {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
-		var newTuple = dest.value().copy();
+		var newDest = dest.value().copy();
 		for (int i = 0; i < content.value().getFieldsCount(); i++) {
 			final int j = i;
-			var tupleField = content.value().getField(j).orElseThrow();
-			var newTupleField = newTuple.getField(j).orElseThrow(() -> new NoSuchField(j));
-			if (newTupleField.value() instanceof GioviSelf) {
-				newTupleField.setValueUnsafe(dest.type().spawn());
+			var contentField = content.value().getField(j).orElseThrow();
+			var newField = newDest.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newField.value() instanceof GioviSelf) {
+				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newTupleField.setValueWithRedirection(tupleField.value());
+			newField.setValueWithRedirection(contentField.value());
 		}
-		return new GioviTuple(dest.type(), newTuple);
+		return new GioviTuple(dest.type(), newDest);
 	}
 
 }
