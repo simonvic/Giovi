@@ -87,7 +87,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.value() instanceof GioviSelf) {
 					// init field
-					fieldVar.redirection(type.spawn());
+					fieldVar.setValueUnsafe(type.spawn());
 				}
 				yield fieldVar;
 			}
