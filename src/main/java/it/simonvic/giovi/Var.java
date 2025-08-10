@@ -50,6 +50,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
 	public void setValueWithRedirection(GioviParserVisitResult value) {
+		// NOTE: if this.value is recursive, we can assume it is already initialized
 		try {
 			redirection(value);
 		} catch (OperatorNotSupported ex) {

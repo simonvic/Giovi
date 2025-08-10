@@ -35,8 +35,10 @@ public record GioviSelf() implements GioviValue<Void> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		// HACK: setValueWithRedirection relies on this shit. Only allow Self content
-		return content;
+		if (content instanceof GioviSelf) {
+			return content;
+		}
+		return GioviValue.super.redirection(content);
 	}
 
 

@@ -141,9 +141,15 @@ public class GioviStructs {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
 		var newStruct = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newStruct
-			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+		for (int i = 0; i < content.value().getFieldsCount(); i++) {
+			final int j = i;
+			var tupleField = content.value().getField(j).orElseThrow();
+			var newRecordField = newStruct.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newRecordField.value() instanceof GioviSelf) {
+				newRecordField.setValueUnsafe(dest.type().spawn());
+			}
+			newRecordField.setValueWithRedirection(tupleField.value());
+		}
 		return new GioviStruct(dest.type(), newStruct);
 	}
 
@@ -151,17 +157,31 @@ public class GioviStructs {
 		// TODO: check requirements and candidate about fields override
 		// the new struct should be dest.signature().spawn()
 		var newStruct = dest.value().copy();
-		content.value().forEach((s, f) -> newStruct
-			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+		for (var contentEntry : content.value().entrySet()) {
+			var fieldIdentifier = contentEntry.getKey();
+			var contentField = contentEntry.getValue();
+			var newRecordField = newStruct.getField(fieldIdentifier)
+				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
+			if (newRecordField.value() instanceof GioviSelf) {
+				newRecordField.setValueUnsafe(dest.type().spawn());
+			}
+			newRecordField.setValueWithRedirection(contentField);
+		}
 		return new GioviStruct(dest.type(), newStruct);
 	}
 
 	public static GioviStruct redirection(GioviStruct dest, GioviStruct content) {
 		var newStruct = dest.value().copy();
-		content.value().forEach((s, f) -> newStruct
-			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+		for (var contentEntry : content.value().entrySet()) {
+			var fieldIdentifier = contentEntry.getKey();
+			var contentField = contentEntry.getValue();
+			var newRecordField = newStruct.getField(fieldIdentifier)
+				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
+			if (newRecordField.value() instanceof GioviSelf) {
+				newRecordField.setValueUnsafe(dest.type().spawn());
+			}
+			newRecordField.setValueWithRedirection(contentField);
+		}
 		return new GioviStruct(dest.type(), newStruct);
 	}
 

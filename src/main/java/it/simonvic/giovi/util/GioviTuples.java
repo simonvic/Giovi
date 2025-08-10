@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import giovi.Tuple;
 import giovi.TupleFieldSignature;
 import giovi.TupleSignature;
+import giovi.lang.GioviSelf;
 import giovi.lang.GioviTuple;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeTuple;
@@ -43,9 +44,15 @@ public class GioviTuples {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
 		var newTuple = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newTuple
-			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+		for (int i = 0; i < content.value().getFieldsCount(); i++) {
+			final int j = i;
+			var tupleField = content.value().getField(j).orElseThrow();
+			var newTupleField = newTuple.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newTupleField.value() instanceof GioviSelf) {
+				newTupleField.setValueUnsafe(dest.type().spawn());
+			}
+			newTupleField.setValueWithRedirection(tupleField.value());
+		}
 		return new GioviTuple(dest.type(), newTuple);
 	}
 

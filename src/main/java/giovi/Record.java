@@ -1,6 +1,7 @@
 package giovi;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
@@ -123,6 +124,10 @@ public sealed class Record extends Tuple permits Struct {
 
 	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
+	}
+
+	public Set<Entry<String, VarD<?>>> entrySet() {
+		return this.fields.entrySet();
 	}
 
 }

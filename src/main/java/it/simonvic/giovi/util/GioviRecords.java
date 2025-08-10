@@ -5,10 +5,7 @@ import java.util.LinkedHashMap;
 import giovi.Record;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
-import giovi.lang.GioviRecord;
-import giovi.lang.GioviTuple;
-import giovi.lang.GioviType;
-import giovi.lang.GioviTypeRecord;
+import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
@@ -157,17 +154,30 @@ public class GioviRecords {
 			throw new IncompatibleFieldsCount(dest.value(), content.value());
 		}
 		var newRecord = dest.value().copy();
-		content.value().forEachIndexed((i, f) -> newRecord
-			.getField(i).orElseThrow(() -> new NoSuchField(i))
-			.setValueWithRedirection(f.value()));
+		for (int i = 0; i < content.value().getFieldsCount(); i++) {
+			final int j = i;
+			var tupleField = content.value().getField(j).orElseThrow();
+			var newRecordField = newRecord.getField(j).orElseThrow(() -> new NoSuchField(j));
+			if (newRecordField.value() instanceof GioviSelf) {
+				newRecordField.setValueUnsafe(dest.type().spawn());
+			}
+			newRecordField.setValueWithRedirection(tupleField.value());
+		}
 		return new GioviRecord(dest.type(), newRecord);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviRecord content) {
 		var newRecord = dest.value().copy();
-		content.value().forEach((s, f) -> newRecord
-			.getField(s).orElseThrow(() -> new NoSuchField(s))
-			.setValueWithRedirection(f.value()));
+		for (var contentEntry : content.value().entrySet()) {
+			var fieldIdentifier = contentEntry.getKey();
+			var contentField = contentEntry.getValue();
+			var newRecordField = newRecord.getField(fieldIdentifier)
+				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
+			if (newRecordField.value() instanceof GioviSelf) {
+				newRecordField.setValueUnsafe(dest.type().spawn());
+			}
+			newRecordField.setValueWithRedirection(contentField);
+		}
 		return new GioviRecord(dest.type(), newRecord);
 	}
 
