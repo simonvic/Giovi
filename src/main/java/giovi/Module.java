@@ -59,11 +59,12 @@ public sealed interface Module extends GioviParserVisitResult {
 
 		@Override
 		public String toString() {
-			return (parent() != null ? parent().toString() : "") + "/" + uri;
+			return (parent() != null ? parent().toString() : "") + "/" + getPath();
 		}
 
 		public String getPath() {
-			return uri.getAuthority() + "/" + uri.getPath();
+			// can we assume the scheme is always like this?
+			return uri.toString().replaceFirst("file://", "");
 		}
 
 	}
