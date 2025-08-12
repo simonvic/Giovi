@@ -1,0 +1,12 @@
+"Hello from module a.giovi" -> _out
+name Text <- "a"
+
+module b {
+	"Hello from module a.b" -> _out
+	name Text <- "b"
+
+	module c {
+		"Hello from module a.b.c" -> _out
+		name Text <- "c"
+	}
+}

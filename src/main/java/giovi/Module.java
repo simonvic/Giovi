@@ -62,6 +62,10 @@ public sealed interface Module extends GioviParserVisitResult {
 			return (parent() != null ? parent().toString() : "") + "/" + uri;
 		}
 
+		public String getPath() {
+			return uri.getAuthority() + "/" + uri.getPath();
+		}
+
 	}
 
 

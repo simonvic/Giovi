@@ -29,6 +29,10 @@ public class TextProcessor {
 		return new GioviText(text);
 	}
 
+	public String collectString() {
+		return text;
+	}
+
 	public static TextProcessor of(String text) {
 		return new TextProcessor(text);
 	}

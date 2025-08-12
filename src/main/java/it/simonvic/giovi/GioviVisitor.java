@@ -151,69 +151,98 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return null;
 	}
 
+	private URI createURIFrom(ImportURIContext ctx) {
+		return switch (ctx) {
+			case ImportURIIdentifierContext c -> URI.create(c.getText());
+			case ImportURIExactTextContext c -> URI.create(TextProcessor.of(c.getText())
+				.trimDelimiters(1)
+				.unescapeEscapes()
+				.collectString());
+			case ImportURITextContext c -> URI.create(TextProcessor.of(c.getText())
+				.trimDelimiters(1)
+				.unescapeEscapes()
+				.injectVariables(getCurrentScope())
+				.injectExpressions(this)
+				.collectString());
+			default -> throw new RuntimeException("Unhandled ImportURIContext");
+		};
+	}
+
 	@Override
 	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
-		var module = (Module) visit(ctx.importEntryPath());
+		Module module = this.module;
+		for (var uriCtx : ctx.importURI()) {
+			var uri = createURIFrom(uriCtx);
+			module = switch (uri.getScheme()) {
+				// case "http", "https" -> new RemoteModule(uri, ROOT_MODULE);
+				case "file" -> {
+					// file import are only available as top level
+					if (module != this.module) {
+						throw new GioviException("Can't import nested file module");
+					}
+					yield new FileModule(uri, ROOT_MODULE);
+				}
+				case null -> {
+					// if parent module is a file module, visit level module declarations
+					if (module instanceof FileModule m) {
+						try {
+							var lexer = new GioviLexer(CharStreams.fromFileName(m.getPath()));
+							var parser = new GioviParser(new CommonTokenStream(lexer));
+							parser.begin().program().statement().stream()
+								.filter(statement -> statement.moduleDeclaration() != null)
+								.map(statement -> statement.moduleDeclaration())
+								.map(innerModuleDeclarationCtx -> new InnerModule(
+									m,
+									innerModuleDeclarationCtx.identifier().getText(),
+									innerModuleDeclarationCtx.body))
+								.forEach(innerModule -> {
+									m.scope().declare(innerModule);
+									scanInnerModules(innerModule, true);
+								});
+						} catch (IOException e) {
+							throw new GioviException(e);
+						}
+					}
+					yield module.scope()
+						.getModule(uri.toString())
+						.orElseThrow(
+							() -> new GioviException("Can't find module " + uri.toString()));
+				}
+				default -> throw new GioviException(
+					"Unsupported module URI scheme: " + uri.getScheme());
+			};
+		}
+		switch (module) {
+			case NativeModule m -> doImport(m);
+			case InnerModule m -> doImport(m);
+			case FileModule m -> doImport(m);
+		}
 		if (ctx.alias != null) {
 			getCurrentScope().declare(ctx.alias.getText(), module);
 		}
 		return null;
 	}
 
-	@Override
-	public GioviParserVisitResult visitImportEntryPath(ImportEntryPathContext ctx) {
-		Module parentModule = this.module;
-		if (ctx.EXACT_TEXT_LITERAL() != null) {
-			String identifier = ctx.EXACT_TEXT_LITERAL().getText();
-			var fileModule = new FileModule(
-				URI.create(identifier.substring(1, identifier.length() - 1)));
-			try {
-				doImportModule(fileModule);
-			} catch (IOException e) {
-				throw new GioviException(e);
-			}
-			if (ctx.identifier().isEmpty()) {
-				return fileModule;
-			}
-			parentModule = fileModule;
-		}
-		// NOTE: last identifier is the actual module
-		for (int i = 0; i < ctx.identifier().size() - 1; i++) {
-			String identifier = ctx.identifier(i).getText();
-			parentModule = parentModule.scope()
-				.getModule(identifier)
-				.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
-		}
-		String identifier = ctx.identifier().getLast().getText();
-		var module = parentModule.scope()
-			.getModule(identifier)
-			.orElseThrow(() -> new GioviException("Inner module " + identifier + " not found"));
-		switch (module) {
-			case InnerModule innerModule -> doImportModule(innerModule);
-			case NativeModule nativeModule -> doImportModule(nativeModule);
-			case FileModule _ -> throw new GioviException("wtf!");
-		}
-		return module;
+	private void doImport(NativeModule module) {
+		// TODO: import if autoimport = false
 	}
 
-	private void doImportModule(NativeModule module) {
-		// how?
-	}
-
-	private void doImportModule(FileModule module) throws IOException {
-		// TODO: allow http scheme? :mind_blow:
-		var lexer = new GioviLexer(CharStreams.fromFileName(module.uri().toString()));
-		var parser = new GioviParser(new CommonTokenStream(lexer));
-		var tree = parser.begin();
-		var visitor = new GioviVisitor(module);
-		visitor.visit(tree);
-	}
-
-	private void doImportModule(InnerModule module) {
+	private void doImport(InnerModule module) {
 		var visitor = new GioviVisitor(module);
 		visitor.visit(module.bodyCtx());
 	}
 
+	private void doImport(FileModule module) {
+		try {
+			var lexer = new GioviLexer(CharStreams.fromFileName(module.getPath()));
+			var parser = new GioviParser(new CommonTokenStream(lexer));
+			var tree = parser.begin();
+			var visitor = new GioviVisitor(module);
+			visitor.visit(tree);
+		} catch (IOException e) {
+			throw new GioviException(e);
+		}
+	}
 
 	@Override
 	public GioviParserVisitResult visitModuleDeclaration(ModuleDeclarationContext ctx) {
@@ -231,10 +260,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			.map(statement -> statement.moduleDeclaration())
 			.toList();
 		for (var innerModuleDeclarationCtx : innerModulesCtx) {
-			String innerModuleIdentifier = innerModuleDeclarationCtx.identifier().getText();
 			var innerModule = new InnerModule(
 				parentModule,
-				innerModuleIdentifier,
+				innerModuleDeclarationCtx.identifier().getText(),
 				innerModuleDeclarationCtx.body);
 			parentModule.scope().declare(innerModule);
 			if (recurse) {
@@ -1175,8 +1203,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				for (var actualParam : actualParams.entrySet()) {
 					getCurrentScope().declare(actualParam.getKey(), actualParam.getValue());
 				}
+
 				yield doInvoke(gFunction);
 			}
+
 		};
 		if (returnValue instanceof GioviVoid
 			&& !(function.signature().returnType() instanceof GioviTypeVoid)) {
