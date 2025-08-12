@@ -21,7 +21,6 @@ import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.Record;
 import giovi.lang.*;
-import giovi.lang.GioviTypeStruct;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
@@ -177,7 +176,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					if (module != this.module) {
 						throw new GioviException("Can't import nested file module");
 					}
-					yield new FileModule(uri, ROOT_MODULE);
+					yield new FileModule(uri);
 				}
 				case null -> {
 					// if parent module is a file module, visit level module declarations

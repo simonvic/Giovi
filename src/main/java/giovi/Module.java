@@ -2,6 +2,7 @@ package giovi;
 
 import java.net.URI;
 
+import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.ModuleScope;
 
@@ -45,16 +46,16 @@ public sealed interface Module extends GioviParserVisitResult {
 
 	public static record FileModule(
 		URI uri,
-		Module parent,
 		ModuleScope scope
 	) implements Module {
 
-		public FileModule(URI uri, Module parent) {
-			this(uri, parent, new ModuleScope(parent.scope()));
+		public FileModule(URI uri) {
+			this(uri, new ModuleScope(GioviVisitor.ROOT_MODULE.scope()));
 		}
 
-		public FileModule(URI uri) {
-			this(uri, null, new ModuleScope());
+		@Override
+		public Module parent() {
+			return GioviVisitor.ROOT_MODULE;
 		}
 
 		@Override

@@ -120,7 +120,7 @@ public class Giovi {
 				module = new NativeModule("-", GioviVisitor.ROOT_MODULE);
 			} else {
 				charStream = CharStreams.fromStream(new FileInputStream(arg));
-				module = new FileModule(URI.create("file://" + arg), GioviVisitor.ROOT_MODULE);
+				module = new FileModule(URI.create("file://" + arg));
 			}
 		}
 
