@@ -129,12 +129,20 @@ public class Giovi {
 		try {
 			visitor.visit(tree);
 		} catch (GioviException ex) {
-			System.err.println(ex.getMessage());
-			if (verbosity >= 1 && ex.getCause() != null) {
-				System.err.println("Caused by: " + ex.getCause());
-			}
-			if (verbosity >= 2) {
+			if (verbosity >= 3) {
 				ex.printStackTrace();
+			} else if (verbosity >= 1) {
+				Throwable cause = ex.getCause();
+				while (cause != null) {
+					if (verbosity >= 2) {
+						System.err.println("=> " + cause);
+					} else {
+						System.err.println("=> " + cause.getMessage());
+					}
+					cause = cause.getCause();
+				}
+			} else {
+				System.err.println(ex.getMessage());
 			}
 		}
 
