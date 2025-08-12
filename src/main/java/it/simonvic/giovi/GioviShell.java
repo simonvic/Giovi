@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 
+import giovi.Module.NativeModule;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 
@@ -11,7 +12,7 @@ public class GioviShell {
 
 	public void run() throws RecognitionException {
 		var console = System.console();
-		var visitor = new GioviVisitor("shell");
+		var visitor = new GioviVisitor(new NativeModule("shell", GioviVisitor.ROOT_MODULE));
 		System.out.print("┃ ");
 		String line;
 		while ((line = console.readLine()) != null) {

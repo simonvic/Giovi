@@ -4,6 +4,7 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.GioviParserVisitResult;
+import giovi.Module.NativeModule;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
@@ -20,11 +21,11 @@ public class GioviVisitorUtils {
 	}
 
 	public static GioviVisitor visit(String code) {
-		return visit(new GioviVisitor("test"), code);
+		return visit(new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code);
 	}
 
 	public static GioviParserVisitResult visitExpression(String code) {
-		return visitExpression(new GioviVisitor("test"), code);
+		return visitExpression(new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code);
 	}
 
 	public static boolean visitNativeBool(String code) {
@@ -57,7 +58,7 @@ public class GioviVisitorUtils {
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(String code) {
-		return visitFunctionDeclaration(new GioviVisitor("test"), code);
+		return visitFunctionDeclaration(new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code);
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(GioviVisitor visitor, String code) {

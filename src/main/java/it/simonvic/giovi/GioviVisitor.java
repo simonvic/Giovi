@@ -21,6 +21,7 @@ import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.Record;
 import giovi.lang.*;
+import giovi.lang.GioviTypeStruct;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
@@ -87,7 +88,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return gioviModule;
 	}
 
-	private static final NativeModule ROOT_MODULE = new NativeModule("");
+	public static final NativeModule ROOT_MODULE = new NativeModule("");
 	private static final NativeModule GIOVI_MODULE;
 
 	static {
@@ -102,10 +103,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	protected final Scanner scanner = new Scanner(System.in);
 	private Scope currentScope;
 	private final Module module;
-
-	public GioviVisitor(String moduleIdentifier) {
-		this(new NativeModule(moduleIdentifier, ROOT_MODULE));
-	}
 
 	public GioviVisitor(Module module) {
 		this.module = module;
@@ -184,7 +181,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 				case null -> {
 					// if parent module is a file module, visit level module declarations
-					if (module instanceof FileModule m) {
+					if (module instanceof FileModule m && m != this.module) {
 						try {
 							var lexer = new GioviLexer(CharStreams.fromFileName(m.getPath()));
 							var parser = new GioviParser(new CommonTokenStream(lexer));

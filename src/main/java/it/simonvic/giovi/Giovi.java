@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStream;
@@ -9,6 +10,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.apache.commons.cli.*;
 
+import giovi.Module;
+import giovi.Module.FileModule;
+import giovi.Module.NativeModule;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.exceptions.GioviException;
@@ -100,11 +104,11 @@ public class Giovi {
 			return;
 		}
 
-		String moduleName;
+		Module module;
 		CharStream charStream;
 		if (cli.hasOption(OPT_FROM_ARG)) {
 			charStream = CharStreams.fromString(cli.getOptionValue(OPT_FROM_ARG));
-			moduleName = "";
+			module = new NativeModule("--", GioviVisitor.ROOT_MODULE);
 		} else {
 			if (cli.getArgs().length < 1) {
 				printHelp();
@@ -113,19 +117,17 @@ public class Giovi {
 			String arg = cli.getArgs()[0];
 			if (arg.equals("-")) {
 				charStream = CharStreams.fromStream(System.in);
-				moduleName = "";
+				module = new NativeModule("-", GioviVisitor.ROOT_MODULE);
 			} else {
 				charStream = CharStreams.fromStream(new FileInputStream(arg));
-				// TODO: properly handle file name to module name transformation
-				// this leads to incompatible module names (i.e. someFile.giovi)
-				moduleName = arg;
+				module = new FileModule(URI.create("file://" + arg), GioviVisitor.ROOT_MODULE);
 			}
 		}
 
 		var lexer = new GioviLexer(charStream);
 		var parser = new GioviParser(new CommonTokenStream(lexer));
 		var tree = parser.begin();
-		var visitor = new GioviVisitor(moduleName);
+		var visitor = new GioviVisitor(module);
 		try {
 			visitor.visit(tree);
 		} catch (GioviException ex) {
