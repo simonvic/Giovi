@@ -123,6 +123,7 @@ public class VisitorUtils {
 		GioviToken operator,
 		GioviParserVisitResult destination
 	) {
+		// TODO: if destination is constant (not a Var) throw error
 		return switch (operator) {
 			case REDIR, REDIR_RTL -> destination.redirection(content);
 			case REDIR_PLUS, REDIR_PLUS_RTL -> destination.redirectionPlus(content);

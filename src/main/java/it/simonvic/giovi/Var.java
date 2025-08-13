@@ -11,6 +11,8 @@ import it.simonvic.giovi.exceptions.RedirectionException;
 
 // TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
 
+// TODO: what if we implement GioviValue<T>
+// TODO: we could do the same for constants (will allow to throw in redirections)
 public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	public static <T> Var<? extends GioviValue<?>> of(T value) {
