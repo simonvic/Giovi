@@ -22,4 +22,14 @@ public class Math {
 		return new GioviReal(java.lang.Math.floor(x.value()));
 	}
 
+	@Func
+	public static GioviReal ceil(GioviReal x) {
+		return new GioviReal(java.lang.Math.ceil(x.value()));
+	}
+
+	@Func
+	public static GioviReal abs(GioviReal x) {
+		return new GioviReal(java.lang.Math.abs(x.value()));
+	}
+
 }
