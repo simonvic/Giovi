@@ -20,6 +20,7 @@ import giovi.Module.FileModule;
 import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.Record;
+import giovi.lang.GioviTypeStruct;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
@@ -265,6 +266,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				scanInnerModules(innerModule, recurse);
 			}
 		}
+	}
+
+	@Override
+	public GioviParserVisitResult visitAliasStatement(AliasStatementContext ctx) {
+		String alias = ctx.alias.getText();
+		var expression = visit(ctx.expression());
+		var scope = getCurrentScope();
+		switch (expression) {
+			case GioviFunction function -> scope.declare(alias, function.value());
+			case GioviTypeStruct typeStruct -> scope.define(alias, typeStruct);
+			// TODO: this could create some funny behavior (e.g. with struct fields)
+			// case VarD<?> variable -> scope.declare(alias, variable);
+			case GioviValue<?> constant -> scope.declareConstant(alias, constant);
+			case Module module -> scope.declare(alias, module);
+			default -> throw new GioviException("Can't create alias for " + expression);
+		}
+		return null;
 	}
 
 	@Override
@@ -1180,6 +1198,8 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			// TODO: passing by reference yields much better performance, but
 			// it's different from other params getting passed by value.
 			// Clarify requirements
+			// TODO: self can be null when invoking a self function via alias. Eventually spawn self
+			// type default value (once the self type wraps the struct type)
 			actualParams.putFirst("self", new VarD<>(instance.unwrapAsGioviValue()));
 		}
 		var returnValue = switch (function) {

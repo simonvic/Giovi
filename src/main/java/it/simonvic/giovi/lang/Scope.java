@@ -140,11 +140,16 @@ public class Scope {
 	protected final Map<String, Function> functions = new HashMap<>();
 
 	public void declare(Function function) {
-		if (functions.containsKey(function.signature().identifier())) {
+		declare(function.signature().identifier(), function);
+	}
+
+	public void declare(String identifier, Function function) {
+		if (functions.containsKey(identifier)) {
 			throw new FunctionAlreadyDeclared(function.signature());
 		}
-		functions.put(function.signature().identifier(), function);
+		functions.put(identifier, function);
 	}
+
 
 	public boolean isDeclaredFunction(String identifier) {
 		return functions.containsKey(identifier)
@@ -166,10 +171,14 @@ public class Scope {
 	protected final Map<String, GioviTypeStruct> structDefinitions = new HashMap<>();
 
 	public void define(GioviTypeStruct type) {
-		if (structDefinitions.containsKey(type.signature().typename())) {
-			throw new StructAlreadyDefined(type.signature().typename());
+		define(type.signature().typename(), type);
+	}
+
+	public void define(String identifier, GioviTypeStruct type) {
+		if (structDefinitions.containsKey(identifier)) {
+			throw new StructAlreadyDefined(identifier);
 		}
-		structDefinitions.put(type.signature().typename(), type);
+		structDefinitions.put(identifier, type);
 	}
 
 	public boolean isDefinedStruct(String identifier) {
