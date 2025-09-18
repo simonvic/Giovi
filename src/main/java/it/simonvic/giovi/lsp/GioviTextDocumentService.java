@@ -11,6 +11,8 @@ import java.util.logging.SimpleFormatter;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -18,6 +20,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
+import it.simonvic.giovi.antlr.GioviParser.*;
 
 public class GioviTextDocumentService implements TextDocumentService {
 
@@ -127,15 +130,84 @@ public class GioviTextDocumentService implements TextDocumentService {
 		});
 	}
 
+	private static GioviParser parserFrom(TextDocumentIdentifier textDocument)
+		throws IOException {
+		var lexer = new GioviLexer(
+			CharStreams.fromFileName(
+				URI.create(textDocument.getUri()).getPath()));
+		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
 	@Override
 	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(
 		DocumentSymbolParams params
 	) {
-		var tempRange = new Range(new Position(0, 0), new Position(0, 0));
 		return CompletableFutures.computeAsync(_ -> {
-			return List.of();
+			GioviParser parser;
+			try {
+				parser = parserFrom(params.getTextDocument());
+			} catch (IOException e) {
+				log.info(e.toString());
+				return List.of();
+			}
+			var symbols = findSymbols(parser.begin());
+			return symbols.stream()
+				.<Either<SymbolInformation, DocumentSymbol>>map(Either::forRight)
+				.toList();
 		});
+	}
 
+	private static List<DocumentSymbol> findSymbols(
+		ParseTree ruleCtx
+	) {
+		List<DocumentSymbol> symbols = new ArrayList<>();
+		for (int i = 0; i < ruleCtx.getChildCount(); i++) {
+			var childCtx = ruleCtx.getChild(i);
+			switch (childCtx) {
+				case ModuleDeclarationContext c -> symbols.add(new DocumentSymbol(
+					c.identifier().getText(),
+					SymbolKind.Module,
+					rangeFrom(c),
+					rangeFrom(c),
+					null,
+					findSymbols(c)));
+				case StructDefinitionContext c -> symbols.add(new DocumentSymbol(
+					c.typename.getText(),
+					SymbolKind.Struct,
+					rangeFrom(c),
+					rangeFrom(c),
+					null,
+					findSymbols(c.body)));
+				case FunctionDeclarationContext c -> symbols.add(new DocumentSymbol(
+					c.functionSignature().identifier().getText(),
+					SymbolKind.Function,
+					rangeFrom(c),
+					rangeFrom(c),
+					c.functionSignature().getText(),
+					findSymbols(c.body)));
+				case ConstantDeclarationContext c -> symbols.add(new DocumentSymbol(
+					c.identifier().getText(),
+					SymbolKind.Constant,
+					rangeFrom(c),
+					rangeFrom(c)));
+				case VarDeclarationContext c -> symbols.add(new DocumentSymbol(
+					c.identifier().getText(),
+					SymbolKind.Variable,
+					rangeFrom(c),
+					rangeFrom(c)));
+				case ProgramContext _,BlockContext _,StatementContext _,StatementOrBlockContext _
+					-> symbols.addAll(findSymbols(childCtx));
+				default -> {}
+			}
+		}
+
+		return symbols;
+	}
+
+	private static Range rangeFrom(ParserRuleContext ctx) {
+		return new Range(
+			new Position(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine()),
+			new Position(ctx.getStop().getLine(), ctx.getStop().getCharPositionInLine()));
 	}
 
 	@Override
@@ -145,11 +217,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 			var syntaxErrorsListener = new SyntaxErrorListener();
 			System.out.println(syntaxErrorsListener);
 			try {
-				var lexer = new GioviLexer(
-					CharStreams.fromFileName(
-						URI.create(params.getTextDocument().getUri()).getPath()));
-				var parser = new GioviParser(new CommonTokenStream(lexer));
-				parser.addErrorListener(syntaxErrorsListener);
+				var parser = parserFrom(params.getTextDocument());
 				parser.begin();
 			} catch (IOException e) {
 				log.info(e.toString());
