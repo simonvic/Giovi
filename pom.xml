@@ -62,6 +62,13 @@
 			<version>4.13.2</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.eclipse.lsp4j/org.eclipse.lsp4j -->
+		<dependency>
+			<groupId>org.eclipse.lsp4j</groupId>
+			<artifactId>org.eclipse.lsp4j</artifactId>
+			<version>0.24.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

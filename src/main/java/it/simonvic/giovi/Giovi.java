@@ -3,6 +3,7 @@ package it.simonvic.giovi;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import org.antlr.v4.runtime.CharStream;
@@ -16,6 +17,8 @@ import giovi.Module.NativeModule;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.exceptions.GioviException;
+import it.simonvic.giovi.lsp.GioviLS;
+import it.simonvic.giovi.lsp.proxy.GioviLSProxy;
 
 public class Giovi {
 
@@ -30,6 +33,16 @@ public class Giovi {
 		.longOpt("verbose")
 		.desc("")
 		.get();
+
+	private static final Option OPT_LS = Option.builder()
+		.longOpt("ls")
+		.desc("Launch Giovi language server")
+		.build();
+
+	private static final Option OPT_LS_PROXY = Option.builder()
+		.longOpt("ls-proxy")
+		.desc("Launch Giovi language server proxy")
+		.build();
 
 	private static final Option OPT_SHELL = Option.builder()
 		.longOpt("shell")
@@ -66,6 +79,8 @@ public class Giovi {
 	private static final Options OPTIONS = optionsOf(
 		OPT_HELP,
 		OPT_VERBOSE,
+		OPT_LS,
+		OPT_LS_PROXY,
 		OPT_SHELL,
 		OPT_FROM_ARG,
 		OPT_FORMAT,
@@ -88,7 +103,8 @@ public class Giovi {
 		return opts;
 	}
 
-	public static void main(String[] args) throws IOException, ParseException {
+	public static void main(String[] args)
+		throws IOException, ParseException, InterruptedException, ExecutionException {
 		CommandLine cli = new DefaultParser().parse(OPTIONS, args);
 
 		long verbosity = Stream.of(cli.getOptions())
@@ -102,6 +118,16 @@ public class Giovi {
 
 		if (cli.hasOption(OPT_SHELL)) {
 			new GioviShell().run();
+			return;
+		}
+
+		if (cli.hasOption(OPT_LS)) {
+			GioviLS.main(new String[] {});
+			return;
+		}
+
+		if (cli.hasOption(OPT_LS_PROXY)) {
+			new GioviLSProxy().run();
 			return;
 		}
 
