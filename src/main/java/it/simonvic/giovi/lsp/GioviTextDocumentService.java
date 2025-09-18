@@ -215,9 +215,9 @@ public class GioviTextDocumentService implements TextDocumentService {
 		return CompletableFutures.computeAsync(_ -> {
 			var diagnostics = new ArrayList<Diagnostic>();
 			var syntaxErrorsListener = new SyntaxErrorListener();
-			System.out.println(syntaxErrorsListener);
 			try {
 				var parser = parserFrom(params.getTextDocument());
+				parser.addErrorListener(syntaxErrorsListener);
 				parser.begin();
 			} catch (IOException e) {
 				log.info(e.toString());
