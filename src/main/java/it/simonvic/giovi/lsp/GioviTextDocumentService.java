@@ -185,6 +185,13 @@ public class GioviTextDocumentService implements TextDocumentService {
 					rangeFrom(c),
 					c.functionSignature().getText(),
 					findSymbols(c.body)));
+				case SelfFunctionDeclarationContext c -> symbols.add(new DocumentSymbol(
+					c.selfFunctionSignature().identifier().getText(),
+					SymbolKind.Function,
+					rangeFrom(c),
+					rangeFrom(c.selfFunctionSignature().identifier()),
+					c.selfFunctionSignature().getText(),
+					findSymbols(c.body)));
 				case ConstantDeclarationContext c -> symbols.add(new DocumentSymbol(
 					c.identifier().getText(),
 					SymbolKind.Constant,
