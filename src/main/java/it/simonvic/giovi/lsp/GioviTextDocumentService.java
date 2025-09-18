@@ -168,21 +168,21 @@ public class GioviTextDocumentService implements TextDocumentService {
 					c.identifier().getText(),
 					SymbolKind.Module,
 					rangeFrom(c),
-					rangeFrom(c),
+					rangeFrom(c.identifier()),
 					null,
 					findSymbols(c)));
 				case StructDefinitionContext c -> symbols.add(new DocumentSymbol(
 					c.typename.getText(),
 					SymbolKind.Struct,
 					rangeFrom(c),
-					rangeFrom(c),
+					rangeFrom(c.typename),
 					null,
 					findSymbols(c.body)));
 				case FunctionDeclarationContext c -> symbols.add(new DocumentSymbol(
 					c.functionSignature().identifier().getText(),
 					SymbolKind.Function,
 					rangeFrom(c),
-					rangeFrom(c),
+					rangeFrom(c.functionSignature().identifier()),
 					c.functionSignature().getText(),
 					findSymbols(c.body)));
 				case SelfFunctionDeclarationContext c -> symbols.add(new DocumentSymbol(
@@ -196,12 +196,12 @@ public class GioviTextDocumentService implements TextDocumentService {
 					c.identifier().getText(),
 					SymbolKind.Constant,
 					rangeFrom(c),
-					rangeFrom(c)));
+					rangeFrom(c.identifier())));
 				case VarDeclarationContext c -> symbols.add(new DocumentSymbol(
 					c.identifier().getText(),
 					SymbolKind.Variable,
 					rangeFrom(c),
-					rangeFrom(c)));
+					rangeFrom(c.identifier())));
 				case ProgramContext _,BlockContext _,StatementContext _,StatementOrBlockContext _
 					-> symbols.addAll(findSymbols(childCtx));
 				default -> {}
@@ -213,8 +213,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	private static Range rangeFrom(ParserRuleContext ctx) {
 		return new Range(
-			new Position(ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine()),
-			new Position(ctx.getStop().getLine(), ctx.getStop().getCharPositionInLine()));
+			new Position(ctx.getStart().getLine() - 1, ctx.getStart().getCharPositionInLine()),
+			new Position(ctx.getStop().getLine() - 1, ctx.getStop().getCharPositionInLine()));
 	}
 
 	@Override
