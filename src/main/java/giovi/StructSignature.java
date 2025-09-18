@@ -31,7 +31,7 @@ public record StructSignature(
 
 	@Override
 	public String toString() {
-		if (fields.size() == 0) return typename + "<>";
+		if (fields.isEmpty()) return typename + "<>";
 		var sb = new StringBuilder(typename + "<");
 		var i = this.fields.values().iterator();
 		while (i.hasNext()) {

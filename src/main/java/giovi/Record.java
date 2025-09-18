@@ -104,7 +104,7 @@ public sealed class Record extends Tuple permits Struct {
 	}
 
 	public Optional<VarD<?>> getField(String identifier) {
-		return Optional.ofNullable((VarD<?>) fields.get(identifier));
+		return Optional.ofNullable(fields.get(identifier));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,7 +115,7 @@ public sealed class Record extends Tuple permits Struct {
 		}
 		clazz.cast(field.value());
 		// TODO: return empty if class cast exception?
-		return Optional.ofNullable((VarD<G>) field);
+		return Optional.of((VarD<G>) field);
 	}
 
 	public List<String> getFieldNames() {
