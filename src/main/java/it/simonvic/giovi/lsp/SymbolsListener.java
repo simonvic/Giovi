@@ -135,5 +135,14 @@ public class SymbolsListener extends GioviParserBaseListener {
 		symbol.setSelectionRange(rangeFrom(ctx.typename));
 	}
 
+	@Override
+	public void exitStructFieldDefinition(StructFieldDefinitionContext ctx) {
+		add(new DocumentSymbol(
+			ctx.identifier().getText(),
+			SymbolKind.Field,
+			rangeFrom(ctx),
+			rangeFrom(ctx.identifier())));
+	}
+
 
 }
