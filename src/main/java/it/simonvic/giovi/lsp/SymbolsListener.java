@@ -1,14 +1,13 @@
 package it.simonvic.giovi.lsp;
 
+import static it.simonvic.giovi.lsp.LSPUtils.range;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.SymbolKind;
 
 import it.simonvic.giovi.antlr.GioviParser.*;
@@ -22,12 +21,6 @@ public class SymbolsListener extends GioviParserBaseListener {
 
 	public List<DocumentSymbol> getSymbols() {
 		return symbols;
-	}
-
-	private static Range rangeFrom(ParserRuleContext ctx) {
-		return new Range(
-			new Position(ctx.getStart().getLine() - 1, ctx.getStart().getCharPositionInLine()),
-			new Position(ctx.getStop().getLine() - 1, ctx.getStop().getCharPositionInLine()));
 	}
 
 	private void add(DocumentSymbol documentSymbol) {
@@ -53,8 +46,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		add(new DocumentSymbol(
 			ctx.identifier().getText(),
 			SymbolKind.Variable,
-			rangeFrom(ctx),
-			rangeFrom(ctx.identifier())));
+			range(ctx),
+			range(ctx.identifier())));
 	}
 
 	@Override
@@ -62,8 +55,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		add(new DocumentSymbol(
 			ctx.name.getText(),
 			SymbolKind.Constant,
-			rangeFrom(ctx),
-			rangeFrom(ctx.name)));
+			range(ctx),
+			range(ctx.name)));
 	}
 
 	@Override
@@ -72,8 +65,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		add(new DocumentSymbol(
 			ctx.alias.getText(),
 			SymbolKind.Namespace,
-			rangeFrom(ctx),
-			rangeFrom(ctx.alias),
+			range(ctx),
+			range(ctx.alias),
 			ctx.importURI().stream().map(c -> c.getText()).collect(Collectors.joining("."))));
 	}
 
@@ -87,8 +80,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		var symbol = stack.pop();
 		symbol.setName(ctx.identifier().getText());
 		symbol.setKind(SymbolKind.Module);
-		symbol.setRange(rangeFrom(ctx));
-		symbol.setSelectionRange(rangeFrom(ctx.identifier()));
+		symbol.setRange(range(ctx));
+		symbol.setSelectionRange(range(ctx.identifier()));
 	}
 
 	@Override
@@ -101,8 +94,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		var symbol = stack.pop();
 		symbol.setName(ctx.functionSignature().identifier().getText());
 		symbol.setKind(SymbolKind.Function);
-		symbol.setRange(rangeFrom(ctx));
-		symbol.setSelectionRange(rangeFrom(ctx.functionSignature().identifier()));
+		symbol.setRange(range(ctx));
+		symbol.setSelectionRange(range(ctx.functionSignature().identifier()));
 		symbol.setDetail(ctx.functionSignature().getText());
 	}
 
@@ -116,8 +109,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		var symbol = stack.pop();
 		symbol.setName(ctx.selfFunctionSignature().identifier().getText());
 		symbol.setKind(SymbolKind.Function); // Method?
-		symbol.setRange(rangeFrom(ctx));
-		symbol.setSelectionRange(rangeFrom(ctx.selfFunctionSignature().identifier()));
+		symbol.setRange(range(ctx));
+		symbol.setSelectionRange(range(ctx.selfFunctionSignature().identifier()));
 		symbol.setDetail(ctx.selfFunctionSignature().getText());
 	}
 
@@ -131,8 +124,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		var symbol = stack.pop();
 		symbol.setName(ctx.typename.getText());
 		symbol.setKind(SymbolKind.Struct);
-		symbol.setRange(rangeFrom(ctx));
-		symbol.setSelectionRange(rangeFrom(ctx.typename));
+		symbol.setRange(range(ctx));
+		symbol.setSelectionRange(range(ctx.typename));
 	}
 
 	@Override
@@ -140,8 +133,8 @@ public class SymbolsListener extends GioviParserBaseListener {
 		add(new DocumentSymbol(
 			ctx.identifier().getText(),
 			SymbolKind.Field,
-			rangeFrom(ctx),
-			rangeFrom(ctx.identifier())));
+			range(ctx),
+			range(ctx.identifier())));
 	}
 
 
