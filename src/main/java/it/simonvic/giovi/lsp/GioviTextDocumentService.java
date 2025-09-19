@@ -161,9 +161,11 @@ public class GioviTextDocumentService implements TextDocumentService {
 		return CompletableFutures.computeAsync(_ -> {
 			var diagnostics = new ArrayList<Diagnostic>();
 			var syntaxErrorsListener = new SyntaxErrorListener();
+			var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
 			try {
 				var parser = parserFrom(params.getTextDocument());
 				parser.addErrorListener(syntaxErrorsListener);
+				parser.addParseListener(functionsBodyListener);
 				parser.begin();
 			} catch (IOException e) {
 				log.info(e.toString());
@@ -173,6 +175,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 					error.getRange(),
 					error.msg()));
 			}
+			diagnostics.addAll(functionsBodyListener.getDiagnostics());
 			return new DocumentDiagnosticReport(
 				new RelatedFullDocumentDiagnosticReport(diagnostics));
 		});
