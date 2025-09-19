@@ -99,7 +99,7 @@
 				<version>4.13.2</version>
 				<configuration>
 					<arguments>
-						<argument>-no-listener</argument>
+						<argument>-listener</argument>
 						<argument>-visitor</argument>
 						<argument>-package</argument>
 						<argument>it.simonvic.giovi.antlr</argument>

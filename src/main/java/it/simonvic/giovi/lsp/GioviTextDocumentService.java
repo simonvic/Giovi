@@ -144,14 +144,16 @@ public class GioviTextDocumentService implements TextDocumentService {
 	) {
 		return CompletableFutures.computeAsync(_ -> {
 			GioviParser parser;
+			var listener = new SymbolsListener();
 			try {
 				parser = parserFrom(params.getTextDocument());
+				parser.addParseListener(listener);
 			} catch (IOException e) {
 				log.info(e.toString());
 				return List.of();
 			}
-			var symbols = findSymbols(parser.begin());
-			return symbols.stream()
+			parser.begin();
+			return listener.getSymbols().stream()
 				.<Either<SymbolInformation, DocumentSymbol>>map(Either::forRight)
 				.toList();
 		});
