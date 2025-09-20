@@ -21,7 +21,7 @@ public class GioviLanguageServer implements LanguageServer, LanguageClientAware 
 	public CompletableFuture<InitializeResult> initialize(InitializeParams arg0) {
 		var capabilities = new ServerCapabilities();
 
-		capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
+		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
 		capabilities.setCompletionProvider(new CompletionOptions());
 		capabilities.setHoverProvider(new HoverOptions());
 		capabilities.setCodeActionProvider(new CodeActionOptions());
