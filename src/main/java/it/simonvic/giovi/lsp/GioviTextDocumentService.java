@@ -172,11 +172,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 			parser.addErrorListener(syntaxErrorsListener);
 			parser.addParseListener(functionsBodyListener);
 			parser.begin();
-			for (var error : syntaxErrorsListener.getErrors()) {
-				diagnostics.add(new Diagnostic(
-					error.getRange(),
-					error.msg()));
-			}
+			diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
 			diagnostics.addAll(functionsBodyListener.getDiagnostics());
 			return new DocumentDiagnosticReport(
 				new RelatedFullDocumentDiagnosticReport(diagnostics));
