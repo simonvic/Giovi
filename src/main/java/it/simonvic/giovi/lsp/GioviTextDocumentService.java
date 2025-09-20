@@ -41,17 +41,17 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		log.info("client changed " + params.getTextDocument().getUri());
-	}
-
-	@Override
-	public void didClose(DidCloseTextDocumentParams params) {
-		log.info("client closed " + params.getTextDocument().getUri());
+		// log.info("client changed " + params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		log.info("client saved " + params.getTextDocument().getUri());
+	}
+
+	@Override
+	public void didClose(DidCloseTextDocumentParams params) {
+		log.info("client closed " + params.getTextDocument().getUri());
 	}
 
 	@Override
@@ -162,14 +162,16 @@ public class GioviTextDocumentService implements TextDocumentService {
 			var diagnostics = new ArrayList<Diagnostic>();
 			var syntaxErrorsListener = new SyntaxErrorListener();
 			var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
+			GioviParser parser;
 			try {
-				var parser = parserFrom(params.getTextDocument());
-				parser.addErrorListener(syntaxErrorsListener);
-				parser.addParseListener(functionsBodyListener);
-				parser.begin();
+				parser = parserFrom(params.getTextDocument());
 			} catch (IOException e) {
 				log.info(e.toString());
+				return new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport());
 			}
+			parser.addErrorListener(syntaxErrorsListener);
+			parser.addParseListener(functionsBodyListener);
+			parser.begin();
 			for (var error : syntaxErrorsListener.getErrors()) {
 				diagnostics.add(new Diagnostic(
 					error.getRange(),
