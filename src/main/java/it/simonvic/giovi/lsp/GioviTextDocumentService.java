@@ -3,7 +3,9 @@ package it.simonvic.giovi.lsp;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -23,6 +25,16 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	private static final Logger log = Logger.getLogger("TextDocumentService");
 
+	public static record Model(
+		String uri,
+		Integer version,
+		boolean synced,
+		String content
+	) {
+	}
+
+	private final Map<String, Model> documents = new HashMap<>();
+
 	public GioviTextDocumentService() {
 		try {
 			var fileHandler = new FileHandler("/tmp/giovils/textdocument.log", true);
@@ -37,21 +49,70 @@ public class GioviTextDocumentService implements TextDocumentService {
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
 		log.info("didOpen() " + params.getTextDocument().getUri());
+		var lspDoc = params.getTextDocument();
+		var model = new Model(
+			lspDoc.getUri(),
+			lspDoc.getVersion(),
+			true,
+			lspDoc.getText());
+		documents.put(lspDoc.getUri(), model);
+		validate(model);
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
 		log.info("didChange " + params.getTextDocument().getUri());
+		var lspDoc = params.getTextDocument();
+		// todo: change once we implement incremental sync
+		String newText = params.getContentChanges().getFirst().getText();
+		var model = new Model(
+			lspDoc.getUri(),
+			lspDoc.getVersion(),
+			newText.equals(documents.get(lspDoc.getUri()).content()),
+			newText);
+		documents.put(lspDoc.getUri(), model);
+		// CompletableFutures.computeAsync(
+		// 	// CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS),
+		// 	_ -> {
+		// 		var diagnostics = validate(model);
+		// 		try {
+		// 			Thread.sleep(500);
+		// 		} catch (InterruptedException e) {
+		// 		}
+		// 		server.getClient().publishDiagnostics(new PublishDiagnosticsParams(
+		// 			params.getTextDocument().getUri(),
+		// 			diagnostics));
+		// 		return null;
+		// 	});
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		log.info("didSave() " + params.getTextDocument().getUri());
+		// var model = documents.get(params.getTextDocument().getUri());
+		// todo: check if buffered content equals params.getText
+		// validate(model);
+	}
+
+	private List<Diagnostic> validate(Model model) {
+		var diagnostics = new ArrayList<Diagnostic>();
+		var syntaxErrorsListener = new SyntaxErrorListener();
+		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
+		GioviParser parser;
+		parser = parserFrom(model);
+		parser.removeErrorListeners(); // silences terminal output
+		parser.addErrorListener(syntaxErrorsListener);
+		parser.addParseListener(functionsBodyListener);
+		parser.begin();
+		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
+		diagnostics.addAll(functionsBodyListener.getDiagnostics());
+		return diagnostics;
 	}
 
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
 		log.info("didClose() " + params.getTextDocument().getUri());
+		documents.remove(params.getTextDocument().getUri());
 	}
 
 	@Override
@@ -129,11 +190,17 @@ public class GioviTextDocumentService implements TextDocumentService {
 		});
 	}
 
-	private static GioviParser parserFrom(TextDocumentIdentifier textDocument)
-		throws IOException {
-		var lexer = new GioviLexer(
-			CharStreams.fromFileName(
-				URI.create(textDocument.getUri()).getPath()));
+	private GioviParser parserFrom(Model model) {
+		var lexer = new GioviLexer(CharStreams.fromString(model.content()));
+		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
+	private static GioviParser parserFrom(TextDocumentIdentifier textDocument) throws IOException {
+		return parserFrom(textDocument.getUri());
+	}
+
+	private static GioviParser parserFrom(String uri) throws IOException {
+		var lexer = new GioviLexer(CharStreams.fromFileName(URI.create(uri).getPath()));
 		return new GioviParser(new CommonTokenStream(lexer));
 	}
 
@@ -163,21 +230,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
 		log.info("diagnostic()");
 		return CompletableFutures.computeAsync(_ -> {
-			var diagnostics = new ArrayList<Diagnostic>();
-			var syntaxErrorsListener = new SyntaxErrorListener();
-			var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
-			GioviParser parser;
-			try {
-				parser = parserFrom(params.getTextDocument());
-			} catch (IOException e) {
-				log.info(e.toString());
-				return new DocumentDiagnosticReport(new RelatedFullDocumentDiagnosticReport());
-			}
-			parser.addErrorListener(syntaxErrorsListener);
-			parser.addParseListener(functionsBodyListener);
-			parser.begin();
-			diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
-			diagnostics.addAll(functionsBodyListener.getDiagnostics());
+			Model model = documents.get(params.getTextDocument().getUri());
+			List<Diagnostic> diagnostics = validate(model);
 			return new DocumentDiagnosticReport(
 				new RelatedFullDocumentDiagnosticReport(diagnostics));
 		});
