@@ -231,8 +231,9 @@ public class GioviTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
 		log.info("diagnostic()");
-		return CompletableFutures.computeAsync(_ -> {
+		return CompletableFutures.computeAsync(cancel -> {
 			Model model = documents.get(params.getTextDocument().getUri());
+			cancel.checkCanceled();
 			List<Diagnostic> diagnostics = validate(model);
 			return new DocumentDiagnosticReport(
 				new RelatedFullDocumentDiagnosticReport(diagnostics));
