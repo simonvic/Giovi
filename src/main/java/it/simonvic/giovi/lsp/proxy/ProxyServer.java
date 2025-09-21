@@ -25,8 +25,9 @@ public class ProxyServer implements LanguageServer, LanguageClientAware {
 		return actualServer.initialize(params);
 	}
 
-		final var initResult = new InitializeResult(capabilities);
-		return CompletableFuture.supplyAsync(() -> initResult);
+	@Override
+	public void initialized(InitializedParams params) {
+		actualServer.initialized(params);
 	}
 
 	@Override

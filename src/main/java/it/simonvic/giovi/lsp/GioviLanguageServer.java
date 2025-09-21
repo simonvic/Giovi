@@ -34,8 +34,18 @@ public class GioviLanguageServer implements LanguageServer, LanguageClientAware 
 		capabilities.setWorkspaceSymbolProvider(new WorkspaceSymbolOptions());
 		capabilities.setDocumentFormattingProvider(new DocumentFormattingOptions());
 
-		final var initResult = new InitializeResult(capabilities);
+		var initResult = new InitializeResult();
+		initResult.setCapabilities(capabilities);
+		initResult.setServerInfo(new ServerInfo("giovils", "0.1"));
 		return CompletableFuture.supplyAsync(() -> initResult);
+	}
+
+	@Override
+	public void initialized(InitializedParams params) {
+		// client.registerCapability(new RegistrationParams(List.of(
+		// 	new Registration(
+		// 		ServerCapabilitiesConstants.TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS,
+		// 		"textDocument/publishDiagnostics"))));
 	}
 
 	@Override
