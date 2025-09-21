@@ -36,29 +36,29 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public void didOpen(DidOpenTextDocumentParams params) {
-		log.info("client opened " + params.getTextDocument().getUri());
+		log.info("didOpen() " + params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
-		// log.info("client changed " + params.getTextDocument().getUri());
+		log.info("didChange " + params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
-		log.info("client saved " + params.getTextDocument().getUri());
+		log.info("didSave() " + params.getTextDocument().getUri());
 	}
 
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
-		log.info("client closed " + params.getTextDocument().getUri());
+		log.info("didClose() " + params.getTextDocument().getUri());
 	}
 
 	@Override
 	public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
 		CompletionParams completionParams
 	) {
-		log.info("\tcontext: " + completionParams.getContext());
+		log.info("completion()");
 		return CompletableFutures.computeAsync(_ -> {
 			var completionItems = new ArrayList<CompletionItem>();
 			completionItems.addAll(Snippets.snippets);
@@ -78,7 +78,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public CompletableFuture<List<Either<Command, CodeAction>>> codeAction(
 		CodeActionParams params
 	) {
-		log.info("client triggered codeActions");
+		log.info("codeActions()");
 		return CompletableFutures.computeAsync(_ -> {
 			return List.of(
 				Either.forRight(new CodeAction("Flip redirection")),
@@ -89,7 +89,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams params) {
-		log.info("client triggered hover");
+		log.info("hover()");
 		return CompletableFutures.computeAsync(_ -> {
 			return new Hover(List.of(
 				Either.forLeft("""
@@ -105,7 +105,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
-		System.out.println(params);
+		log.info("formatting()");
 		return CompletableFutures.computeAsync(_ -> {
 			var edits = new ArrayList<TextEdit>();
 			return edits;
@@ -114,6 +114,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<List<InlayHint>> inlayHint(InlayHintParams params) {
+		log.info("inlayHint()");
 		return CompletableFutures.computeAsync(_ -> {
 			return List.of(
 				new InlayHint(new Position(0, 0), Either.forLeft("This is a sample inlay hint")));
@@ -122,6 +123,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<SignatureHelp> signatureHelp(SignatureHelpParams params) {
+		log.info("signatureHelp()");
 		return CompletableFutures.computeAsync(_ -> {
 			return new SignatureHelp(List.of(new SignatureInformation("signature help")), 0, 0);
 		});
@@ -139,6 +141,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(
 		DocumentSymbolParams params
 	) {
+		log.info("documentSymbol()");
 		return CompletableFutures.computeAsync(_ -> {
 			GioviParser parser;
 			var listener = new SymbolsListener();
@@ -158,6 +161,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 	@Override
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
+		log.info("diagnostic()");
 		return CompletableFutures.computeAsync(_ -> {
 			var diagnostics = new ArrayList<Diagnostic>();
 			var syntaxErrorsListener = new SyntaxErrorListener();
@@ -183,6 +187,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(
 		DefinitionParams params
 	) {
+		log.info("definition()");
 		return CompletableFutures.computeAsync(_ -> {
 			return Either.forLeft(List.of());
 		});
