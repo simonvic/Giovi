@@ -21,20 +21,9 @@ public class ProxyServer implements LanguageServer, LanguageClientAware {
 	}
 
 	@Override
-	public CompletableFuture<InitializeResult> initialize(InitializeParams arg0) {
-		var capabilities = new ServerCapabilities();
-
-		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
-		capabilities.setCompletionProvider(new CompletionOptions());
-		capabilities.setHoverProvider(new HoverOptions());
-		capabilities.setCodeActionProvider(new CodeActionOptions());
-		capabilities.setInlayHintProvider(new InlayHintRegistrationOptions());
-		capabilities.setSignatureHelpProvider(new SignatureHelpOptions());
-		capabilities.setDocumentSymbolProvider(new DocumentSymbolOptions());
-		capabilities.setDiagnosticProvider(new DiagnosticRegistrationOptions());
-		capabilities.setDefinitionProvider(new DefinitionOptions());
-		capabilities.setWorkspaceSymbolProvider(new WorkspaceSymbolOptions());
-		capabilities.setDocumentFormattingProvider(new DocumentFormattingOptions());
+	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
+		return actualServer.initialize(params);
+	}
 
 		final var initResult = new InitializeResult(capabilities);
 		return CompletableFuture.supplyAsync(() -> initResult);

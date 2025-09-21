@@ -18,7 +18,7 @@ public class GioviLanguageServer implements LanguageServer, LanguageClientAware 
 	}
 
 	@Override
-	public CompletableFuture<InitializeResult> initialize(InitializeParams arg0) {
+	public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 		var capabilities = new ServerCapabilities();
 
 		capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
