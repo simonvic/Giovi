@@ -13,8 +13,12 @@ public class GioviLanguageServer implements LanguageServer, LanguageClientAware 
 	private boolean shutdownAsked;
 
 	public GioviLanguageServer() {
-		this.textDocumentService = new GioviTextDocumentService();
+		this.textDocumentService = new GioviTextDocumentService(this);
 		this.workspaceService = new GioviWorkspaceService();
+	}
+
+	public LanguageClient getClient() {
+		return client;
 	}
 
 	@Override

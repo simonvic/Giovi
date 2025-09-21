@@ -33,9 +33,11 @@ public class GioviTextDocumentService implements TextDocumentService {
 	) {
 	}
 
+	private final GioviLanguageServer server;
 	private final Map<String, Model> documents = new HashMap<>();
 
-	public GioviTextDocumentService() {
+	public GioviTextDocumentService(GioviLanguageServer server) {
+		this.server = server;
 		try {
 			var fileHandler = new FileHandler("/tmp/giovils/textdocument.log", true);
 			fileHandler.setFormatter(new SimpleFormatter());
