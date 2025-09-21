@@ -2,14 +2,16 @@ package it.simonvic.giovi.lsp.proxy;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.lsp4j.*;
+import org.eclipse.lsp4j.InitializeParams;
+import org.eclipse.lsp4j.InitializeResult;
+import org.eclipse.lsp4j.InitializedParams;
 import org.eclipse.lsp4j.services.*;
 
 public class ProxyServer implements LanguageServer, LanguageClientAware {
 
 	private final GioviTextDocumentServiceProxy textDocumentService;
 	private final GioviWorkspaceServiceProxy workspaceService;
-	private LanguageClient actualClient;
+	private LanguageClient proxyClient;
 	private boolean shutdownAsked;
 
 	private final LanguageServer actualServer;
@@ -42,7 +44,7 @@ public class ProxyServer implements LanguageServer, LanguageClientAware {
 
 	@Override
 	public void connect(LanguageClient client) {
-		this.actualClient = client;
+		this.proxyClient = client;
 	}
 
 	@Override

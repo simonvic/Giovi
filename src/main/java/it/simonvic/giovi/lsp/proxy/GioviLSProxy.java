@@ -9,10 +9,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.eclipse.lsp4j.jsonrpc.Launcher;
 import org.eclipse.lsp4j.launch.LSPLauncher;
-import org.eclipse.lsp4j.services.LanguageClient;
-import org.eclipse.lsp4j.services.LanguageServer;
 
 public class GioviLSProxy {
 
@@ -32,26 +29,27 @@ public class GioviLSProxy {
 
 		try (var socket = new Socket("127.0.0.1", 8069)) {
 			log.info("Connected to real server socket");
-			var client = new ProxyClient(null);
-			Launcher<LanguageServer> clientLauncher = LSPLauncher.createClientLauncher(
-				client,
+			var proxyClient = new ProxyClient();
+			var proxyClientLauncher = LSPLauncher.createClientLauncher(
+				proxyClient,
 				socket.getInputStream(),
 				socket.getOutputStream());
 
 			log.info("Starting proxy server");
-			var server = new ProxyServer(clientLauncher.getRemoteProxy());
-			Launcher<LanguageClient> serverLauncher = LSPLauncher.createServerLauncher(
-				server,
+			var proxyServer = new ProxyServer(proxyClientLauncher.getRemoteProxy());
+			var proxyServerLauncher = LSPLauncher.createServerLauncher(
+				proxyServer,
 				System.in,
 				System.out);
-			server.connect(serverLauncher.getRemoteProxy());
+			proxyClient.setActualClient(proxyServerLauncher.getRemoteProxy());
+			proxyServer.connect(proxyClient);
 
 			log.info("listening for real server");
-			Future<Void> clientFuture = clientLauncher.startListening();
+			Future<Void> clientFuture = proxyClientLauncher.startListening();
 			//clientFuture.get();
 
 			log.info("Listening for real client");
-			Future<?> serverFuture = serverLauncher.startListening();
+			Future<?> serverFuture = proxyServerLauncher.startListening();
 			serverFuture.get();
 
 		}

@@ -10,9 +10,9 @@ import org.eclipse.lsp4j.services.LanguageClient;
 
 public class ProxyClient implements LanguageClient {
 
-	private final LanguageClient actualClient;
+	private LanguageClient actualClient;
 
-	public ProxyClient(LanguageClient actualClient) {
+	public void setActualClient(LanguageClient actualClient) {
 		this.actualClient = actualClient;
 	}
 
