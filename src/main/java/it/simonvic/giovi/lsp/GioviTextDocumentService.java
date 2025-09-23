@@ -2,10 +2,7 @@ package it.simonvic.giovi.lsp;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -13,6 +10,8 @@ import java.util.logging.SimpleFormatter;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -21,6 +20,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import giovi.Module.FileModule;
 import it.simonvic.giovi.antlr.GioviExtendedLexer;
 import it.simonvic.giovi.antlr.GioviExtendedParser;
+import it.simonvic.giovi.antlr.GioviExtendedParser.StatementContext;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 
@@ -29,6 +29,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 	private static final Logger log = Logger.getLogger("TextDocumentService");
 
 	public static record Model(
+		// TODO: cache AST?
 		String uri,
 		Integer version,
 		boolean synced,
@@ -158,18 +159,52 @@ public class GioviTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams params) {
 		log.info("hover()");
-		return CompletableFutures.computeAsync(_ -> {
-			return new Hover(List.of(
-				Either.forLeft("""
-					hello world from
-					real server 
-					"""),
-				Either.forLeft("""
-					This is some documentation
-					""")));
+		var model = documents.get(params.getTextDocument().getUri());
+		var parser = extendedParserFrom(model);
 
+		Optional<TerminalNode> matchedNodeOpt = LSPUtils.findLeaf(
+			parser.begin(),
+			params.getPosition());
+		Hover hover;
+		if (matchedNodeOpt.isEmpty()) {
+			hover = null;
+		} else {
+			var matchedNode = matchedNodeOpt.orElseThrow();
+			var sb = new StringBuilder();
+			List<ParseTree> hierarchy = LSPUtils.getHierarchy(matchedNode).reversed();
+			for (int i = 0; i < hierarchy.size(); i++) {
+				sb.repeat(" ", i);
+				sb.append("(");
+				sb.append(hierarchy.get(i).getClass().getSimpleName());
+				sb.append("\n");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+			sb.repeat(")", hierarchy.size());
+			String content = String.format(
+				"""
+				- Text: *%s*
+				- Type: `%s`
+				- Ancestor rule type: `%s`
+				- Statement ancestor: `%s`
+				- Hierarchy :
+				```scheme
+				%s
+				````
+				""",
+				matchedNode.getText(),
+				matchedNode.getClass().getSimpleName(),
+				matchedNode.getParent().getClass().getSimpleName(),
+				LSPUtils.findClosestAncestor(matchedNode, StatementContext.class)
+					.map(ctx -> ctx.getChild(0).getClass().getSimpleName())
+					.orElse("unknown"),
+				sb.toString());
+			hover = new Hover(new MarkupContent(MarkupKind.MARKDOWN, content));
+		}
+		return CompletableFutures.computeAsync(_ -> {
+			return hover;
 		});
 	}
+
 
 	@Override
 	public CompletableFuture<List<? extends TextEdit>> formatting(DocumentFormattingParams params) {
