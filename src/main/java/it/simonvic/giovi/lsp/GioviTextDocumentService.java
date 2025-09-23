@@ -18,6 +18,9 @@ import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
+import giovi.Module.FileModule;
+import it.simonvic.giovi.antlr.GioviExtendedLexer;
+import it.simonvic.giovi.antlr.GioviExtendedParser;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 
@@ -100,14 +103,16 @@ public class GioviTextDocumentService implements TextDocumentService {
 		var diagnostics = new ArrayList<Diagnostic>();
 		var syntaxErrorsListener = new SyntaxErrorListener();
 		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
-		GioviParser parser;
-		parser = parserFrom(model);
+		var parser = extendedParserFrom(model);
 		parser.removeErrorListeners(); // silences terminal output
 		parser.addErrorListener(syntaxErrorsListener);
 		parser.addParseListener(functionsBodyListener);
-		parser.begin();
+		var begin = parser.begin();
+		var visitor = new LSVisitor(new FileModule(URI.create(model.uri)));
+		visitor.visit(begin);
 		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
 		diagnostics.addAll(functionsBodyListener.getDiagnostics());
+		diagnostics.addAll(visitor.getDiagnostics());
 		return diagnostics;
 	}
 
@@ -204,6 +209,11 @@ public class GioviTextDocumentService implements TextDocumentService {
 	private static GioviParser parserFrom(String uri) throws IOException {
 		var lexer = new GioviLexer(CharStreams.fromFileName(URI.create(uri).getPath()));
 		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
+	private GioviExtendedParser extendedParserFrom(Model model) {
+		var lexer = new GioviExtendedLexer(CharStreams.fromString(model.content()));
+		return new GioviExtendedParser(new CommonTokenStream(lexer));
 	}
 
 	@Override
