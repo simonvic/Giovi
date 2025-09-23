@@ -18,6 +18,24 @@ public class Snippets {
 			"""),
 
 		snippet(
+			"#",
+			"Comment block",
+			"""
+			#{
+			# $0
+			}#
+			"""),
+
+		snippet(
+			"#?",
+			"Documentation block",
+			"""
+			#?{
+			#? $0
+			}#
+			"""),
+
+		snippet(
 			"println",
 			"Print to stdout",
 			"""
