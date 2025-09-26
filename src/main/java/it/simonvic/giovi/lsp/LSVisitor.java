@@ -6,6 +6,7 @@ import java.util.List;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
+import org.eclipse.lsp4j.DocumentSymbol;
 
 import giovi.GioviParserVisitResult;
 import giovi.Module;
@@ -19,6 +20,7 @@ public class LSVisitor extends GioviExtendedParserBaseVisitor<GioviParserVisitRe
 	private final Module module;
 	private final List<Diagnostic> diagnostics = new ArrayList<>();
 	private final List<CodeAction> codeActions = new ArrayList<>();
+	private final List<DocumentSymbol> symbols = new ArrayList<>();
 
 	public LSVisitor(Module module) {
 		this.module = module;
@@ -30,6 +32,10 @@ public class LSVisitor extends GioviExtendedParserBaseVisitor<GioviParserVisitRe
 
 	public List<CodeAction> getCodeActions() {
 		return codeActions;
+	}
+
+	public List<DocumentSymbol> getSymbols() {
+		return symbols;
 	}
 
 	@Override

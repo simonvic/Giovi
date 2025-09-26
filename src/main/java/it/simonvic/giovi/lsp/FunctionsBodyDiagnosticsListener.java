@@ -1,17 +1,16 @@
 package it.simonvic.giovi.lsp;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DiagnosticSeverity;
 
-import it.simonvic.giovi.antlr.GioviParser.FunctionDeclarationContext;
-import it.simonvic.giovi.antlr.GioviParser.StatementContext;
-import it.simonvic.giovi.antlr.GioviParserBaseListener;
+import it.simonvic.giovi.antlr.GioviExtendedParserBaseListener;
+import it.simonvic.giovi.antlr.GioviExtendedParser.FunctionDeclarationContext;
+import it.simonvic.giovi.antlr.GioviExtendedParser.StatementContext;
 
-public class FunctionsBodyDiagnosticsListener extends GioviParserBaseListener {
+public class FunctionsBodyDiagnosticsListener extends GioviExtendedParserBaseListener {
 
 	private final List<Diagnostic> diags = new ArrayList<>();
 

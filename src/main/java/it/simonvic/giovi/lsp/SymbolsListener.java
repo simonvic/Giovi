@@ -10,10 +10,10 @@ import java.util.stream.Collectors;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.SymbolKind;
 
-import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.antlr.GioviParserBaseListener;
+import it.simonvic.giovi.antlr.GioviExtendedParserBaseListener;
+import it.simonvic.giovi.antlr.GioviExtendedParser.*;
 
-public class SymbolsListener extends GioviParserBaseListener {
+public class SymbolsListener extends GioviExtendedParserBaseListener {
 
 
 	private Stack<DocumentSymbol> stack = new Stack<>();

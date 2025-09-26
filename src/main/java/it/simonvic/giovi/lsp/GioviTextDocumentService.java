@@ -79,23 +79,6 @@ public class GioviTextDocumentService implements TextDocumentService {
 		// TODO: check if buffered content equals params.getText
 	}
 
-	private List<Diagnostic> validate(GioviDocument doc) {
-		var diagnostics = new ArrayList<Diagnostic>();
-		var syntaxErrorsListener = new SyntaxErrorListener();
-		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
-		var parser = LSPUtils.extendedParserFrom(doc);
-		parser.removeErrorListeners(); // silences terminal output
-		parser.addErrorListener(syntaxErrorsListener);
-		parser.addParseListener(functionsBodyListener);
-		var begin = parser.begin();
-		var visitor = new LSVisitor(new FileModule(URI.create(doc.getUri())));
-		visitor.visit(begin);
-		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
-		diagnostics.addAll(functionsBodyListener.getDiagnostics());
-		diagnostics.addAll(visitor.getDiagnostics());
-		return diagnostics;
-	}
-
 	@Override
 	public void didClose(DidCloseTextDocumentParams params) {
 		log.info("didClose() " + params.getTextDocument().getUri());
@@ -216,20 +199,13 @@ public class GioviTextDocumentService implements TextDocumentService {
 		DocumentSymbolParams params
 	) {
 		log.info("documentSymbol()");
+		var symbols = documents.get(params.getTextDocument().getUri())
+			.getSymbols()
+			.stream()
+			.<Either<SymbolInformation, DocumentSymbol>>map(Either::forRight)
+			.toList();
 		return CompletableFutures.computeAsync(_ -> {
-			GioviParser parser;
-			var listener = new SymbolsListener();
-			try {
-				parser = LSPUtils.parserFrom(params.getTextDocument());
-				parser.addParseListener(listener);
-			} catch (IOException e) {
-				log.info(e.toString());
-				return List.of();
-			}
-			parser.begin();
-			return listener.getSymbols().stream()
-				.<Either<SymbolInformation, DocumentSymbol>>map(Either::forRight)
-				.toList();
+			return symbols;
 		});
 	}
 
@@ -239,9 +215,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 		return CompletableFutures.computeAsync(cancel -> {
 			GioviDocument doc = documents.get(params.getTextDocument().getUri());
 			cancel.checkCanceled();
-			List<Diagnostic> diagnostics = validate(doc);
 			return new DocumentDiagnosticReport(
-				new RelatedFullDocumentDiagnosticReport(diagnostics));
+				new RelatedFullDocumentDiagnosticReport(doc.getDiagnostics()));
 		});
 	}
 

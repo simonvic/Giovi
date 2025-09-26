@@ -191,7 +191,7 @@ public class LSPUtils {
 	 * @param content
 	 * @return extended parser
 	 */
-	public static GioviParser parserFrom(String content) throws IOException {
+	public static GioviParser parserFrom(String content) {
 		var lexer = new GioviLexer(CharStreams.fromString(content));
 		return new GioviParser(new CommonTokenStream(lexer));
 	}
