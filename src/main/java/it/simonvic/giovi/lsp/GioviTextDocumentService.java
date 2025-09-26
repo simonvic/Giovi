@@ -8,8 +8,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.*;
@@ -18,27 +16,15 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 import giovi.Module.FileModule;
-import it.simonvic.giovi.antlr.GioviExtendedLexer;
-import it.simonvic.giovi.antlr.GioviExtendedParser;
 import it.simonvic.giovi.antlr.GioviExtendedParser.StatementContext;
-import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 
 public class GioviTextDocumentService implements TextDocumentService {
 
 	private static final Logger log = Logger.getLogger("TextDocumentService");
 
-	public static record Model(
-		// TODO: cache AST?
-		String uri,
-		Integer version,
-		boolean synced,
-		String content
-	) {
-	}
-
 	private final GioviLanguageServer server;
-	private final Map<String, Model> documents = new HashMap<>();
+	private final Map<String, GioviDocument> documents = new HashMap<>();
 
 	public GioviTextDocumentService(GioviLanguageServer server) {
 		this.server = server;
@@ -56,31 +42,26 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public void didOpen(DidOpenTextDocumentParams params) {
 		log.info("didOpen() " + params.getTextDocument().getUri());
 		var lspDoc = params.getTextDocument();
-		var model = new Model(
+		var doc = new GioviDocument(
 			lspDoc.getUri(),
 			lspDoc.getVersion(),
-			true,
 			lspDoc.getText());
-		documents.put(lspDoc.getUri(), model);
-		validate(model);
+		documents.put(lspDoc.getUri(), doc);
 	}
 
 	@Override
 	public void didChange(DidChangeTextDocumentParams params) {
 		log.info("didChange " + params.getTextDocument().getUri());
 		var lspDoc = params.getTextDocument();
-		// todo: change once we implement incremental sync
+		// TODO: change once we implement incremental sync
 		String newText = params.getContentChanges().getFirst().getText();
-		var model = new Model(
-			lspDoc.getUri(),
-			lspDoc.getVersion(),
-			newText.equals(documents.get(lspDoc.getUri()).content()),
-			newText);
-		documents.put(lspDoc.getUri(), model);
+		var doc = documents.get(lspDoc.getUri()); // TODO: can didChange triggers without didOpen?
+		doc.setContent(newText);
+		doc.setVersion(lspDoc.getVersion());
 		// CompletableFutures.computeAsync(
 		// 	// CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS),
 		// 	_ -> {
-		// 		var diagnostics = validate(model);
+		// 		var diagnostics = validate(doc);
 		// 		try {
 		// 			Thread.sleep(500);
 		// 		} catch (InterruptedException e) {
@@ -95,21 +76,19 @@ public class GioviTextDocumentService implements TextDocumentService {
 	@Override
 	public void didSave(DidSaveTextDocumentParams params) {
 		log.info("didSave() " + params.getTextDocument().getUri());
-		// var model = documents.get(params.getTextDocument().getUri());
-		// todo: check if buffered content equals params.getText
-		// validate(model);
+		// TODO: check if buffered content equals params.getText
 	}
 
-	private List<Diagnostic> validate(Model model) {
+	private List<Diagnostic> validate(GioviDocument doc) {
 		var diagnostics = new ArrayList<Diagnostic>();
 		var syntaxErrorsListener = new SyntaxErrorListener();
 		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
-		var parser = extendedParserFrom(model);
+		var parser = LSPUtils.extendedParserFrom(doc);
 		parser.removeErrorListeners(); // silences terminal output
 		parser.addErrorListener(syntaxErrorsListener);
 		parser.addParseListener(functionsBodyListener);
 		var begin = parser.begin();
-		var visitor = new LSVisitor(new FileModule(URI.create(model.uri)));
+		var visitor = new LSVisitor(new FileModule(URI.create(doc.getUri())));
 		visitor.visit(begin);
 		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
 		diagnostics.addAll(functionsBodyListener.getDiagnostics());
@@ -159,8 +138,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 	@Override
 	public CompletableFuture<Hover> hover(HoverParams params) {
 		log.info("hover()");
-		var model = documents.get(params.getTextDocument().getUri());
-		var parser = extendedParserFrom(model);
+		var doc = documents.get(params.getTextDocument().getUri());
+		var parser = LSPUtils.extendedParserFrom(doc);
 
 		Optional<TerminalNode> matchedNodeOpt = LSPUtils.findLeaf(
 			parser.begin(),
@@ -232,25 +211,6 @@ public class GioviTextDocumentService implements TextDocumentService {
 		});
 	}
 
-	private GioviParser parserFrom(Model model) {
-		var lexer = new GioviLexer(CharStreams.fromString(model.content()));
-		return new GioviParser(new CommonTokenStream(lexer));
-	}
-
-	private static GioviParser parserFrom(TextDocumentIdentifier textDocument) throws IOException {
-		return parserFrom(textDocument.getUri());
-	}
-
-	private static GioviParser parserFrom(String uri) throws IOException {
-		var lexer = new GioviLexer(CharStreams.fromFileName(URI.create(uri).getPath()));
-		return new GioviParser(new CommonTokenStream(lexer));
-	}
-
-	private GioviExtendedParser extendedParserFrom(Model model) {
-		var lexer = new GioviExtendedLexer(CharStreams.fromString(model.content()));
-		return new GioviExtendedParser(new CommonTokenStream(lexer));
-	}
-
 	@Override
 	public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(
 		DocumentSymbolParams params
@@ -260,7 +220,7 @@ public class GioviTextDocumentService implements TextDocumentService {
 			GioviParser parser;
 			var listener = new SymbolsListener();
 			try {
-				parser = parserFrom(params.getTextDocument());
+				parser = LSPUtils.parserFrom(params.getTextDocument());
 				parser.addParseListener(listener);
 			} catch (IOException e) {
 				log.info(e.toString());
@@ -277,9 +237,9 @@ public class GioviTextDocumentService implements TextDocumentService {
 	public CompletableFuture<DocumentDiagnosticReport> diagnostic(DocumentDiagnosticParams params) {
 		log.info("diagnostic()");
 		return CompletableFutures.computeAsync(cancel -> {
-			Model model = documents.get(params.getTextDocument().getUri());
+			GioviDocument doc = documents.get(params.getTextDocument().getUri());
 			cancel.checkCanceled();
-			List<Diagnostic> diagnostics = validate(model);
+			List<Diagnostic> diagnostics = validate(doc);
 			return new DocumentDiagnosticReport(
 				new RelatedFullDocumentDiagnosticReport(diagnostics));
 		});

@@ -1,10 +1,13 @@
 package it.simonvic.giovi.lsp;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -13,6 +16,12 @@ import org.antlr.v4.runtime.tree.SyntaxTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.TextDocumentIdentifier;
+
+import it.simonvic.giovi.antlr.GioviExtendedLexer;
+import it.simonvic.giovi.antlr.GioviExtendedParser;
+import it.simonvic.giovi.antlr.GioviLexer;
+import it.simonvic.giovi.antlr.GioviParser;
 
 public class LSPUtils {
 
@@ -143,6 +152,59 @@ public class LSPUtils {
 			}
 			default -> Optional.empty();
 		};
+	}
+
+	/**
+	 * Get new parser for the given text document
+	 * @param textDocument
+	 * @return parser
+	 * @throws IOException
+	 */
+	public static GioviParser parserFrom(TextDocumentIdentifier textDocument) throws IOException {
+		URI uri = URI.create(textDocument.getUri());
+		var lexer = new GioviLexer(CharStreams.fromFileName(uri.getPath()));
+		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
+	/**
+	 * Get new parser for the given document
+	 * @param doc
+	 * @return parser
+	 */
+	public static GioviParser parserFrom(GioviDocument doc) {
+		var lexer = new GioviLexer(CharStreams.fromString(doc.getContent()));
+		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
+	/**
+	 * Get new extended parser for the given document
+	 * @param doc
+	 * @return extended parser
+	 */
+	public static GioviExtendedParser extendedParserFrom(GioviDocument doc) {
+		var lexer = new GioviExtendedLexer(CharStreams.fromString(doc.getContent()));
+		return new GioviExtendedParser(new CommonTokenStream(lexer));
+	}
+
+	/**
+	 * Get new extended parser for the given content
+	 * @param content
+	 * @return extended parser
+	 */
+	public static GioviParser parserFrom(String content) throws IOException {
+		var lexer = new GioviLexer(CharStreams.fromString(content));
+		return new GioviParser(new CommonTokenStream(lexer));
+	}
+
+	/**
+	 * Get new parser for the given URI
+	 * @param uri
+	 * @return parser
+	 * @throws IOException
+	 */
+	public static GioviExtendedParser extendedParserFrom(String content) {
+		var lexer = new GioviExtendedLexer(CharStreams.fromString(content));
+		return new GioviExtendedParser(new CommonTokenStream(lexer));
 	}
 
 }
