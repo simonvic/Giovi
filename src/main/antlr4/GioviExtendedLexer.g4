@@ -2,9 +2,17 @@ lexer grammar GioviExtendedLexer;
 
 import GioviLexer;
 
-WS: [ \t\r\n\u000C]+ -> channel(3);
+channels {
+	COMMENTS,
+	DOCS,
+	WHITESPACES
+}
 
-COMMENT:       '#' (~[?{\r\n] ~[\r\n]*)? -> channel(1) ;
-COMMENT_BLOCK: '#{' .*? ('}#' | EOF) -> channel(1) ;
-DOC:           '#?' (~[{\r\n] ~[\r\n]*)? -> channel(2) ;
-DOC_BLOCK:     '#?{' .*? ('}#' | EOF) -> channel(2) ;
+DOC_BLOCK:     '#{?' .*? ('}#' | EOF) -> channel(DOCS) ;
+COMMENT_BLOCK: '#{' (~[?] .*?)? ('}#' | EOF) -> channel(COMMENTS);
+DOC:           '#?' ~[\r\n]* ([\r\n] | EOF) -> channel(DOCS) ;
+COMMENT:       '#' (~[?{\r\n] ~[\r\n]*)? ([\r\n] | EOF) -> channel(COMMENTS);
+
+SPACES: [ ]+ -> channel(WHITESPACES) ;
+TABS: [\t]+ -> channel(WHITESPACES) ;
+NEWLINES: [\r\n]+ -> channel(WHITESPACES) ;
