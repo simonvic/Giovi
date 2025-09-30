@@ -7,17 +7,23 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.eclipse.lsp4j.DocumentSymbol;
 import org.eclipse.lsp4j.SymbolKind;
 
-import it.simonvic.giovi.antlr.GioviExtendedParserBaseListener;
 import it.simonvic.giovi.antlr.GioviExtendedParser.*;
+import it.simonvic.giovi.antlr.GioviExtendedParserBaseListener;
 
 public class SymbolsListener extends GioviExtendedParserBaseListener {
 
 
-	private Stack<DocumentSymbol> stack = new Stack<>();
-	private List<DocumentSymbol> symbols = new ArrayList<>();
+	private final CommonTokenStream tokens;
+	private final Stack<DocumentSymbol> stack = new Stack<>();
+	private final List<DocumentSymbol> symbols = new ArrayList<>();
+
+	public SymbolsListener(CommonTokenStream tokens) {
+		this.tokens = tokens;
+	}
 
 	public List<DocumentSymbol> getSymbols() {
 		return symbols;
@@ -47,7 +53,8 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 			ctx.identifier().getText(),
 			SymbolKind.Variable,
 			range(ctx),
-			range(ctx.identifier())));
+			range(ctx.identifier()),
+			LSPUtils.findDocumentation(ctx, tokens).orElse(null)));
 	}
 
 	@Override
@@ -56,7 +63,8 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 			ctx.name.getText(),
 			SymbolKind.Constant,
 			range(ctx),
-			range(ctx.name)));
+			range(ctx.name),
+			LSPUtils.findDocumentation(ctx, tokens).orElse(null)));
 	}
 
 	@Override
@@ -82,6 +90,7 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setKind(SymbolKind.Module);
 		symbol.setRange(range(ctx));
 		symbol.setSelectionRange(range(ctx.identifier()));
+		symbol.setDetail(LSPUtils.findDocumentation(ctx, tokens).orElse(null));
 	}
 
 	@Override
@@ -96,7 +105,9 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setKind(SymbolKind.Function);
 		symbol.setRange(range(ctx));
 		symbol.setSelectionRange(range(ctx.functionSignature().identifier()));
-		symbol.setDetail(ctx.functionSignature().getText());
+		symbol.setDetail(
+			LSPUtils.findDocumentation(ctx, tokens)
+				.orElse(ctx.functionSignature().getText()));
 	}
 
 	@Override
@@ -111,7 +122,9 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setKind(SymbolKind.Function); // Method?
 		symbol.setRange(range(ctx));
 		symbol.setSelectionRange(range(ctx.selfFunctionSignature().identifier()));
-		symbol.setDetail(ctx.selfFunctionSignature().getText());
+		symbol.setDetail(
+			LSPUtils.findDocumentation(ctx, tokens)
+				.orElse(ctx.selfFunctionSignature().getText()));
 	}
 
 	@Override
@@ -126,6 +139,7 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setKind(SymbolKind.Struct);
 		symbol.setRange(range(ctx));
 		symbol.setSelectionRange(range(ctx.typename));
+		symbol.setDetail(LSPUtils.findDocumentation(ctx, tokens).orElse(null));
 	}
 
 	@Override

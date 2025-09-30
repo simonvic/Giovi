@@ -1,13 +1,14 @@
 package it.simonvic.giovi.lsp;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import java.util.stream.Collectors;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.*;
@@ -15,9 +16,7 @@ import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
-import giovi.Module.FileModule;
 import it.simonvic.giovi.antlr.GioviExtendedParser.StatementContext;
-import it.simonvic.giovi.antlr.GioviParser;
 
 public class GioviTextDocumentService implements TextDocumentService {
 
@@ -133,34 +132,61 @@ public class GioviTextDocumentService implements TextDocumentService {
 		} else {
 			var matchedNode = matchedNodeOpt.orElseThrow();
 			var sb = new StringBuilder();
+			sb.append("- Text: *")
+				.append(matchedNode.getText())
+				.append("*\n");
+			sb.append("- Type: `")
+				.append(matchedNode.getClass().getSimpleName())
+				.append("`\n");
+			sb.append("- Ancestor type: `")
+				.append(matchedNode.getParent().getClass().getSimpleName())
+				.append("`\n");
+
+			Optional<StatementContext> closestAncestorStatement = LSPUtils
+				.findClosestAncestor(matchedNode, StatementContext.class);
+			closestAncestorStatement.ifPresent(
+				statementCtx -> sb.append("- Statement ancestor: `")
+					.append(statementCtx.getChild(0).getClass().getSimpleName())
+					.append("`\n"));
+			sb.append("- Hierarchy :\n```scheme\n");
 			List<ParseTree> hierarchy = LSPUtils.getHierarchy(matchedNode).reversed();
 			for (int i = 0; i < hierarchy.size(); i++) {
-				sb.repeat(" ", i);
-				sb.append("(");
-				sb.append(hierarchy.get(i).getClass().getSimpleName());
-				sb.append("\n");
+				sb.repeat(" ", i)
+					.append("(")
+					.append(hierarchy.get(i).getClass().getSimpleName())
+					.append("\n");
 			}
-			sb.deleteCharAt(sb.length() - 1);
-			sb.repeat(")", hierarchy.size());
-			String content = String.format(
-				"""
-				- Text: *%s*
-				- Type: `%s`
-				- Ancestor rule type: `%s`
-				- Statement ancestor: `%s`
-				- Hierarchy :
-				```scheme
-				%s
-				````
-				""",
-				matchedNode.getText(),
-				matchedNode.getClass().getSimpleName(),
-				matchedNode.getParent().getClass().getSimpleName(),
-				LSPUtils.findClosestAncestor(matchedNode, StatementContext.class)
-					.map(ctx -> ctx.getChild(0).getClass().getSimpleName())
-					.orElse("unknown"),
-				sb.toString());
-			hover = new Hover(new MarkupContent(MarkupKind.MARKDOWN, content));
+			sb.deleteCharAt(sb.length() - 1)
+				.repeat(")", hierarchy.size())
+				.append("```\n");
+
+			closestAncestorStatement.ifPresent(statementCtx -> sb
+				.append("---\n")
+				.append(LSPUtils
+					.findDocumentation(statementCtx, (CommonTokenStream) parser.getTokenStream())
+					.orElse("No documentation found"))
+				.append("\n"));
+			// sb.append("""
+			// 	---
+			// 	left:
+			// 	%s
+			//
+			// 	right:
+			// 	%s
+			// 	""".formatted(
+			// 	LSPUtils.getHiddenTokensToLeft(
+			// 		closestAncestorStatement.orElseThrow(),
+			// 		(CommonTokenStream) parser.getTokenStream())
+			// 		.stream()
+			// 		.map(t -> "- " + t.getChannel() + ": '" + t.getText() + "'")
+			// 		.collect(Collectors.joining("\n")),
+			// 	LSPUtils.getHiddenTokensToRight(
+			// 		closestAncestorStatement.orElseThrow(),
+			// 		(CommonTokenStream) parser.getTokenStream())
+			// 		.stream()
+			// 		.map(t -> "- " + t.getChannel() + ": '" + t.getText() + "'")
+			// 		.collect(Collectors.joining("\n"))));
+			hover = new Hover(new MarkupContent(MarkupKind.MARKDOWN, sb.toString()));
 		}
 		return CompletableFutures.computeAsync(_ -> {
 			return hover;

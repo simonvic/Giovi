@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -73,6 +74,38 @@ public class LSPUtils {
 	public static List<Token> getHiddenTokensToRight(SyntaxTree node, CommonTokenStream tokens) {
 		var t = tokens.getHiddenTokensToRight(node.getSourceInterval().b);
 		return (t != null) ? t : Collections.emptyList();
+	}
+
+	/**
+	 * Find documentation related to the given tree
+	 * @param node
+	 * @param tokens
+	 * @return optional string
+	 */
+	public static Optional<String> findDocumentation(SyntaxTree node, CommonTokenStream tokens) {
+		List<Token> hiddenTokens = getHiddenTokensToLeft(node, tokens);
+		if (hiddenTokens.isEmpty()) {
+			return Optional.empty();
+		}
+		hiddenTokens = hiddenTokens.reversed(); // NOTE: we need tokens from the node, upwards
+		Token first = hiddenTokens.getFirst();
+		if (first.getType() == GioviExtendedLexer.NEWLINES) {
+			first = hiddenTokens.removeFirst();
+		}
+		if (hiddenTokens.isEmpty()) {
+			return Optional.empty();
+		}
+		hiddenTokens = hiddenTokens.stream()
+			.takeWhile(t -> t.getChannel() == GioviExtendedLexer.DOCS)
+			.toList();
+		if (hiddenTokens.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(
+			hiddenTokens.reversed()
+				.stream()
+				.map(Token::getText)
+				.collect(Collectors.joining("")));
 	}
 
 	/**

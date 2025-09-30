@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
@@ -84,7 +85,7 @@ public class GioviDocument {
 		var parser = LSPUtils.extendedParserFrom(content);
 		var syntaxErrorsListener = new SyntaxErrorListener();
 		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
-		var symbolsListener = new SymbolsListener();
+		var symbolsListener = new SymbolsListener((CommonTokenStream) parser.getTokenStream());
 		parser.removeErrorListeners(); // silences terminal output
 		parser.addErrorListener(syntaxErrorsListener);
 		parser.addParseListener(functionsBodyListener);
