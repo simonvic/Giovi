@@ -37,12 +37,12 @@ public class Giovi {
 	private static final Option OPT_LS = Option.builder()
 		.longOpt("ls")
 		.desc("Launch Giovi language server")
-		.build();
+		.get();
 
 	private static final Option OPT_LS_PROXY = Option.builder()
 		.longOpt("ls-proxy")
 		.desc("Launch Giovi language server proxy")
-		.build();
+		.get();
 
 	private static final Option OPT_SHELL = Option.builder()
 		.longOpt("shell")

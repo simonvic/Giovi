@@ -97,7 +97,7 @@ public class GioviDocument {
 	}
 
 	public void updateAST() {
-		var parser = LSPUtils.extendedParserFrom(content);
+		var parser = LSPUtils.parserFrom(content);
 		var syntaxErrorsListener = new SyntaxErrorListener();
 		var functionsBodyListener = new FunctionsBodyDiagnosticsListener();
 		var symbolsListener = new SymbolsListener((CommonTokenStream) parser.getTokenStream());

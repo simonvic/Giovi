@@ -143,7 +143,7 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 	}
 
 	@Override
-	public void exitStructFieldDefinition(StructFieldDefinitionContext ctx) {
+	public void exitFieldDeclaration(FieldDeclarationContext ctx) {
 		add(new DocumentSymbol(
 			ctx.identifier().getText(),
 			SymbolKind.Field,
