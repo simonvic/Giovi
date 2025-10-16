@@ -22,6 +22,7 @@ public class GioviDocument {
 	private List<Diagnostic> diagnostics = new ArrayList<>();
 	private List<CodeAction> codeActions = new ArrayList<>();
 	private List<DocumentSymbol> symbols = new ArrayList<>();
+	private LSVisitor visitor;
 
 	public GioviDocument(String uri) {
 		this.uri = uri;
@@ -67,6 +68,13 @@ public class GioviDocument {
 		return ast;
 	}
 
+	public LSVisitor getVisitor() {
+		if (dirtyAST) {
+			updateAST();
+		}
+		return visitor;
+	}
+
 	public List<DocumentSymbol> getSymbols() {
 		if (dirtyAST) {
 			updateAST();
@@ -81,6 +89,13 @@ public class GioviDocument {
 		return diagnostics;
 	}
 
+	public List<CodeAction> getCodeActions() {
+		if (dirtyAST) {
+			updateAST();
+		}
+		return codeActions;
+	}
+
 	public void updateAST() {
 		var parser = LSPUtils.extendedParserFrom(content);
 		var syntaxErrorsListener = new SyntaxErrorListener();
@@ -90,14 +105,16 @@ public class GioviDocument {
 		parser.addErrorListener(syntaxErrorsListener);
 		parser.addParseListener(functionsBodyListener);
 		parser.addParseListener(symbolsListener);
+
 		// TODO: use completable future
 		ast = parser.begin();
+
 		diagnostics = new ArrayList<>();
-		var begin = parser.begin();
-		var visitor = new LSVisitor(new FileModule(URI.create(uri)));
-		visitor.visit(begin);
 		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
 		diagnostics.addAll(functionsBodyListener.getDiagnostics());
+
+		visitor = new LSVisitor(new FileModule(URI.create(uri)));
+		visitor.visit(ast);
 		diagnostics.addAll(visitor.getDiagnostics());
 
 		codeActions = new ArrayList<>();
@@ -110,4 +127,3 @@ public class GioviDocument {
 	}
 
 }
-

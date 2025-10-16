@@ -11,8 +11,13 @@ import org.eclipse.lsp4j.DocumentSymbol;
 import giovi.GioviParserVisitResult;
 import giovi.Module;
 import giovi.lang.*;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviExtendedParser.*;
 import it.simonvic.giovi.antlr.GioviExtendedParserBaseVisitor;
+import it.simonvic.giovi.exceptions.TypeNotFound;
+import it.simonvic.giovi.lang.FunctionScope;
+import it.simonvic.giovi.lang.LoopScope;
+import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.util.TextProcessor;
 
 public class LSVisitor extends GioviExtendedParserBaseVisitor<GioviParserVisitResult> {
@@ -22,8 +27,11 @@ public class LSVisitor extends GioviExtendedParserBaseVisitor<GioviParserVisitRe
 	private final List<CodeAction> codeActions = new ArrayList<>();
 	private final List<DocumentSymbol> symbols = new ArrayList<>();
 
+	private Scope currentScope;
+
 	public LSVisitor(Module module) {
 		this.module = module;
+		this.currentScope = module.scope();
 	}
 
 	public List<Diagnostic> getDiagnostics() {
@@ -36,6 +44,59 @@ public class LSVisitor extends GioviExtendedParserBaseVisitor<GioviParserVisitRe
 
 	public List<DocumentSymbol> getSymbols() {
 		return symbols;
+	}
+
+	public Scope getCurrentScope() {
+		return currentScope;
+	}
+
+	private void setCurrentScope(Scope scope) {
+		currentScope = scope;
+	}
+
+	private void enterScope() {
+		setCurrentScope(new Scope(getCurrentScope()));
+	}
+
+	private void enterFunctionScope() {
+		setCurrentScope(new FunctionScope(getCurrentScope()));
+	}
+
+	private void enterLoopScope() {
+		setCurrentScope(new LoopScope(getCurrentScope()));
+	}
+
+	private void exitScope() {
+		setCurrentScope(getCurrentScope().getParent());
+	}
+
+	@Override
+	public GioviType<?> visitType(TypeContext ctx) {
+		if (ctx.identifier() != null) {
+			String typename = ctx.identifier().getText();
+			return getCurrentScope()
+				.getType(typename)
+				.orElseThrow(() -> new TypeNotFound(typename));
+		}
+		return visitChildren(ctx).asGioviType();
+	}
+
+	@Override
+	public VarD<?> visitVarDeclaration(VarDeclarationContext ctx) {
+		try {
+			var type = visitType(ctx.type());
+			var value = type.spawn();
+			GioviValue<?> defaultValue;
+			defaultValue = (ctx.defaultDefinition() != null)
+				? type.widen(visit(ctx.defaultDefinition()).asGioviValue())
+				: type.spawn();
+			var variable = new VarD<>(value, defaultValue);
+			getCurrentScope().declare(ctx.identifier().getText(), variable);
+			return variable;
+		} catch (Exception e) {
+			diagnostics.add(new Diagnostic(LSPUtils.range(ctx), e.getMessage()));
+		}
+		return null;
 	}
 
 	@Override
