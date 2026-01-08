@@ -19,6 +19,7 @@ import giovi.lang.GioviValue;
 /// 8. Some sort of generic typing
 public interface Native {
 
+	// TODO: add @Descriptor or @Type for method/fields to provide instance
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
