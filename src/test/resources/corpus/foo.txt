@@ -1,0 +1,19 @@
+================================================================================
+function declaration
+================================================================================
+foo() {
+	i Int
+}
+--------------------------------------------------------------------------------
+(begin
+ (program
+  (statement
+   (functionDeclaration
+    (functionSignature
+     (identifier foo)
+     (anonFunctionSignature
+      (formalParameters ( ))))
+    (block {
+	 (statement (varDeclaration (identifier i) (type (identifier Int))))
+     }))))
+ <EOF>)
