@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -486,6 +487,39 @@ public class TestWidening {
 				"a", new VarD<>(new GioviInt(69)),
 				"b", new VarD<>(new GioviReal(69d)),
 				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
+				"d", new VarD<>(new GioviBool()))));
+		}
+
+		@Disabled
+		@Test
+		void testWidening_with_disjointRecord() throws NonWideneable {
+			var narrow = GioviRecords.of(
+				"a", new Natural(69),
+				"b", List.of(69, 420));
+			var type = new GioviTypeRecord(GioviRecords.signatureOf(
+				"a", GioviInt.TYPE,
+				"c", GioviReal.TYPE,
+				"d", GioviBool.TYPE));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
+				"a", new VarD<>(new GioviInt(69)),
+				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviInt.TYPE)),
+				"c", new VarD<>(new GioviReal()),
+				"d", new VarD<>(new GioviBool()))));
+		}
+
+		@Disabled
+		@Test
+		void testWidening_with_fullDisjointRecord() throws NonWideneable {
+			var narrow = GioviRecords.of(
+				"a", new Natural(69),
+				"b", List.of(69, 420));
+			var type = new GioviTypeRecord(GioviRecords.signatureOf(
+				"c", GioviReal.TYPE,
+				"d", GioviBool.TYPE));
+			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
+				"a", new VarD<>(new GioviNatural(new Natural(69))),
+				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviInt.TYPE)),
+				"c", new VarD<>(new GioviReal()),
 				"d", new VarD<>(new GioviBool()))));
 		}
 
