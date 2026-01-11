@@ -24,7 +24,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 	}
 
 	@Override
-	public Record defaultValue() {
+	public Record zero() {
 		return type.spawn().value();
 	}
 
@@ -63,7 +63,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equal(defaultValue()));
+			case GioviDefault _ -> new GioviBool(value.equal(zero()));
 			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
 			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));

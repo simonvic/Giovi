@@ -18,7 +18,7 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 	}
 
 	@Override
-	public Class<? extends GioviText> defaultValue() {
+	public Class<? extends GioviText> zero() {
 		return GioviText.class;
 	}
 

@@ -18,7 +18,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	}
 
 	@Override
-	public Class<? extends GioviNatural> defaultValue() {
+	public Class<? extends GioviNatural> zero() {
 		return GioviNatural.class;
 	}
 

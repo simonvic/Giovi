@@ -25,7 +25,7 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 	}
 
 	@Override
-	public Class<? extends GioviFunction> defaultValue() {
+	public Class<? extends GioviFunction> zero() {
 		return GioviFunction.class;
 	}
 

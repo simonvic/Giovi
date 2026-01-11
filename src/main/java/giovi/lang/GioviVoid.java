@@ -16,7 +16,7 @@ public record GioviVoid() implements GioviPrimitive<Void> {
 	}
 
 	@Override
-	public Void defaultValue() {
+	public Void zero() {
 		return null;
 	}
 

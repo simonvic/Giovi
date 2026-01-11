@@ -19,7 +19,7 @@ public record GioviTypeSelf() implements GioviType<GioviSelf> {
 	}
 
 	@Override
-	public Class<? extends GioviSelf> defaultValue() {
+	public Class<? extends GioviSelf> zero() {
 		return GioviSelf.class;
 	}
 

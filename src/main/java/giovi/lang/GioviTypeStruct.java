@@ -20,7 +20,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	}
 
 	@Override
-	public Class<? extends GioviStruct> defaultValue() {
+	public Class<? extends GioviStruct> zero() {
 		return GioviStruct.class;
 	}
 

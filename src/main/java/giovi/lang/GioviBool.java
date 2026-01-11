@@ -22,7 +22,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	}
 
 	@Override
-	public Boolean defaultValue() {
+	public Boolean zero() {
 		return false;
 	}
 
@@ -53,7 +53,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviBool(defaultValue());
+			case GioviDefault _ -> new GioviBool(zero());
 			case GioviBool(var v) -> new GioviBool(v);
 			default -> GioviPrimitive.super.redirection(content);
 		};
@@ -71,7 +71,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value && defaultValue());
+			case GioviDefault _ -> new GioviBool(value && zero());
 			case GioviBool(var v) -> new GioviBool(value && v);
 			// case IntValue(var v) -> new BoolValue(value && v.asBool());
 			default -> GioviPrimitive.super.and(right);
@@ -81,7 +81,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value || defaultValue());
+			case GioviDefault _ -> new GioviBool(value || zero());
 			case GioviBool(var v) -> new GioviBool(value || v);
 			// case IntValue(var v) -> new BoolValue(value || v.asBool());
 			default -> GioviPrimitive.super.or(right);
@@ -93,7 +93,7 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
+			case GioviDefault _ -> new GioviBool(value.equals(zero()));
 			case GioviBool(var v) -> new GioviBool(value.equals(v));
 			// case IntValue(var v) -> new BoolValue(value == v.asBool());
 			default -> GioviPrimitive.super.equal(right);

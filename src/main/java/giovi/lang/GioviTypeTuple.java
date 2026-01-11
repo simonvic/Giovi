@@ -22,7 +22,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 	}
 
 	@Override
-	public Class<? extends GioviTuple> defaultValue() {
+	public Class<? extends GioviTuple> zero() {
 		return GioviTuple.class;
 	}
 

@@ -55,7 +55,7 @@ public sealed interface GioviValue<T>
 	 * gets cached in a Var)
 	 * @return default value of the type
 	 */
-	T defaultValue();
+	T zero();
 
 	/**
 	 * Get the Type (in Giovi space) of this value

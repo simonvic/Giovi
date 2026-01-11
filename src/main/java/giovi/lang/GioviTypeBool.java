@@ -18,7 +18,7 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 	}
 
 	@Override
-	public Class<? extends GioviBool> defaultValue() {
+	public Class<? extends GioviBool> zero() {
 		return GioviBool.class;
 	}
 

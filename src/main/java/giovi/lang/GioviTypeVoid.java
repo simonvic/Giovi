@@ -18,7 +18,7 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public Class<? extends GioviVoid> defaultValue() {
+	public Class<? extends GioviVoid> zero() {
 		return GioviVoid.class;
 	}
 

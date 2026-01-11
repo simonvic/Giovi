@@ -19,7 +19,7 @@ public record GioviSelf() implements GioviValue<Void> {
 	}
 
 	@Override
-	public Void defaultValue() {
+	public Void zero() {
 		return null;
 	}
 

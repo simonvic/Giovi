@@ -16,7 +16,7 @@ public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimi
 	}
 
 	@Override
-	public Class<? extends GioviType<T>> defaultValue() {
+	public Class<? extends GioviType<T>> zero() {
 		throw new UnsupportedOperationException("Unimplemented method 'defaultValue'");
 	}
 

@@ -22,7 +22,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	}
 
 	@Override
-	public Class<? extends GioviMap> defaultValue() {
+	public Class<? extends GioviMap> zero() {
 		return GioviMap.class;
 	}
 

@@ -19,7 +19,7 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 	}
 
 	@Override
-	public Class<? extends GioviReal> defaultValue() {
+	public Class<? extends GioviReal> zero() {
 		return GioviReal.class;
 	}
 

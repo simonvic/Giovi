@@ -33,7 +33,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	}
 
 	@Override
-	public List<Var<?>> defaultValue() {
+	public List<Var<?>> zero() {
 		return new ArrayList<>();
 	}
 
@@ -125,7 +125,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviList(entryType, copyOf(defaultValue()));
+			case GioviDefault _ -> new GioviList(entryType, copyOf(zero()));
 			case GioviList v when v.entryType.equals(this.entryType)
 				-> new GioviList(entryType, copyOf(v.value()));
 			case GioviList v when v.entryType.isWidenableTo(this.entryType)
@@ -137,7 +137,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> addAll(copyOf(defaultValue()));
+			case GioviDefault _ -> addAll(copyOf(zero()));
 			case GioviList v when v.entryType.equals(this.entryType)
 				-> addAll(copyOf(v.value));
 			case GioviList v when v.entryType.isWidenableTo(this.entryType)
@@ -157,7 +157,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> removeAll(defaultValue());
+			case GioviDefault _ -> removeAll(zero());
 			case GioviList v when v.entryType.equals(entryType) -> removeAll(v.value);
 			case GioviList v when v.entryType.isWidenableTo(entryType) -> removeAllWidened(v.value);
 			case GioviValue<?> v -> {
@@ -181,7 +181,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(defaultValue()));
+			case GioviDefault _ -> new GioviBool(value.equals(zero()));
 			case GioviList v -> {
 				// NOTE: we are checking if entries are **equal** instead of **equals**
 				if (this.value.size() != v.value.size()) {

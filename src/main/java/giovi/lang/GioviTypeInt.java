@@ -18,7 +18,7 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 	}
 
 	@Override
-	public Class<? extends GioviInt> defaultValue() {
+	public Class<? extends GioviInt> zero() {
 		return GioviInt.class;
 	}
 

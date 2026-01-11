@@ -15,7 +15,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 	}
 
 	@Override
-	public Function defaultValue() {
+	public Function zero() {
 		return new GFunction(value.signature());
 	}
 
@@ -46,7 +46,7 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 			return GioviValue.super.redirection(content);
 		}
 		return switch (content) {
-			case GioviDefault _ -> new GioviFunction(defaultValue());
+			case GioviDefault _ -> new GioviFunction(zero());
 
 			case GioviFunction(Function f) when f.signature().equals(this.value.signature())
 				-> new GioviFunction(f.copy());
