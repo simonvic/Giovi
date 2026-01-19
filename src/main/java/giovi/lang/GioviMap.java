@@ -165,36 +165,63 @@ public record GioviMap(
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviDefault _ -> putAll(zero());
-			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> putAll(value);
-			default -> GioviValue.super.redirectionPlus(right);
-		}
-		return this;
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviDefault _ -> removeAll(zero());
-			case GioviMap(var type, var value) when type.equals(this.type) -> removeAll(value);
-			case GioviMap(var type, var value) when type.isWidenableTo(this.type)
-				-> removeAllWidened(value);
-			case GioviValue<?> v -> {
-				try {
-					value.remove(new Var<>(this.type.keyType().widen(v)));
-				} catch (NonWideneable e) {
-					return GioviValue.super.redirectionMinus(right);
-				}
-			}
-			default -> GioviValue.super.redirectionMinus(right);
-		}
-		return this;
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+	@Override
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> plus(new GioviMap(this.type));
+			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> {
+				var concat = copyOf(this.value);
+				for (var entry : value.entrySet()) {
+					try {
+						concat.put(
+							entry.getKey().widenTo(type.keyType()),
+							entry.getValue().widenTo(type.elementType()));
+					} catch (NonWideneable e) {
+						yield GioviValue.super.plus(right);
+					}
+				}
+				yield new GioviMap(this.type, concat);
+			}
+			default -> GioviValue.super.plus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> minus(new GioviMap(this.type));
+			case GioviMap(var type, var value) when type.equals(this.type) -> {
+				var intersection = copyOf(this.value);
+				value.forEach(intersection::remove);
+				yield new GioviMap(this.type, intersection);
+			}
+			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> {
+				var intersection = copyOf(this.value);
+				for (var entry : value.entrySet()) {
+					try {
+						intersection.remove(
+							entry.getKey().widenTo(this.type.keyType()),
+							entry.getValue().widenTo(this.type.elementType()));
+					} catch (NonWideneable e) {
+						yield GioviValue.super.minus(right);
+					}
+				}
+				yield new GioviMap(this.type, intersection);
+			}
+			case GioviValue<?> v -> {
+				var intersection = copyOf(this.value);
+				try {
+					intersection.remove(new Var<>(this.type.keyType().widen(v)));
+				} catch (NonWideneable e) {
+					yield GioviValue.super.minus(right);
+				}
+				yield new GioviMap(this.type, intersection);
+			}
+			default -> GioviValue.super.minus(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 

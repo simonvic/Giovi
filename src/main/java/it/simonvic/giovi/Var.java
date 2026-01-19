@@ -119,34 +119,6 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return this.value;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionPlus(content);
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionMinus(content);
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionMultiply(content);
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirectionDivide(content);
-		return this.value;
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

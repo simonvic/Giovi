@@ -67,42 +67,6 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(value.plus(zero()));
-			case GioviNatural(var v) -> new GioviNatural(value.plus(v));
-			default -> GioviNumber.super.redirectionPlus(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(value.minus(zero()));
-			case GioviNatural(var v) -> new GioviNatural(value.minus(v));
-			default -> GioviNumber.super.redirectionMinus(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(value.multiply(zero()));
-			case GioviNatural(var v) -> new GioviNatural(value.multiply(v));
-			default -> GioviNumber.super.redirectionMultiply(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(value.divide(zero()));
-			case GioviNatural(var v) -> new GioviNatural(value.divide(v));
-			default -> GioviNumber.super.redirectionDivide(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

@@ -105,34 +105,6 @@ public sealed interface GioviValue<T>
 		};
 	}
 
-	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> redirectionPlus(v.value());
-			default -> GioviObject.super.redirectionPlus(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> redirectionMinus(v.value());
-			default -> GioviObject.super.redirectionMinus(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> redirectionMultiply(v.value());
-			default -> GioviObject.super.redirectionMultiply(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
-		return switch (right) {
-			case Var<?> v -> redirectionDivide(v.value());
-			default -> GioviObject.super.redirectionDivide(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	default GioviParserVisitResult plus(GioviParserVisitResult right) {

@@ -9,6 +9,7 @@ import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
@@ -134,45 +135,73 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviDefault _ -> addAll(copyOf(zero()));
-			case GioviList v when v.entryType.equals(this.entryType)
-				-> addAll(copyOf(v.value));
-			case GioviList v when v.entryType.isWidenableTo(this.entryType)
-				-> addAll(copyOf(v.value));
-			case GioviValue<?> v -> {
-				try {
-					add(new Var<>(v.copy()));
-				} catch (IllegalArgumentException ex) {
-					GioviValue.super.redirectionPlus(right);
-				}
-			}
-			default -> GioviValue.super.redirectionPlus(right);
-		}
-		return this;
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviDefault _ -> removeAll(zero());
-			case GioviList v when v.entryType.equals(entryType) -> removeAll(v.value);
-			case GioviList v when v.entryType.isWidenableTo(entryType) -> removeAllWidened(v.value);
-			case GioviValue<?> v -> {
-				try {
-					remove(new Var<>(this.entryType.widen(v)));
-				} catch (IllegalArgumentException | NonWideneable e) {
-					return GioviValue.super.redirectionMinus(right);
-				}
-			}
-			default -> GioviValue.super.redirectionMinus(right);
-		}
-		return this;
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+	@Override
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			// case GioviDefault _ -> plus(new GioviList(this.entryType));
+			case GioviList v when v.entryType.equals(this.entryType) -> {
+				var concat = copyOf(this.value);
+				concat.addAll(copyOf(v.value));
+				yield new GioviList(entryType, concat);
+			}
+			case GioviList v when v.entryType.isWidenableTo(this.entryType) -> {
+				var concat = copyOf(this.value);
+				for (var entry : v.value) {
+					try {
+						concat.add(new Var<>(entry.value().copy().widenTo(entryType)));
+					} catch (NonWideneable ex) {
+						throw new IllegalArgumentException(ex);
+					}
+				}
+				yield new GioviList(entryType, concat);
+			}
+			case GioviValue<?> v -> {
+				var concat = copyOf(this.value);
+				try {
+					concat.add(new Var<>(this.entryType.widen(v)));
+				} catch (NonWideneable e) {
+					yield GioviValue.super.plus(right);
+				}
+				yield new GioviList(entryType, concat);
+			}
+			default -> GioviValue.super.plus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			// case GioviDefault _ -> minus(new GioviList(this.entryType));
+			case GioviList v when v.entryType.equals(entryType) -> {
+				var intersection = copyOf(this.value);
+				intersection.removeAll(v.value);
+				yield new GioviList(this.entryType, intersection);
+			}
+			case GioviList v when v.entryType.isWidenableTo(entryType) -> {
+				var intersection = copyOf(this.value);
+				for (var entry : v.value) {
+					try {
+						intersection.remove(new Var<>(this.entryType.widen(entry.value())));
+					} catch (NonWideneable e) {
+						throw new GioviException(e);
+					}
+				}
+				yield new GioviList(this.entryType, intersection);
+			}
+			case GioviValue<?> v -> {
+				var intersection = copyOf(this.value);
+				try {
+					intersection.remove(new Var<>(this.entryType.widen(v)));
+				} catch (NonWideneable e) {
+					yield GioviValue.super.minus(right);
+				}
+				yield new GioviList(this.entryType, intersection);
+			}
+			default -> GioviValue.super.minus(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 

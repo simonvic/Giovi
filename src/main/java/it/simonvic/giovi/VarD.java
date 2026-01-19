@@ -98,46 +98,6 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return this.value;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionPlus(defaultValue);
-			default -> super.redirectionPlus(content);
-		};
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMinus(defaultValue);
-			default -> super.redirectionMinus(content);
-		};
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMultiply(defaultValue);
-			default -> super.redirectionMultiply(content);
-		};
-		return this.value;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionDivide(defaultValue);
-			default -> super.redirectionDivide(content);
-		};
-		return this.value;
-	}
-
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
