@@ -23,6 +23,8 @@ import it.simonvic.giovi.lang.annotation.Native.TypeMap;
 
 public class Natives {
 
+	// TODO: what if we compile native modules to classes instead of reading it with reflection?
+
 	public static void scanModule(Module module, Class<?> clazz) {
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
