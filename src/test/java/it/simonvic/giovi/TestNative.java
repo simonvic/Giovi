@@ -75,7 +75,22 @@ public class TestNative {
 							new GioviTypeMap(
 								GioviText.TYPE,
 								new GioviTypeStruct(structSignatureOf(Rgb.class))))),
-					GioviInt.TYPE)));
+					GioviInt.TYPE)),
+			Arguments.of(
+				"giovi.util.TestModule.getListOfPrimitive",
+				new FunctionSignature(
+					"getListOfPrimitive",
+					new GioviTypeList(GioviInt.TYPE)
+				)
+			),
+			Arguments.of(
+				"giovi.util.TestModule.getMapOfPrimitive",
+				new FunctionSignature(
+					"getMapOfPrimitive",
+					new GioviTypeMap(GioviText.TYPE, GioviInt.TYPE)
+				)
+			)
+		);
 	}
 
 	@ParameterizedTest

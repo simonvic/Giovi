@@ -61,6 +61,7 @@ public interface Native {
 	public @interface Struct {
 
 		String typename() default "";
+
 		Class<?> inherit() default Object.class;
 
 		@Retention(RetentionPolicy.RUNTIME)
@@ -120,6 +121,7 @@ public interface Native {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Repeatable(Types.class)
 	@Documented
 	public @interface Type {
 
@@ -127,6 +129,15 @@ public interface Native {
 		// TODO: use a dummy Type instead of Void which might be used for real
 
 		Class<?> nativ() default Object.class;
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE })
+	@Documented
+	public @interface Types {
+
+		Type[] value();
 
 	}
 

@@ -243,9 +243,12 @@ public class Natives {
 			return gioviTypeFrom(typeListAnnotation);
 		}
 
-		var typeMapAnnotation = annotatedReturnType.getAnnotation(TypeMap.class);
-		if (typeMapAnnotation != null) {
-			return gioviTypeFrom(typeMapAnnotation);
+		if (annotatedReturnType.getType() == GioviMap.class) {
+			// NOTE: we can't use @TypeMap on return types (can't repeat annotations)
+			var typeMapAnnotation = annotatedReturnType.getAnnotationsByType(Native.Type.class);
+			return new GioviTypeMap(
+				gioviTypeFrom(typeMapAnnotation[0]),
+				gioviTypeFrom(typeMapAnnotation[1]));
 		}
 
 		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last

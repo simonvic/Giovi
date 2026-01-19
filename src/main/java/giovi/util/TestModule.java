@@ -8,6 +8,8 @@ import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
+import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.Natives;
 
 @Module
@@ -55,14 +57,20 @@ public class TestModule {
 		return new GioviInt(69);
 	}
 
-	// TODO: can't repeat Type
-	// @Func
-	// public static @TypeMap(
-	// 	key = @Type(GioviTypeText.class),
-	// 	val = @Type(GioviTypeInt.class)
-	// ) GioviMap getMap() {
-	// 	return GioviMaps.of("a", 1, "b", 2, "c", 3);
-	// }
+	@Func
+	public static @TypeList(@Type(GioviTypeInt.class)) GioviList getListOfPrimitive() {
+		return GioviLists.of(1, 2, 3);
+	}
+
+	@Func
+	public static @Type(GioviTypeText.class) @Type(
+		GioviTypeInt.class
+	) GioviMap getMapOfPrimitive() {
+		return GioviMaps.of(
+			"a", 1,
+			"b", 2,
+			"c", 3);
+	}
 
 	@Struct
 	public static class TestStruct {
