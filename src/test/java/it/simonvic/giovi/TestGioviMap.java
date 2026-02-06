@@ -209,7 +209,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(69, "foo", 420, "bar", 69420, "foobar"));
 			}
 
@@ -221,7 +221,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1d, 10d, 2d, 20d, 3d, 30d));
 			}
 
@@ -242,7 +242,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "foobar"));
 			}
 
@@ -254,7 +254,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c", 69, "foobar"));
 			}
 
@@ -266,7 +266,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "foo", 69, "bar", 42, "foobar"));
 			}
 
@@ -278,7 +278,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1d, 69d, 2d, 420d, 3d, 3d));
 			}
 
@@ -299,7 +299,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -311,7 +311,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -323,7 +323,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -335,7 +335,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -347,7 +347,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 3, "c"));
 			}
 
@@ -359,7 +359,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a", 2, "b", 3, "c"));
 			}
 
@@ -371,7 +371,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a"));
 			}
 
@@ -383,7 +383,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, 1d, 3, 3d));
 			}
 
@@ -396,7 +396,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(1, "a"));
 			}
 
@@ -412,7 +412,7 @@ public class TestGioviMap {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviMaps.of(
 						Map.of(1, "a"), "A",
 						Map.of(2, "b"), "B"));
@@ -575,7 +575,7 @@ public class TestGioviMap {
 					[1:"a" 2:"b" 3:"c"]@2
 					""")
 					.asVar()
-					.value()
+					.unwrap()
 					.value())
 					.isEqualTo("b");
 			}

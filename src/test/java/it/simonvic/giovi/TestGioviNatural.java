@@ -70,7 +70,7 @@ public class TestGioviNatural {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(new Natural(69));
 			}
@@ -84,7 +84,7 @@ public class TestGioviNatural {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(new Natural(69));
 			}
@@ -98,7 +98,7 @@ public class TestGioviNatural {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(new Natural(69));
 			}
@@ -112,7 +112,7 @@ public class TestGioviNatural {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(new Natural(420));
 			}
@@ -126,7 +126,7 @@ public class TestGioviNatural {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(new Natural(69));
 			}

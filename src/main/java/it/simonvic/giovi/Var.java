@@ -31,7 +31,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	/**
 	 * @return the value
 	 */
-	public T value() {
+	public T unwrap() {
 		return value;
 	}
 
@@ -162,7 +162,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.plus(v.value());
+			case Var<?> v -> value.plus(v.unwrap());
 			default -> value.plus(right);
 		};
 	}
@@ -170,7 +170,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.minus(v.value());
+			case Var<?> v -> value.minus(v.unwrap());
 			default -> value.minus(right);
 		};
 	}
@@ -178,7 +178,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.multiply(v.value());
+			case Var<?> v -> value.multiply(v.unwrap());
 			default -> value.multiply(right);
 		};
 	}
@@ -186,7 +186,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.divide(v.value());
+			case Var<?> v -> value.divide(v.unwrap());
 			default -> value.divide(right);
 		};
 	}
@@ -194,7 +194,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.modulo(v.value());
+			case Var<?> v -> value.modulo(v.unwrap());
 			default -> value.modulo(right);
 		};
 	}
@@ -202,7 +202,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.power(v.value());
+			case Var<?> v -> value.power(v.unwrap());
 			default -> value.power(right);
 		};
 	}
@@ -218,7 +218,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.and(v.value());
+			case Var<?> v -> value.and(v.unwrap());
 			default -> value.and(right);
 		};
 	}
@@ -226,7 +226,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.or(v.value());
+			case Var<?> v -> value.or(v.unwrap());
 			default -> value.or(right);
 		};
 	}
@@ -236,7 +236,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.equal(v.value());
+			case Var<?> v -> value.equal(v.unwrap());
 			default -> value.equal(right);
 		};
 	}
@@ -244,7 +244,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.notEqual(v.value());
+			case Var<?> v -> value.notEqual(v.unwrap());
 			default -> value.notEqual(right);
 		};
 	}
@@ -252,7 +252,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.less(v.value());
+			case Var<?> v -> value.less(v.unwrap());
 			default -> value.less(right);
 		};
 	}
@@ -260,7 +260,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.lessEqual(v.value());
+			case Var<?> v -> value.lessEqual(v.unwrap());
 			default -> value.lessEqual(right);
 		};
 	}
@@ -268,7 +268,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.greater(v.value());
+			case Var<?> v -> value.greater(v.unwrap());
 			default -> value.greater(right);
 		};
 	}
@@ -276,7 +276,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.greaterEqual(v.value());
+			case Var<?> v -> value.greaterEqual(v.unwrap());
 			default -> value.greaterEqual(right);
 		};
 	}
@@ -284,7 +284,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.contains(v.value());
+			case Var<?> v -> value.contains(v.unwrap());
 			default -> value.contains(right);
 		};
 	}
@@ -292,7 +292,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult isContained(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.isContained(v.value());
+			case Var<?> v -> value.isContained(v.unwrap());
 			default -> value.isContained(right);
 		};
 	}
@@ -301,7 +301,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.access(v.value());
+			case Var<?> v -> value.access(v.unwrap());
 			default -> value.access(right);
 		};
 	}
@@ -309,7 +309,7 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> value.dot(v.value());
+			case Var<?> v -> value.dot(v.unwrap());
 			default -> value.dot(right);
 		};
 	}

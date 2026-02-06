@@ -151,7 +151,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -163,7 +163,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
@@ -184,7 +184,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -196,7 +196,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
@@ -217,7 +217,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -229,7 +229,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3, 4));
 			}
 
@@ -241,7 +241,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -253,7 +253,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3, 4, 5, 6));
 			}
 
@@ -265,7 +265,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -277,7 +277,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -289,7 +289,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
@@ -307,7 +307,7 @@ public class TestGioviList {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(
 						List.of(1, 0, 0),
 						List.of(0, 1, 0),
@@ -327,7 +327,7 @@ public class TestGioviList {
 					x -<- [[1 1 1] [2 2 2]]
 					""").getCurrentScope().getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(
 						List.of(1, 0, 0),
 						List.of(0, 1, 0),
@@ -342,7 +342,7 @@ public class TestGioviList {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviLists.of(1, 69, 3));
 			}
 
@@ -517,7 +517,7 @@ public class TestGioviList {
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
 				assertThat(visitExpression(expression)
 					.asVar()
-					.value()
+					.unwrap()
 					.value())
 					.isEqualTo(expected);
 			}
@@ -536,7 +536,7 @@ public class TestGioviList {
 			) {
 				assertThat(visitExpression(expression)
 					.asVar()
-					.value()
+					.unwrap()
 					.value())
 					.isEqualTo(expected);
 			}

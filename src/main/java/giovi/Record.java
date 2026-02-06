@@ -113,7 +113,7 @@ public sealed class Record extends Tuple permits Struct {
 		if (field == null) {
 			return Optional.empty();
 		}
-		clazz.cast(field.value());
+		clazz.cast(field.unwrap());
 		// TODO: return empty if class cast exception?
 		return Optional.of((VarD<G>) field);
 	}

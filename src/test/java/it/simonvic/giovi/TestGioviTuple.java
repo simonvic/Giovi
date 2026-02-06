@@ -129,7 +129,7 @@ public class TestGioviTuple {
 				<0 1 2 3>@3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
-				assertThat(visitVar(code).value().value()).isEqualTo(expected);
+				assertThat(visitVar(code).unwrap().value()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -143,7 +143,7 @@ public class TestGioviTuple {
 				String code,
 				Integer expected
 			) {
-				assertThat(visitVar(code).value().value()).isEqualTo(expected);
+				assertThat(visitVar(code).unwrap().value()).isEqualTo(expected);
 			}
 
 

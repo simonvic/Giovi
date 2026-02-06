@@ -56,7 +56,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 			case GioviList v -> {
 				var widened = new GioviList(this.entryType);
 				for (var entry : v.value()) {
-					widened.value().add(new Var<>(this.entryType.widen(entry.value())));
+					widened.value().add(new Var<>(this.entryType.widen(entry.unwrap())));
 				}
 				yield widened;
 			}

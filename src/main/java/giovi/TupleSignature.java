@@ -105,7 +105,7 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 			var thisFieldSignature = this.fields.get(i);
 			// we widen the field, but use the default value of the wider field
 			widenedFields.add(new VarD<>(
-				thisFieldSignature.type().widen(narrowField.value()),
+				thisFieldSignature.type().widen(narrowField.unwrap()),
 				thisFieldSignature.defaultValue().copy()));
 		}
 		// "surplus" fields will be set to the wider field default value

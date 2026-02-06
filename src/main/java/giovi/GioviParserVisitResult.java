@@ -95,7 +95,7 @@ public interface GioviParserVisitResult {
 	 */
 	default GioviValue<?> unwrapAsGioviValue() {
 		return switch (this) {
-			case Var<?> v -> v.value();
+			case Var<?> v -> v.unwrap();
 			default -> (GioviValue<?>) this;
 		};
 	}

@@ -46,7 +46,7 @@ public class TestGioviBool {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo(true);
 			}

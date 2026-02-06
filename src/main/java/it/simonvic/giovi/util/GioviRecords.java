@@ -20,7 +20,7 @@ public class GioviRecords {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
 		value.forEach((identifier, field) -> fields.put(identifier, new RecordFieldSignature(
 			identifier,
-			field.value().getGioviType(),
+			field.unwrap().getGioviType(),
 			field.defaultValue())));
 		return new RecordSignature(fields);
 	}
@@ -158,10 +158,10 @@ public class GioviRecords {
 			final int j = i;
 			var contentField = content.value().getField(j).orElseThrow();
 			var newField = newDest.getField(j).orElseThrow(() -> new NoSuchField(j));
-			if (newField.value() instanceof GioviSelf) {
+			if (newField.unwrap() instanceof GioviSelf) {
 				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newField.setValueWithRedirection(contentField.value());
+			newField.setValueWithRedirection(contentField.unwrap());
 		}
 		return new GioviRecord(dest.type(), newDest);
 	}
@@ -173,10 +173,10 @@ public class GioviRecords {
 			var contentField = contentEntry.getValue();
 			var newField = newDest.getField(fieldIdentifier)
 				.orElseThrow(() -> new NoSuchField(fieldIdentifier));
-			if (newField.value() instanceof GioviSelf) {
+			if (newField.unwrap() instanceof GioviSelf) {
 				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newField.setValueWithRedirection(contentField.value());
+			newField.setValueWithRedirection(contentField.unwrap());
 		}
 		return new GioviRecord(dest.type(), newDest);
 	}

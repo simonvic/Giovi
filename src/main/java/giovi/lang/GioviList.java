@@ -214,7 +214,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 				-> new GioviBool(this.value.containsAll(v.value));
 			case GioviValue<?> v -> {
 				for (var entry : this.value) {
-					if (entry.value().equal(v).asNativeBool()) {
+					if (entry.unwrap().equal(v).asNativeBool()) {
 						yield new GioviBool(true);
 					}
 				}
@@ -229,7 +229,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		if (right instanceof Var<?> v) {
-			right = v.value();
+			right = v.unwrap();
 		}
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {

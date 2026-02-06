@@ -72,7 +72,7 @@ public record GioviMap(
 		if (!value.containsKey(key)) {
 			// return new Var<>(new GioviVoid());
 			// return new Var<>(elementType.spawn());
-			throw new KeyNotPresent(this, key.value());
+			throw new KeyNotPresent(this, key.unwrap());
 		}
 		return value.get(key);
 	}

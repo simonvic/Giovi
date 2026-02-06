@@ -716,7 +716,7 @@ public class TestGioviStruct {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviStructs.of(
 						"Foo",
 						"i", VarD.of(69),
@@ -751,7 +751,7 @@ public class TestGioviStruct {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviStructs.of(
 						"Foo",
 						"i", VarD.of(69),
@@ -769,7 +769,7 @@ public class TestGioviStruct {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviStructs.of(
 						"Foo",
 						"i", VarD.of(69),
@@ -797,7 +797,7 @@ public class TestGioviStruct {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviStructs.of(
 						"Foo",
 						"i", VarD.of(69),
@@ -814,7 +814,7 @@ public class TestGioviStruct {
 					""").getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value())
+					.unwrap())
 					.isEqualTo(GioviStructs.of(
 						"Foo",
 						"i", VarD.of(69),
@@ -851,7 +851,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(visitExpression(visitor, code)
 					.asVar()
-					.value()
+					.unwrap()
 					.value())
 					.isEqualTo(expected);
 			}
@@ -872,7 +872,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(visitExpression(visitor, code)
 					.asVar()
-					.value()
+					.unwrap()
 					.value())
 					.isEqualTo(expected);
 			}

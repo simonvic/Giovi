@@ -23,7 +23,7 @@ public class GioviTuples {
 	public static TupleSignature signatureFrom(Tuple value) {
 		var fields = new ArrayList<TupleFieldSignature>(value.getFieldsCount());
 		value.forEach(field -> fields.add(new TupleFieldSignature(
-			field.value().getGioviType(),
+			field.unwrap().getGioviType(),
 			field.defaultValue())));
 		return new TupleSignature(fields);
 	}
@@ -48,10 +48,10 @@ public class GioviTuples {
 			final int j = i;
 			var contentField = content.value().getField(j).orElseThrow();
 			var newField = newDest.getField(j).orElseThrow(() -> new NoSuchField(j));
-			if (newField.value() instanceof GioviSelf) {
+			if (newField.unwrap() instanceof GioviSelf) {
 				newField.setValueUnsafe(dest.type().spawn());
 			}
-			newField.setValueWithRedirection(contentField.value());
+			newField.setValueWithRedirection(contentField.unwrap());
 		}
 		return new GioviTuple(dest.type(), newDest);
 	}

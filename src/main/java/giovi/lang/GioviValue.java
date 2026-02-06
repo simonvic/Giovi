@@ -45,8 +45,7 @@ public sealed interface GioviValue<T>
 	}
 
 	/**
-	 * TODO: maybe rename to unbox() or native() to avoid confusion from the Var.value()
-	 * @return
+	 * @return the native value
 	 */
 	T value();
 
@@ -91,7 +90,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> as(v.value());
+			case Var<?> v -> as(v.unwrap());
 			default -> GioviObject.super.as(right);
 		};
 	}
@@ -100,35 +99,35 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case Var<?> v -> redirection(v.value());
+			case Var<?> v -> redirection(v.unwrap());
 			default -> GioviObject.super.redirection(content);
 		};
 	}
 
 	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> redirectionPlus(v.value());
+			case Var<?> v -> redirectionPlus(v.unwrap());
 			default -> GioviObject.super.redirectionPlus(right);
 		};
 	}
 
 	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> redirectionMinus(v.value());
+			case Var<?> v -> redirectionMinus(v.unwrap());
 			default -> GioviObject.super.redirectionMinus(right);
 		};
 	}
 
 	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> redirectionMultiply(v.value());
+			case Var<?> v -> redirectionMultiply(v.unwrap());
 			default -> GioviObject.super.redirectionMultiply(right);
 		};
 	}
 
 	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> redirectionDivide(v.value());
+			case Var<?> v -> redirectionDivide(v.unwrap());
 			default -> GioviObject.super.redirectionDivide(right);
 		};
 	}
@@ -137,42 +136,42 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> plus(v.value());
+			case Var<?> v -> plus(v.unwrap());
 			default -> GioviObject.super.plus(right);
 		};
 	}
 
 	default GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> minus(v.value());
+			case Var<?> v -> minus(v.unwrap());
 			default -> GioviObject.super.minus(right);
 		};
 	}
 
 	default GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> multiply(v.value());
+			case Var<?> v -> multiply(v.unwrap());
 			default -> GioviObject.super.multiply(right);
 		};
 	}
 
 	default GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> divide(v.value());
+			case Var<?> v -> divide(v.unwrap());
 			default -> GioviObject.super.divide(right);
 		};
 	}
 
 	default GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> modulo(v.value());
+			case Var<?> v -> modulo(v.unwrap());
 			default -> GioviObject.super.modulo(right);
 		};
 	}
 
 	default GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> power(v.value());
+			case Var<?> v -> power(v.unwrap());
 			default -> GioviObject.super.power(right);
 		};
 	}
@@ -182,14 +181,14 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> and(v.value());
+			case Var<?> v -> and(v.unwrap());
 			default -> GioviObject.super.and(right);
 		};
 	}
 
 	default GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> or(v.value());
+			case Var<?> v -> or(v.unwrap());
 			default -> GioviObject.super.or(right);
 		};
 	}
@@ -198,49 +197,49 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> equal(v.value());
+			case Var<?> v -> equal(v.unwrap());
 			default -> GioviObject.super.equal(right);
 		};
 	}
 
 	default GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> notEqual(v.value());
+			case Var<?> v -> notEqual(v.unwrap());
 			default -> GioviObject.super.notEqual(right);
 		};
 	}
 
 	default GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> less(v.value());
+			case Var<?> v -> less(v.unwrap());
 			default -> GioviObject.super.less(right);
 		};
 	}
 
 	default GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> lessEqual(v.value());
+			case Var<?> v -> lessEqual(v.unwrap());
 			default -> GioviObject.super.lessEqual(right);
 		};
 	}
 
 	default GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> greater(v.value());
+			case Var<?> v -> greater(v.unwrap());
 			default -> GioviObject.super.greater(right);
 		};
 	}
 
 	default GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> greaterEqual(v.value());
+			case Var<?> v -> greaterEqual(v.unwrap());
 			default -> GioviObject.super.greaterEqual(right);
 		};
 	}
 
 	default GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> contains(v.value());
+			case Var<?> v -> contains(v.unwrap());
 			default -> GioviObject.super.contains(right);
 		};
 	}
@@ -253,14 +252,14 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> access(v.value());
+			case Var<?> v -> access(v.unwrap());
 			default -> GioviObject.super.access(right);
 		};
 	}
 
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> dot(v.value());
+			case Var<?> v -> dot(v.unwrap());
 			// TODO: lookup for self functions in the Value instance
 			case MemberKey(var identifier) when this
 				.getClass().getAnnotation(DescribedBy.class) instanceof DescribedBy annotation

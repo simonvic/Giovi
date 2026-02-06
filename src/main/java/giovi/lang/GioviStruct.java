@@ -85,7 +85,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 			case GioviDefault _ -> type.spawn();
 			case MemberKey(var identifier) when value.containsField(identifier) -> {
 				var fieldVar = value.getField(identifier).orElseThrow();
-				if (fieldVar.value() instanceof GioviSelf) {
+				if (fieldVar.unwrap() instanceof GioviSelf) {
 					// init field
 					fieldVar.setValueUnsafe(type.spawn());
 				}

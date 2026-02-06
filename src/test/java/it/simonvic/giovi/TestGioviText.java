@@ -244,7 +244,7 @@ public class TestGioviText {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo("foo");
 			}
@@ -258,7 +258,7 @@ public class TestGioviText {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo("foobar");
 			}
@@ -272,7 +272,7 @@ public class TestGioviText {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo("bar");
 			}
@@ -286,7 +286,7 @@ public class TestGioviText {
 					.getCurrentScope()
 					.getVariable("x")
 					.get()
-					.value()
+					.unwrap()
 					.value())
 						.isEqualTo("bar");
 			}

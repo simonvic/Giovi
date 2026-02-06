@@ -194,7 +194,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			var widerFieldSignature = iter.next();
 			// we widen the field, but use the default value of the wider field
 			widenedFields.put(widerFieldSignature.identifier(), new VarD<>(
-				widerFieldSignature.type().widen(narrowField.value()),
+				widerFieldSignature.type().widen(narrowField.unwrap()),
 				widerFieldSignature.defaultValue().copy()));
 		}
 		// "surplus" fields will be set to the wider field default value
@@ -257,7 +257,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			GioviValue<?> widenedDefaultValue = widerField.defaultValue().copy();
 			var narrowField = narrow.getField(widerField.identifier());
 			if (narrowField.isPresent()) {
-				widenedValue = widerField.type().widen(narrowField.orElseThrow().value().copy());
+				widenedValue = widerField.type().widen(narrowField.orElseThrow().unwrap().copy());
 			} else {
 				widenedValue = widerField.defaultValue().copy();
 			}

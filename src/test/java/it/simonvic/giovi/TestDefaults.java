@@ -276,7 +276,7 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.get()
-				.value())
+				.unwrap())
 				.isEqualTo(GioviLists.of(1, 2, 3));
 		}
 
@@ -329,7 +329,7 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.get()
-				.value()
+				.unwrap()
 				.value())
 				.isEqualTo(Structs.of(
 					"Foo",

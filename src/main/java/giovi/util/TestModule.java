@@ -144,7 +144,7 @@ public class TestModule {
 		@Func
 		public static @Self GioviStruct capitalize(@Self GioviStruct self) {
 			var dataField = self.value().getField("data", GioviText.class).orElseThrow();
-			dataField.setValue(new GioviText(dataField.value().value().toUpperCase()));
+			dataField.setValue(new GioviText(dataField.unwrap().value().toUpperCase()));
 			return self;
 		}
 

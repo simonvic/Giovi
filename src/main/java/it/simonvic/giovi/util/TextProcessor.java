@@ -75,7 +75,7 @@ public class TextProcessor {
 				.getVariable(matchResult.group().substring(1))
 				.orElseThrow(() -> new GioviException(
 					"Variable not declared: " + matchResult.group().substring(1)))
-				.value()
+				.unwrap()
 				.toString());
 	}
 

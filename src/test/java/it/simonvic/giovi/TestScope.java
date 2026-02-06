@@ -51,27 +51,27 @@ public class TestScope {
 		void testDeclarationVariableType_string() {
 			scope.declare("aString", VarD.of("hello world"));
 			assertEquals(String.class,
-				scope.getVariable("aString").get().value().value().getClass());
+				scope.getVariable("aString").get().unwrap().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_bool() {
 			scope.declare("aBoolean", VarD.of(true));
 			assertEquals(Boolean.class,
-				scope.getVariable("aBoolean").get().value().value().getClass());
+				scope.getVariable("aBoolean").get().unwrap().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_real() {
 			scope.declare("aReal", VarD.of(0.69));
-			assertEquals(Double.class, scope.getVariable("aReal").get().value().value().getClass());
+			assertEquals(Double.class, scope.getVariable("aReal").get().unwrap().value().getClass());
 		}
 
 		@Test
 		void testDeclarationVariableType_int() {
 			scope.declare("anInteger", VarD.of(69));
 			assertEquals(Integer.class,
-				scope.getVariable("anInteger").get().value().value().getClass());
+				scope.getVariable("anInteger").get().unwrap().value().getClass());
 		}
 
 		@Test
@@ -96,7 +96,7 @@ public class TestScope {
 	@Test
 	void testValueUnbox() {
 		scope.declare("anInt", VarD.of(69));
-		assertEquals(69, scope.getVariable("anInt").get().value().value());
+		assertEquals(69, scope.getVariable("anInt").get().unwrap().value());
 	}
 
 	@Nested
@@ -125,7 +125,7 @@ public class TestScope {
 		@Test
 		void test_getVariableValue() {
 			global.declare("aString", VarD.of("hello world"));
-			assertEquals("hello world", global.getVariable("aString").get().value().value());
+			assertEquals("hello world", global.getVariable("aString").get().unwrap().value());
 		}
 
 		@Test
@@ -168,7 +168,7 @@ public class TestScope {
 		@Test
 		void nestedBlockShouldAccessVariablesValue() {
 			global.declare("aString", VarD.of("Hello world"));
-			assertEquals("Hello world", scope11.getVariable("aString").get().value().value());
+			assertEquals("Hello world", scope11.getVariable("aString").get().unwrap().value());
 		}
 
 	}
