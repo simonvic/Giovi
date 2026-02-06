@@ -59,6 +59,9 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	@Override
 	public GioviList spawn() {
 		var list = new GioviList(this);
+		// TODO: remove initSize from the type signature
+		// HACK: it doesn't belong to the type and will lead to unexpected behaviour,
+		// it should be handled by the visitor appropriately
 		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
 			rawList.add(new Var<>(this.entryType.spawn()));

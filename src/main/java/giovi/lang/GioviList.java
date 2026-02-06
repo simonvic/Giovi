@@ -29,7 +29,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	}
 
 	public GioviList(GioviTypeList type) {
-		// TODO: add initSize entries here
 		this(type, new ArrayList<>());
 	}
 
