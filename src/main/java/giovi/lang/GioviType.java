@@ -20,7 +20,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 
 	@Override
 	default GioviTypeType<T> getGioviType() {
-		return new GioviTypeType<>();
+		return new GioviTypeType<>(this);
 	}
 
 	/**

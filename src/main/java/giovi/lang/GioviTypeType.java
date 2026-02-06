@@ -3,21 +3,22 @@ package giovi.lang;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimitive<GioviType<T>> {
+public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
+	implements GioviTypePrimitive<GioviType<T>> {
 
 	@Override
 	public String toString() {
-		return "Type";
+		return "Type{" + describedType + "}";
 	}
 
 	@Override
 	public Class<? extends GioviType<T>> value() {
-		throw new UnsupportedOperationException("Unimplemented method 'value'");
+		return (Class<? extends GioviType<T>>) describedType.getClass();
 	}
 
 	@Override
 	public Class<? extends GioviType<T>> zero() {
-		throw new UnsupportedOperationException("Unimplemented method 'defaultValue'");
+		throw new UnsupportedOperationException("Unimplemented method 'zero'");
 	}
 
 	@Override
@@ -46,18 +47,19 @@ public record GioviTypeType<T extends GioviValue<?>>() implements GioviTypePrimi
 
 	@Override
 	public GioviType<T> spawn() {
-		return (GioviType<T>) GioviVoid.TYPE;
+		return describedType;
 	}
 
 	@Override
 	public GioviTypeType<T> copy() {
-		return new GioviTypeType<>();
+		return this;
 	}
 
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return GioviVoid.TYPE; // TODO: emh...
+			// NOTE: by default, a Type describes the Void type
+			return GioviVoid.TYPE;
 		}
 		return GioviTypePrimitive.super.dot(right);
 	}
