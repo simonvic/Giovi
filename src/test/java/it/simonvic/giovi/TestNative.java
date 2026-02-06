@@ -70,7 +70,7 @@ public class TestNative {
 					new FormalParameters(
 						new FormalParameter("i", GioviInt.TYPE),
 						new FormalParameter("s", new GioviTypeStruct(structSignatureOf(Rgb.class))),
-						new FormalParameter("l", new GioviTypeList(GioviInt.TYPE)),
+						new FormalParameter("l", GioviList.TYPE_OF_INT),
 						new FormalParameter("m",
 							new GioviTypeMap(
 								GioviText.TYPE,
@@ -80,7 +80,7 @@ public class TestNative {
 				"giovi.util.TestModule.getListOfPrimitive",
 				new FunctionSignature(
 					"getListOfPrimitive",
-					new GioviTypeList(GioviInt.TYPE)
+					GioviList.TYPE_OF_INT
 				)
 			),
 			Arguments.of(
@@ -106,7 +106,7 @@ public class TestNative {
 			"TestStruct",
 			new RecordFieldSignature("i", GioviInt.TYPE),
 			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
-			new RecordFieldSignature("l", new GioviTypeList(GioviInt.TYPE)),
+			new RecordFieldSignature("l", GioviList.TYPE_OF_INT),
 			new RecordFieldSignature("m", new GioviTypeMap(
 				GioviText.TYPE,
 				GioviInt.TYPE)));
@@ -127,7 +127,7 @@ public class TestNative {
 			"TestStructExtends",
 			new RecordFieldSignature("i", GioviInt.TYPE),
 			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
-			new RecordFieldSignature("l", new GioviTypeList(GioviInt.TYPE)),
+			new RecordFieldSignature("l", GioviList.TYPE_OF_INT),
 			new RecordFieldSignature("m", new GioviTypeMap(
 				GioviText.TYPE,
 				GioviInt.TYPE)),

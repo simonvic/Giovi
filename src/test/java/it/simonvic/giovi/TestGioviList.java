@@ -107,7 +107,7 @@ public class TestGioviList {
 				""").asGioviList()
 				.type()
 				.entryType())
-				.isEqualTo(new GioviTypeList(GioviInt.TYPE));
+				.isEqualTo(GioviList.TYPE_OF_INT);
 		}
 
 		@Test
@@ -117,7 +117,7 @@ public class TestGioviList {
 				""").asGioviList()
 				.type()
 				.entryType())
-				.isEqualTo(new GioviTypeList(GioviReal.TYPE));
+				.isEqualTo(GioviList.TYPE_OF_REAL);
 		}
 
 		@Test
@@ -131,7 +131,7 @@ public class TestGioviList {
 				""").asGioviList().value())
 				.allSatisfy(entry -> assertThat(entry
 					.getGioviType())
-					.isEqualTo(new GioviTypeList(GioviReal.TYPE)));
+					.isEqualTo(GioviList.TYPE_OF_REAL));
 		}
 
 		@Test

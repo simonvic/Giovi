@@ -35,8 +35,8 @@ public class TestGioviType {
 				GioviBool.TYPE,
 				GioviBool.TYPE),
 			Arguments.of(
-				new GioviTypeList(GioviInt.TYPE),
-				new GioviTypeList(GioviInt.TYPE)),
+				GioviList.TYPE_OF_INT,
+				GioviList.TYPE_OF_INT),
 			Arguments.of(
 				new GioviTypeMap(
 					GioviInt.TYPE,
@@ -62,9 +62,9 @@ public class TestGioviType {
 				GioviText.TYPE),
 			Arguments.of(
 				GioviText.TYPE,
-				new GioviTypeList(GioviInt.TYPE)),
+				GioviList.TYPE_OF_INT),
 			Arguments.of(
-				new GioviTypeList(GioviInt.TYPE),
+				GioviList.TYPE_OF_INT,
 				new GioviTypeMap(
 					GioviInt.TYPE,
 					GioviText.TYPE)));

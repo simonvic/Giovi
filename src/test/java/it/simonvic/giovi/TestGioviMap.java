@@ -135,7 +135,7 @@ public class TestGioviMap {
 				]
 				""").asGioviMap()
 				.getElementType())
-				.isEqualTo(new GioviTypeList(GioviReal.TYPE));
+				.isEqualTo(GioviList.TYPE_OF_REAL);
 		}
 
 		@Test
