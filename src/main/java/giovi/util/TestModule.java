@@ -82,12 +82,12 @@ public class TestModule {
 		public static final GioviText t = new GioviText("some default");
 
 		@Field
-		public static final GioviList l = new GioviList(GioviList.TYPE_OF_INT);
+		public static final GioviList l = new GioviList(GioviType.LIST_OF_INT);
 
 		@Field
 		public static final GioviMap m = new GioviMap(new GioviTypeMap(
-			GioviText.TYPE,
-			GioviInt.TYPE));
+			GioviType.TEXT,
+			GioviType.INT));
 
 		@Const
 		public static final GioviInt SOME_CONST = new GioviInt(69);

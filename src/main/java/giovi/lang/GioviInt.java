@@ -7,8 +7,6 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeInt.class)
 public record GioviInt(Integer value) implements GioviNumber<Integer> {
 
-	public static final GioviTypeInt TYPE = new GioviTypeInt();
-
 	public static GioviInt valueOf(String s) throws NumberFormatException {
 		if (s.isBlank()) {
 			return new GioviInt();
@@ -40,7 +38,7 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 
 	@Override
 	public GioviTypeInt getGioviType() {
-		return GioviInt.TYPE;
+		return GioviType.INT;
 	}
 
 	@Override

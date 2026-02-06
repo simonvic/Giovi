@@ -42,7 +42,7 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 
 	@Override
 	public GioviTypeBool copy() {
-		return GioviBool.TYPE;
+		return GioviType.BOOL;
 	}
 
 	@Override

@@ -6,8 +6,6 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeSelf.class)
 public record GioviSelf() implements GioviValue<Void> {
 
-	public static final GioviTypeSelf TYPE = new GioviTypeSelf();
-
 	@Override
 	public String toString() {
 		return "self";
@@ -25,7 +23,7 @@ public record GioviSelf() implements GioviValue<Void> {
 
 	@Override
 	public GioviType<? extends GioviValue<Void>> getGioviType() {
-		return GioviSelf.TYPE;
+		return GioviType.SELF;
 	}
 
 	@Override

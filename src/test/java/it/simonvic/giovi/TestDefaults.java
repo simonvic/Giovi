@@ -148,12 +148,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviList.TYPE_OF_INT))),
+								new GioviList(GioviType.LIST_OF_INT))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviList.TYPE_OF_INT),
-								new GioviList(GioviList.TYPE_OF_INT))))));
+								new GioviList(GioviType.LIST_OF_INT),
+								new GioviList(GioviType.LIST_OF_INT))))));
 		}
 
 		@Test
@@ -339,12 +339,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviList.TYPE_OF_INT))),
+								new GioviList(GioviType.LIST_OF_INT))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviList.TYPE_OF_INT),
-								new GioviList(GioviList.TYPE_OF_INT))))));
+								new GioviList(GioviType.LIST_OF_INT),
+								new GioviList(GioviType.LIST_OF_INT))))));
 		}
 
 	}
@@ -461,12 +461,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviList.TYPE_OF_INT))),
+								new GioviList(GioviType.LIST_OF_INT))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviList.TYPE_OF_INT),
-								new GioviList(GioviList.TYPE_OF_INT))))));
+								new GioviList(GioviType.LIST_OF_INT),
+								new GioviList(GioviType.LIST_OF_INT))))));
 		}
 
 	}
@@ -522,7 +522,7 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				[Int].default
 				"""))
-				.isEqualTo(new GioviList(GioviList.TYPE_OF_INT));
+				.isEqualTo(new GioviList(GioviType.LIST_OF_INT));
 		}
 
 		@Test
@@ -532,8 +532,8 @@ public class TestDefaults {
 				[Text:Int].default
 				"""))
 				.isEqualTo(new GioviMap(new GioviTypeMap(
-					GioviText.TYPE,
-					GioviInt.TYPE)));
+					GioviType.TEXT,
+					GioviType.INT)));
 		}
 
 		@Test

@@ -7,8 +7,6 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeReal.class)
 public record GioviReal(Double value) implements GioviNumber<Double> {
 
-	public static final GioviTypeReal TYPE = new GioviTypeReal();
-
 	public static GioviReal valueOf(String s) throws NumberFormatException {
 		if (s.isBlank()) {
 			return new GioviReal();
@@ -43,7 +41,7 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 
 	@Override
 	public GioviTypeReal getGioviType() {
-		return GioviReal.TYPE;
+		return GioviType.REAL;
 	}
 
 	@Override

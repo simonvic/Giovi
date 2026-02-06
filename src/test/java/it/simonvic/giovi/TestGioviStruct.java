@@ -62,9 +62,9 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(GioviStructs.signatureOf(
 					"Foo",
-					"foo", GioviInt.TYPE,
-					"bar", GioviBool.TYPE,
-					"foobar", GioviText.TYPE));
+					"foo", GioviType.INT,
+					"bar", GioviType.BOOL,
+					"foobar", GioviType.TEXT));
 		}
 
 		@Test
@@ -80,9 +80,9 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(new StructSignature(
 					"Foo",
-					new RecordFieldSignature("i", GioviInt.TYPE, new GioviInt(69)),
-					new RecordFieldSignature("b", GioviBool.TYPE, new GioviBool(true)),
-					new RecordFieldSignature("t", GioviText.TYPE, new GioviText("hello"))));
+					new RecordFieldSignature("i", GioviType.INT, new GioviInt(69)),
+					new RecordFieldSignature("b", GioviType.BOOL, new GioviBool(true)),
+					new RecordFieldSignature("t", GioviType.TEXT, new GioviText("hello"))));
 		}
 
 		@Test
@@ -103,12 +103,12 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(GioviStructs.signatureOf(
 					"Person",
-					"name", GioviText.TYPE,
+					"name", GioviType.TEXT,
 					"favoriteColor", new GioviTypeStruct(GioviStructs.signatureOf(
 						"RGB",
-						"r", GioviInt.TYPE,
-						"g", GioviInt.TYPE,
-						"b", GioviInt.TYPE))));
+						"r", GioviType.INT,
+						"g", GioviType.INT,
+						"b", GioviType.INT))));
 		}
 
 
@@ -116,9 +116,9 @@ public class TestGioviStruct {
 		void testDefinitionWithNestedStructFieldAndDefaults() {
 			var rgbType = new GioviTypeStruct(GioviStructs.signatureOf(
 				"RGB",
-				"r", GioviInt.TYPE,
-				"g", GioviInt.TYPE,
-				"b", GioviInt.TYPE));
+				"r", GioviType.INT,
+				"g", GioviType.INT,
+				"b", GioviType.INT));
 			assertThat(visit("""
 				RGB <
 					r Int
@@ -139,7 +139,7 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(new StructSignature(
 					"Person",
-					new RecordFieldSignature("name", GioviText.TYPE),
+					new RecordFieldSignature("name", GioviType.TEXT),
 					new RecordFieldSignature(
 						"favoriteColor",
 						rgbType,
@@ -174,8 +174,8 @@ public class TestGioviStruct {
 		void testConstantsWithSameDeclaringType() {
 			var expectedType = new GioviTypeStruct(GioviStructs.signatureOf(
 				"Foo",
-				"a", GioviInt.TYPE,
-				"b", GioviInt.TYPE));
+				"a", GioviType.INT,
+				"b", GioviType.INT));
 			expectedType.signature()
 				.constants().put("FOO", expectedType.spawn());
 			assertThat(visit("""
@@ -207,13 +207,13 @@ public class TestGioviStruct {
 					"foo", new GioviFunction(new GFunction(new FunctionSignature(
 						"foo",
 						new FormalParameters(),
-						GioviVoid.TYPE))),
+						GioviType.VOID))),
 					"bar", new GioviFunction(new GFunction(new FunctionSignature(
 						"bar",
 						new FormalParameters(
-							new FormalParameter("a", GioviReal.TYPE),
+							new FormalParameter("a", GioviType.REAL),
 							new FormalParameter("b", GioviLists.of(1, 2, 3))),
-						GioviText.TYPE)))));
+						GioviType.TEXT)))));
 		}
 
 		@Disabled("Not implemented yet")
@@ -238,10 +238,10 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(GioviStructs.signatureOf(
 					"RGBA",
-					"r", GioviInt.TYPE,
-					"g", GioviInt.TYPE,
-					"b", GioviInt.TYPE,
-					"a", GioviInt.TYPE));
+					"r", GioviType.INT,
+					"g", GioviType.INT,
+					"b", GioviType.INT,
+					"a", GioviType.INT));
 		}
 
 		@Test
@@ -260,10 +260,10 @@ public class TestGioviStruct {
 				.signature())
 				.isEqualTo(new StructSignature(
 					"RGBA",
-					new RecordFieldSignature("r", GioviInt.TYPE, new GioviInt(255)),
-					new RecordFieldSignature("g", GioviInt.TYPE, new GioviInt(255)),
-					new RecordFieldSignature("b", GioviInt.TYPE, new GioviInt(255)),
-					new RecordFieldSignature("a", GioviInt.TYPE, new GioviInt(69))));
+					new RecordFieldSignature("r", GioviType.INT, new GioviInt(255)),
+					new RecordFieldSignature("g", GioviType.INT, new GioviInt(255)),
+					new RecordFieldSignature("b", GioviType.INT, new GioviInt(255)),
+					new RecordFieldSignature("a", GioviType.INT, new GioviInt(69))));
 		}
 
 		@Test
@@ -286,15 +286,15 @@ public class TestGioviStruct {
 			assertAll(
 				() -> assertThat(rgb).isEqualTo(new GioviTypeStruct(new StructSignature(
 					"RGB",
-					new RecordFieldSignature("r", GioviInt.TYPE, new GioviInt(255)),
-					new RecordFieldSignature("g", GioviInt.TYPE, new GioviInt(255)),
-					new RecordFieldSignature("b", GioviInt.TYPE, new GioviInt(255))))),
+					new RecordFieldSignature("r", GioviType.INT, new GioviInt(255)),
+					new RecordFieldSignature("g", GioviType.INT, new GioviInt(255)),
+					new RecordFieldSignature("b", GioviType.INT, new GioviInt(255))))),
 				() -> assertThat(argb).isEqualTo(new GioviTypeStruct(new StructSignature(
 					"RGBA",
-					new RecordFieldSignature("r", GioviInt.TYPE, new GioviInt(250)),
-					new RecordFieldSignature("g", GioviInt.TYPE, new GioviInt(200)),
-					new RecordFieldSignature("b", GioviInt.TYPE, new GioviInt(150)),
-					new RecordFieldSignature("a", GioviInt.TYPE, new GioviInt(0))))));
+					new RecordFieldSignature("r", GioviType.INT, new GioviInt(250)),
+					new RecordFieldSignature("g", GioviType.INT, new GioviInt(200)),
+					new RecordFieldSignature("b", GioviType.INT, new GioviInt(150)),
+					new RecordFieldSignature("a", GioviType.INT, new GioviInt(0))))));
 		}
 
 		@Nested

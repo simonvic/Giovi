@@ -46,7 +46,7 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 
 	@Override
 	public GioviTypeInt copy() {
-		return GioviInt.TYPE;
+		return GioviType.INT;
 	}
 
 	@Override

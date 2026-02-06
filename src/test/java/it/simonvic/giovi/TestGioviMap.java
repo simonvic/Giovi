@@ -77,8 +77,8 @@ public class TestGioviMap {
 				[ 1n:1n 2i:2i 3r:3r ]
 				""").asGioviMap().value())
 				.allSatisfy((k, e) -> assertAll(
-					() -> assertThat(k.getGioviType()).isEqualTo(GioviReal.TYPE),
-					() -> assertThat(e.getGioviType()).isEqualTo(GioviReal.TYPE)));
+					() -> assertThat(k.getGioviType()).isEqualTo(GioviType.REAL),
+					() -> assertThat(e.getGioviType()).isEqualTo(GioviType.REAL)));
 
 		}
 
@@ -135,7 +135,7 @@ public class TestGioviMap {
 				]
 				""").asGioviMap()
 				.getElementType())
-				.isEqualTo(GioviList.TYPE_OF_REAL);
+				.isEqualTo(GioviType.LIST_OF_REAL);
 		}
 
 		@Test

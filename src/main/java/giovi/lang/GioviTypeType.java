@@ -59,7 +59,7 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
 			// NOTE: by default, a Type describes the Void type
-			return GioviVoid.TYPE;
+			return GioviType.VOID;
 		}
 		return GioviTypePrimitive.super.dot(right);
 	}

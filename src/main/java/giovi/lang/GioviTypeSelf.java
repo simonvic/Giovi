@@ -40,7 +40,7 @@ public record GioviTypeSelf() implements GioviType<GioviSelf> {
 
 	@Override
 	public GioviType<GioviSelf> copy() {
-		return GioviSelf.TYPE;
+		return GioviType.SELF;
 	}
 
 }

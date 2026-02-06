@@ -1097,7 +1097,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
 		var map = new LinkedHashMap<Var<?>, Var<?>>();
 		if (ctx.mapEntries() == null) {
-			return new GioviMap(new GioviTypeMap(GioviVoid.TYPE, GioviVoid.TYPE), map);
+			return new GioviMap(new GioviTypeMap(GioviType.VOID, GioviType.VOID), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
@@ -1132,7 +1132,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		GioviType<?> returnType = ctx.returnType != null
 			? visit(ctx.returnType).asGioviType()
-			: GioviVoid.TYPE;
+			: GioviType.VOID;
 
 		return new FunctionSignature("", parameters, returnType);
 	}
@@ -1482,16 +1482,16 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var parameters = (FormalParameters) visit(signatureCtx.formalParameters());
 			if (funcCtx.selfFunctionSignature().self != null) {
 				parameters.parameters()
-					.putFirst("self", new FormalParameter("self", GioviSelf.TYPE));
+					.putFirst("self", new FormalParameter("self", GioviType.SELF));
 			}
 
 			GioviType<?> returnType;
 			if (signatureCtx.returnType != null) {
 				returnType = visit(signatureCtx.returnType).asGioviType();
 			} else if (signatureCtx.returnSelf != null) {
-				returnType = GioviSelf.TYPE;
+				returnType = GioviType.SELF;
 			} else {
-				returnType = GioviVoid.TYPE;
+				returnType = GioviType.VOID;
 			}
 
 			var signature = new FunctionSignature(identifier, parameters, returnType);
@@ -1505,7 +1505,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitStructFieldDefinition(StructFieldDefinitionContext ctx) {
 		String identifier = ctx.identifier().getText();
 		if (ctx.SELF() != null) {
-			return new RecordFieldSignature(identifier, GioviSelf.TYPE);
+			return new RecordFieldSignature(identifier, GioviType.SELF);
 		}
 		var type = visit(ctx.type()).asGioviType();
 		GioviValue<?> defaultValue;

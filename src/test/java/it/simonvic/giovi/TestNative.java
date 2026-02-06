@@ -38,56 +38,56 @@ public class TestNative {
 				new FunctionSignature("minimal")),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", GioviText.TYPE)),
+				new FunctionSignature("onlyReturn", GioviType.TEXT)),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", GioviText.TYPE)),
+				new FunctionSignature("onlyReturn", GioviType.TEXT)),
 			Arguments.of(
 				"giovi.util.TestModule.manyParams",
 				new FunctionSignature(
 					"manyParams",
 					new FormalParameters(
-						new FormalParameter("t", GioviText.TYPE),
-						new FormalParameter("i", GioviInt.TYPE),
-						new FormalParameter("r", GioviReal.TYPE)))),
+						new FormalParameter("t", GioviType.TEXT),
+						new FormalParameter("i", GioviType.INT),
+						new FormalParameter("r", GioviType.REAL)))),
 			Arguments.of(
 				"giovi.util.TestModule.paramWithLabel",
 				new FunctionSignature(
 					"paramWithLabel",
 					new FormalParameters(
-						new FormalParameter("label", "t", GioviText.TYPE)))),
+						new FormalParameter("label", "t", GioviType.TEXT)))),
 			Arguments.of(
 				"giovi.util.TestModule.oneParamWithReturn",
 				new FunctionSignature(
 					"oneParamWithReturn",
 					new FormalParameters(
-						new FormalParameter("t", GioviText.TYPE)),
-					GioviText.TYPE)),
+						new FormalParameter("t", GioviType.TEXT)),
+					GioviType.TEXT)),
 			Arguments.of(
 				"giovi.util.TestModule.complex",
 				new FunctionSignature(
 					"complex",
 					new FormalParameters(
-						new FormalParameter("i", GioviInt.TYPE),
+						new FormalParameter("i", GioviType.INT),
 						new FormalParameter("s", new GioviTypeStruct(structSignatureOf(Rgb.class))),
-						new FormalParameter("l", GioviList.TYPE_OF_INT),
+						new FormalParameter("l", GioviType.LIST_OF_INT),
 						new FormalParameter("m",
 							new GioviTypeMap(
-								GioviText.TYPE,
+								GioviType.TEXT,
 								new GioviTypeStruct(structSignatureOf(Rgb.class))))),
-					GioviInt.TYPE)),
+					GioviType.INT)),
 			Arguments.of(
 				"giovi.util.TestModule.getListOfPrimitive",
 				new FunctionSignature(
 					"getListOfPrimitive",
-					GioviList.TYPE_OF_INT
+					GioviType.LIST_OF_INT
 				)
 			),
 			Arguments.of(
 				"giovi.util.TestModule.getMapOfPrimitive",
 				new FunctionSignature(
 					"getMapOfPrimitive",
-					new GioviTypeMap(GioviText.TYPE, GioviInt.TYPE)
+					new GioviTypeMap(GioviType.TEXT, GioviType.INT)
 				)
 			)
 		);
@@ -104,12 +104,12 @@ public class TestNative {
 	void test_struct() throws NoSuchMethodException {
 		var expectedSignature = new StructSignature(
 			"TestStruct",
-			new RecordFieldSignature("i", GioviInt.TYPE),
-			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
-			new RecordFieldSignature("l", GioviList.TYPE_OF_INT),
+			new RecordFieldSignature("i", GioviType.INT),
+			new RecordFieldSignature("t", GioviType.TEXT, new GioviText("some default")),
+			new RecordFieldSignature("l", GioviType.LIST_OF_INT),
 			new RecordFieldSignature("m", new GioviTypeMap(
-				GioviText.TYPE,
-				GioviInt.TYPE)));
+				GioviType.TEXT,
+				GioviType.INT)));
 		expectedSignature.constants().put("SOME_CONST", new GioviInt(69));
 		expectedSignature.functions().put(
 			"someFunc",
@@ -125,13 +125,13 @@ public class TestNative {
 	void test_struct_extended() {
 		var expectedSignature = new StructSignature(
 			"TestStructExtends",
-			new RecordFieldSignature("i", GioviInt.TYPE),
-			new RecordFieldSignature("t", GioviText.TYPE, new GioviText("some default")),
-			new RecordFieldSignature("l", GioviList.TYPE_OF_INT),
+			new RecordFieldSignature("i", GioviType.INT),
+			new RecordFieldSignature("t", GioviType.TEXT, new GioviText("some default")),
+			new RecordFieldSignature("l", GioviType.LIST_OF_INT),
 			new RecordFieldSignature("m", new GioviTypeMap(
-				GioviText.TYPE,
-				GioviInt.TYPE)),
-			new RecordFieldSignature("i2", GioviInt.TYPE, new GioviInt(420)));
+				GioviType.TEXT,
+				GioviType.INT)),
+			new RecordFieldSignature("i2", GioviType.INT, new GioviInt(420)));
 		assertThat(visitExpression("giovi.util.TestModule.TestSubModule.TestStructExtends"))
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}

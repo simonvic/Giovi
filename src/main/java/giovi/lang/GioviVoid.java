@@ -8,8 +8,6 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeVoid.class)
 public record GioviVoid() implements GioviPrimitive<Void> {
 
-	public static final GioviTypeVoid TYPE = new GioviTypeVoid();
-
 	@Override
 	public Void value() {
 		return null;
@@ -27,7 +25,7 @@ public record GioviVoid() implements GioviPrimitive<Void> {
 
 	@Override
 	public GioviTypeVoid getGioviType() {
-		return GioviVoid.TYPE;
+		return GioviType.VOID;
 	}
 
 	@Override

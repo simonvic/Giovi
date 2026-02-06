@@ -30,7 +30,7 @@ public class GioviTypes {
 	// TODO: should we allow record widening to be a disjoint union instead?
 
 	public static GioviType<?> inferGioviType(Collection<Var<?>> entries) {
-		if (entries.isEmpty()) return GioviVoid.TYPE; // TODO: emh... lol
+		if (entries.isEmpty()) return GioviType.VOID; // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
 		for (Var<?> entry : entries) {

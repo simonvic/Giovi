@@ -17,10 +17,10 @@ public record FunctionSignature(
 	public static final FunctionSignature EMPTY = new FunctionSignature(
 		"",
 		new FormalParameters(),
-		GioviVoid.TYPE);
+		GioviType.VOID);
 
 	public FunctionSignature(String identifier) {
-		this(identifier, new FormalParameters(), GioviVoid.TYPE);
+		this(identifier, new FormalParameters(), GioviType.VOID);
 	}
 
 	public FunctionSignature(String identifier, GioviType<?> returnType) {
@@ -31,7 +31,7 @@ public record FunctionSignature(
 		String identifier,
 		FormalParameters parameters
 	) {
-		this(identifier, parameters, GioviVoid.TYPE);
+		this(identifier, parameters, GioviType.VOID);
 	}
 
 	@Override

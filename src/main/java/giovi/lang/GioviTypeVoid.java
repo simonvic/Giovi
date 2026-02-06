@@ -37,7 +37,7 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 
 	@Override
 	public GioviTypeVoid copy() {
-		return GioviVoid.TYPE;
+		return GioviType.VOID;
 	}
 
 	@Override

@@ -16,10 +16,6 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 public record GioviList(GioviTypeList type, List<Var<?>> value)
 	implements GioviValue<List<Var<?>>> {
 
-	public static final GioviTypeList TYPE_OF_INT = new GioviTypeList(GioviInt.TYPE);
-	public static final GioviTypeList TYPE_OF_REAL = new GioviTypeList(GioviReal.TYPE);
-	public static final GioviTypeList TYPE_OF_TEXT = new GioviTypeList(GioviText.TYPE);
-
 	public GioviList(GioviTypeList type, List<Var<?>> value) {
 		this.type = type;
 		this.value = new ArrayList<>();

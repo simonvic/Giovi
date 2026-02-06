@@ -45,7 +45,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 
 	@Override
 	public GioviTypeNatural copy() {
-		return GioviNatural.TYPE;
+		return GioviType.NAT;
 	}
 
 	@Override

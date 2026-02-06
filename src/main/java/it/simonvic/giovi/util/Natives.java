@@ -145,7 +145,7 @@ public class Natives {
 		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
 			if (param.isAnnotationPresent(Native.Self.class)) {
-				parameters.put("self", new FormalParameter("self", GioviSelf.TYPE));
+				parameters.put("self", new FormalParameter("self", GioviType.SELF));
 				continue;
 			}
 			var annotation = param.getAnnotation(Native.Func.Param.class);
@@ -229,13 +229,13 @@ public class Natives {
 
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
 		if (method.getReturnType().equals(Void.TYPE)) {
-			return GioviVoid.TYPE;
+			return GioviType.VOID;
 		}
 
 		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
 
 		if (annotatedReturnType.isAnnotationPresent(Self.class)) {
-			return GioviSelf.TYPE;
+			return GioviType.SELF;
 		}
 
 		var typeListAnnotation = annotatedReturnType.getAnnotation(TypeList.class);
