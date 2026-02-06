@@ -2,6 +2,7 @@ package giovi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import giovi.lang.*;
@@ -169,12 +170,7 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((start == null) ? 0 : start.hashCode());
-		result = prime * result + ((end == null) ? 0 : end.hashCode());
-		result = prime * result + ((step == null) ? 0 : step.hashCode());
-		return result;
+		return Objects.hash(start, end, step);
 	}
 
 	@Override
@@ -183,16 +179,9 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		Range<?> other = (Range<?>) obj;
-		if (start == null) {
-			if (other.start != null) return false;
-		} else if (!start.equals(other.start)) return false;
-		if (end == null) {
-			if (other.end != null) return false;
-		} else if (!end.equals(other.end)) return false;
-		if (step == null) {
-			if (other.step != null) return false;
-		} else if (!step.equals(other.step)) return false;
-		return true;
+		return Objects.equals(start, other.start)
+			&& Objects.equals(end, other.end)
+			&& Objects.equals(step, other.step);
 	}
 
 	@Override
