@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
@@ -206,6 +207,34 @@ public class TestGioviType {
 				assertEquals(expected, actual);
 			}
 
+		}
+
+	}
+
+	@Nested
+	class TestTypeType {
+
+		@Test
+		void testTypeOfTypePreservation() {
+			var someInt = new GioviInt();
+			assertThat(someInt.getGioviType().getGioviType())
+				.isEqualTo(new GioviTypeType<>(new GioviTypeInt()));
+		}
+
+		@Test
+		void testSpawnOfTypeType() {
+			var someInt = new GioviInt();
+			assertThat(someInt.getGioviType().getGioviType().spawn())
+				.isEqualTo(new GioviTypeInt());
+		}
+
+		// INFO: fun fact, spawn() and getGioviType() are one the opposite of the other
+
+		@Test
+		void testSpawnOfTypeTypeSpawn() { // lmao
+			var someInt = new GioviInt();
+			assertThat(someInt.getGioviType().getGioviType().spawn().spawn())
+				.isEqualTo(new GioviInt());
 		}
 
 	}
