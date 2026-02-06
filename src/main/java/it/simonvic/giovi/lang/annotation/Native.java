@@ -12,7 +12,7 @@ import giovi.lang.GioviValue;
 /// 2. ~Struct functions~
 /// 3. Function overloading?
 /// 4. Better way to get Types from Values
-/// 4.1. Eventually performance improvements to primitive types
+///    1. Eventually performance improvements to primitive types
 /// 5. Expose Range and Types as GioviValues (or reimplement them as Native)
 /// 6. Find a way to handle Generic-like types (List,Maps,Range)
 /// 7. ~Import statements~
@@ -126,7 +126,7 @@ public interface Native {
 	public @interface Type {
 
 		Class<? extends GioviTypePrimitive<?>> value() default GioviTypeVoid.class;
-		// TODO: use a dummy Type instead of Void which might be used for real
+		// TODO: use a dummy Type instead of Void which might be actually used
 
 		Class<?> nativ() default Object.class;
 
