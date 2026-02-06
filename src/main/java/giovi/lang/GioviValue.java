@@ -40,10 +40,6 @@ public sealed interface GioviValue<T>
 		};
 	}
 
-	default Class<?> getValueType() {
-		return value().getClass();
-	}
-
 	/**
 	 * @return the native value
 	 */

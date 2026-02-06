@@ -26,11 +26,6 @@ public record GioviVoid() implements GioviPrimitive<Void> {
 	}
 
 	@Override
-	public Class<?> getValueType() {
-		return Void.class;
-	}
-
-	@Override
 	public GioviTypeVoid getGioviType() {
 		return GioviVoid.TYPE;
 	}

@@ -60,7 +60,7 @@ public class TestUtils {
 		@ParameterizedTest
 		@MethodSource("produceValuesWithPrimitiveValueType")
 		void test_Value_of_primitiveValueType(Class<?> primitiveValueType, GioviValue<?> value) {
-			assertEquals(primitiveValueType, value.getValueType());
+			assertEquals(primitiveValueType, value.value().getClass());
 		}
 
 
