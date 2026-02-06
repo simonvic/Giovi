@@ -206,7 +206,7 @@ public class TestWidening {
 				.isEqualTo(new Tuple(
 					VarD.of(69),
 					VarD.of(69d),
-					new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE))));
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE)))));
 		}
 
 		@Test
@@ -224,7 +224,7 @@ public class TestWidening {
 				.isEqualTo(new Tuple(
 					VarD.of(69),
 					VarD.of(69d),
-					new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
+					new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))),
 					VarD.of(false)));
 		}
 
@@ -253,7 +253,7 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type).value()).isEqualTo(Records.of(
 				"n", new VarD<>(new GioviNatural(new Natural(69))),
 				"i", new VarD<>(new GioviInt(69)),
-				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE))));
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeList(GioviInt.TYPE)))));
 		}
 
 		@Test
@@ -269,7 +269,7 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))))));
 		}
 
 		@Test
@@ -286,7 +286,7 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))),
 				"b", new VarD<>(new GioviBool()))));
 		}
 
@@ -318,7 +318,7 @@ public class TestWidening {
 				"Foo",
 				"n", new VarD<>(new GioviNatural(new Natural(69))),
 				"i", new VarD<>(new GioviInt(69)),
-				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
+				"li", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeList(GioviInt.TYPE))))));
 		}
 
 		@Test
@@ -336,7 +336,7 @@ public class TestWidening {
 				"Foo",
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))))));
 		}
 
 		@Test
@@ -355,7 +355,7 @@ public class TestWidening {
 				"Foo",
 				"i", new VarD<>(new GioviInt(69)),
 				"r", new VarD<>(new GioviReal(69d)),
-				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
+				"lr", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))),
 				"b", new VarD<>(new GioviBool()))));
 		}
 
@@ -406,7 +406,7 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeList(GioviInt.TYPE))))));
 		}
 
 		@Test
@@ -435,7 +435,7 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)),
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeList(GioviInt.TYPE))),
 				"d", new VarD<>(new GioviBool()))));
 		}
 
@@ -454,7 +454,7 @@ public class TestWidening {
 				"Foo",
 				"a", new VarD<>(new GioviInt(69)),
 				"b", new VarD<>(new GioviReal(69d)),
-				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)))));
+				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))))));
 		}
 
 		@Test
@@ -486,7 +486,7 @@ public class TestWidening {
 				"Foo",
 				"a", new VarD<>(new GioviInt(69)),
 				"b", new VarD<>(new GioviReal(69d)),
-				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviReal.TYPE)),
+				"c", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviReal.TYPE))),
 				"d", new VarD<>(new GioviBool()))));
 		}
 
@@ -502,7 +502,7 @@ public class TestWidening {
 				"d", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviInt(69)),
-				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviInt.TYPE)),
+				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviInt.TYPE))),
 				"c", new VarD<>(new GioviReal()),
 				"d", new VarD<>(new GioviBool()))));
 		}
@@ -518,7 +518,7 @@ public class TestWidening {
 				"d", GioviBool.TYPE));
 			assertThat(narrow.widenTo(type)).isEqualTo(new GioviRecord(type, Records.of(
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
-				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviInt.TYPE)),
+				"b", new VarD<>(GioviLists.of(69d, 420d), new GioviList(new GioviTypeList(GioviInt.TYPE))),
 				"c", new VarD<>(new GioviReal()),
 				"d", new VarD<>(new GioviBool()))));
 		}
@@ -572,7 +572,7 @@ public class TestWidening {
 				"Foo",
 				"a", new VarD<>(new GioviNatural(new Natural(69))),
 				"b", new VarD<>(new GioviInt(69)),
-				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviInt.TYPE)))));
+				"c", new VarD<>(GioviLists.of(69, 420), new GioviList(new GioviTypeList(GioviInt.TYPE))))));
 		}
 
 		// TODO: clarify requirements about widening between different struct types

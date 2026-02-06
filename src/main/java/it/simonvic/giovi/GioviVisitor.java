@@ -1090,7 +1090,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 		}
 		var entryType = GioviTypes.inferGioviType(entries);
-		return new GioviList(entryType, entries);
+		return new GioviList(new GioviTypeList(entryType), entries);
 	}
 
 	@Override

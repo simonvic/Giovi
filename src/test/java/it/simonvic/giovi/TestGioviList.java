@@ -34,7 +34,9 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1 2 3 4 ]
 				""").asGioviList()
-				.getEntryType().value())
+				.type()
+				.entryType()
+				.value())
 				.isEqualTo(GioviInt.class);
 		}
 
@@ -43,7 +45,9 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ 1.0 2.0 3.0 4.0 ]
 				""").asGioviList()
-				.getEntryType().value())
+				.type()
+				.entryType()
+				.value())
 				.isEqualTo(GioviReal.class);
 		}
 
@@ -52,7 +56,9 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ "A" "B" "C" ]
 				""").asGioviList()
-				.getEntryType().value())
+				.type()
+				.entryType()
+				.value())
 				.isEqualTo(GioviText.class);
 		}
 
@@ -61,7 +67,8 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ true false true true ]
 				""").asGioviList()
-				.getEntryType().value())
+				.type()
+				.entryType().value())
 				.isEqualTo(GioviBool.class);
 		}
 
@@ -77,7 +84,9 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[1n 1i 1r]
 				""").asGioviList()
-				.getEntryType().value())
+				.type()
+				.entryType()
+				.value())
 				.isEqualTo(GioviReal.class);
 		}
 
@@ -96,7 +105,8 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ [1 2 3] [1 2 3] ]
 				""").asGioviList()
-				.getEntryType())
+				.type()
+				.entryType())
 				.isEqualTo(new GioviTypeList(GioviInt.TYPE));
 		}
 
@@ -105,7 +115,8 @@ public class TestGioviList {
 			assertThat(visitExpression("""
 				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
 				""").asGioviList()
-				.getEntryType())
+				.type()
+				.entryType())
 				.isEqualTo(new GioviTypeList(GioviReal.TYPE));
 		}
 

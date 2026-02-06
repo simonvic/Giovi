@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import giovi.lang.GioviList;
+import giovi.lang.GioviTypeList;
 import it.simonvic.giovi.Var;
 
 public class GioviLists {
@@ -13,7 +14,7 @@ public class GioviLists {
 		for (T value : values) {
 			entries.add(Var.of(value));
 		}
-		return new GioviList(GioviTypes.inferGioviType(entries), entries);
+		return new GioviList(new GioviTypeList(GioviTypes.inferGioviType(entries)), entries);
 	}
 
 	public static <T> GioviList of(T v) {

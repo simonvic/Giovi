@@ -44,9 +44,9 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	@Override
 	public GioviList widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviList v when v.entryType().equals(this.entryType) -> v;
+			case GioviList v when v.type().entryType().equals(this.entryType) -> v;
 			case GioviList v -> {
-				var widened = new GioviList(this.entryType);
+				var widened = new GioviList(this);
 				for (var entry : v.value()) {
 					widened.value().add(new Var<>(this.entryType.widen(entry.unwrap())));
 				}
@@ -58,7 +58,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 
 	@Override
 	public GioviList spawn() {
-		var list = new GioviList(this.entryType);
+		var list = new GioviList(this);
 		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
 			rawList.add(new Var<>(this.entryType.spawn()));
@@ -69,7 +69,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof GioviDefault) {
-			return new GioviList(entryType);
+			return new GioviList(this);
 		}
 		return GioviType.super.dot(right);
 	}

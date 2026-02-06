@@ -148,12 +148,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviInt.TYPE))),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviInt.TYPE),
-								new GioviList(GioviInt.TYPE))))));
+								new GioviList(new GioviTypeList(GioviInt.TYPE)),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))))));
 		}
 
 		@Test
@@ -339,12 +339,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviInt.TYPE))),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviInt.TYPE),
-								new GioviList(GioviInt.TYPE))))));
+								new GioviList(new GioviTypeList(GioviInt.TYPE)),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))))));
 		}
 
 	}
@@ -461,12 +461,12 @@ public class TestDefaults {
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviInt.TYPE))),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))),
 						Structs.of("Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
-								new GioviList(GioviInt.TYPE),
-								new GioviList(GioviInt.TYPE))))));
+								new GioviList(new GioviTypeList(GioviInt.TYPE)),
+								new GioviList(new GioviTypeList(GioviInt.TYPE)))))));
 		}
 
 	}
@@ -522,7 +522,7 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				[Int].default
 				"""))
-				.isEqualTo(new GioviList(GioviInt.TYPE));
+				.isEqualTo(new GioviList(new GioviTypeList(GioviInt.TYPE)));
 		}
 
 		@Test

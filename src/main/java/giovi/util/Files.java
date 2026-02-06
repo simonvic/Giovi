@@ -5,6 +5,7 @@ import java.nio.file.Path;
 
 import giovi.lang.GioviList;
 import giovi.lang.GioviText;
+import giovi.lang.GioviTypeList;
 import giovi.lang.GioviTypeText;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.lang.annotation.Native.Func;
@@ -20,7 +21,7 @@ public class Files {
 	public static @TypeList(@Type(GioviTypeText.class)) GioviList lines(
 		GioviText path
 	) throws IOException {
-		return new GioviList(GioviText.TYPE, java.nio.file.Files
+		return new GioviList(new GioviTypeList(GioviText.TYPE), java.nio.file.Files
 			.lines(Path.of(path.value()))
 			.map(GioviText::new)
 			.<Var<?>>map(Var::new)

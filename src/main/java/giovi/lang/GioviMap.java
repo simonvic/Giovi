@@ -269,8 +269,12 @@ public record GioviMap(
 			case GioviValue<?> gioviValue -> get(new Var<>(gioviValue));
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value().size());
-				case KEYS -> new GioviList(type.keyType(), new ArrayList<>(value().keySet()));
-				case VALUES -> new GioviList(type.elementType(), new ArrayList<>(value().values()));
+				case KEYS -> new GioviList(
+					new GioviTypeList(type.keyType()),
+					new ArrayList<>(value().keySet()));
+				case VALUES -> new GioviList(
+					new GioviTypeList(type.elementType()),
+					new ArrayList<>(value().values()));
 			};
 			default -> GioviValue.super.access(right);
 		};

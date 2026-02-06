@@ -82,7 +82,7 @@ public class TestModule {
 		public static final GioviText t = new GioviText("some default");
 
 		@Field
-		public static final GioviList l = new GioviList(GioviInt.TYPE);
+		public static final GioviList l = new GioviList(new GioviTypeList(GioviInt.TYPE));
 
 		@Field
 		public static final GioviMap m = new GioviMap(new GioviTypeMap(
