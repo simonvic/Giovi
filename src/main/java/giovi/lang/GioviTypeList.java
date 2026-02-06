@@ -13,14 +13,6 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		this(entryType, 0);
 	}
 
-	public GioviType<?> getEntryType() {
-		return entryType;
-	}
-
-	public Integer getInitSize() {
-		return initSize;
-	}
-
 	@Override
 	public Class<? extends GioviList> value() {
 		return GioviList.class;
@@ -44,7 +36,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeList t -> getEntryType().isWidenableTo(t.getEntryType());
+			case GioviTypeList t -> this.entryType.isWidenableTo(t.entryType);
 			default -> false;
 		};
 	}

@@ -113,7 +113,7 @@ public record GioviList(GioviType<?> entryType, List<Var<?>> value)
 		if (right instanceof GioviTypeList t) {
 			var newGioviList = t.spawn();
 			for (var entry : this.value) {
-				newGioviList.value.add(new Var<>(entry.as(t.getEntryType()).asGioviValue()));
+				newGioviList.value.add(new Var<>(entry.as(t.entryType()).asGioviValue()));
 			}
 			return newGioviList;
 		}
