@@ -58,4 +58,15 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	@Override
 	GioviType<T> copy();
 
+	@Override
+	default GioviParserVisitResult dot(GioviParserVisitResult right) {
+		return switch (right) {
+			case MemberKey(var identifier)
+				-> GioviValue.findSymbol(identifier, this.getClass())
+					.orElseGet(() -> GioviPrimitive.super.dot(right));
+			default -> GioviPrimitive.super.dot(right);
+		};
+	}
+
+
 }

@@ -269,7 +269,7 @@ public sealed interface GioviValue<T>
 	/// Lookup order is the same of [Scope]
 	public static Optional<GioviParserVisitResult> findSymbol(
 		String identifier,
-		Class<? extends GioviType<?>> clazz
+		Class<?> clazz
 	) {
 		// Constants
 		try {
