@@ -324,7 +324,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var matchedLabel = SwitchStatementDelegate.evaluate(this, ctx.switchBlock(), subject);
 		if (matchedLabel.isPresent()) {
 			enterScope();
-			var matchedLabelCtx = matchedLabel.get();
+			var matchedLabelCtx = matchedLabel.orElseThrow();
 			if (matchedLabelCtx.caseMatch() instanceof CaseMatchTypeCheckContext typeCheckCtx
 				&& typeCheckCtx.identifier() != null) {
 				var type = visit(typeCheckCtx.type());

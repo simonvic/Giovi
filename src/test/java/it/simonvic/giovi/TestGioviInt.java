@@ -76,7 +76,7 @@ public class TestGioviInt {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
-					.get()
+					.orElseThrow()
 					.unwrap()
 					.value())
 						.isEqualTo(69);
@@ -90,7 +90,7 @@ public class TestGioviInt {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
-					.get()
+					.orElseThrow()
 					.unwrap()
 					.value())
 						.isEqualTo(69);
@@ -104,7 +104,7 @@ public class TestGioviInt {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
-					.get()
+					.orElseThrow()
 					.unwrap()
 					.value())
 						.isEqualTo(69);
@@ -118,7 +118,7 @@ public class TestGioviInt {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
-					.get()
+					.orElseThrow()
 					.unwrap()
 					.value())
 						.isEqualTo(420);
@@ -132,7 +132,7 @@ public class TestGioviInt {
 					""")
 					.getCurrentScope()
 					.getVariable("x")
-					.get()
+					.orElseThrow()
 					.unwrap()
 					.value())
 						.isEqualTo(69);
