@@ -33,6 +33,7 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
+		// TODO: clarify requirements. Should we check for describedType widenability?
 		return type instanceof GioviTypeType;
 	}
 
