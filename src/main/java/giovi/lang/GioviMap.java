@@ -159,8 +159,6 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviMap(type, copyOf(zero()));
-
 			case GioviMap(var type, var value) when type.equals(this.type)
 				-> new GioviMap(this.type, copyOf(value));
 
@@ -174,7 +172,6 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> putAll(zero());
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> putAll(value);
 			default -> GioviValue.super.redirectionPlus(right);
 		}
@@ -184,7 +181,6 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> removeAll(zero());
 			case GioviMap(var type, var value) when type.equals(this.type) -> removeAll(value);
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type)
 				-> removeAllWidened(value);
@@ -209,7 +205,6 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(zero()));
 			case GioviMap v -> {
 				// NOTE: we need to check if the key and element is **equal** instead of **equals**
 				var thisEntrySet = this.value.entrySet();

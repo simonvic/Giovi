@@ -121,7 +121,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviList(this.type, copyOf(zero()));
 			case GioviList v when v.type.entryType().equals(this.type.entryType())
 				-> new GioviList(this.type, copyOf(v.value()));
 			case GioviList v when v.type.entryType().isWidenableTo(this.type.entryType())
@@ -133,7 +132,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _ -> addAll(copyOf(zero()));
 			case GioviList v when v.type.entryType().equals(this.type.entryType())
 				-> addAll(copyOf(v.value));
 			case GioviList v when v.type.entryType().isWidenableTo(this.type.entryType())
@@ -153,8 +151,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		switch (right) {
-			case GioviDefault _
-				-> removeAll(zero());
 			case GioviList v when v.type.entryType().equals(type.entryType())
 				-> removeAll(v.value);
 			case GioviList v when v.type.entryType().isWidenableTo(type.entryType())
@@ -180,7 +176,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(zero()));
 			case GioviList v -> {
 				// NOTE: we are checking if entries are **equal** instead of **equals**
 				if (this.value.size() != v.value.size()) {
