@@ -13,9 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import giovi.Natural;
 import giovi.lang.*;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.Structs;
+import it.simonvic.giovi.util.*;
 
 public class TestDefaults {
 
@@ -401,7 +399,107 @@ public class TestDefaults {
 	}
 
 	@Nested
-	class TestDotDefault {
+	class TestLiteralsDefault {
+
+		@Test
+		void testDotDefaultNatural() {
+			assertThat(
+				visitExpression("""
+				69n.default
+				""")
+			).isEqualTo(new GioviNatural());
+		}
+
+		@Test
+		void testDotDefaultInt() {
+			assertThat(
+				visitExpression("""
+				69i.default
+				""")
+			).isEqualTo(new GioviInt());
+		}
+
+		@Test
+		void testDotDefaultReal() {
+			assertThat(
+				visitExpression("""
+				69r.default
+				""")
+			).isEqualTo(new GioviReal());
+		}
+
+		@Test
+		void testDotDefaultBool() {
+			assertThat(
+				visitExpression("""
+				true.default
+				""")
+			).isEqualTo(new GioviBool());
+		}
+
+		@Test
+		void testDotDefaultText() {
+			assertThat(
+				visitExpression("""
+				"foo".default
+				""")
+			).isEqualTo(new GioviText());
+		}
+
+		@Test
+		void testDotDefaultList() {
+			assertThat(
+				visitExpression("""
+				[1 2 3].default
+				""")
+			).isEqualTo(new GioviList(GioviType.LIST_OF_INT));
+		}
+
+		@Test
+		void testDotDefaultMaps() {
+			assertThat(
+				visitExpression("""
+				["a":1, "b":2].default
+				""")
+			).isEqualTo(new GioviMap(new GioviTypeMap(GioviType.TEXT, GioviType.INT)));
+		}
+
+		@Test
+		void testDotDefaultTuple() {
+			assertThat(
+				visitExpression(
+					"""
+					<1 true "foo">.default
+					"""
+				).asGioviValue().value()
+			).isEqualTo(
+				Tuples.ofNative(
+					0, false, ""
+				)
+			);
+		}
+
+		@Test
+		void testDotDefaultRecord() {
+			assertThat(
+				visitExpression(
+					"""
+					<a:1 b:true c:"foo">.default
+					"""
+				).asGioviValue().value()
+			).isEqualTo(
+				Records.of(
+					"a", VarD.of(0),
+					"b", VarD.of(false),
+					"c", VarD.of("")
+				)
+			);
+		}
+
+	}
+
+	@Nested
+	class TestVariablesDefault {
 
 		@Test
 		void testDotDefaultNatural() {
