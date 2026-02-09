@@ -91,7 +91,7 @@ public record StructSignature(
 	/**
 	 * Check if the provided signature can be widened to this signature
 	 * @param narrow
-	 * @return true if can be widened, false otherwise
+	 * @return widened tuple
 	 */
 	public Struct widen(Tuple narrow) throws NonWideneable {
 		return new Struct(this.typename, RecordSignature.widenTuple(narrow, this.fields));

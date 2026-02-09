@@ -79,7 +79,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	/**
 	 * Check if the provided signature can be widened to this signature
 	 * @param narrow
-	 * @return true if can be widened, false otherwise
+	 * @return widened tuple
 	 */
 	public Record widen(Tuple narrow) throws NonWideneable {
 		return new Record(RecordSignature.widenTuple(narrow, this.fields));
@@ -181,7 +181,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	/**
 	 * @param wide
 	 * @param narrow
-	 * @return true if can widen
+	 * @return widened tuple
 	 */
 	public static LinkedHashMap<String, VarD<?>> widenTuple(
 		Tuple narrow,
