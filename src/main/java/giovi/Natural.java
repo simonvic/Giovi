@@ -1,5 +1,7 @@
 package giovi;
 
+import java.util.Objects;
+
 import it.simonvic.giovi.exceptions.GioviException;
 
 public final class Natural extends Number {
@@ -38,18 +40,16 @@ public final class Natural extends Number {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((value == null) ? 0 : value.hashCode());
-		return result;
+		return Objects.hash(value);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof Natural n) {
-			return value == n.intValue();
-		}
-		return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		Natural other = (Natural) obj;
+		return Objects.equals(value, other.value);
 	}
 
 	@Override
