@@ -253,12 +253,4 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviList(this.type);
-		}
-		return GioviValue.super.dot(right);
-	}
-
 }

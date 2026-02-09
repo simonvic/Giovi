@@ -64,13 +64,4 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 		return new GioviTypeMap(this.keyType.copy(), this.elementType.copy());
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviMap(this);
-		}
-		return GioviType.super.dot(right);
-	}
-
-
 }

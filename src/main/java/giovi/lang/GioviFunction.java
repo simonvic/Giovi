@@ -75,12 +75,4 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviFunction();
-		}
-		return GioviValue.super.dot(right);
-	}
-
 }

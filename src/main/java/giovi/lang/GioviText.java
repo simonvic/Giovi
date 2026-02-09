@@ -191,14 +191,6 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviText();
-		}
-		return GioviPrimitive.super.dot(right);
-	}
-
-	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {

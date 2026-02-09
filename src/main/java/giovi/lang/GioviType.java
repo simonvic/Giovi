@@ -61,6 +61,8 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	@Override
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
+			// NOTE: unlike other values, a Type's default is the zero value rather than its Type's zero (i.e. TypeType.zero)
+			case GioviDefault _ -> spawn();
 			case MemberKey(var identifier)
 				-> GioviValue.findSymbol(identifier, this.getClass())
 					.orElseGet(() -> GioviPrimitive.super.dot(right));

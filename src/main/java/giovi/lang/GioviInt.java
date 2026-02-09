@@ -261,12 +261,4 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviInt();
-		}
-		return GioviNumber.super.dot(right);
-	}
-
 }

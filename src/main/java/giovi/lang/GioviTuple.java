@@ -76,14 +76,6 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> type.spawn();
-			default -> GioviValue.super.dot(right);
-		};
-	}
-
-	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {

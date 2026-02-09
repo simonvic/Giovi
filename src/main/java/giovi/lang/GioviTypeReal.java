@@ -46,14 +46,6 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 		return GioviType.REAL;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviReal();
-		}
-		return GioviTypeNumber.super.dot(right);
-	}
-
 	@Const
 	public static final GioviReal MAX_VALUE = new GioviReal(Double.MAX_VALUE);
 

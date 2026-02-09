@@ -62,12 +62,4 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 		return new GioviTypeFunction(signature.copy());
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviFunction();
-		}
-		return GioviType.super.dot(right);
-	}
-
 }

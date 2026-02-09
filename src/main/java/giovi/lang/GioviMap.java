@@ -288,12 +288,4 @@ public record GioviMap(
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviMap(type);
-		}
-		return GioviValue.super.dot(right);
-	}
-
 }

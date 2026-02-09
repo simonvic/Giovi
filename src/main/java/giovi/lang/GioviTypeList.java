@@ -69,13 +69,4 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		return list;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviList(this);
-		}
-		return GioviType.super.dot(right);
-	}
-
-
 }

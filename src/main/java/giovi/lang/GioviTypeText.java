@@ -45,13 +45,4 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 		return GioviType.TEXT;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviText();
-		}
-		return GioviTypePrimitive.super.dot(right);
-	}
-
-
 }

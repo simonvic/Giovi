@@ -253,12 +253,4 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviNatural();
-		}
-		return GioviNumber.super.dot(right);
-	}
-
 }

@@ -55,7 +55,6 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> this.spawn();
 			case MemberKey(var identifier) when signature.containsField(identifier)
 				-> signature.getField(identifier).defaultValue().copy();
 			case MemberKey(var identifier) when signature.containsConstant(identifier)

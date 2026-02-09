@@ -45,13 +45,5 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 		return new GioviVoid();
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviVoid();
-		}
-		return GioviTypePrimitive.super.dot(right);
-	}
-
 }
 

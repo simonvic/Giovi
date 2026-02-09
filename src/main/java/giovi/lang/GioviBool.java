@@ -105,12 +105,4 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviBool();
-		}
-		return GioviPrimitive.super.dot(right);
-	}
-
 }

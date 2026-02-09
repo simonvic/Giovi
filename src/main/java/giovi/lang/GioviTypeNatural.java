@@ -48,12 +48,4 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 		return GioviType.NAT;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviNatural();
-		}
-		return GioviTypeNumber.super.dot(right);
-	}
-
 }

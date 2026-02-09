@@ -269,12 +269,4 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviReal(zero());
-		}
-		return GioviNumber.super.dot(right);
-	}
-
 }

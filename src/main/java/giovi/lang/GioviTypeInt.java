@@ -49,14 +49,5 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 		return GioviType.INT;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviInt();
-		}
-		return GioviTypeNumber.super.dot(right);
-	}
-
-
 }
 

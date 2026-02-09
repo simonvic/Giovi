@@ -45,12 +45,4 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 		return GioviType.BOOL;
 	}
 
-	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return new GioviBool();
-		}
-		return GioviTypePrimitive.super.dot(right);
-	}
-
 }

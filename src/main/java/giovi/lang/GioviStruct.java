@@ -82,7 +82,6 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> type.spawn();
 			case MemberKey(var identifier) when value.containsField(identifier) -> {
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.unwrap() instanceof GioviSelf) {
