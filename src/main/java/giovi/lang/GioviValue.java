@@ -36,7 +36,8 @@ public sealed interface GioviValue<T>
 			case Tuple v -> new GioviTuple(GioviTuples.typeFrom(v), v);
 			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(
-				"Unknown type " + value + " (" + value.getClass() + ")");
+				"Unknown type " + value + " (" + value.getClass() + ")"
+			);
 		};
 	}
 
@@ -278,9 +279,7 @@ public sealed interface GioviValue<T>
 				&& field.get(null) instanceof GioviParserVisitResult v) {
 				return Optional.of(v);
 			}
-		} catch (NoSuchFieldException
-			| IllegalArgumentException
-			| IllegalAccessException _) {
+		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException _) {
 		}
 
 		// Method

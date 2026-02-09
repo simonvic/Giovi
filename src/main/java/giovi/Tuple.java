@@ -63,10 +63,13 @@ public sealed class Tuple permits Record {
 
 	public Tuple copy(Range<Integer> range) {
 		var list = new ArrayList<VarD<?>>();
-		range.iterate(index -> list.add(
-			getField(index)
-				.orElseThrow(() -> new NoSuchField(index))
-				.copy()));
+		range.iterate(
+			index -> list.add(
+				getField(index)
+					.orElseThrow(() -> new NoSuchField(index))
+					.copy()
+			)
+		);
 		return new Tuple(list);
 	}
 

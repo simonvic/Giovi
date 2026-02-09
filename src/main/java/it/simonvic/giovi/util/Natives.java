@@ -29,7 +29,8 @@ public class Natives {
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
 				System.err.println(
-					"Non static fields are not supported. Ignoring " + classField);
+					"Non static fields are not supported. Ignoring " + classField
+				);
 				continue;
 			}
 			try {
@@ -103,7 +104,8 @@ public class Natives {
 		for (Field classField : clazz.getFields()) {
 			if (!Modifier.isStatic(classField.getModifiers())) {
 				System.err.println(
-					"Non static fields are not supported. Ignoring " + classField);
+					"Non static fields are not supported. Ignoring " + classField
+				);
 				continue;
 			}
 			try {
@@ -112,10 +114,14 @@ public class Natives {
 					continue;
 				}
 				if (classField.isAnnotationPresent(Native.Struct.Field.class)) {
-					fields.put(classField.getName(), new RecordFieldSignature(
+					fields.put(
 						classField.getName(),
-						gioviValue.getGioviType(),
-						gioviValue.copy()));
+						new RecordFieldSignature(
+							classField.getName(),
+							gioviValue.getGioviType(),
+							gioviValue.copy()
+						)
+					);
 				} else if (classField.isAnnotationPresent(Native.Const.class)) {
 					constants.put(classField.getName(), gioviValue);
 				}
@@ -135,7 +141,8 @@ public class Natives {
 			typename,
 			fields,
 			constants,
-			functions);
+			functions
+		);
 	}
 
 	// TODO: not robust enough
@@ -179,9 +186,11 @@ public class Natives {
 						| InvocationTargetException
 						| NoSuchMethodException
 						| SecurityException
-						| NonWideneable e) {
+						| NonWideneable e
+					) {
 						throw new RuntimeException(
-							"Can't invoke parameter default value method source", e);
+							"Can't invoke parameter default value method source", e
+						);
 					}
 				}
 				formalParam = new FormalParameter(paramName, paramType, defaultValue);
@@ -197,8 +206,14 @@ public class Natives {
 		if (clazz != GioviTypeVoid.class) {
 			try {
 				return clazz.getConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			} catch (
+				InstantiationException
+				| IllegalAccessException
+				| IllegalArgumentException
+				| InvocationTargetException
+				| NoSuchMethodException
+				| SecurityException e
+			) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -209,8 +224,14 @@ public class Natives {
 		if (clazz != GioviTypeVoid.class) {
 			try {
 				return clazz.getConstructor().newInstance();
-			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			} catch (
+				InstantiationException
+				| IllegalAccessException
+				| IllegalArgumentException
+				| InvocationTargetException
+				| NoSuchMethodException
+				| SecurityException e
+			) {
 				throw new RuntimeException(e);
 			}
 		}
@@ -224,7 +245,8 @@ public class Natives {
 	private static GioviType<?> gioviTypeFrom(TypeMap typeMapAnnotation) {
 		return new GioviTypeMap(
 			gioviTypeFrom(typeMapAnnotation.key()),
-			gioviTypeFrom(typeMapAnnotation.val()));
+			gioviTypeFrom(typeMapAnnotation.val())
+		);
 	}
 
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
@@ -248,7 +270,8 @@ public class Natives {
 			var typeMapAnnotation = annotatedReturnType.getAnnotationsByType(Native.Type.class);
 			return new GioviTypeMap(
 				gioviTypeFrom(typeMapAnnotation[0]),
-				gioviTypeFrom(typeMapAnnotation[1]));
+				gioviTypeFrom(typeMapAnnotation[1])
+			);
 		}
 
 		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
@@ -289,7 +312,8 @@ public class Natives {
 
 		throw new GioviException(
 			"Can't find type for parameter: " + param
-				+ " in " + param.getDeclaringExecutable());
+				+ " in " + param.getDeclaringExecutable()
+		);
 	}
 
 	public static GioviTypeStruct structTypeOf(Class<?> clazz) {

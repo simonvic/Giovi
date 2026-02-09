@@ -15,7 +15,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 		for (var field : fields) {
 			if (this.fields.putIfAbsent(field.identifier(), field) != null) {
 				throw new IllegalArgumentException(
-					"Duplicate record field identifier " + field.identifier());
+					"Duplicate record field identifier " + field.identifier()
+				);
 			}
 		}
 	}
@@ -113,8 +114,10 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	) {
 		var fields = new LinkedHashMap<String, VarD<?>>();
 		for (var field : signatureFields.values()) {
-			fields.put(field.identifier(),
-				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
+			fields.put(
+				field.identifier(),
+				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())
+			);
 		}
 		return fields;
 	}
@@ -193,16 +196,24 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			var narrowField = narrow.getField(i).orElseThrow();
 			var widerFieldSignature = iter.next();
 			// we widen the field, but use the default value of the wider field
-			widenedFields.put(widerFieldSignature.identifier(), new VarD<>(
-				widerFieldSignature.type().widen(narrowField.unwrap()),
-				widerFieldSignature.defaultValue().copy()));
+			widenedFields.put(
+				widerFieldSignature.identifier(),
+				new VarD<>(
+					widerFieldSignature.type().widen(narrowField.unwrap()),
+					widerFieldSignature.defaultValue().copy()
+				)
+			);
 		}
 		// "surplus" fields will be set to the wider field default value
 		while (iter.hasNext()) {
 			var widerFieldSignature = iter.next();
-			widenedFields.put(widerFieldSignature.identifier(), new VarD<>(
-				widerFieldSignature.defaultValue().copy(),
-				widerFieldSignature.defaultValue().copy()));
+			widenedFields.put(
+				widerFieldSignature.identifier(),
+				new VarD<>(
+					widerFieldSignature.defaultValue().copy(),
+					widerFieldSignature.defaultValue().copy()
+				)
+			);
 		}
 		return widenedFields;
 	}
@@ -263,7 +274,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			}
 			widenedFields.put(
 				widerField.identifier(),
-				new VarD<>(widenedValue, widenedDefaultValue));
+				new VarD<>(widenedValue, widenedDefaultValue)
+			);
 		}
 		return widenedFields;
 	}

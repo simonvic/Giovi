@@ -21,11 +21,13 @@ public class Files {
 	public static @TypeList(@Type(GioviTypeText.class)) GioviList lines(
 		GioviText path
 	) throws IOException {
-		return new GioviList(GioviType.LIST_OF_TEXT, java.nio.file.Files
-			.lines(Path.of(path.value()))
-			.map(GioviText::new)
-			.<Var<?>>map(Var::new)
-			.toList());
+		return new GioviList(
+			GioviType.LIST_OF_TEXT, java.nio.file.Files
+				.lines(Path.of(path.value()))
+				.map(GioviText::new)
+				.<Var<?>>map(Var::new)
+				.toList()
+		);
 	}
 
 }

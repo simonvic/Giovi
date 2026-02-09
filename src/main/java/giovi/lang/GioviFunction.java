@@ -56,7 +56,8 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 			case GioviFunction(GFunction(var signature, var bodyCtx)) -> {
 				try {
 					yield new GioviFunction(
-						new GFunction(this.value.signature().widen(signature), bodyCtx));
+						new GFunction(this.value.signature().widen(signature), bodyCtx)
+					);
 				} catch (NonWideneable e) {
 					yield GioviValue.super.redirection(content);
 				}

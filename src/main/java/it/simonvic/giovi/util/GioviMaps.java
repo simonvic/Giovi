@@ -15,24 +15,32 @@ public class GioviMaps {
 		return new GioviMap(
 			new GioviTypeMap(
 				GioviTypes.inferGioviType(entries.keySet()),
-				GioviTypes.inferGioviType(entries.values())),
-			entries);
+				GioviTypes.inferGioviType(entries.values())
+			),
+			entries
+		);
 	}
 
 	public static <K, V> GioviMap of(
 		K k1, V v1
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1
+			)
+		);
 	}
 
 	public static <K, V> GioviMap of(
 		K k1, V v1,
 		K k2, V v2
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1,
-			k2, v2));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1,
+				k2, v2
+			)
+		);
 	}
 
 	public static <K, V> GioviMap of(
@@ -40,10 +48,13 @@ public class GioviMaps {
 		K k2, V v2,
 		K k3, V v3
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1,
-			k2, v2,
-			k3, v3));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1,
+				k2, v2,
+				k3, v3
+			)
+		);
 	}
 
 	public static <K, V> GioviMap of(
@@ -52,11 +63,14 @@ public class GioviMaps {
 		K k3, V v3,
 		K k4, V v4
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1,
-			k2, v2,
-			k3, v3,
-			k4, v4));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1,
+				k2, v2,
+				k3, v3,
+				k4, v4
+			)
+		);
 	}
 
 	public static <K, V> GioviMap of(
@@ -66,12 +80,15 @@ public class GioviMaps {
 		K k4, V v4,
 		K k5, V v5
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1,
-			k2, v2,
-			k3, v3,
-			k4, v4,
-			k5, v5));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1,
+				k2, v2,
+				k3, v3,
+				k4, v4,
+				k5, v5
+			)
+		);
 	}
 
 	public static <K, V> GioviMap of(
@@ -82,13 +99,16 @@ public class GioviMaps {
 		K k5, V v5,
 		K k6, V v6
 	) {
-		return GioviMaps.of(Map.of(
-			k1, v1,
-			k2, v2,
-			k3, v3,
-			k4, v4,
-			k5, v5,
-			k6, v6));
+		return GioviMaps.of(
+			Map.of(
+				k1, v1,
+				k2, v2,
+				k3, v3,
+				k4, v4,
+				k5, v5,
+				k6, v6
+			)
+		);
 	}
 
 	public static LinkedHashMap<Var<?>, Var<?>> copyOf(LinkedHashMap<Var<?>, Var<?>> map) {

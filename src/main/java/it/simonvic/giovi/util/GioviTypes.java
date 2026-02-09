@@ -48,8 +48,9 @@ public class GioviTypes {
 			}
 			// find minimum widest type here or rework widening?
 			throw new GioviException(
-				"Impossible to infer list type.\n\tExpecting:\t" + inferred + "\n\tbut got:\t"
-					+ next);
+				"Impossible to infer list type.\n\tExpecting:\t" + inferred
+					+ "\n\tbut got:\t" + next
+			);
 		}
 		if (inferred == null) {
 			throw new GioviException("Impossible to infer list type");

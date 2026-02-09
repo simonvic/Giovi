@@ -111,10 +111,10 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() + zero().intValue()));
-			case GioviNatural(var v) -> new GioviNatural(
-				new Natural(value.intValue() + v.intValue()));
+			case GioviDefault _
+				-> new GioviNatural(new Natural(value.intValue() + zero().intValue()));
+			case GioviNatural(var v)
+				-> new GioviNatural(new Natural(value.intValue() + v.intValue()));
 			case GioviInt(var v) -> new GioviInt(value.intValue() + v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() + v);
 			default -> GioviNumber.super.plus(right);
@@ -124,10 +124,10 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() - zero().intValue()));
-			case GioviNatural(var v) -> new GioviNatural(
-				new Natural(value.intValue() - v.intValue()));
+			case GioviDefault _
+				-> new GioviNatural(new Natural(value.intValue() - zero().intValue()));
+			case GioviNatural(var v)
+				-> new GioviNatural(new Natural(value.intValue() - v.intValue()));
 			case GioviInt(var v) -> new GioviInt(value.intValue() - v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() - v);
 			default -> GioviNumber.super.minus(right);
@@ -137,10 +137,10 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() * zero().intValue()));
-			case GioviNatural(var v) -> new GioviNatural(
-				new Natural(value.intValue() * v.intValue()));
+			case GioviDefault _
+				-> new GioviNatural(new Natural(value.intValue() * zero().intValue()));
+			case GioviNatural(var v)
+				-> new GioviNatural(new Natural(value.intValue() * v.intValue()));
 			case GioviInt(var v) -> new GioviInt(value.intValue() * v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() * v);
 			default -> GioviNumber.super.multiply(right);
@@ -150,8 +150,8 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() / zero().intValue()));
+			case GioviDefault _
+				-> new GioviNatural(new Natural(value.intValue() / zero().intValue()));
 			case GioviNatural(var v) -> new GioviReal(value.doubleValue() / v.doubleValue());
 			case GioviInt(var v) -> new GioviReal(value.doubleValue() / v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() / v);
@@ -162,10 +162,10 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviNatural(
-				new Natural(value.intValue() % zero().intValue()));
-			case GioviNatural(var v) -> new GioviNatural(
-				new Natural(value.intValue() % v.intValue()));
+			case GioviDefault _
+				-> new GioviNatural(new Natural(value.intValue() % zero().intValue()));
+			case GioviNatural(var v)
+				-> new GioviNatural(new Natural(value.intValue() % v.intValue()));
 			case GioviInt(var v) -> new GioviInt(value.intValue() % v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() % v);
 			default -> GioviNumber.super.modulo(right);
@@ -176,9 +176,10 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> new GioviNatural(
-				new Natural((int) Math.pow(value.intValue(), zero().intValue())));
-			case GioviNatural(var v) -> new GioviNatural(
-				new Natural((int) Math.pow(value.intValue(), v.intValue())));
+				new Natural((int) Math.pow(value.intValue(), zero().intValue()))
+			);
+			case GioviNatural(var v)
+				-> new GioviNatural(new Natural((int) Math.pow(value.intValue(), v.intValue())));
 			case GioviInt(var v) -> new GioviInt((int) Math.pow(value.intValue(), v));
 			case GioviReal(var v) -> new GioviReal(Math.pow(value.doubleValue(), v));
 			default -> GioviNumber.super.power(right);

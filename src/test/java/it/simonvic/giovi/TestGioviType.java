@@ -21,53 +21,62 @@ public class TestGioviType {
 		return Stream.of(
 			Arguments.of(
 				GioviType.NAT,
-				GioviType.NAT),
+				GioviType.NAT
+			),
 			Arguments.of(
 				GioviType.INT,
-				GioviType.INT),
+				GioviType.INT
+			),
 			Arguments.of(
 				GioviType.REAL,
-				GioviType.REAL),
+				GioviType.REAL
+			),
 			Arguments.of(
 				GioviType.TEXT,
-				GioviType.TEXT),
+				GioviType.TEXT
+			),
 			Arguments.of(
 				GioviType.BOOL,
-				GioviType.BOOL),
+				GioviType.BOOL
+			),
 			Arguments.of(
 				GioviType.LIST_OF_INT,
-				GioviType.LIST_OF_INT),
+				GioviType.LIST_OF_INT
+			),
 			Arguments.of(
-				new GioviTypeMap(
-					GioviType.INT,
-					GioviType.TEXT),
-				new GioviTypeMap(
-					GioviType.INT,
-					GioviType.TEXT)));
+				new GioviTypeMap(GioviType.INT, GioviType.TEXT),
+				new GioviTypeMap(GioviType.INT, GioviType.TEXT)
+			)
+		);
 	}
 
 	static Stream<Arguments> produceNotEqualTypes() {
 		return Stream.of(
 			Arguments.of(
 				GioviType.NAT,
-				GioviType.INT),
+				GioviType.INT
+			),
 			Arguments.of(
 				GioviType.INT,
-				GioviType.REAL),
+				GioviType.REAL
+			),
 			Arguments.of(
 				GioviType.REAL,
-				GioviType.BOOL),
+				GioviType.BOOL
+			),
 			Arguments.of(
 				GioviType.BOOL,
-				GioviType.TEXT),
+				GioviType.TEXT
+			),
 			Arguments.of(
 				GioviType.TEXT,
-				GioviType.LIST_OF_INT),
+				GioviType.LIST_OF_INT
+			),
 			Arguments.of(
 				GioviType.LIST_OF_INT,
-				new GioviTypeMap(
-					GioviType.INT,
-					GioviType.TEXT)));
+				new GioviTypeMap(GioviType.INT, GioviType.TEXT)
+			)
+		);
 	}
 
 	@ParameterizedTest

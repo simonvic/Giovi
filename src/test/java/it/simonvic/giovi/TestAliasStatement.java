@@ -62,9 +62,11 @@ public class TestAliasStatement {
 			""")
 			.getCurrentScope();
 		assertThat(scope.getModule("Random").orElseThrow())
-			.isSameAs(scope.getModule("giovi").orElseThrow()
-				.scope().getModule("util").orElseThrow()
-				.scope().getModule("Random").orElseThrow());
+			.isSameAs(
+				scope.getModule("giovi").orElseThrow()
+					.scope().getModule("util").orElseThrow()
+					.scope().getModule("Random").orElseThrow()
+			);
 	}
 
 	@Disabled("Clarify requirements")

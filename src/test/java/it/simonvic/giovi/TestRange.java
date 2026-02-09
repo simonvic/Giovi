@@ -26,7 +26,8 @@ public class TestRange {
 			Arguments.of("[5..0]", GioviLists.of(5, 4, 3, 2, 1, 0)),
 			Arguments.of("[10..0..2]", GioviLists.of(10, 8, 6, 4, 2, 0)),
 			Arguments.of("[100..10..10]", GioviLists.of(100, 90, 80, 70, 60, 50, 40, 30, 20, 10)),
-			Arguments.of("[10..0..10]", GioviLists.of(10, 0)));
+			Arguments.of("[10..0..10]", GioviLists.of(10, 0))
+		);
 	}
 
 	@ParameterizedTest
@@ -48,7 +49,8 @@ public class TestRange {
 			Arguments.of("[10.0 .. 0.0 .. 10.0]", GioviLists.of(10d, 0d)),
 			Arguments.of("[0 .. 1 .. 0.25]", GioviLists.of(0.0, 0.25, 0.5, 0.75, 1.0)),
 			Arguments.of("[0 .. 5.0 .. 1]", GioviLists.of(0d, 1d, 2d, 3d, 4d, 5d)),
-			Arguments.of("[0.0 .. 5 .. 1]", GioviLists.of(0d, 1d, 2d, 3d, 4d, 5d)));
+			Arguments.of("[0.0 .. 5 .. 1]", GioviLists.of(0d, 1d, 2d, 3d, 4d, 5d))
+		);
 	}
 
 	@ParameterizedTest
@@ -61,7 +63,8 @@ public class TestRange {
 	private static Stream<Arguments> produceEqualListsLetters() {
 		return Stream.of(
 			Arguments.of("['a' .. 'e']", GioviLists.of("a", "b", "c", "d", "e")),
-			Arguments.of("['a' .. 'e' .. 2]", GioviLists.of("a", "c", "e")));
+			Arguments.of("['a' .. 'e' .. 2]", GioviLists.of("a", "c", "e"))
+		);
 
 	}
 
@@ -75,7 +78,8 @@ public class TestRange {
 		return Stream.of(
 			Arguments.of("[1 .. 'z']"),
 			Arguments.of("[1 .. 0.1 ..'z']"),
-			Arguments.of("[0 .. 1 ..'z']"));
+			Arguments.of("[0 .. 1 ..'z']")
+		);
 	}
 
 
@@ -84,4 +88,5 @@ public class TestRange {
 	void incompatibleValues_shouldThrow(String code) {
 		assertThrows(GioviException.class, () -> visitExpression(code));
 	}
+
 }

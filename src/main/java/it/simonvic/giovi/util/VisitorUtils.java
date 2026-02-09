@@ -145,7 +145,8 @@ public class VisitorUtils {
 					case "_out" -> System.out.println(content);
 					case "_err" -> System.err.println(content);
 					default -> throw new GioviException(
-						"Unkown primitive destination " + destination);
+						"Unkown primitive destination " + destination
+					);
 				}
 			}
 			case REDIR_PLUS, REDIR_PLUS_RTL -> {
@@ -153,11 +154,13 @@ public class VisitorUtils {
 					case "_out" -> System.out.print(content);
 					case "_err" -> System.err.print(content);
 					default -> throw new GioviException(
-						"Unkown primitive destination " + destination);
+						"Unkown primitive destination " + destination
+					);
 				}
 			}
 			default -> throw new RedirectionException(
-				"Operator not supported for primitive destination: " + operator);
+				"Operator not supported for primitive destination: " + operator
+			);
 		}
 	}
 

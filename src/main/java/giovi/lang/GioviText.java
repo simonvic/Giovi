@@ -115,10 +115,12 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 		return switch (right) {
 			case GioviText(var v) -> new GioviList(
 				GioviType.LIST_OF_TEXT,
-				new ArrayList<>(Stream.of(value
-					.split(v)) // TODO: sanitize v, it should not be treated as regex
-					.map(this::toVar)
-					.toList()));
+				new ArrayList<>(
+					Stream.of(value.split(v)) // TODO: sanitize v, it should not be treated as regex
+						.map(this::toVar)
+						.toList()
+				)
+			);
 			default -> GioviPrimitive.super.divide(right);
 		};
 	}
@@ -204,7 +206,8 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				case KEYS -> Range.of(0, value.length() - 1, 1);
 				case VALUES -> new GioviList(
 					GioviType.LIST_OF_TEXT,
-					new ArrayList<>(value.chars().boxed().map(this::toVar).toList()));
+					new ArrayList<>(value.chars().boxed().map(this::toVar).toList())
+				);
 			};
 			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
 				var sb = new StringBuilder();

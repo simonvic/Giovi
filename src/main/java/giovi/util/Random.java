@@ -29,11 +29,13 @@ public class Random {
 
 	@Func
 	public static GioviText text() {
-		return new GioviText(random.ints('a', 'z' + 1)
-			.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-			.limit(8)
-			.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-			.toString());
+		return new GioviText(
+			random.ints('a', 'z' + 1)
+				.filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+				.limit(8)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString()
+		);
 	}
 
 }

@@ -70,72 +70,77 @@ public class TestGioviInt {
 
 			@Test
 			void testRedirection() {
-				assertThat(visit("""
-					x Int
-					69 -> x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69);
+				assertThat(
+					visit("""
+						x Int
+						69 -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69);
 			}
 
 			@Test
 			void testRedirectionPlus() {
-				assertThat(visit("""
-					60 -> x Int
-					9 ->+ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69);
+				assertThat(
+					visit("""
+						60 -> x Int
+						9 ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69);
 			}
 
 			@Test
 			void testRedirectionMinus() {
-				assertThat(visit("""
-					79 -> x Int
-					10 ->- x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69);
+				assertThat(
+					visit("""
+						79 -> x Int
+						10 ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69);
 			}
 
 			@Test
 			void testRedirectionMultiply() {
-				assertThat(visit("""
-					42 -> x Int
-					10 ->* x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(420);
+				assertThat(
+					visit("""
+						42 -> x Int
+						10 ->* x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(420);
 			}
 
 			@Test
 			void testRedirectionDivide() {
-				assertThat(visit("""
-					690 -> x Int
-					10 ->/ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69);
+				assertThat(
+					visit("""
+						690 -> x Int
+						10 ->/ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69);
 			}
 
 		}

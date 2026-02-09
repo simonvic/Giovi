@@ -70,7 +70,8 @@ public class Giovi {
 		OPT_FROM_ARG,
 		OPT_FORMAT,
 		OPT_FORMAT_OUTPUT,
-		OPT_DEBUG_AST);
+		OPT_DEBUG_AST
+	);
 
 	private static void printHelp() {
 		HelpFormatter f = new HelpFormatter();

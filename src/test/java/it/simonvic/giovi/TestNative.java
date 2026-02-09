@@ -35,13 +35,16 @@ public class TestNative {
 		return Stream.of(
 			Arguments.of(
 				"giovi.util.TestModule.minimal",
-				new FunctionSignature("minimal")),
+				new FunctionSignature("minimal")
+			),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", GioviType.TEXT)),
+				new FunctionSignature("onlyReturn", GioviType.TEXT)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.onlyReturn",
-				new FunctionSignature("onlyReturn", GioviType.TEXT)),
+				new FunctionSignature("onlyReturn", GioviType.TEXT)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.manyParams",
 				new FunctionSignature(
@@ -49,20 +52,29 @@ public class TestNative {
 					new FormalParameters(
 						new FormalParameter("t", GioviType.TEXT),
 						new FormalParameter("i", GioviType.INT),
-						new FormalParameter("r", GioviType.REAL)))),
+						new FormalParameter("r", GioviType.REAL)
+					)
+				)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.paramWithLabel",
 				new FunctionSignature(
 					"paramWithLabel",
 					new FormalParameters(
-						new FormalParameter("label", "t", GioviType.TEXT)))),
+						new FormalParameter("label", "t", GioviType.TEXT)
+					)
+				)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.oneParamWithReturn",
 				new FunctionSignature(
 					"oneParamWithReturn",
 					new FormalParameters(
-						new FormalParameter("t", GioviType.TEXT)),
-					GioviType.TEXT)),
+						new FormalParameter("t", GioviType.TEXT)
+					),
+					GioviType.TEXT
+				)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.complex",
 				new FunctionSignature(
@@ -71,11 +83,17 @@ public class TestNative {
 						new FormalParameter("i", GioviType.INT),
 						new FormalParameter("s", new GioviTypeStruct(structSignatureOf(Rgb.class))),
 						new FormalParameter("l", GioviType.LIST_OF_INT),
-						new FormalParameter("m",
+						new FormalParameter(
+							"m",
 							new GioviTypeMap(
 								GioviType.TEXT,
-								new GioviTypeStruct(structSignatureOf(Rgb.class))))),
-					GioviType.INT)),
+								new GioviTypeStruct(structSignatureOf(Rgb.class))
+							)
+						)
+					),
+					GioviType.INT
+				)
+			),
 			Arguments.of(
 				"giovi.util.TestModule.getListOfPrimitive",
 				new FunctionSignature(
@@ -107,13 +125,18 @@ public class TestNative {
 			new RecordFieldSignature("i", GioviType.INT),
 			new RecordFieldSignature("t", GioviType.TEXT, new GioviText("some default")),
 			new RecordFieldSignature("l", GioviType.LIST_OF_INT),
-			new RecordFieldSignature("m", new GioviTypeMap(
-				GioviType.TEXT,
-				GioviType.INT)));
+			new RecordFieldSignature(
+				"m", new GioviTypeMap(
+					GioviType.TEXT,
+					GioviType.INT
+				)
+			)
+		);
 		expectedSignature.constants().put("SOME_CONST", new GioviInt(69));
 		expectedSignature.functions().put(
 			"someFunc",
-			new GioviFunction(new JFunction(TestStruct.class.getMethod("someFunc"))));
+			new GioviFunction(new JFunction(TestStruct.class.getMethod("someFunc")))
+		);
 		var actualSignature = visitExpression("giovi.util.TestModule.TestStruct");
 		assertThat(actualSignature)
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
@@ -128,10 +151,14 @@ public class TestNative {
 			new RecordFieldSignature("i", GioviType.INT),
 			new RecordFieldSignature("t", GioviType.TEXT, new GioviText("some default")),
 			new RecordFieldSignature("l", GioviType.LIST_OF_INT),
-			new RecordFieldSignature("m", new GioviTypeMap(
-				GioviType.TEXT,
-				GioviType.INT)),
-			new RecordFieldSignature("i2", GioviType.INT, new GioviInt(420)));
+			new RecordFieldSignature(
+				"m", new GioviTypeMap(
+					GioviType.TEXT,
+					GioviType.INT
+				)
+			),
+			new RecordFieldSignature("i2", GioviType.INT, new GioviInt(420))
+		);
 		assertThat(visitExpression("giovi.util.TestModule.TestSubModule.TestStructExtends"))
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
@@ -152,7 +179,8 @@ public class TestNative {
 			root.capitalize -> _out
 			root.capitalize() -> _out
 
-			""");
+			"""
+		);
 	}
 
 }

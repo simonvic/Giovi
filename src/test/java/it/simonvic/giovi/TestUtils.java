@@ -35,7 +35,8 @@ public class TestUtils {
 				Arguments.of(GioviText.class, GioviValue.of("hello")),
 				Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 				Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.ofNative("a", "a"))));
+				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.ofNative("a", "a")))
+			);
 		}
 
 		@ParameterizedTest
@@ -54,7 +55,8 @@ public class TestUtils {
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
 				Arguments.of(Tuple.class, GioviValue.of(Tuples.ofNative("a", "a"))),
-				Arguments.of(Record.class, GioviValue.of(Records.of("a", VarD.of("a")))));
+				Arguments.of(Record.class, GioviValue.of(Records.of("a", VarD.of("a"))))
+			);
 		}
 
 		@ParameterizedTest
@@ -75,7 +77,8 @@ public class TestUtils {
 				Arguments.of(new GioviInt(69), new GioviInt(69)),
 				Arguments.of(new GioviReal(4.20), new GioviReal(4.20)),
 				Arguments.of(new GioviBool(true), new GioviBool(true)),
-				Arguments.of(new GioviText("hello"), new GioviText("hello")));
+				Arguments.of(new GioviText("hello"), new GioviText("hello"))
+			);
 		}
 
 		@ParameterizedTest
@@ -95,7 +98,8 @@ public class TestUtils {
 				Arguments.of(new GioviInt(420), new GioviInt(69)),
 				Arguments.of(new GioviReal(4.20), new GioviReal(6.9)),
 				Arguments.of(new GioviBool(true), new GioviBool(false)),
-				Arguments.of(new GioviText("hello"), new GioviText("heLLo")));
+				Arguments.of(new GioviText("hello"), new GioviText("heLLo"))
+			);
 		}
 
 		@ParameterizedTest
@@ -111,16 +115,21 @@ public class TestUtils {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 4)),
-						GioviValue.of(List.of(1, 2, 3, 4))),
+						GioviValue.of(List.of(1, 2, 3, 4))
+					),
 					Arguments.of(
 						GioviValue.of(List.of(1d, 2d, 3d, 4d)),
-						GioviValue.of(List.of(1d, 2d, 3d, 4d))),
+						GioviValue.of(List.of(1d, 2d, 3d, 4d))
+					),
 					Arguments.of(
 						GioviValue.of(List.of(true, false, true, true)),
-						GioviValue.of(List.of(true, false, true, true))),
+						GioviValue.of(List.of(true, false, true, true))
+					),
 					Arguments.of(
 						GioviValue.of(List.of("simone", "mario", "luigi")),
-						GioviValue.of(List.of("simone", "mario", "luigi"))));
+						GioviValue.of(List.of("simone", "mario", "luigi"))
+					)
+				);
 			}
 
 			@ParameterizedTest
@@ -133,13 +142,17 @@ public class TestUtils {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 69)),
-						GioviValue.of(List.of(1, 2, 3, 4))),
+						GioviValue.of(List.of(1, 2, 3, 4))
+					),
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3)),
-						GioviValue.of(List.of(1, 2, 3, 4))),
+						GioviValue.of(List.of(1, 2, 3, 4))
+					),
 					Arguments.of(
 						GioviValue.of(List.of(1, 2, 3, 4)),
-						GioviValue.of(List.of(1, 2, 3))));
+						GioviValue.of(List.of(1, 2, 3))
+					)
+				);
 			}
 
 			@ParameterizedTest
@@ -157,10 +170,13 @@ public class TestUtils {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
+					),
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(2, "b", 1, "a", 3, "c"))));
+						GioviValue.of(Map.of(2, "b", 1, "a", 3, "c"))
+					)
+				);
 			}
 
 			@ParameterizedTest
@@ -173,16 +189,21 @@ public class TestUtils {
 				return Stream.of(
 					Arguments.of(
 						GioviValue.of(Map.of(1, "A", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
+					),
 					Arguments.of(
 						GioviValue.of(Map.of(69, "a", 2, "b", 3, "c")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
+					),
 					Arguments.of(
 						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c", 4, "d")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))),
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
+					),
 					Arguments.of(
 						GioviValue.of(Map.of("1", "a", "2", "b", "3", "c", "4", "d")),
-						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))));
+						GioviValue.of(Map.of(1, "a", 2, "b", 3, "c"))
+					)
+				);
 			}
 
 			@ParameterizedTest
@@ -203,7 +224,8 @@ public class TestUtils {
 		void test_GioviListsOf() {
 			assertEquals(
 				GioviLists.of("Simone", "Francesco", "Mario"),
-				GioviLists.of("Simone", "Francesco", "Mario"));
+				GioviLists.of("Simone", "Francesco", "Mario")
+			);
 		}
 
 		@Test
@@ -229,10 +251,13 @@ public class TestUtils {
 			assertEquals(
 				Records.of(
 					"foo", VarD.of("lol"),
-					"bar", VarD.of(true)),
+					"bar", VarD.of(true)
+				),
 				Records.of(
 					"foo", VarD.of("lol"),
-					"bar", VarD.of(true)));
+					"bar", VarD.of(true)
+				)
+			);
 		}
 
 		@Test
@@ -241,36 +266,48 @@ public class TestUtils {
 				Records.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
-					"foobar", VarD.of(Records.of(
-						"x", VarD.of(0),
-						"y", VarD.of(0)))),
+					"foobar", VarD.of(
+						Records.of(
+							"x", VarD.of(0),
+							"y", VarD.of(0)
+						)
+					)
+				),
 				Records.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
-					"foobar", VarD.of(Records.of(
-						"x", VarD.of(0),
-						"y", VarD.of(0)))));
+					"foobar", VarD.of(
+						Records.of(
+							"x", VarD.of(0),
+							"y", VarD.of(0)
+						)
+					)
+				)
+			);
 		}
 
 		@Test
 		void tuples_withSameFieldsAndEqualValues_shouldBeEquals() {
 			assertEquals(
 				GioviTuples.of(69, true, "hello"),
-				GioviTuples.of(69, true, "hello"));
+				GioviTuples.of(69, true, "hello")
+			);
 		}
 
 		@Test
 		void tuples_withDifferentFieldType_shouldNotBeEquals() {
 			assertNotEquals(
 				GioviTuples.of(69, true, "hello"),
-				GioviTuples.of(69, "hello", true));
+				GioviTuples.of(69, "hello", true)
+			);
 		}
 
 		@Test
 		void tuples_withDifferentValues_shouldNotBeEquals() {
 			assertNotEquals(
 				GioviTuples.of(69, true, "hello"),
-				GioviTuples.of(69, true, "HELLO"));
+				GioviTuples.of(69, true, "HELLO")
+			);
 		}
 
 	}
@@ -285,12 +322,15 @@ public class TestUtils {
 					"Foobar",
 					"foo", 69,
 					"bar", true,
-					"foobar", "hello"),
+					"foobar", "hello"
+				),
 				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
 					"bar", true,
-					"foobar", "hello"));
+					"foobar", "hello"
+				)
+			);
 		}
 
 		@Test
@@ -299,10 +339,13 @@ public class TestUtils {
 				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
-					"bar", true),
+					"bar", true
+				),
 				GioviStructs.ofNative(
 					"Foobar",
-					"foo", 69));
+					"foo", 69
+				)
+			);
 		}
 
 		@Test
@@ -311,11 +354,14 @@ public class TestUtils {
 				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
-					"bar", true),
+					"bar", true
+				),
 				GioviStructs.ofNative(
 					"Foobar",
 					"foo", 69,
-					"bar", 420));
+					"bar", 420
+				)
+			);
 		}
 
 	}

@@ -18,10 +18,16 @@ public class GioviRecords {
 
 	public static RecordSignature signatureFrom(Record value) {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
-		value.forEach((identifier, field) -> fields.put(identifier, new RecordFieldSignature(
-			identifier,
-			field.unwrap().getGioviType(),
-			field.defaultValue())));
+		value.forEach(
+			(identifier, field) -> fields.put(
+				identifier,
+				new RecordFieldSignature(
+					identifier,
+					field.unwrap().getGioviType(),
+					field.defaultValue()
+				)
+			)
+		);
 		return new RecordSignature(fields);
 	}
 
@@ -98,7 +104,8 @@ public class GioviRecords {
 		String i1, GioviType<?> t1
 	) {
 		return new RecordSignature(
-			new RecordFieldSignature(i1, t1));
+			new RecordFieldSignature(i1, t1)
+		);
 	}
 
 	public static RecordSignature signatureOf(
@@ -107,7 +114,8 @@ public class GioviRecords {
 	) {
 		return new RecordSignature(
 			new RecordFieldSignature(i1, t1),
-			new RecordFieldSignature(i2, t2));
+			new RecordFieldSignature(i2, t2)
+		);
 	}
 
 	public static RecordSignature signatureOf(
@@ -118,7 +126,8 @@ public class GioviRecords {
 		return new RecordSignature(
 			new RecordFieldSignature(i1, t1),
 			new RecordFieldSignature(i2, t2),
-			new RecordFieldSignature(i3, t3));
+			new RecordFieldSignature(i3, t3)
+		);
 	}
 
 	public static RecordSignature signatureOf(
@@ -131,7 +140,8 @@ public class GioviRecords {
 			new RecordFieldSignature(i1, t1),
 			new RecordFieldSignature(i2, t2),
 			new RecordFieldSignature(i3, t3),
-			new RecordFieldSignature(i4, t4));
+			new RecordFieldSignature(i4, t4)
+		);
 	}
 
 	public static RecordSignature signatureOf(
@@ -146,7 +156,8 @@ public class GioviRecords {
 			new RecordFieldSignature(i2, t2),
 			new RecordFieldSignature(i3, t3),
 			new RecordFieldSignature(i4, t4),
-			new RecordFieldSignature(i5, t5));
+			new RecordFieldSignature(i5, t5)
+		);
 	}
 
 	public static GioviRecord redirection(GioviRecord dest, GioviTuple content) {

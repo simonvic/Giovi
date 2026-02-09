@@ -77,21 +77,26 @@ public record FormalParameters(
 		}
 		if (!this.parameters.keySet().containsAll(narrowParams.keySet())) {
 			throw new NonWideneable(
-				"Signature has parameter not contained in widening target signature");
+				"Signature has parameter not contained in widening target signature"
+			);
 		}
 		var widenedParams = new LinkedHashMap<String, FormalParameter>();
 		for (var widerParam : this.parameters.values()) {
 			var widerIdentifier = widerParam.identifier();
 			var widerType = widerParam.type();
 			// TODO: clarify requirements about optionality and labels
-			widenedParams.put(widerParam.identifier(), new FormalParameter(
-				widerParam.label(),
-				widerIdentifier,
-				widerType,
-				narrowParams.containsKey(widerIdentifier)
-					? narrowParams.get(widerIdentifier).param().widenTo(widerType)
-					: widerParam.param().copy(),
-				widerParam.isOptional()));
+			widenedParams.put(
+				widerParam.identifier(),
+				new FormalParameter(
+					widerParam.label(),
+					widerIdentifier,
+					widerType,
+					narrowParams.containsKey(widerIdentifier)
+						? narrowParams.get(widerIdentifier).param().widenTo(widerType)
+						: widerParam.param().copy(),
+					widerParam.isOptional()
+				)
+			);
 		}
 		return new FormalParameters(widenedParams);
 	}

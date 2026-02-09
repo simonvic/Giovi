@@ -63,85 +63,91 @@ public class TestGioviReal {
 
 			@Test
 			void redirToDeclaration_shouldInitialize() {
-				assertThat(visit("""
-					69r -> x Real
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						69r -> x Real
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 			@Test
 			void redir_shouldChangeValue() {
-				assertThat(visit("""
-					x Real
-					69r -> x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						x Real
+						69r -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 			@Test
 			void redirPlus_shouldIncrement() {
-				assertThat(visit("""
-					60r -> x Real
-					9r ->+ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						60r -> x Real
+						9r ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 			@Test
 			void redirMinus_shouldDecrement() {
-				assertThat(visit("""
-					79r -> x Real
-					10r ->- x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						79r -> x Real
+						10r ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 			@Test
 			void redirStar_shouldMultiply() {
-				assertThat(visit("""
-					6.9r -> x Real
-					10r ->* x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						6.9r -> x Real
+						10r ->* x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 			@Test
 			void redirDiv_shouldDivide() {
-				assertThat(visit("""
-					690r -> x Real
-					10r ->/ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(69d);
+				assertThat(
+					visit("""
+						690r -> x Real
+						10r ->/ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(69d);
 			}
 
 		}

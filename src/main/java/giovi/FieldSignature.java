@@ -7,6 +7,7 @@ import giovi.lang.GioviValue;
 public interface FieldSignature extends GioviParserVisitResult {
 
 	GioviType<?> type();
+
 	GioviValue<?> defaultValue();
 
 }

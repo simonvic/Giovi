@@ -249,7 +249,8 @@ public class Scope {
 		"Int", GioviType.INT,
 		"Real", GioviType.REAL,
 		"Bool", GioviType.BOOL,
-		"Text", GioviType.TEXT);
+		"Text", GioviType.TEXT
+	);
 
 	public Optional<GioviType<?>> getType(String typename) {
 		if (primitiveTypes.containsKey(typename)) {
@@ -263,12 +264,13 @@ public class Scope {
 	}
 
 	/// Breadth-first search of a symbol.
+	///
 	/// The following order will be used when looking up the symbol:
-	///   - variables
-	///   - constants
-	///   - functions
-	///   - types
-	///   - modules
+	/// - variables
+	/// - constants
+	/// - functions
+	/// - types
+	/// - modules
 	public Optional<GioviParserVisitResult> getSymbol(String identifier) {
 		if (variables.containsKey(identifier)) {
 			return Optional.of(variables.get(identifier));

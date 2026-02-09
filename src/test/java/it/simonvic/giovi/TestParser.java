@@ -12,25 +12,28 @@ public class TestParser {
 
 	@Test
 	void parse() {
-		assertThatNoException()
-			.isThrownBy(() -> new GioviParserBaseVisitor<GioviParserVisitResult>().visit(parserOf("""
-				=> foo()
-				=> foo.foo.foo()
-				=> foo().foo()
-				=> foo()()
-				=> {foo}()
+		assertThatNoException().isThrownBy(
+			() -> new GioviParserBaseVisitor<GioviParserVisitResult>().visit(
+				parserOf("""
+					=> foo()
+					=> foo.foo.foo()
+					=> foo().foo()
+					=> foo()()
+					=> {foo}()
 
-				foo()
-				foo.foo.foo()
-				foo().foo()
-				foo()()
-				{foo}()
+					foo()
+					foo.foo.foo()
+					foo().foo()
+					foo()()
+					{foo}()
 
-				=> ::foo.foo.foo
-				=> ::Foo.foo.foo
-				=> ::Foo.foo().foo
-				""")
-				.begin()));
+					=> ::foo.foo.foo
+					=> ::Foo.foo.foo
+					=> ::Foo.foo().foo
+					""")
+					.begin()
+			)
+		);
 	}
 
 }

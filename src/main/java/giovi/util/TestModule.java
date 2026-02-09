@@ -69,7 +69,8 @@ public class TestModule {
 		return GioviMaps.of(
 			"a", 1,
 			"b", 2,
-			"c", 3);
+			"c", 3
+		);
 	}
 
 	@Struct
@@ -85,9 +86,9 @@ public class TestModule {
 		public static final GioviList l = new GioviList(GioviType.LIST_OF_INT);
 
 		@Field
-		public static final GioviMap m = new GioviMap(new GioviTypeMap(
-			GioviType.TEXT,
-			GioviType.INT));
+		public static final GioviMap m = new GioviMap(
+			new GioviTypeMap(GioviType.TEXT, GioviType.INT)
+		);
 
 		@Const
 		public static final GioviInt SOME_CONST = new GioviInt(69);

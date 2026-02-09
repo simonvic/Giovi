@@ -110,7 +110,8 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 			case Range(Integer _, _, _, _)
 				-> new GioviRecord(
 					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
-					this.value.copy((Range<Integer>) right));
+					this.value.copy((Range<Integer>) right)
+				);
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));

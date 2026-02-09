@@ -10,14 +10,14 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 public record TupleSignature(List<TupleFieldSignature> fields) {
 
 	public TupleSignature(TupleFieldSignature... fields) {
-        this(Arrays.asList(fields));
-    }
+		this(Arrays.asList(fields));
+	}
 
 	public TupleSignature() {
-        this(new ArrayList<>());
-    }
+		this(new ArrayList<>());
+	}
 
-    @Override
+	@Override
 	public String toString() {
 		if (fields.isEmpty()) return "Tuple<>";
 		var sb = new StringBuilder("Tuple<");
@@ -104,16 +104,22 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 			var narrowField = narrow.getField(i).orElseThrow();
 			var thisFieldSignature = this.fields.get(i);
 			// we widen the field, but use the default value of the wider field
-			widenedFields.add(new VarD<>(
-				thisFieldSignature.type().widen(narrowField.unwrap()),
-				thisFieldSignature.defaultValue().copy()));
+			widenedFields.add(
+				new VarD<>(
+					thisFieldSignature.type().widen(narrowField.unwrap()),
+					thisFieldSignature.defaultValue().copy()
+				)
+			);
 		}
 		// "surplus" fields will be set to the wider field default value
 		for (int i = narrow.getFieldsCount(); i < this.fields.size(); i++) {
 			var thisFieldSignature = this.fields.get(i);
-			widenedFields.add(new VarD<>(
-				thisFieldSignature.defaultValue().copy(),
-				thisFieldSignature.defaultValue().copy()));
+			widenedFields.add(
+				new VarD<>(
+					thisFieldSignature.defaultValue().copy(),
+					thisFieldSignature.defaultValue().copy()
+				)
+			);
 		}
 		return new Tuple(widenedFields);
 	}

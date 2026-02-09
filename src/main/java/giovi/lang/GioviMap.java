@@ -34,7 +34,8 @@ public record GioviMap(
 			for (var entry : value.entrySet()) {
 				this.value.put(
 					entry.getKey().widenTo(this.type.keyType()),
-					entry.getValue().widenTo(this.type.elementType()));
+					entry.getValue().widenTo(this.type.elementType())
+				);
 			}
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
@@ -57,7 +58,8 @@ public record GioviMap(
 		try {
 			value.put(
 				key.widenTo(type.keyType()),
-				element.widenTo(type.elementType()));
+				element.widenTo(type.elementType())
+			);
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
 		}
@@ -86,7 +88,8 @@ public record GioviMap(
 			for (var entry : entries.entrySet()) {
 				value.remove(
 					entry.getKey().widenTo(type.keyType()),
-					entry.getValue().widenTo(type.elementType()));
+					entry.getValue().widenTo(type.elementType())
+				);
 			}
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
@@ -140,9 +143,12 @@ public record GioviMap(
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		if (right instanceof GioviTypeMap t) {
 			var map = new GioviMap(type);
-			this.value.forEach((k, e) -> map.value.put(
-				new Var<>(k.as(t.getKeyType()).asGioviValue()),
-				new Var<>(e.as(t.getElementType()).asGioviValue())));
+			this.value.forEach(
+				(k, e) -> map.value.put(
+					new Var<>(k.as(t.getKeyType()).asGioviValue()),
+					new Var<>(e.as(t.getElementType()).asGioviValue())
+				)
+			);
 			return map;
 		}
 		return GioviValue.super.as(right);
@@ -271,10 +277,12 @@ public record GioviMap(
 				case COUNT -> new GioviInt(value().size());
 				case KEYS -> new GioviList(
 					new GioviTypeList(type.keyType()),
-					new ArrayList<>(value().keySet()));
+					new ArrayList<>(value().keySet())
+				);
 				case VALUES -> new GioviList(
 					new GioviTypeList(type.elementType()),
-					new ArrayList<>(value().values()));
+					new ArrayList<>(value().values())
+				);
 			};
 			default -> GioviValue.super.access(right);
 		};

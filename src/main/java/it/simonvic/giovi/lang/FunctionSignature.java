@@ -17,7 +17,8 @@ public record FunctionSignature(
 	public static final FunctionSignature EMPTY = new FunctionSignature(
 		"",
 		new FormalParameters(),
-		GioviType.VOID);
+		GioviType.VOID
+	);
 
 	public FunctionSignature(String identifier) {
 		this(identifier, new FormalParameters(), GioviType.VOID);
@@ -100,12 +101,14 @@ public record FunctionSignature(
 	public FunctionSignature widen(FunctionSignature narrow) throws NonWideneable {
 		if (!narrow.returnType.isWidenableTo(this.returnType)) {
 			throw new NonWideneable(
-				"Can't widen return type " + narrow.returnType + " to " + this.returnType);
+				"Can't widen return type " + narrow.returnType + " to " + this.returnType
+			);
 		}
 		return new FunctionSignature(
 			this.identifier,
 			this.parameters.widen(narrow.parameters),
-			this.returnType); // TODO: this should be this.returnType.getGioviType().widen(narrow.returnType));
+			this.returnType
+		); // TODO: this should be this.returnType.getGioviType().widen(narrow.returnType));
 	}
 
 }

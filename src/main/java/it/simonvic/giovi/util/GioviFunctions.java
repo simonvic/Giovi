@@ -15,19 +15,29 @@ public class GioviFunctions {
 		String identifier,
 		FormalParameter... formalParameters
 	) {
-		return new GioviFunction(new GFunction(new FunctionSignature(
-			identifier,
-			new FormalParameters(formalParameters),
-			returnType)));
+		return new GioviFunction(
+			new GFunction(
+				new FunctionSignature(
+					identifier,
+					new FormalParameters(formalParameters),
+					returnType
+				)
+			)
+		);
 	}
 
 	public static GioviFunction of(
 		String identifier,
 		FormalParameter... formalParameters
 	) {
-		return new GioviFunction(new GFunction(new FunctionSignature(
-			identifier,
-			new FormalParameters(formalParameters))));
+		return new GioviFunction(
+			new GFunction(
+				new FunctionSignature(
+					identifier,
+					new FormalParameters(formalParameters)
+				)
+			)
+		);
 	}
 
 	public static GioviTypeFunction typeOf(
@@ -35,19 +45,25 @@ public class GioviFunctions {
 		String identifier,
 		FormalParameter... formalParameters
 	) {
-		return new GioviTypeFunction(new FunctionSignature(
-			identifier,
-			new FormalParameters(formalParameters),
-			returnType));
+		return new GioviTypeFunction(
+			new FunctionSignature(
+				identifier,
+				new FormalParameters(formalParameters),
+				returnType
+			)
+		);
 	}
 
 	public static GioviTypeFunction typeOf(
 		String identifier,
 		FormalParameter... formalParameters
 	) {
-		return new GioviTypeFunction(new FunctionSignature(
-			identifier,
-			new FormalParameters(formalParameters)));
+		return new GioviTypeFunction(
+			new FunctionSignature(
+				identifier,
+				new FormalParameters(formalParameters)
+			)
+		);
 	}
 
 }

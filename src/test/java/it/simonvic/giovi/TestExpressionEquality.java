@@ -9,7 +9,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class TestExpressionEquality {
 
 	@ParameterizedTest
-	@CsvSource(textBlock = """
+	@CsvSource(
+		textBlock = """
 		10 = 10, true
 		10 = 50, false
 		10.0 = 10, true
@@ -25,7 +26,8 @@ public class TestExpressionEquality {
 	}
 
 	@ParameterizedTest
-	@CsvSource(textBlock = """
+	@CsvSource(
+		textBlock = """
 		"simone" = "simone", true
 		"simone" = "Simone", false
 		"simone" != "simone", false
@@ -37,7 +39,8 @@ public class TestExpressionEquality {
 	}
 
 	@ParameterizedTest
-	@CsvSource(textBlock = """
+	@CsvSource(
+		textBlock = """
 		[0 1 2 3] = [0 1 2 3], true
 		[0 1 2 3] = [0 1 2 3 4], false
 		[0 1 2 3] = [0 1 2], false
@@ -48,7 +51,8 @@ public class TestExpressionEquality {
 	}
 
 	@ParameterizedTest
-	@CsvSource(textBlock = """
+	@CsvSource(
+		textBlock = """
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:3], true
 		[0:"a" 1:"b" 2:"c" 3:"d"] = [0:"a" 1:"b" 2:"c" 3:"d"], true
 		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:69], false

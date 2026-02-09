@@ -22,7 +22,8 @@ public class TestGioviText {
 			assertThat(visitExpression("""
 				"hello world"
 				""").asGioviText().value()).isEqualTo(
-				"hello world");
+				"hello world"
+			);
 		}
 
 		@Test
@@ -30,7 +31,8 @@ public class TestGioviText {
 			assertThat(visitExpression("""
 				'hello world'
 				""").asGioviText().value()).isEqualTo(
-				"hello world");
+				"hello world"
+			);
 		}
 
 		@Nested
@@ -41,7 +43,8 @@ public class TestGioviText {
 				assertThat(visitExpression("""
 					"{}"
 					""").asGioviText().value()).isEqualTo(
-					"");
+					""
+				);
 			}
 
 			@Test
@@ -49,7 +52,8 @@ public class TestGioviText {
 				assertThat(visitExpression("""
 					"{hello world}"
 					""").asGioviText().value()).isEqualTo(
-					"hello world");
+					"hello world"
+				);
 			}
 
 			@Test
@@ -123,7 +127,8 @@ public class TestGioviText {
 						world
 						}"
 						""").asGioviText().value()).isEqualTo(
-						"\thello\nworld\n");
+						"\thello\nworld\n"
+					);
 				}
 
 				@Test
@@ -134,7 +139,8 @@ public class TestGioviText {
 							world
 							}"
 						""").asGioviText().value()).isEqualTo(
-						"hello\nworld\n");
+						"hello\nworld\n"
+					);
 				}
 
 				@Test
@@ -146,7 +152,8 @@ public class TestGioviText {
 										!!!
 								}"
 						""").asGioviText().value()).isEqualTo(
-						"\thello\nworld\n\t\t!!!\n");
+						"\thello\nworld\n\t\t!!!\n"
+					);
 				}
 
 				@Test
@@ -158,7 +165,8 @@ public class TestGioviText {
 									!!!
 								}"
 						""").asGioviText().value()).isEqualTo(
-						"\thello\n\tworld\n\t!!!\n");
+						"\thello\n\tworld\n\t!!!\n"
+					);
 				}
 
 				@Test
@@ -170,7 +178,8 @@ public class TestGioviText {
 						            !!!
 						    }"
 						""").asGioviText().value()).isEqualTo(
-						"    hello\nworld\n        !!!\n");
+						"    hello\nworld\n        !!!\n"
+					);
 				}
 
 				@Test
@@ -182,7 +191,8 @@ public class TestGioviText {
 						        !!!
 						    }"
 						""").asGioviText().value()).isEqualTo(
-						"    hello\n    world\n    !!!\n");
+						"    hello\n    world\n    !!!\n"
+					);
 				}
 
 				@Test
@@ -194,7 +204,8 @@ public class TestGioviText {
 								    !!!
 								    }"
 						""").asGioviText().value()).isEqualTo(
-						"    hello\n    world\n    !!!\n    ");
+						"    hello\n    world\n    !!!\n    "
+					);
 				}
 
 				@Test
@@ -206,7 +217,8 @@ public class TestGioviText {
 								    !!!
 								  }"
 						""").asGioviText().value()).isEqualTo(
-						"\thello\n  world\n    !!!\n  ");
+						"\thello\n  world\n    !!!\n  "
+					);
 				}
 
 				@Test
@@ -218,7 +230,8 @@ public class TestGioviText {
 						    	!!!
 						    	}"
 						""").asGioviText().value()).isEqualTo(
-						"\thello\n\tworld\n\t!!!\n\t");
+						"\thello\n\tworld\n\t!!!\n\t"
+					);
 				}
 
 			}
@@ -237,58 +250,62 @@ public class TestGioviText {
 
 			@Test
 			void redir_shouldChangeValue() {
-				assertThat(visit("""
-					x Text
-					"foo" -> x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo("foo");
+				assertThat(
+					visit("""
+						x Text
+						"foo" -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo("foo");
 			}
 
 			@Test
 			void redirPlus_shouldAppend() {
-				assertThat(visit("""
-					"foo" -> x Text
-					"bar" ->+ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo("foobar");
+				assertThat(
+					visit("""
+						"foo" -> x Text
+						"bar" ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo("foobar");
 			}
 
 			@Test
 			void redirMinus_shouldRemove() {
-				assertThat(visit("""
-					"foobar" -> x Text
-					"foo" ->- x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo("bar");
+				assertThat(
+					visit("""
+						"foobar" -> x Text
+						"foo" ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo("bar");
 			}
 
 			@Test
 			void redirMinus_shouldRemoveAllOccurences() {
-				assertThat(visit("""
-					"foobarfoo" -> x Text
-					"foo" ->- x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo("bar");
+				assertThat(
+					visit("""
+						"foobarfoo" -> x Text
+						"foo" ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo("bar");
 			}
 
 		}
@@ -302,7 +319,8 @@ public class TestGioviText {
 				assertThat(visitExpression("""
 					"hello" + " world"
 					""").asGioviText().value()).isEqualTo(
-					"hello world");
+					"hello world"
+				);
 			}
 
 			@Test
@@ -310,7 +328,8 @@ public class TestGioviText {
 				assertThat(visitExpression("""
 					"hello world" - "o"
 					""").asGioviText().value()).isEqualTo(
-					"hell wrld");
+					"hell wrld"
+				);
 			}
 
 			@Test
@@ -318,15 +337,19 @@ public class TestGioviText {
 				assertThat(visitExpression("""
 					"Hello" ^ 3
 					""").asGioviText().value()).isEqualTo(
-					"HelloHelloHello");
+					"HelloHelloHello"
+				);
 			}
 
 			@Test
 			void divide_shouldSplit() {
 				assertThat(visitExpression("""
 					"hello-beatiful-world" / "-"
-					""")).isEqualTo(GioviLists.of(
-					"hello", "beatiful", "world"));
+					""")).isEqualTo(
+					GioviLists.of(
+						"hello", "beatiful", "world"
+					)
+				);
 			}
 
 		}
@@ -396,7 +419,8 @@ public class TestGioviText {
 				""")
 			void accessWithNegativeInt_shouldReturnCharAtRearIndex(
 				String expression,
-				String expected) {
+				String expected
+			) {
 				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
@@ -434,7 +458,8 @@ public class TestGioviText {
 				""")
 			void accessWithInverseRange_shouldReturnSubstringReversed(
 				String expression,
-				String expected) {
+				String expected
+			) {
 				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}
@@ -471,7 +496,8 @@ public class TestGioviText {
 				""")
 			void accessWithInverseStepRange_shouldReturnSubstringReversed(
 				String expression,
-				String expected) {
+				String expected
+			) {
 				assertThat(visitExpression(expression).asGioviText().value())
 					.isEqualTo(expected);
 			}

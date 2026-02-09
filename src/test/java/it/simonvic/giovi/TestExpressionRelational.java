@@ -15,8 +15,7 @@ public class TestExpressionRelational {
 		-1 > -5, true
 		10 > -10, true
 		-10 > 10, false
-		"""
-	)
+		""")
 	void testGreater(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
@@ -28,8 +27,7 @@ public class TestExpressionRelational {
 		-1 < -5, false
 		10 < -10, false
 		-10 < 10, true
-		"""
-	)
+		""")
 	void testLess(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
@@ -44,8 +42,7 @@ public class TestExpressionRelational {
 		10 <= 10, true
 		-10 <= -10, true
 		10 <= -10, false
-		"""
-	)
+		""")
 	void testLessEqual(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}
@@ -60,8 +57,7 @@ public class TestExpressionRelational {
 		10 >= 10, true
 		-10 >= -10, true
 		10 >= -10, true
-		"""
-	)
+		""")
 	void testGreaterEqual(String code, boolean expected) {
 		assertEquals(expected, visitExpression(code).asNativeBool());
 	}

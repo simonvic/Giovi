@@ -24,95 +24,105 @@ public class TestDefaults {
 
 		@Test
 		void testDefaultOverrideNatural() {
-			assertThat(visit("""
-				x Natural default 69n
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(new Natural(69));
+			assertThat(
+				visit("""
+					x Natural default 69n
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(new Natural(69));
 		}
 
 		@Test
 		void testDefaultOverrideInt() {
-			assertThat(visit("""
-				x Int default 69
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(69);
+			assertThat(
+				visit("""
+					x Int default 69
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(69);
 		}
 
 		@Test
 		void testDefaultOverrideReal() {
-			assertThat(visit("""
-				x Real default 6.9
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(6.9);
+			assertThat(
+				visit("""
+					x Real default 6.9
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(6.9);
 		}
 
 		@Test
 		void testDefaultOverrideBool() {
-			assertThat(visit("""
-				x Bool default true
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(true);
+			assertThat(
+				visit("""
+					x Bool default true
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(true);
 		}
 
 		@Test
 		void testDefaultOverrideText() {
-			assertThat(visit("""
-				x Text default "foo"
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo("foo");
+			assertThat(
+				visit("""
+					x Text default "foo"
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo("foo");
 		}
 
 		@Test
 		void testDefaultOverrideList() {
-			assertThat(visit("""
-				x [Int] default [1 2 3]
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(GioviLists.of(1, 2, 3).value());
+			assertThat(
+				visit("""
+					x [Int] default [1 2 3]
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
 
 		@Test
 		void testDefaultOverrideMap() {
-			assertThat(visit("""
-				x [Int:Bool] default [1:true 2:false]
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.defaultValue()
-				.value())
-				.isEqualTo(Map.of(
+			assertThat(
+				visit("""
+					x [Int:Bool] default [1:true 2:false]
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.defaultValue()
+					.value()
+			).isEqualTo(
+				Map.of(
 					Var.of(1), Var.of(true),
-					Var.of(2), Var.of(false)));
+					Var.of(2), Var.of(false)
+				)
+			);
 		}
 
 		@Test
@@ -140,20 +150,30 @@ public class TestDefaults {
 				.defaultValue()
 				.value();
 			assertThat(def)
-				.isEqualTo(Structs.of(
-					"Foo",
-					"foo", VarD.of("foo"),
-					"bar", VarD.of(
-						Structs.of("Bar",
-							"baz", VarD.of("baz"),
-							"foobar", new VarD<>(
-								GioviLists.of(1, 2, 3),
-								new GioviList(GioviType.LIST_OF_INT))),
-						Structs.of("Bar",
-							"baz", VarD.of(""),
-							"foobar", new VarD<>(
-								new GioviList(GioviType.LIST_OF_INT),
-								new GioviList(GioviType.LIST_OF_INT))))));
+				.isEqualTo(
+					Structs.of(
+						"Foo",
+						"foo", VarD.of("foo"),
+						"bar", VarD.of(
+							Structs.of(
+								"Bar",
+								"baz", VarD.of("baz"),
+								"foobar", new VarD<>(
+									GioviLists.of(1, 2, 3),
+									new GioviList(GioviType.LIST_OF_INT)
+								)
+							),
+							Structs.of(
+								"Bar",
+								"baz", VarD.of(""),
+								"foobar", new VarD<>(
+									new GioviList(GioviType.LIST_OF_INT),
+									new GioviList(GioviType.LIST_OF_INT)
+								)
+							)
+						)
+					)
+				);
 		}
 
 		@Test
@@ -184,16 +204,24 @@ public class TestDefaults {
 				.defaultValue()
 				.value();
 			assertThat(def)
-				.isEqualTo(Structs.of(
-					"Foo",
-					"foo", VarD.of("foo", "foodefault"),
-					"bar", VarD.of(
-						Structs.of("Bar",
-							"baz", VarD.of("baz", "bazdefault"),
-							"foobar", VarD.of(List.of(1, 2, 3), List.of(69))),
-						Structs.of("Bar",
-							"baz", VarD.of("overriden bazdefault", "bazdefault"),
-							"foobar", VarD.of(List.of(420), List.of(69))))));
+				.isEqualTo(
+					Structs.of(
+						"Foo",
+						"foo", VarD.of("foo", "foodefault"),
+						"bar", VarD.of(
+							Structs.of(
+								"Bar",
+								"baz", VarD.of("baz", "bazdefault"),
+								"foobar", VarD.of(List.of(1, 2, 3), List.of(69))
+							),
+							Structs.of(
+								"Bar",
+								"baz", VarD.of("overriden bazdefault", "bazdefault"),
+								"foobar", VarD.of(List.of(420), List.of(69))
+							)
+						)
+					)
+				);
 		}
 
 	}
@@ -203,148 +231,171 @@ public class TestDefaults {
 
 		@Test
 		void testDefaultResetNatural() {
-			assertThat(visit("""
-				x Natural default 69n
-				420n -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of(new Natural(69), new Natural(69)));
+			assertThat(
+				visit("""
+					x Natural default 69n
+					420n -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(VarD.of(new Natural(69), new Natural(69)));
 		}
 
 		@Test
 		void testDefaultResetInt() {
-			assertThat(visit("""
-				x Int default 69
-				420 -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of(69, 69));
+			assertThat(
+				visit("""
+					x Int default 69
+					420 -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(VarD.of(69, 69));
 		}
 
 		@Test
 		void testDefaultResetReal() {
-			assertThat(visit("""
-				x Real default 6.9
-				420 -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of(6.9, 6.9));
+			assertThat(
+				visit("""
+					x Real default 6.9
+					420 -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(VarD.of(6.9, 6.9));
 		}
 
 		@Test
 		void testDefaultResetBool() {
-			assertThat(visit("""
-				x Bool default true
-				false -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of(true, true));
+			assertThat(
+				visit("""
+					x Bool default true
+					false -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(VarD.of(true, true));
 		}
 
 		@Test
 		void testDefaultResetText() {
-			assertThat(visit("""
-				x Text default "foo"
-				"bar" -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of("foo", "foo"));
+			assertThat(
+				visit("""
+					x Text default "foo"
+					"bar" -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(VarD.of("foo", "foo"));
 		}
 
 		@Test
 		void testDefaultResetList() {
-			assertThat(visit("""
-				x [Int] default [1 2 3]
-				[69 420] -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.unwrap())
-				.isEqualTo(GioviLists.of(1, 2, 3));
+			assertThat(
+				visit("""
+					x [Int] default [1 2 3]
+					[69 420] -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.unwrap()
+			).isEqualTo(GioviLists.of(1, 2, 3));
 		}
 
 		@Test
 		void testDefaultResetMap() {
-			assertThat(visit("""
-				x [Int:Bool] default [1:true 2:false]
-				[69:true 420:true] -> x
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow())
-				.isEqualTo(VarD.of(
+			assertThat(
+				visit("""
+					x [Int:Bool] default [1:true 2:false]
+					[69:true 420:true] -> x
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+			).isEqualTo(
+				VarD.of(
 					Map.of(
 						1, true,
-						2, false),
+						2, false
+					),
 					Map.of(
 						1, true,
-						2, false)));
+						2, false
+					)
+				)
+			);
 		}
 
 		@Test
 		void testDefaultResetStruct() {
-			assertThat(visit("""
-				Bar <
-					baz Text
-					foobar [Int]
-				>
-				Foo <
-					foo Text
-					bar Bar
-				>
-				x Foo default Foo.<
-					foo: "foo"
-					bar: Bar.<
-						baz: "baz"
-						foobar: [1 2 3]
+			assertThat(
+				visit("""
+					Bar <
+						baz Text
+						foobar [Int]
 					>
-				>
-				x <- Foo.<
-					foo: "hello"
-					bar: Bar.<
-						baz: "world"
-						foobar: [69 420]
+					Foo <
+						foo Text
+						bar Bar
 					>
-				>
-				default -> x
-				""")
-				.getCurrentScope()
-				.getVariable("x")
-				.orElseThrow()
-				.unwrap()
-				.value())
-				.isEqualTo(Structs.of(
+					x Foo default Foo.<
+						foo: "foo"
+						bar: Bar.<
+							baz: "baz"
+							foobar: [1 2 3]
+						>
+					>
+					x <- Foo.<
+						foo: "hello"
+						bar: Bar.<
+							baz: "world"
+							foobar: [69 420]
+						>
+					>
+					default -> x
+					""")
+					.getCurrentScope()
+					.getVariable("x")
+					.orElseThrow()
+					.unwrap()
+					.value()
+			).isEqualTo(
+				Structs.of(
 					"Foo",
 					"foo", VarD.of("foo"),
 					"bar", VarD.of(
-						Structs.of("Bar",
+						Structs.of(
+							"Bar",
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviType.LIST_OF_INT))),
-						Structs.of("Bar",
+								new GioviList(GioviType.LIST_OF_INT)
+							)
+						),
+						Structs.of(
+							"Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
 								new GioviList(GioviType.LIST_OF_INT),
-								new GioviList(GioviType.LIST_OF_INT))))));
+								new GioviList(GioviType.LIST_OF_INT)
+							)
+						)
+					)
+				)
+			);
 		}
 
 	}
@@ -448,25 +499,38 @@ public class TestDefaults {
 					>
 				>
 				""");
-			assertThat(visitExpression(visitor, """
-				x.default
-				""")
-				.asGioviValue()
-				.value())
-				.isEqualTo(Structs.of(
+			assertThat(
+				visitExpression(
+					visitor,
+					"""
+					x.default
+					"""
+				).asGioviValue()
+					.value()
+			).isEqualTo(
+				Structs.of(
 					"Foo",
 					"foo", VarD.of("foo"),
 					"bar", VarD.of(
-						Structs.of("Bar",
+						Structs.of(
+							"Bar",
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
 								GioviLists.of(1, 2, 3),
-								new GioviList(GioviType.LIST_OF_INT))),
-						Structs.of("Bar",
+								new GioviList(GioviType.LIST_OF_INT)
+							)
+						),
+						Structs.of(
+							"Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
 								new GioviList(GioviType.LIST_OF_INT),
-								new GioviList(GioviType.LIST_OF_INT))))));
+								new GioviList(GioviType.LIST_OF_INT)
+							)
+						)
+					)
+				)
+			);
 		}
 
 	}
@@ -531,9 +595,14 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				[Text:Int].default
 				"""))
-				.isEqualTo(new GioviMap(new GioviTypeMap(
-					GioviType.TEXT,
-					GioviType.INT)));
+				.isEqualTo(
+					new GioviMap(
+						new GioviTypeMap(
+							GioviType.TEXT,
+							GioviType.INT
+						)
+					)
+				);
 		}
 
 		@Test
@@ -552,24 +621,36 @@ public class TestDefaults {
 					>
 				>
 				""");
-			assertThat(visitExpression(visitor, """
-				Foo.default
-				""")
-				.asGioviValue()
-				.value())
-				.isEqualTo(Structs.of(
+			assertThat(
+				visitExpression(visitor, """
+					Foo.default
+					""").asGioviValue()
+					.value()
+			).isEqualTo(
+				Structs.of(
 					"Foo",
 					"foo", VarD.of("foo", "foo"),
-					"bar", VarD.of(Structs.of("Bar",
-						"baz", VarD.of("baz", "baz"),
-						"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3)))),
+					"bar", VarD.of(
+						Structs.of(
+							"Bar",
+							"baz", VarD.of("baz", "baz"),
+							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3))
+						)
+					),
 					"foobar", VarD.of(
-						Structs.of("Bar",
+						Structs.of(
+							"Bar",
 							"baz", VarD.of("BAZ", "baz"),
-							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))),
-						Structs.of("Bar",
+							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))
+						),
+						Structs.of(
+							"Bar",
 							"baz", VarD.of("BAZ", "baz"),
-							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))))));
+							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))
+						)
+					)
+				)
+			);
 		}
 
 

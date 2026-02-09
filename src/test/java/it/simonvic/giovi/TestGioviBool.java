@@ -39,16 +39,17 @@ public class TestGioviBool {
 
 			@Test
 			void testRedirection() {
-				assertThat(visit("""
-					x Bool
-					true -> x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(true);
+				assertThat(
+					visit("""
+						x Bool
+						true -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(true);
 			}
 
 		}
@@ -104,6 +105,7 @@ public class TestGioviBool {
 			public void testParenthesizedExpression(String code, boolean expected) {
 				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);
 			}
+
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// relational

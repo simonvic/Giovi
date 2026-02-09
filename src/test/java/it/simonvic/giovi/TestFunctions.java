@@ -45,7 +45,8 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(GioviType.VOID));
+					.isEqualTo(GioviType.VOID)
+			);
 		}
 
 		@Test
@@ -57,7 +58,8 @@ public class TestFunctions {
 				() -> assertThat(functionSignature.getParametersList())
 					.isEmpty(),
 				() -> assertThat(functionSignature.returnType())
-					.isEqualTo(GioviType.INT));
+					.isEqualTo(GioviType.INT)
+			);
 		}
 
 		@Test
@@ -67,9 +69,12 @@ public class TestFunctions {
 					a Int
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", GioviType.INT)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", GioviType.INT)
+					)
+				);
 
 		}
 
@@ -81,10 +86,13 @@ public class TestFunctions {
 					b Real
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", GioviType.INT),
-					paramOf("b", GioviType.REAL)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", GioviType.INT),
+						paramOf("b", GioviType.REAL)
+					)
+				);
 		}
 
 		@Test
@@ -94,9 +102,12 @@ public class TestFunctions {
 					a Int default 69,
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", 69)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", 69)
+					)
+				);
 		}
 
 		@Test
@@ -107,9 +118,12 @@ public class TestFunctions {
 					a Int default _,
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", 0)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", 0)
+					)
+				);
 		}
 
 		@Test
@@ -138,10 +152,13 @@ public class TestFunctions {
 					b Real default 6.9,
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", 69),
-					paramOf("b", 6.9)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", 69),
+						paramOf("b", 6.9)
+					)
+				);
 		}
 
 		@Test
@@ -153,11 +170,14 @@ public class TestFunctions {
 					c Bool default true,
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", GioviType.INT),
-					paramOf("b", GioviType.REAL),
-					paramOf("c", true)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", GioviType.INT),
+						paramOf("b", GioviType.REAL),
+						paramOf("c", true)
+					)
+				);
 		}
 
 		@Test
@@ -169,11 +189,14 @@ public class TestFunctions {
 					c Bool default true,
 				) {}
 				"""))
-				.isEqualTo(signatureOf(
-					"someFunction",
-					paramOf("a", 69),
-					paramOf("b", GioviType.REAL),
-					paramOf("c", true)));
+				.isEqualTo(
+					signatureOf(
+						"someFunction",
+						paramOf("a", 69),
+						paramOf("b", GioviType.REAL),
+						paramOf("c", true)
+					)
+				);
 		}
 
 		@Disabled("Function overload not implemented yet")

@@ -63,72 +63,77 @@ public class TestGioviNatural {
 
 			@Test
 			void testRedirection() {
-				assertThat(visit("""
-					x Natural
-					69n -> x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(new Natural(69));
+				assertThat(
+					visit("""
+						x Natural
+						69n -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(new Natural(69));
 			}
 
 			@Test
 			void testRedirectionPlus() {
-				assertThat(visit("""
-					60n -> x Natural
-					9n ->+ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(new Natural(69));
+				assertThat(
+					visit("""
+						60n -> x Natural
+						9n ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(new Natural(69));
 			}
 
 			@Test
 			void testRedirectionMinus() {
-				assertThat(visit("""
-					79n -> x Natural
-					10n ->- x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(new Natural(69));
+				assertThat(
+					visit("""
+						79n -> x Natural
+						10n ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(new Natural(69));
 			}
 
 			@Test
 			void testRedirectionMultiply() {
-				assertThat(visit("""
-					42n -> x Natural
-					10n ->* x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(new Natural(420));
+				assertThat(
+					visit("""
+						42n -> x Natural
+						10n ->* x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(new Natural(420));
 			}
 
 			@Test
 			void testRedirectionDivide() {
-				assertThat(visit("""
-					690n -> x Natural
-					10n ->/ x
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap()
-					.value())
-						.isEqualTo(new Natural(69));
+				assertThat(
+					visit("""
+						690n -> x Natural
+						10n ->/ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+						.value()
+				).isEqualTo(new Natural(69));
 			}
 
 		}

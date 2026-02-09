@@ -71,12 +71,17 @@ public class TextProcessor {
 		return Pattern
 			.compile("\\$[a-zA-Z]\\w*")
 			.matcher(text)
-			.replaceAll(matchResult -> scope
-				.getVariable(matchResult.group().substring(1))
-				.orElseThrow(() -> new GioviException(
-					"Variable not declared: " + matchResult.group().substring(1)))
-				.unwrap()
-				.toString());
+			.replaceAll(
+				matchResult -> scope
+					.getVariable(matchResult.group().substring(1))
+					.orElseThrow(
+						() -> new GioviException(
+							"Variable not declared: " + matchResult.group().substring(1)
+						)
+					)
+					.unwrap()
+					.toString()
+			);
 	}
 
 	public static String injectExpressions(String text, GioviVisitor visitor) {
@@ -124,7 +129,8 @@ public class TextProcessor {
 		// build text and remove all incidental indentation characters
 		linesList.forEach(line -> {
 			s.append(
-				line.replaceFirst(indentationLeader + "{" + minIncidentalWhiteSpace + "}", ""));
+				line.replaceFirst(indentationLeader + "{" + minIncidentalWhiteSpace + "}", "")
+			);
 			s.append("\n");
 		});
 

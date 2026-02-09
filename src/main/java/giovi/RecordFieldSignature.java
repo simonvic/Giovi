@@ -3,7 +3,7 @@ package giovi;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 
-public record RecordFieldSignature (
+public record RecordFieldSignature(
 	String identifier,
 	GioviType<?> type,
 	GioviValue<?> defaultValue

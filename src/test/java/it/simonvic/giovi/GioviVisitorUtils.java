@@ -25,7 +25,9 @@ public class GioviVisitorUtils {
 	}
 
 	public static GioviParserVisitResult visitExpression(String code) {
-		return visitExpression(new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code);
+		return visitExpression(
+			new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code
+		);
 	}
 
 	public static boolean visitNativeBool(String code) {
@@ -58,7 +60,9 @@ public class GioviVisitorUtils {
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(String code) {
-		return visitFunctionDeclaration(new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code);
+		return visitFunctionDeclaration(
+			new GioviVisitor(new NativeModule("test", GioviVisitor.ROOT_MODULE)), code
+		);
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(GioviVisitor visitor, String code) {

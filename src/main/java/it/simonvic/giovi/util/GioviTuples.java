@@ -22,9 +22,14 @@ public class GioviTuples {
 	// TODO: delete this
 	public static TupleSignature signatureFrom(Tuple value) {
 		var fields = new ArrayList<TupleFieldSignature>(value.getFieldsCount());
-		value.forEach(field -> fields.add(new TupleFieldSignature(
-			field.unwrap().getGioviType(),
-			field.defaultValue())));
+		value.forEach(
+			field -> fields.add(
+				new TupleFieldSignature(
+					field.unwrap().getGioviType(),
+					field.defaultValue()
+				)
+			)
+		);
 		return new TupleSignature(fields);
 	}
 
@@ -34,9 +39,13 @@ public class GioviTuples {
 	}
 
 	public static GioviTypeTuple typeOf(GioviType<?>... types) {
-		return new GioviTypeTuple(new TupleSignature(Stream.of(types)
-			.map(f -> new TupleFieldSignature(f))
-			.toList()));
+		return new GioviTypeTuple(
+			new TupleSignature(
+				Stream.of(types)
+					.map(f -> new TupleFieldSignature(f))
+					.toList()
+			)
+		);
 	}
 
 	public static GioviTuple redirection(GioviTuple dest, GioviTuple content) {

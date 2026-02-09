@@ -24,7 +24,8 @@ public record StructSignature(
 		for (var field : fields) {
 			if (this.fields.putIfAbsent(field.identifier(), field) != null) {
 				throw new IllegalArgumentException(
-					"Duplicate struct field identifier " + field.identifier());
+					"Duplicate struct field identifier " + field.identifier()
+				);
 			}
 		}
 	}
@@ -64,7 +65,8 @@ public record StructSignature(
 			this.typename,
 			RecordSignature.copy(this.fields),
 			this.constants,
-			this.functions);
+			this.functions
+		);
 	}
 
 	/**
@@ -136,7 +138,8 @@ public record StructSignature(
 			return narrow;
 		}
 		throw new NonWideneable(
-			"Can't widen struct " + narrow.getTypename() + " to " + this.typename);
+			"Can't widen struct " + narrow.getTypename() + " to " + this.typename
+		);
 	}
 
 	public boolean containsField(String identifier) {

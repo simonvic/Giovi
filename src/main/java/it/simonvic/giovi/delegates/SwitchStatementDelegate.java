@@ -52,7 +52,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return VisitorUtils.relational(
 			subject,
 			GioviToken.of(ctx.op.getText()),
-			gioviVisitor.visit(ctx.expression()));
+			gioviVisitor.visit(ctx.expression())
+		);
 	}
 
 	@Override
@@ -60,7 +61,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return VisitorUtils.equality(
 			subject,
 			GioviToken.of(ctx.op.getText()),
-			gioviVisitor.visit(ctx.expression()));
+			gioviVisitor.visit(ctx.expression())
+		);
 	}
 
 	@Override
@@ -68,7 +70,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return VisitorUtils.bool(
 			visit(ctx.caseMatch(0)),
 			GioviToken.of(ctx.bop.getText()),
-			() -> visit(ctx.caseMatch(1)));
+			() -> visit(ctx.caseMatch(1))
+		);
 	}
 
 	@Override
@@ -76,7 +79,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return VisitorUtils.containment(
 			subject,
 			GioviToken.of(ctx.op.getText()),
-			gioviVisitor.visit(ctx.expression()));
+			gioviVisitor.visit(ctx.expression())
+		);
 	}
 
 	@Override
@@ -84,7 +88,8 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		return VisitorUtils.bool(
 			subject,
 			GioviToken.of(ctx.op.getText()),
-			() -> gioviVisitor.visit(ctx.expression()));
+			() -> gioviVisitor.visit(ctx.expression())
+		);
 	}
 
 	@Override
