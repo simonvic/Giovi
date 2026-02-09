@@ -20,7 +20,6 @@ import giovi.Module.FileModule;
 import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.Record;
-import giovi.lang.GioviTypeStruct;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;

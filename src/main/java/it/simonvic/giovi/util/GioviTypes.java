@@ -3,7 +3,6 @@ package it.simonvic.giovi.util;
 import java.util.Collection;
 
 import giovi.lang.GioviType;
-import giovi.lang.GioviVoid;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 

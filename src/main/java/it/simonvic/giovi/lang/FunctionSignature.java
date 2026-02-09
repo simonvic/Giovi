@@ -5,7 +5,6 @@ import java.util.List;
 
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
-import giovi.lang.GioviVoid;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record FunctionSignature(
