@@ -126,6 +126,7 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 		return switch (right) {
 			case GioviDefault _
 				-> new GioviNatural(new Natural(value.intValue() - zero().intValue()));
+			// TODO: check if result is still Natural or Int (same for redirMinus)
 			case GioviNatural(var v)
 				-> new GioviNatural(new Natural(value.intValue() - v.intValue()));
 			case GioviInt(var v) -> new GioviInt(value.intValue() - v);

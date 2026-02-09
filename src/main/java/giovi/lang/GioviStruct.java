@@ -47,7 +47,7 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _,GioviSelf _ -> type.spawn();
+			case GioviDefault _,GioviSelf _ -> type.spawn(); // TODO: what???
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
