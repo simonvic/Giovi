@@ -80,6 +80,11 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		return new VarD<>(gioviType.widen(value), gioviType.widen(defaultValue));
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// cast
+
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
@@ -88,11 +93,13 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 		};
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirection(defaultValue);
+			case GioviDefault _ -> this.value.redirection(this.defaultValue);
 			default -> super.redirection(content);
 		};
 		return this.value;
@@ -102,7 +109,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionPlus(defaultValue);
+			case GioviDefault _ -> this.value.redirectionPlus(this.defaultValue);
 			default -> super.redirectionPlus(content);
 		};
 		return this.value;
@@ -112,7 +119,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMinus(defaultValue);
+			case GioviDefault _ -> this.value.redirectionMinus(this.defaultValue);
 			default -> super.redirectionMinus(content);
 		};
 		return this.value;
@@ -122,7 +129,7 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionMultiply(defaultValue);
+			case GioviDefault _ -> this.value.redirectionMultiply(this.defaultValue);
 			default -> super.redirectionMultiply(content);
 		};
 		return this.value;
@@ -132,21 +139,156 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) {
 		this.value = (T) switch (content) {
-			case GioviDefault _ -> this.value.redirectionDivide(defaultValue);
+			case GioviDefault _ -> this.value.redirectionDivide(this.defaultValue);
 			default -> super.redirectionDivide(content);
 		};
 		return this.value;
 	}
 
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 	@Override
-	public GioviParserVisitResult dot(GioviParserVisitResult right) {
-		if (right instanceof GioviDefault) {
-			return defaultValue;
-		}
-		return super.dot(right);
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.plus(this.defaultValue);
+			default -> super.plus(right);
+		};
 	}
 
-	// TODO: other operations should handle default as well
-	// e.g. someVar + default should be someVar + someVar.default
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.minus(this.defaultValue);
+			default -> super.minus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.multiply(this.defaultValue);
+			default -> super.multiply(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult divide(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.divide(this.defaultValue);
+			default -> super.divide(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.modulo(this.defaultValue);
+			default -> super.modulo(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult power(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.power(this.defaultValue);
+			default -> super.power(right);
+		};
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
+
+	@Override
+	public GioviParserVisitResult and(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.and(this.defaultValue);
+			default -> super.and(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult or(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.or(this.defaultValue);
+			default -> super.or(right);
+		};
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// relational
+
+	@Override
+	public GioviParserVisitResult equal(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.equal(this.defaultValue);
+			default -> super.equal(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.notEqual(this.defaultValue);
+			default -> super.notEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult less(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.less(this.defaultValue);
+			default -> super.less(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.lessEqual(this.defaultValue);
+			default -> super.lessEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult greater(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.greater(this.defaultValue);
+			default -> super.greater(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.greaterEqual(this.defaultValue);
+			default -> super.greaterEqual(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult contains(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.contains(this.defaultValue);
+			default -> super.contains(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult isContained(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.isContained(this.defaultValue);
+			default -> super.isContained(right);
+		};
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// access
+
+	@Override
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.defaultValue;
+			default -> super.dot(right);
+		};
+	}
 
 }
