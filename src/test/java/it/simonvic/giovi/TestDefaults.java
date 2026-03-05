@@ -758,41 +758,28 @@ public class TestDefaults {
 	@Nested
 	class TestOperatorsWithDefault {
 
-		@Disabled("Clarify requirements")
 		@Test
 		void testLiterals() {
-			assertAll(
-				() -> assertThat(
-					visitExpression("""
-						10r / default
-						""")
-				).isEqualTo(new GioviReal(10d / 0)),
-				() -> assertThat(
-					visitExpression("""
-						default / 10r
-						""")
-				).isEqualTo(new GioviReal(0 / 10d))
+			assertThat(
+				visitExpression("""
+					10r / default
+					""")
+			).isEqualTo(
+				new GioviReal(10d / 0)
 			);
 		}
 
-
-		@Disabled("Clarify requirements")
 		@Test
 		void testVars() {
 			var visitor = visit("""
 				420 -> foo Int default 69
 				""");
-			assertAll(
-				() -> assertThat(
-					visitExpression(visitor, """
-						foo - default
-						""")
-				).isEqualTo(new GioviInt(420 - 69)),
-				() -> assertThat(
-					visitExpression(visitor, """
-						default - foo
-						""")
-				).isEqualTo(new GioviInt(69 - 420))
+			assertThat(
+				visitExpression(visitor, """
+					foo - default
+					""")
+			).isEqualTo(
+				new GioviInt(420 - 69)
 			);
 		}
 
