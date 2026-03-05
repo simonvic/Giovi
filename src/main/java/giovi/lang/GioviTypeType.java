@@ -17,11 +17,6 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 	}
 
 	@Override
-	public Class<? extends GioviType<T>> zero() {
-		throw new UnsupportedOperationException("Unimplemented method 'zero'");
-	}
-
-	@Override
 	public String getFullyQualifiedName() {
 		return "giovi.Type";
 	}

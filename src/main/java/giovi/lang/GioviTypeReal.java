@@ -19,11 +19,6 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 	}
 
 	@Override
-	public Class<? extends GioviReal> zero() {
-		return GioviReal.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return type instanceof GioviTypeReal;
 	}

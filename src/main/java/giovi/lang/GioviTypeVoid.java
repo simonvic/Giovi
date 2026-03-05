@@ -18,11 +18,6 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 	}
 
 	@Override
-	public Class<? extends GioviVoid> zero() {
-		return GioviVoid.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return true;
 	}

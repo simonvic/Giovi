@@ -22,11 +22,6 @@ public record GioviTypeRecord(RecordSignature signature) implements GioviType<Gi
 	}
 
 	@Override
-	public Class<? extends GioviRecord> zero() {
-		return GioviRecord.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);

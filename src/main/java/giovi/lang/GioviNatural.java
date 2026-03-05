@@ -21,11 +21,6 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	}
 
 	@Override
-	public Natural zero() {
-		return new Natural();
-	}
-
-	@Override
 	public GioviTypeNatural getGioviType() {
 		return GioviType.NAT;
 	}

@@ -19,11 +19,6 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	}
 
 	@Override
-	public Class<? extends GioviList> zero() {
-		return GioviList.class;
-	}
-
-	@Override
 	public String toString() {
 		return "[" + entryType + "]";
 	}

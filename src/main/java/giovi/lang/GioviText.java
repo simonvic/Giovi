@@ -22,11 +22,6 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	}
 
 	@Override
-	public String zero() {
-		return "";
-	}
-
-	@Override
 	public GioviTypeText getGioviType() {
 		return GioviType.TEXT;
 	}

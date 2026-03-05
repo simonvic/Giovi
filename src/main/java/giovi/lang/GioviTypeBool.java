@@ -18,11 +18,6 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 	}
 
 	@Override
-	public Class<? extends GioviBool> zero() {
-		return GioviBool.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return type instanceof GioviTypeBool;
 	}

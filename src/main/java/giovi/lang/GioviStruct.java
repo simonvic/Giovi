@@ -21,11 +21,6 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 	}
 
 	@Override
-	public Struct zero() {
-		return type.spawn().value();
-	}
-
-	@Override
 	public GioviStruct copy() {
 		return new GioviStruct(type, value.copy());
 	}

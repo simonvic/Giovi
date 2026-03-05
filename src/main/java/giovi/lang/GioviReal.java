@@ -35,11 +35,6 @@ public record GioviReal(Double value) implements GioviNumber<Double> {
 	}
 
 	@Override
-	public Double zero() {
-		return 0d;
-	}
-
-	@Override
 	public GioviTypeReal getGioviType() {
 		return GioviType.REAL;
 	}

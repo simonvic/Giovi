@@ -22,11 +22,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 		return new GioviInt(Integer.decode(s));
 	}
 
-	@Override
-	public Integer zero() {
-		return 0;
-	}
-
 	public GioviInt() {
 		this(0);
 	}

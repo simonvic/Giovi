@@ -22,11 +22,6 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 	}
 
 	@Override
-	public Class<? extends GioviMap> zero() {
-		return GioviMap.class;
-	}
-
-	@Override
 	public String toString() {
 		return "[" + keyType + " : " + elementType + "]";
 	}

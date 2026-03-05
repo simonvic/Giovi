@@ -18,11 +18,6 @@ public record GioviTypeInt() implements GioviTypeNumber<GioviInt> {
 	}
 
 	@Override
-	public Class<? extends GioviInt> zero() {
-		return GioviInt.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeInt _,GioviTypeReal _ -> true;

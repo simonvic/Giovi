@@ -22,11 +22,6 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 	}
 
 	@Override
-	public Class<? extends GioviTuple> zero() {
-		return GioviTuple.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);

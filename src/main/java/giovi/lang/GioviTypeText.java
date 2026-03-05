@@ -18,11 +18,6 @@ public record GioviTypeText() implements GioviTypePrimitive<GioviText> {
 	}
 
 	@Override
-	public Class<? extends GioviText> zero() {
-		return GioviText.class;
-	}
-
-	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return type instanceof GioviTypeText;
 	}

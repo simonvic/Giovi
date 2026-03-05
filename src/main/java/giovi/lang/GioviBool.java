@@ -20,11 +20,6 @@ public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 	}
 
 	@Override
-	public Boolean zero() {
-		return false;
-	}
-
-	@Override
 	public GioviTypeBool getGioviType() {
 		return GioviType.BOOL;
 	}

@@ -42,11 +42,6 @@ public record GioviMap(
 		}
 	}
 
-	@Override
-	public LinkedHashMap<Var<?>, Var<?>> zero() {
-		return new LinkedHashMap<>();
-	}
-
 	/**
 	 * Put key-value pair. They will be widened if necessary.
 	 * @param key

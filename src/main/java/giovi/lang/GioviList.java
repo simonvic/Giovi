@@ -33,11 +33,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	}
 
 	@Override
-	public List<Var<?>> zero() {
-		return new ArrayList<>();
-	}
-
-	@Override
 	public String toString() {
 		var i = value.iterator();
 		if (!i.hasNext())

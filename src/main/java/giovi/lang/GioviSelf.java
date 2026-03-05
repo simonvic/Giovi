@@ -17,11 +17,6 @@ public record GioviSelf() implements GioviValue<Void> {
 	}
 
 	@Override
-	public Void zero() {
-		return null;
-	}
-
-	@Override
 	public GioviType<? extends GioviValue<Void>> getGioviType() {
 		return GioviType.SELF;
 	}

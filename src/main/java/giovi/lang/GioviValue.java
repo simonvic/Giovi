@@ -47,12 +47,6 @@ public sealed interface GioviValue<T>
 	T value();
 
 	/**
-	 * TODO: move this to the Type hierarchy (when eventually it gets cached in a Var)
-	 * @return default value of the type
-	 */
-	T zero();
-
-	/**
 	 * Get the Type (in Giovi space) of this value
 	 * @return Type
 	 */

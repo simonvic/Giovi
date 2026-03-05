@@ -22,11 +22,6 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	}
 
 	@Override
-	public Tuple zero() {
-		return type.spawn().value();
-	}
-
-	@Override
 	public GioviTypeTuple getGioviType() {
 		return type;
 	}

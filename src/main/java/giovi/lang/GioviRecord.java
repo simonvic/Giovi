@@ -24,11 +24,6 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 	}
 
 	@Override
-	public Record zero() {
-		return type.spawn().value();
-	}
-
-	@Override
 	public GioviTypeRecord getGioviType() {
 		return type;
 	}
