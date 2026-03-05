@@ -70,7 +70,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
-			case GioviDefault _ -> new GioviInt(zero());
 			case GioviNatural(var v) -> new GioviInt(v.intValue());
 			case GioviInt(var v) -> new GioviInt(v);
 			default -> GioviNumber.super.redirection(content);
@@ -80,7 +79,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value + zero());
 			case GioviNatural(var v) -> new GioviInt(value + v.intValue());
 			case GioviInt(var v) -> new GioviInt(value + v);
 			default -> GioviNumber.super.redirectionPlus(right);
@@ -90,7 +88,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value - zero());
 			case GioviNatural(var v) -> new GioviInt(value - v.intValue());
 			case GioviInt(var v) -> new GioviInt(value - v);
 			default -> GioviNumber.super.redirectionMinus(right);
@@ -100,7 +97,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value * zero());
 			case GioviNatural(var v) -> new GioviInt(value * v.intValue());
 			case GioviInt(var v) -> new GioviInt(value * v);
 			default -> GioviNumber.super.redirectionMultiply(right);
@@ -110,7 +106,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value / zero());
 			case GioviNatural(var v) -> new GioviInt(value / v.intValue());
 			case GioviInt(var v) -> new GioviInt(value / v);
 			default -> GioviNumber.super.redirectionDivide(right);
@@ -132,7 +127,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value + zero());
 			case GioviNatural(var v) -> new GioviInt(value + v.intValue());
 			case GioviInt(var v) -> new GioviInt(value + v);
 			case GioviReal(var v) -> new GioviReal(value + v);
@@ -143,7 +137,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value - zero());
 			case GioviNatural(var v) -> new GioviInt(value - v.intValue());
 			case GioviInt(var v) -> new GioviInt(value - v);
 			case GioviReal(var v) -> new GioviReal(value - v);
@@ -154,7 +147,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value * zero());
 			case GioviNatural(var v) -> new GioviInt(value * v.intValue());
 			case GioviInt(var v) -> new GioviInt(value * v);
 			case GioviReal(var v) -> new GioviReal(value * v);
@@ -165,7 +157,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value / zero());
 			case GioviNatural(var v) -> new GioviReal(value.doubleValue() / v.doubleValue());
 			case GioviInt(var v) -> new GioviReal(value.doubleValue() / v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() / v);
@@ -176,7 +167,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt(value % zero());
 			case GioviNatural(var v) -> new GioviInt(value % v.intValue());
 			case GioviInt(var v) -> new GioviInt(value % v);
 			case GioviReal(var v) -> new GioviReal(value.doubleValue() % v);
@@ -187,7 +177,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviInt((int) Math.pow(value, zero()));
 			case GioviNatural(var v) -> new GioviInt((int) Math.pow(value, v.intValue()));
 			case GioviInt(var v) -> new GioviInt((int) Math.pow(value, v));
 			case GioviReal(var v) -> new GioviReal(Math.pow(value.doubleValue(), v));
@@ -202,7 +191,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value.equals(zero()));
 			case GioviNatural(var v) -> new GioviBool(value.equals(v.intValue()));
 			case GioviInt(var v) -> new GioviBool(value.equals(v));
 			case GioviReal(var v) -> new GioviBool(value.doubleValue() == v);
@@ -218,7 +206,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value < zero());
 			case GioviNatural(var v) -> new GioviBool(value < v.intValue());
 			case GioviInt(var v) -> new GioviBool(value < v);
 			case GioviReal(var v) -> new GioviBool(value < v);
@@ -229,7 +216,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value <= zero());
 			case GioviNatural(var v) -> new GioviBool(value <= v.intValue());
 			case GioviInt(var v) -> new GioviBool(value <= v);
 			case GioviReal(var v) -> new GioviBool(value <= v);
@@ -240,7 +226,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value > zero());
 			case GioviNatural(var v) -> new GioviBool(value > v.intValue());
 			case GioviInt(var v) -> new GioviBool(value > v);
 			case GioviReal(var v) -> new GioviBool(value > v);
@@ -251,7 +236,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviDefault _ -> new GioviBool(value >= zero());
 			case GioviNatural(var v) -> new GioviBool(value >= v.intValue());
 			case GioviInt(var v) -> new GioviBool(value >= v);
 			case GioviReal(var v) -> new GioviBool(value >= v);

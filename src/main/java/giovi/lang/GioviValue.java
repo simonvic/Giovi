@@ -95,6 +95,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
+			case GioviDefault _ -> redirection(getGioviType().spawn());
 			case Var<?> v -> redirection(v.unwrap());
 			default -> GioviObject.super.redirection(content);
 		};
@@ -102,6 +103,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> redirectionPlus(getGioviType().spawn());
 			case Var<?> v -> redirectionPlus(v.unwrap());
 			default -> GioviObject.super.redirectionPlus(right);
 		};
@@ -109,6 +111,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> redirectionMinus(getGioviType().spawn());
 			case Var<?> v -> redirectionMinus(v.unwrap());
 			default -> GioviObject.super.redirectionMinus(right);
 		};
@@ -116,6 +119,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> redirectionMultiply(getGioviType().spawn());
 			case Var<?> v -> redirectionMultiply(v.unwrap());
 			default -> GioviObject.super.redirectionMultiply(right);
 		};
@@ -123,6 +127,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> redirectionDivide(getGioviType().spawn());
 			case Var<?> v -> redirectionDivide(v.unwrap());
 			default -> GioviObject.super.redirectionDivide(right);
 		};
@@ -132,6 +137,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> plus(getGioviType().spawn());
 			case Var<?> v -> plus(v.unwrap());
 			default -> GioviObject.super.plus(right);
 		};
@@ -139,6 +145,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> minus(getGioviType().spawn());
 			case Var<?> v -> minus(v.unwrap());
 			default -> GioviObject.super.minus(right);
 		};
@@ -146,6 +153,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> multiply(getGioviType().spawn());
 			case Var<?> v -> multiply(v.unwrap());
 			default -> GioviObject.super.multiply(right);
 		};
@@ -153,6 +161,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> divide(getGioviType().spawn());
 			case Var<?> v -> divide(v.unwrap());
 			default -> GioviObject.super.divide(right);
 		};
@@ -160,6 +169,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> modulo(getGioviType().spawn());
 			case Var<?> v -> modulo(v.unwrap());
 			default -> GioviObject.super.modulo(right);
 		};
@@ -167,6 +177,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> power(getGioviType().spawn());
 			case Var<?> v -> power(v.unwrap());
 			default -> GioviObject.super.power(right);
 		};
@@ -177,6 +188,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> and(getGioviType().spawn());
 			case Var<?> v -> and(v.unwrap());
 			default -> GioviObject.super.and(right);
 		};
@@ -184,6 +196,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> or(getGioviType().spawn());
 			case Var<?> v -> or(v.unwrap());
 			default -> GioviObject.super.or(right);
 		};
@@ -193,6 +206,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> equal(getGioviType().spawn());
 			case Var<?> v -> equal(v.unwrap());
 			default -> GioviObject.super.equal(right);
 		};
@@ -200,6 +214,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> notEqual(getGioviType().spawn());
 			case Var<?> v -> notEqual(v.unwrap());
 			default -> GioviObject.super.notEqual(right);
 		};
@@ -207,6 +222,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> less(getGioviType().spawn());
 			case Var<?> v -> less(v.unwrap());
 			default -> GioviObject.super.less(right);
 		};
@@ -214,6 +230,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> lessEqual(getGioviType().spawn());
 			case Var<?> v -> lessEqual(v.unwrap());
 			default -> GioviObject.super.lessEqual(right);
 		};
@@ -221,6 +238,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> greater(getGioviType().spawn());
 			case Var<?> v -> greater(v.unwrap());
 			default -> GioviObject.super.greater(right);
 		};
@@ -228,6 +246,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> greaterEqual(getGioviType().spawn());
 			case Var<?> v -> greaterEqual(v.unwrap());
 			default -> GioviObject.super.greaterEqual(right);
 		};
@@ -235,13 +254,17 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
+			case GioviDefault _ -> contains(getGioviType().spawn());
 			case Var<?> v -> contains(v.unwrap());
 			default -> GioviObject.super.contains(right);
 		};
 	}
 
 	default GioviParserVisitResult isContained(GioviParserVisitResult right) {
-		return right.contains(this);
+		return switch (right) {
+			case GioviDefault _ -> isContained(getGioviType().spawn());
+			default -> right.contains(this);
+		};
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access

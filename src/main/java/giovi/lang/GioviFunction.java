@@ -46,8 +46,6 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 			return GioviValue.super.redirection(content);
 		}
 		return switch (content) {
-			case GioviDefault _ -> new GioviFunction(zero());
-
 			case GioviFunction(Function f) when f.signature().equals(this.value.signature())
 				-> new GioviFunction(f.copy());
 
