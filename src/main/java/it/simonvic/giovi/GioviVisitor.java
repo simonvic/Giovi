@@ -1473,18 +1473,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		String typename = ctx.typename.getText();
 
-		if (ctx.parentTypename != null) {
-			String parentTypename = ctx.parentTypename.getText();
-			var parentType = getCurrentScope()
-				.getStructType(parentTypename)
-				.orElseThrow(
-					() -> new GioviException(
-						"Can't inherit from " + parentTypename,
-						new TypeNotFound(parentTypename)
-					)
-				);
-			for (var inheritedField : parentType.signature().fields().values()) {
-				fields.put(inheritedField.identifier(), inheritedField);
+		if (ctx.parentType != null) {
+			var parentType = visit(ctx.parentType);
+			if (parentType instanceof GioviTypeStruct parentTypeStruct) {
+				for (var inheritedField : parentTypeStruct.signature().fields().values()) {
+					fields.put(inheritedField.identifier(), inheritedField);
+				}
+			} else {
+				throw new GioviException("Can't inherit from " + parentType);
 			}
 		}
 
@@ -1580,18 +1576,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitStructCreation(StructCreationContext ctx) {
-		GioviTypeStruct typeStruct;
-		if (ctx.typeQualified() != null) {
-			typeStruct = (GioviTypeStruct) visit(ctx.typeQualified());
-		} else {
-			String typename = ctx.identifier().getText();
-			typeStruct = getCurrentScope()
-				.getStructType(typename)
-				.orElseThrow(
-					() -> new GioviException(
-						"Can't create struct " + typename, new TypeNotFound(typename)
-					)
-				);
+		var type = visit(ctx.typeQualified());
+		if (!(type instanceof GioviTypeStruct typeStruct)) {
+			throw new GioviException("Can't create struct of non-struct type " + type);
 		}
 		var struct = typeStruct.signature().spawn();
 		try {
@@ -1699,31 +1686,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type
 
 	@Override
-	public GioviParserVisitResult visitType(TypeContext ctx) {
-		if (ctx.identifier() != null) {
-			String typename = ctx.identifier().getText();
-			return getCurrentScope()
-				.getType(typename)
-				.orElseThrow(() -> new TypeNotFound(typename));
-		}
-		return visitChildren(ctx);
-	}
-
-	@Override
 	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
-		Module parentModule = this.module;
+		var scope = getCurrentScope();
 		for (int i = 0; i < ctx.identifier().size() - 1; i++) { // NOTE: last identifier is the typename
 			var moduleIdentifierCtx = ctx.identifier(i);
 			String moduleIdentifier = moduleIdentifierCtx.getText();
-			parentModule = parentModule.scope().getModule(moduleIdentifier)
-				.orElseThrow(
-					() -> new GioviException("Can't find find module " + moduleIdentifier)
-				);
+			scope = scope.getModule(moduleIdentifier)
+				.orElseThrow(() -> new GioviException("Can't find find module " + moduleIdentifier))
+				.scope();
 		}
 		String typename = ctx.typename.getText();
-		// TODO: should we allow primitive types too? giovi.Int, giovi.Range, giovi.Tuple
-		return parentModule.scope()
-			.getStructType(typename)
+		return scope.getType(typename)
 			.orElseThrow(() -> new TypeNotFound(typename));
 	}
 
