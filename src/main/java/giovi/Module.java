@@ -2,6 +2,7 @@ package giovi;
 
 import java.net.URI;
 
+import giovi.lang.GioviFunction;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.lang.ModuleScope;
@@ -22,6 +23,19 @@ public sealed interface Module extends GioviParserVisitResult {
 		}
 		return GioviParserVisitResult.super.dot(right);
 	}
+
+	@Override
+	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		if (right instanceof MemberKey(var identifier)) {
+			var symbolOpt = scope().getSymbol(identifier);
+			if (symbolOpt.isPresent()
+				&& symbolOpt.orElseThrow() instanceof GioviFunction function) {
+				return function;
+			}
+		}
+		return GioviParserVisitResult.super.dotRef(right);
+	}
+
 
 	public static record NativeModule(
 		String identifier,

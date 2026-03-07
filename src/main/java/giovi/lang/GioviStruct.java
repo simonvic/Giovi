@@ -112,6 +112,15 @@ public record GioviStruct(GioviTypeStruct type, Struct value)
 		};
 	}
 
+	@Override
+	public GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		return switch (right) {
+			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
+				-> type.signature().getFunction(identifier);
+			default -> GioviValue.super.dotRef(right);
+		};
+	}
+
 
 }
 

@@ -63,6 +63,7 @@ public interface GioviParserVisitResult {
 
 	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.AT, right); }
 	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.DOT, right); }
+	default GioviParserVisitResult dotRef(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.REF, right); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// CASTS
 

@@ -60,4 +60,13 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 		};
 	}
 
+	@Override
+	public GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		return switch (right) {
+			case MemberKey(var identifier) when signature.containsFunction(identifier)
+				-> signature.getFunction(identifier);
+			default -> GioviType.super.dotRef(right);
+		};
+	}
+
 }

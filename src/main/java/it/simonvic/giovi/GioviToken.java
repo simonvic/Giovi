@@ -51,6 +51,7 @@ public enum GioviToken {
 	UNDERSCORE                    ("_"),
 	BACKSLASH                     ("\\"),
 	COLON                         (":"),
+	REF                           ("::"),
 	SEMICOLON                     (";"),
 	HASHTAG                       ("#"),
 	AT                            ("@"),
