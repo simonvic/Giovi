@@ -87,8 +87,8 @@ public class TestGioviBool {
 			@CsvSource(textBlock = """
 				!true, false
 				!false, true
-				!!false, false
-				!!true, true
+				! !false, false
+				! !true, true
 				""")
 			public void testNotOperator(String code, boolean expected) {
 				assertThat(visitExpression(code).asNativeBool()).isEqualTo(expected);

@@ -146,6 +146,62 @@ public class VarD<T extends GioviValue<?>> extends Var<T> {
 	}
 
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+	@Override
+	public GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseAnd(this.defaultValue);
+			default -> super.bitwiseAnd(right);
+		};
+	}
+
+
+	@Override
+	public GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseOr(this.defaultValue);
+			default -> super.bitwiseOr(right);
+		};
+	}
+
+
+	@Override
+	public GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseXor(this.defaultValue);
+			default -> super.bitwiseXor(right);
+		};
+	}
+
+
+	@Override
+	public GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseLeftShift(this.defaultValue);
+			default -> super.bitwiseLeftShift(right);
+		};
+	}
+
+
+	@Override
+	public GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseRightShift(this.defaultValue);
+			default -> super.bitwiseRightShift(right);
+		};
+	}
+
+
+	@Override
+	public GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> this.value.bitwiseRightUnsignedShift(this.defaultValue);
+			default -> super.bitwiseRightUnsignedShift(right);
+		};
+	}
+
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

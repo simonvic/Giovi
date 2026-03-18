@@ -30,6 +30,16 @@ public interface GioviParserVisitResult {
 	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MULT, content); }
 	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_DIV, content); }
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+	default GioviParserVisitResult bitwiseNot() { throw new OperatorNotSupported(this, GioviToken.BIT_NOT); }
+	default GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_AND, right); }
+	default GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_OR, right); }
+	default GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_XOR, right); }
+	default GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_LSHIFT, right); }
+	default GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_RSHIFT, right); }
+	default GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviToken.BIT_RUSHIFT, right); }
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	default GioviParserVisitResult positive() { throw new OperatorNotSupported(this, GioviToken.PLUS); }

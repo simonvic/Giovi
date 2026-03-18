@@ -147,6 +147,61 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 		return this.value;
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+	@Override
+	public GioviParserVisitResult bitwiseNot() {
+		return value.bitwiseNot();
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseAnd(v.unwrap());
+			default -> value.bitwiseAnd(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseOr(v.unwrap());
+			default -> value.bitwiseOr(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseXor(v.unwrap());
+			default -> value.bitwiseXor(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseLeftShift(v.unwrap());
+			default -> value.bitwiseLeftShift(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseRightShift(v.unwrap());
+			default -> value.bitwiseRightShift(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case Var<?> v -> value.bitwiseRightUnsignedShift(v.unwrap());
+			default -> value.bitwiseRightUnsignedShift(right);
+		};
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

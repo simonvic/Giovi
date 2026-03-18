@@ -955,6 +955,29 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitExpressionBitwiseBool(ExpressionBitwiseBoolContext ctx) {
+		return VisitorUtils.bitwiseBool(
+			visit(ctx.expression(0)),
+			GioviToken.of(ctx.bop.getText()),
+			visit(ctx.expression(1))
+		);
+	}
+
+	@Override
+	public GioviParserVisitResult visitExpressionBitwiseNot(ExpressionBitwiseNotContext ctx) {
+		return VisitorUtils.bitwiseNot(visit(ctx.expression()));
+	}
+
+	@Override
+	public GioviParserVisitResult visitExpressionBitwiseShift(ExpressionBitwiseShiftContext ctx) {
+		return VisitorUtils.bitwiseShift(
+			visit(ctx.expression(0)),
+			GioviToken.of(ctx.bop.getText()),
+			visit(ctx.expression(1))
+		);
+	}
+
+	@Override
 	public GioviParserVisitResult visitExpressionPrefixed(ExpressionPrefixedContext ctx) {
 		return VisitorUtils.prefixed(
 			GioviToken.of(ctx.prefix.getText()),

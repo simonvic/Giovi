@@ -145,6 +145,55 @@ public class TestGioviInt {
 
 		}
 
+		//////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+		@Nested
+		class Bitwise {
+
+			@Test
+			void testBitwiseNot() {
+				assertThat(visitExpression("!!0b01000101").asNativeInt())
+					.isEqualTo(~0b01000101);
+			}
+
+			@Test
+			void testBitwiseAnd() {
+				assertThat(visitExpression("0b1111 && 0b0101").asNativeInt())
+					.isEqualTo(0b1111 & 0b0101);
+			}
+
+			@Test
+			void testBitwiseOr() {
+				assertThat(visitExpression("0b1001 || 0b0100").asNativeInt())
+					.isEqualTo(0b1001 | 0b0100);
+			}
+
+			@Test
+			void testBitwiseXor() {
+				assertThat(visitExpression("0b1001 ||| 0b0100").asNativeInt())
+					.isEqualTo(0b1001 ^ 0b0100);
+			}
+
+			@Test
+			void testBitwiseLeftShift() {
+				assertThat(visitExpression("1 {<} 5").asNativeInt())
+					.isEqualTo(1 << 5);
+			}
+
+			@Test
+			void testBitwiseRightShift() {
+				assertThat(visitExpression("1 {>} 5").asNativeInt())
+					.isEqualTo(1 >> 5);
+			}
+
+			@Test
+			void testBitwiseRightUnsignedShift() {
+				assertThat(visitExpression("1 {>>} 5").asNativeInt())
+					.isEqualTo(1 >>> 5);
+			}
+
+		}
+
 		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 		@Nested

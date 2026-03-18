@@ -11,6 +11,36 @@ import it.simonvic.giovi.exceptions.RedirectionException;
 
 public class VisitorUtils {
 
+	public static GioviParserVisitResult bitwiseNot(GioviParserVisitResult value) {
+		return value.bitwiseNot();
+	}
+
+	public static GioviParserVisitResult bitwiseBool(
+		GioviParserVisitResult lhs,
+		GioviToken bop,
+		GioviParserVisitResult rhs
+	) {
+		return switch (bop) {
+			case BIT_AND -> lhs.bitwiseAnd(rhs);
+			case BIT_OR -> lhs.bitwiseOr(rhs);
+			case BIT_XOR -> lhs.bitwiseXor(rhs);
+			default -> throw new OperatorNotSupported(lhs, bop, rhs);
+		};
+	}
+
+	public static GioviParserVisitResult bitwiseShift(
+		GioviParserVisitResult lhs,
+		GioviToken bop,
+		GioviParserVisitResult rhs
+	) {
+		return switch (bop) {
+			case BIT_LSHIFT -> lhs.bitwiseLeftShift(rhs);
+			case BIT_RSHIFT -> lhs.bitwiseRightShift(rhs);
+			case BIT_RUSHIFT -> lhs.bitwiseRightUnsignedShift(rhs);
+			default -> throw new OperatorNotSupported(lhs, bop, rhs);
+		};
+	}
+
 	public static GioviParserVisitResult prefixed(GioviToken prefix, GioviParserVisitResult value) {
 		return switch (prefix) {
 			case PLUS -> value.positive();

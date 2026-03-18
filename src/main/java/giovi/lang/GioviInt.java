@@ -107,6 +107,67 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 		};
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+	@Override
+	public GioviParserVisitResult bitwiseNot() {
+		return new GioviInt(~value);
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value & v.intValue());
+			case GioviInt(var v) -> new GioviInt(value & v);
+			default -> GioviNumber.super.bitwiseAnd(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value | v.intValue());
+			case GioviInt(var v) -> new GioviInt(value | v);
+			default -> GioviNumber.super.bitwiseOr(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value ^ v.intValue());
+			case GioviInt(var v) -> new GioviInt(value ^ v);
+			default -> GioviNumber.super.bitwiseXor(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value << v.intValue());
+			case GioviInt(var v) -> new GioviInt(value << v);
+			default -> GioviNumber.super.bitwiseLeftShift(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value >> v.intValue());
+			case GioviInt(var v) -> new GioviInt(value >> v);
+			default -> GioviNumber.super.bitwiseRightShift(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviNatural(var v) -> new GioviInt(value >>> v.intValue());
+			case GioviInt(var v) -> new GioviInt(value >>> v);
+			default -> GioviNumber.super.bitwiseRightUnsignedShift(right);
+		};
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override
