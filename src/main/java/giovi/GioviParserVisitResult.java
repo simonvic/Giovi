@@ -12,6 +12,7 @@ public interface GioviParserVisitResult {
 	// @formatter:off
 
 	// TODO: convert to interfaces
+	// TODO: use intersections <T extends Serializable & Comparable<T>>
 	// TODO: add toText() and keep toString() conventional
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
