@@ -13,7 +13,7 @@ public record GioviTypeRecord(RecordSignature signature) implements GioviType<Gi
 
 	@Override
 	public String toString() {
-		return signature.toString();
+		return "record" + signature.toString();
 	}
 
 	@Override

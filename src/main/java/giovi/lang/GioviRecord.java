@@ -20,7 +20,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return "record." + value.toString();
 	}
 
 	@Override

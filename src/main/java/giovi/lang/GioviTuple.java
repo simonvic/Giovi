@@ -18,7 +18,7 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return "tuple." + value.toString();
 	}
 
 	@Override

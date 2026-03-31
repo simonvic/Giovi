@@ -27,8 +27,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 
 	@Override
 	public String toString() {
-		if (fields.isEmpty()) return "Record<>";
-		var sb = new StringBuilder("Record<");
+		if (fields.isEmpty()) return "<>";
+		var sb = new StringBuilder("<");
 		var i = this.fields.values().iterator();
 		while (i.hasNext()) {
 			var next = i.next();

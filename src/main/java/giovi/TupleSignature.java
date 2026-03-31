@@ -19,8 +19,8 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 
 	@Override
 	public String toString() {
-		if (fields.isEmpty()) return "Tuple<>";
-		var sb = new StringBuilder("Tuple<");
+		if (fields.isEmpty()) return "<>";
+		var sb = new StringBuilder("<");
 		for (int i = 0; i < fields.size() - 1; i++) {
 			var field = fields.get(i);
 			sb.append(field.type());

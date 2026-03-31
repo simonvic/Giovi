@@ -13,7 +13,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 
 	@Override
 	public String toString() {
-		return signature.toString();
+		return "tuple" + signature.toString();
 	}
 
 	@Override
