@@ -1507,7 +1507,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 		}
 
-		for (var fieldCtx : ctx.structBodyDefinition().structFieldDefinition()) {
+		for (var fieldCtx : ctx.structBodyDefinition().fieldDeclaration()) {
 			var field = (RecordFieldSignature) visit(fieldCtx);
 			if (fields.containsKey(field.identifier())) {
 				var inheritedField = fields.get(field.identifier());
@@ -1580,7 +1580,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitStructFieldDefinition(StructFieldDefinitionContext ctx) {
+	public GioviParserVisitResult visitFieldDeclaration(FieldDeclarationContext ctx) {
 		String identifier = ctx.identifier().getText();
 		if (ctx.SELF() != null) {
 			return new RecordFieldSignature(identifier, GioviType.SELF);
@@ -1605,10 +1605,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		var struct = typeStruct.signature().spawn();
 		try {
-			if (ctx.tupleCreation() != null) {
-				initStruct(typeStruct, struct, ctx.tupleCreation());
+			if (ctx.tupleCreationBody() != null) {
+				initStruct(typeStruct, struct, ctx.tupleCreationBody());
 			} else {
-				initStruct(typeStruct, struct, ctx.recordCreation());
+				initStruct(typeStruct, struct, ctx.recordCreationBody());
 			}
 		} catch (NonWideneable e) {
 			throw new GioviException(e, "Can't create struct");
@@ -1619,7 +1619,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void initStruct(
 		GioviTypeStruct structType,
 		Struct struct,
-		RecordCreationContext fieldsCtx
+		RecordCreationBodyContext fieldsCtx
 	) throws NonWideneable {
 		for (var fieldCtx : fieldsCtx.recordEntry()) {
 			String fieldIdentifier = fieldCtx.identifier().getText();
@@ -1633,7 +1633,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	private void initStruct(
 		GioviTypeStruct structType,
 		Struct struct,
-		TupleCreationContext ctx
+		TupleCreationBodyContext ctx
 	) throws NonWideneable {
 		List<ExpressionContext> expressions = ctx.expression();
 		if (expressions == null || expressions.isEmpty()) {
@@ -1671,7 +1671,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitTupleCreation(TupleCreationContext ctx) {
+	public GioviParserVisitResult visitTupleCreationBody(TupleCreationBodyContext ctx) {
 		int size = ctx.expression().size();
 		var fields = new ArrayList<VarD<?>>(size);
 		var fieldsSignature = new ArrayList<TupleFieldSignature>(size);
@@ -1689,7 +1689,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitRecordCreation(RecordCreationContext ctx) {
+	public GioviParserVisitResult visitRecordCreationBody(RecordCreationBodyContext ctx) {
 		int size = ctx.recordEntry().size();
 		var fields = new LinkedHashMap<String, VarD<?>>(size);
 		var fieldsSignature = new LinkedHashMap<String, RecordFieldSignature>(size);
@@ -1721,6 +1721,38 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		String typename = ctx.typename.getText();
 		return scope.getType(typename)
 			.orElseThrow(() -> new TypeNotFound(typename));
+	}
+
+	@Override
+	public GioviParserVisitResult visitTypeTuple(TypeTupleContext ctx) {
+		var fields = new ArrayList<TupleFieldSignature>();
+		for (var fieldCtx : ctx.typeTupleEntry()) {
+			fields.add((TupleFieldSignature) visit(fieldCtx));
+		}
+		var signature = new TupleSignature(fields);
+		return new GioviTypeTuple(signature);
+	}
+
+	@Override
+	public GioviParserVisitResult visitTypeTupleEntry(TypeTupleEntryContext ctx) {
+		var type = visit(ctx.type()).asGioviType();
+		return (ctx.defaultDefinition() == null)
+			? new TupleFieldSignature(type)
+			: new TupleFieldSignature(
+				type,
+				visit(ctx.defaultDefinition().expression()).asGioviValue()
+			);
+	}
+
+	@Override
+	public GioviParserVisitResult visitTypeRecord(TypeRecordContext ctx) {
+		int fieldsCount = ctx.fieldDeclaration().size();
+		var fields = new RecordFieldSignature[fieldsCount];
+		for (int i = 0; i < fieldsCount; i++) {
+			fields[i] = (RecordFieldSignature) visit(ctx.fieldDeclaration(i));
+		}
+		var signature = new RecordSignature(fields);
+		return new GioviTypeRecord(signature);
 	}
 
 	@Override

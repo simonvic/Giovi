@@ -100,10 +100,9 @@ public class TestGioviRecord {
 		class Redirection {
 
 			@Test
-			@Disabled("Candidate not implemented")
 			void redir() {
 				visit("""
-					<1 true "hello"> -> Record <a Int, b Bool, c Text>
+					<a:1 b:true c:"hello"> -> foo record<a Int, b Bool, c Text>
 					""");
 			}
 

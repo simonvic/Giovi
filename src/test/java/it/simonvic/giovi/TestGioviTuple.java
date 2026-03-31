@@ -58,10 +58,9 @@ public class TestGioviTuple {
 		class Redirection {
 
 			@Test
-			@Disabled("Candidate not implemented")
 			void redir() {
 				visit("""
-					<1 true "hello"> -> tuple <Int, Bool, Text>
+					<1 true "hello"> -> foo tuple<Int, Bool, Text>
 					""");
 			}
 
