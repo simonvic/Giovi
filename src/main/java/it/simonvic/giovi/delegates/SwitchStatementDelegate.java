@@ -6,6 +6,7 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviBool;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
+import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.util.VisitorUtils;
 

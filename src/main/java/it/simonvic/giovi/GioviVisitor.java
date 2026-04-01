@@ -118,23 +118,23 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return currentScope;
 	}
 
-	private void setCurrentScope(Scope scope) {
+	protected void setCurrentScope(Scope scope) {
 		currentScope = scope;
 	}
 
-	private void enterScope() {
+	protected void enterScope() {
 		setCurrentScope(new Scope(getCurrentScope()));
 	}
 
-	private void enterFunctionScope() {
+	protected void enterFunctionScope() {
 		setCurrentScope(new FunctionScope(getCurrentScope()));
 	}
 
-	private void enterLoopScope() {
+	protected void enterLoopScope() {
 		setCurrentScope(new LoopScope(getCurrentScope()));
 	}
 
-	private void exitScope() {
+	protected void exitScope() {
 		setCurrentScope(getCurrentScope().getParent());
 	}
 
