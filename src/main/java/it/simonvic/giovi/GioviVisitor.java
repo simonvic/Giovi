@@ -24,6 +24,7 @@ import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.delegates.ForStatementDelegate;
+import it.simonvic.giovi.delegates.ImportStatementDelegate;
 import it.simonvic.giovi.delegates.SwitchStatementDelegate;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
@@ -141,111 +142,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitImportStatement(ImportStatementContext ctx) {
-		for (var importEntryCtx : ctx.importEntry()) {
-			visit(importEntryCtx);
-		}
-		return null;
-	}
-
-	private URI createURIFrom(ImportURIContext ctx) {
-		return switch (ctx) {
-			case ImportURIIdentifierContext c -> URI.create(c.getText());
-			case ImportURIExactTextContext c -> URI.create(
-				TextProcessor.of(c.getText())
-					.trimDelimiters(1)
-					.unescapeEscapes()
-					.collectString()
-			);
-			case ImportURITextContext c -> URI.create(
-				TextProcessor.of(c.getText())
-					.trimDelimiters(1)
-					.unescapeEscapes()
-					.injectVariables(getCurrentScope())
-					.injectExpressions(this)
-					.collectString()
-			);
-			default -> throw new RuntimeException("Unhandled ImportURIContext");
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult visitImportEntry(ImportEntryContext ctx) {
-		Module module = this.module;
-		for (var uriCtx : ctx.importURI()) {
-			var uri = createURIFrom(uriCtx);
-			module = switch (uri.getScheme()) {
-				// case "http", "https" -> new RemoteModule(uri, ROOT_MODULE);
-				case "file" -> {
-					// file import are only available as top level
-					if (module != this.module) {
-						throw new GioviException("Can't import nested file module");
-					}
-					yield new FileModule(uri);
-				}
-				case null -> {
-					// if parent module is a file module, visit level module declarations
-					if (module instanceof FileModule m && m != this.module) {
-						try {
-							var lexer = new GioviLexer(CharStreams.fromFileName(m.getPath()));
-							var parser = new GioviParser(new CommonTokenStream(lexer));
-							parser.begin().program().statement().stream()
-								.filter(statement -> statement.moduleDeclaration() != null)
-								.map(statement -> statement.moduleDeclaration())
-								.map(
-									innerModuleDeclarationCtx -> new InnerModule(
-										m, innerModuleDeclarationCtx.identifier().getText(),
-										innerModuleDeclarationCtx.body
-									)
-								)
-								.forEach(innerModule -> {
-									m.scope().declare(innerModule);
-									scanInnerModules(innerModule, true);
-								});
-						} catch (IOException e) {
-							throw new GioviException(e);
-						}
-					}
-					yield module.scope()
-						.getModule(uri.toString())
-						.orElseThrow(
-							() -> new GioviException("Can't find module " + uri.toString())
-						);
-				}
-				default -> throw new GioviException(
-					"Unsupported module URI scheme: " + uri.getScheme()
-				);
-			};
-		}
-		switch (module) {
-			case NativeModule m -> doImport(m);
-			case InnerModule m -> doImport(m);
-			case FileModule m -> doImport(m);
-		}
-		if (ctx.alias != null) {
-			getCurrentScope().declare(ctx.alias.getText(), module);
-		}
-		return null;
-	}
-
-	private void doImport(NativeModule module) {
-		// TODO: import if autoimport = false
-	}
-
-	private void doImport(InnerModule module) {
-		var visitor = new GioviVisitor(module);
-		visitor.visit(module.bodyCtx());
-	}
-
-	private void doImport(FileModule module) {
-		try {
-			var lexer = new GioviLexer(CharStreams.fromFileName(module.getPath()));
-			var parser = new GioviParser(new CommonTokenStream(lexer));
-			var tree = parser.begin();
-			var visitor = new GioviVisitor(module);
-			visitor.visit(tree);
-		} catch (IOException e) {
-			throw new GioviException(e);
-		}
+		return new ImportStatementDelegate(this).visit(ctx);
 	}
 
 	@Override
@@ -258,7 +155,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return module;
 	}
 
-	private static void scanInnerModules(InnerModule parentModule, boolean recurse) {
+	public static void scanInnerModules(InnerModule parentModule, boolean recurse) {
 		var innerModulesCtx = parentModule.bodyCtx().statement().stream()
 			.filter(statement -> statement.moduleDeclaration() != null)
 			.map(statement -> statement.moduleDeclaration())

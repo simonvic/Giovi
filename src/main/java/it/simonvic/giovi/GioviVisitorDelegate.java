@@ -12,6 +12,10 @@ public abstract class GioviVisitorDelegate extends GioviParserBaseVisitor<GioviP
 		this.gioviVisitor = gioviVisitor;
 	}
 
+	protected giovi.Module getModule() {
+		return gioviVisitor.getModule();
+	}
+
 	protected Scope getCurrentScope() {
 		return gioviVisitor.getCurrentScope();
 	}
