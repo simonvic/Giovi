@@ -6,25 +6,39 @@ import java.util.function.Consumer;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.lang.*;
-import it.simonvic.giovi.*;
+import it.simonvic.giovi.GioviVisitor;
+import it.simonvic.giovi.GioviVisitorDelegate;
+import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class ForStatementDelegate extends GioviVisitorDelegate {
 
-	public ForStatementDelegate(GioviVisitor gioviVisitor) {
+	public static GioviParserVisitResult doVisit(
+		GioviVisitor gioviVisitor,
+		ForStatementContext ctx
+	) {
+		return new ForStatementDelegate(gioviVisitor, ctx).doVisit();
+	}
+
+	private final ForStatementContext ctx;
+	private final StatementOrBlockContext bodyCtx;
+	private final IteratorContext iteratorCtx;
+
+	public ForStatementDelegate(GioviVisitor gioviVisitor, ForStatementContext ctx) {
 		super(gioviVisitor);
+		this.ctx = ctx;
+		this.bodyCtx = ctx.statementOrBlock();
+		this.iteratorCtx = ctx.iterator();
 	}
 
 	// TODO: check if necessary to new VarD when deconstructing
 	// TODO: check when declaring if it should be copied (by value) (e.g. iterating over a tuple)
 	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
 
-	@Override
-	public GioviParserVisitResult visitForStatement(ForStatementContext ctx) {
-		var iterator = ctx.iterator();
-		var bodyCtx = ctx.statementOrBlock();
+	public GioviParserVisitResult doVisit() {
 		var iterated = gioviVisitor.visit(ctx.iterable());
 		// TODO: figure out a better way to handle vars
 		if (iterated instanceof Var<?> v) {
@@ -33,68 +47,80 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		switch (iterated) {
 
 			case Range<?> range -> {
-				var expanded = range.expandAsGioviList(); // TODO: workaround for range iteration
-				switch (iterator) {
+				Consumer<Var<?>> loopBody = switch (iteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> iterate(expanded, bodyCtx, _ -> {});
+					case IteratorPlaceholderContext _ -> (_) -> {
+						gioviVisitor.visit(bodyCtx);
+					};
 
-					case IteratorUnaryContext entryCtx -> iterate(expanded, bodyCtx, entry -> {
+					case IteratorUnaryContext iCtx -> (entry) -> {
 						getCurrentScope().declare(
-							entryCtx.unaryIterator().identifier().getText(),
+							iCtx.unaryIterator().identifier().getText(),
 							new VarD<>(entry.unwrap().copy())
 						);
-					});
+						gioviVisitor.visit(bodyCtx);
+					};
 
 					default -> throw new GioviException(
-						"Can't iterate over " + range + " with iterator " + iterator.getText()
+						"Can't iterate over " + range + " with iterator " + iteratorCtx.getText()
 					);
-				}
+				};
+				forEach(range, loopBody);
 			}
 
 			case GioviList list -> {
-				switch (iterator) {
+				Consumer<Var<?>> loopBody = switch (iteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> iterate(list, bodyCtx, _ -> {});
+					case IteratorPlaceholderContext _ -> (_) -> {
+						gioviVisitor.visit(bodyCtx);
+					};
 
-					case IteratorUnaryContext entryCtx -> iterate(list, bodyCtx, entry -> {
+					case IteratorUnaryContext iCtx -> (entry) -> {
 						getCurrentScope().declare(
-							entryCtx.unaryIterator().identifier().getText(),
+							iCtx.unaryIterator().identifier().getText(),
 							new VarD<>(entry.unwrap().copy())
 						);
-					});
+						gioviVisitor.visit(bodyCtx);
+					};
 
-					case IteratorAggregateContext entryCtx -> iterate(list, bodyCtx, entry -> {
-						deconstruct(entry.copy(), entryCtx);
-					});
+					case IteratorAggregateContext iCtx -> (entry) -> {
+						deconstruct(entry.copy(), iCtx);
+						gioviVisitor.visit(bodyCtx);
+					};
 
 					default -> throw new GioviException(
-						"Can't iterate over " + list + " with iterator " + iterator.getText()
+						"Can't iterate over " + list + " with iterator " + iteratorCtx.getText()
 					);
-				}
+				};
+				forEach(list, loopBody);
 			}
 
 			case GioviMap map -> {
-				switch (iterator) {
+				BiConsumer<Var<?>, Var<?>> loopBody = switch (iteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> iterate(map, bodyCtx, (_, _) -> {});
+					case IteratorPlaceholderContext _ -> (_, _) -> {
+						gioviVisitor.visit(bodyCtx);
+					};
 
-					case IteratorUnaryContext keyCtx -> iterate(map, bodyCtx, (key, _) -> {
+					case IteratorUnaryContext iCtx -> (key, _) -> {
 						getCurrentScope().declare(
-							keyCtx.unaryIterator().identifier().getText(),
+							iCtx.unaryIterator().identifier().getText(),
 							new VarD<>(key.unwrap().copy())
 						);
-					});
+						gioviVisitor.visit(bodyCtx);
+					};
 
-					case IteratorMapContext c -> iterate(map, bodyCtx, c.key, c.value);
+					case IteratorMapContext iCtx -> loopBodyFor(map, iCtx);
 
 					default -> throw new GioviException(
-						"Can't iterate over " + map + " with iterator " + iterator.getText()
+						"Can't iterate over " + map + " with iterator " + iteratorCtx.getText()
 					);
-				}
+				};
+				forEach(map, loopBody);
 			}
 
 			default -> throw new GioviException(
-				"Can't iterate over " + iterated + " with iterator " + iterator.getText()
+				"Can't iterate over " + iterated + " with iterator " + iteratorCtx.getText()
 			);
 		}
 		return null;
@@ -106,115 +132,119 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 * Iterate over a map
 	 * @param map
 	 * @param bodyCtx
-	 * @param keyIteratorCtx
-	 * @param valueIteratorCtx
+	 * @param iteratorCtx
 	 */
-	private void iterate(
+	private BiConsumer<Var<?>, Var<?>> loopBodyFor(
 		GioviMap map,
-		StatementOrBlockContext bodyCtx,
-		IteratorContext keyIteratorCtx,
-		IteratorContext valueIteratorCtx
+		IteratorMapContext iteratorCtx
 	) {
-		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> iterationBody;
-		try {
-			iterationBody = switch (keyIteratorCtx) {
+		var keyIteratorCtx = iteratorCtx.key;
+		var valueIteratorCtx = iteratorCtx.value;
+		return switch (keyIteratorCtx) {
 
-				case IteratorPlaceholderContext _ -> switch (valueIteratorCtx) {
+			case IteratorPlaceholderContext _ -> switch (valueIteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> (body, _, _) -> gioviVisitor.visit(body);
+				case IteratorPlaceholderContext _ -> (_, _) -> gioviVisitor.visit(bodyCtx);
 
-					case IteratorUnaryContext valueCtx -> (body, _, v) -> {
+				case IteratorUnaryContext vCtx -> (_, v) -> {
+					getCurrentScope().declare(
+						vCtx.unaryIterator().identifier().getText(),
+						new VarD<>(v.unwrap().copy())
+					);
+					gioviVisitor.visit(bodyCtx);
+				};
+
+				case IteratorAggregateContext vCtx -> (_, v) -> {
+					deconstruct(v.copy(), vCtx);
+					gioviVisitor.visit(bodyCtx);
+				};
+
+				case IteratorMapContext vCtx -> (k, v) -> {
+					if (v.unwrap() instanceof GioviMap nestedMap) {
+						forEach(nestedMap, loopBodyFor(nestedMap, vCtx));
+					}
+				};
+
+				default -> throw new GioviException("Unsupported map value");
+			};
+
+			case IteratorUnaryContext kCtx -> {
+				String keyIdentifier = kCtx.unaryIterator().identifier().getText();
+
+				yield switch (valueIteratorCtx) {
+					case IteratorPlaceholderContext _ -> (k, _) -> {
 						getCurrentScope().declare(
-							valueCtx.unaryIterator().identifier().getText(),
+							keyIdentifier,
+							new VarD<>(k.unwrap().copy())
+						);
+						gioviVisitor.visit(bodyCtx);
+					};
+
+					case IteratorUnaryContext vCtx -> (k, v) -> {
+						getCurrentScope().declare(
+							keyIdentifier,
+							new VarD<>(k.unwrap().copy())
+						);
+						getCurrentScope().declare(
+							vCtx.unaryIterator().identifier().getText(),
 							new VarD<>(v.unwrap().copy())
 						);
-						gioviVisitor.visit(body);
+						gioviVisitor.visit(bodyCtx);
 					};
 
-					case IteratorAggregateContext valueCtx -> (body, _, v) -> {
-						deconstruct(v.copy(), valueCtx);
-						gioviVisitor.visit(body);
+					case IteratorAggregateContext vCtx -> (k, v) -> {
+						getCurrentScope().declare(
+							keyIdentifier,
+							new VarD<>(k.unwrap().copy())
+						);
+						deconstruct(v.copy(), vCtx);
+						gioviVisitor.visit(bodyCtx);
 					};
 
-					case IteratorMapContext valueCtx -> (body, k, v) -> {
+					case IteratorMapContext vCtx -> (k, v) -> {
+						getCurrentScope().declare(
+							keyIdentifier,
+							new VarD<>(k.unwrap().copy())
+						);
 						if (v.unwrap() instanceof GioviMap nestedMap) {
-							iterate(nestedMap, body, valueCtx.key, valueCtx.value);
+							forEach(nestedMap, loopBodyFor(nestedMap, vCtx));
 						}
 					};
 
 					default -> throw new GioviException("Unsupported map value");
 				};
+			}
 
-				case IteratorUnaryContext keyCtx -> {
-					String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
+			case IteratorAggregateContext kCtx -> switch (valueIteratorCtx) {
 
-					yield switch (valueIteratorCtx) {
-						case IteratorPlaceholderContext _ -> (body, k, _) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.unwrap().copy()));
-							gioviVisitor.visit(body);
-						};
-
-						case IteratorUnaryContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.unwrap().copy()));
-							String valueIdentifier = valueCtx.unaryIterator().identifier()
-								.getText();
-							getCurrentScope().declare(
-								valueIdentifier,
-								new VarD<>(v.unwrap().copy())
-							);
-							gioviVisitor.visit(body);
-						};
-
-						case IteratorAggregateContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.unwrap().copy()));
-							deconstruct(v.copy(), valueCtx);
-							gioviVisitor.visit(body);
-						};
-
-						case IteratorMapContext valueCtx -> (body, k, v) -> {
-							getCurrentScope().declare(keyIdentifier, new VarD<>(k.unwrap().copy()));
-							if (v.unwrap() instanceof GioviMap nestedMap) {
-								iterate(nestedMap, body, valueCtx.key, valueCtx.value);
-							}
-						};
-
-						default -> throw new GioviException("Unsupported map value");
-					};
-				}
-
-				case IteratorAggregateContext keyCtx -> switch (valueIteratorCtx) {
-
-					case IteratorPlaceholderContext _ -> (body, k, _) -> {
-						deconstruct(k.copy(), keyCtx);
-						gioviVisitor.visit(body);
-					};
-
-					case IteratorUnaryContext valueCtx -> (body, k, v) -> {
-						deconstruct(k.copy(), keyCtx);
-						String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
-						getCurrentScope().declare(valueIdentifier, new VarD<>(v.unwrap().copy()));
-						gioviVisitor.visit(body);
-					};
-
-					case IteratorAggregateContext valueCtx -> (body, k, v) -> {
-						deconstruct(k.copy(), keyCtx);
-						deconstruct(v.copy(), valueCtx);
-						gioviVisitor.visit(body);
-					};
-
-					default -> throw new GioviException("Unsupported map value");
+				case IteratorPlaceholderContext _ -> (k, _) -> {
+					deconstruct(k.copy(), kCtx);
+					gioviVisitor.visit(bodyCtx);
 				};
-				default -> throw new GioviException("Unsupported map key");
-			};
-		} catch (GioviException e) {
-			throw new GioviException(e, "Can't iterate over map");
-		}
 
-		iterate(map, bodyCtx, iterationBody);
+				case IteratorUnaryContext vCtx -> (k, v) -> {
+					deconstruct(k.copy(), kCtx);
+					getCurrentScope().declare(
+						vCtx.unaryIterator().identifier().getText(),
+						new VarD<>(v.unwrap().copy())
+					);
+					gioviVisitor.visit(bodyCtx);
+				};
+
+				case IteratorAggregateContext vCtx -> (k, v) -> {
+					deconstruct(k.copy(), kCtx);
+					deconstruct(v.copy(), vCtx);
+					gioviVisitor.visit(bodyCtx);
+				};
+
+				default -> throw new GioviException("Unsupported map value");
+			};
+			default -> throw new GioviException("Unsupported map key");
+		};
 	}
 
 	/**
-	 * Deconstruct an aggregate value and declare the variables
+	 * Deconstruct a product type and declare the variables
 	 * @param aggregate
 	 * @param aggregateCtx
 	 */
@@ -243,7 +273,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	/**
-	 * Deconstruct a tuple and declare the variables
+	 * Deconstruct a record and declare the variables
 	 * @param tuple
 	 * @param aggregateCtx
 	 */
@@ -302,19 +332,40 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	/**
-	 * @param list
-	 * @param statementOrBlockCtx
-	 * @param preamble
+	 * @param range
+	 * @param loopBody
 	 */
-	private void iterate(
+	private void forEach(
+		Range<?> range,
+		Consumer<Var<?>> loopBody
+	) {
+		// TODO: hacky way of iterating range
+		for (var entry : range.expandAsGioviList().value()) {
+			enterLoopScope();
+			loopBody.accept(entry);
+			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
+				exitScope();
+				break;
+			}
+			if (getCurrentScope().shouldSkip()) {
+				exitScope();
+				continue;
+			}
+			exitScope();
+		}
+	}
+
+	/**
+	 * @param list
+	 * @param loopBody
+	 */
+	private void forEach(
 		GioviList list,
-		StatementOrBlockContext statementOrBlockCtx,
-		Consumer<Var<?>> preamble
+		Consumer<Var<?>> loopBody
 	) {
 		for (var entry : list.value()) {
 			enterLoopScope();
-			preamble.accept(entry);
-			gioviVisitor.visit(statementOrBlockCtx);
+			loopBody.accept(entry);
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
 				exitScope();
 				break;
@@ -329,43 +380,15 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	/**
 	 * @param map
-	 * @param statementOrBlockCtx
-	 * @param preamble
-	 */
-	private void iterate(
-		GioviMap map,
-		StatementOrBlockContext statementOrBlockCtx,
-		BiConsumer<Var<?>, Var<?>> preamble
-	) {
-		for (var entry : map.value().entrySet()) {
-			enterLoopScope();
-			preamble.accept(entry.getKey(), entry.getValue());
-			gioviVisitor.visit(statementOrBlockCtx);
-			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
-				exitScope();
-				break;
-			}
-			if (getCurrentScope().shouldSkip()) {
-				exitScope();
-				continue;
-			}
-			exitScope();
-		}
-	}
-
-	/**
-	 * @param map
-	 * @param statementOrBlockCtx
 	 * @param loopBody
 	 */
-	private void iterate(
+	private void forEach(
 		GioviMap map,
-		StatementOrBlockContext statementOrBlockCtx,
-		TriConsumer<StatementOrBlockContext, Var<?>, Var<?>> loopBody
+		BiConsumer<Var<?>, Var<?>> loopBody
 	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
-			loopBody.accept(statementOrBlockCtx, entry.getKey(), entry.getValue());
+			loopBody.accept(entry.getKey(), entry.getValue());
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
 				exitScope();
 				break;

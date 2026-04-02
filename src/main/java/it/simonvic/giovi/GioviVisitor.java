@@ -288,7 +288,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitForStatement(ForStatementContext ctx) {
-		return new ForStatementDelegate(this).visit(ctx);
+		return ForStatementDelegate.doVisit(this, ctx);
 	}
 
 	@Override
