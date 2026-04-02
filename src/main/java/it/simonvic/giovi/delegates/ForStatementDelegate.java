@@ -39,9 +39,8 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case IteratorPlaceholderContext _ -> iterate(expanded, bodyCtx, _ -> {});
 
 					case IteratorUnaryContext entryCtx -> iterate(expanded, bodyCtx, entry -> {
-						String identifier = entryCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							identifier,
+							entryCtx.unaryIterator().identifier().getText(),
 							new VarD<>(entry.unwrap().copy())
 						);
 					});
@@ -58,9 +57,8 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case IteratorPlaceholderContext _ -> iterate(list, bodyCtx, _ -> {});
 
 					case IteratorUnaryContext entryCtx -> iterate(list, bodyCtx, entry -> {
-						String identifier = entryCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							identifier,
+							entryCtx.unaryIterator().identifier().getText(),
 							new VarD<>(entry.unwrap().copy())
 						);
 					});
@@ -81,9 +79,8 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case IteratorPlaceholderContext _ -> iterate(map, bodyCtx, (_, _) -> {});
 
 					case IteratorUnaryContext keyCtx -> iterate(map, bodyCtx, (key, _) -> {
-						String keyIdentifier = keyCtx.unaryIterator().identifier().getText();
 						getCurrentScope().declare(
-							keyIdentifier,
+							keyCtx.unaryIterator().identifier().getText(),
 							new VarD<>(key.unwrap().copy())
 						);
 					});
@@ -127,8 +124,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case IteratorPlaceholderContext _ -> (body, _, _) -> gioviVisitor.visit(body);
 
 					case IteratorUnaryContext valueCtx -> (body, _, v) -> {
-						String valueIdentifier = valueCtx.unaryIterator().identifier().getText();
-						getCurrentScope().declare(valueIdentifier, new VarD<>(v.unwrap().copy()));
+						getCurrentScope().declare(
+							valueCtx.unaryIterator().identifier().getText(),
+							new VarD<>(v.unwrap().copy())
+						);
 						gioviVisitor.visit(body);
 					};
 
