@@ -1,7 +1,11 @@
 package it.simonvic.giovi.delegates;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+
+import org.antlr.v4.runtime.ParserRuleContext;
 
 import giovi.GioviParserVisitResult;
 import giovi.Range;
@@ -16,6 +20,8 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class ForStatementDelegate extends GioviVisitorDelegate {
 
+	// TODO: based on iterator, flatten iterated value first and then iterate, instead of doing whatever this is
+
 	public static GioviParserVisitResult doVisit(
 		GioviVisitor gioviVisitor,
 		ForStatementContext ctx
@@ -26,304 +32,426 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	private final ForStatementContext ctx;
 	private final StatementOrBlockContext bodyCtx;
 	private final IteratorContext iteratorCtx;
+	private final GioviParserVisitResult iterated;
 
 	public ForStatementDelegate(GioviVisitor gioviVisitor, ForStatementContext ctx) {
 		super(gioviVisitor);
 		this.ctx = ctx;
 		this.bodyCtx = ctx.statementOrBlock();
 		this.iteratorCtx = ctx.iterator();
+		var iterated = gioviVisitor.visit(ctx.iterable());
+		this.iterated = (iterated instanceof Var<?> v) // TODO: figure out a better way to handle vars
+			? v.unwrap()
+			: iterated;
 	}
 
 	// TODO: check if necessary to new VarD when deconstructing
 	// TODO: check when declaring if it should be copied (by value) (e.g. iterating over a tuple)
-	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
+
+	private static GioviException unsupportedIterator(
+		ParserRuleContext iteratorCtx,
+		GioviParserVisitResult value
+		// TODO: add cause
+	) {
+		String iteratedText = (value instanceof GioviValue<?> v)
+			? v.getGioviType().toString()
+			: value.toString();
+		return new GioviException(
+			"Can't interate with " + iteratorCtx.getText() + " on " + iteratedText
+		);
+	}
+
+	private static GioviException unsupportedDeconstruction(
+		GioviParserVisitResult value,
+		ParserRuleContext iteratorCtx
+	) {
+		return new GioviException("Can't deconstruct " + value + " into " + iteratorCtx.getText());
+	}
+
+	private static GioviException unsupportedDeconstruction(
+		GioviParserVisitResult value,
+		List<NestedIteratorContext> nestedIterators
+	) {
+		return new GioviException("Can't deconstruct " + value + " into " + nestedIterators);
+	}
+
+	private static GioviException unsupportedDeconstruction(
+		GioviParserVisitResult value,
+		ParserRuleContext iteratorCtx,
+		Exception cause
+	) {
+		return new GioviException(
+			cause, "Can't deconstruct " + value + " into " + iteratorCtx.getText()
+		);
+	}
+
 
 	public GioviParserVisitResult doVisit() {
-		var iterated = gioviVisitor.visit(ctx.iterable());
-		// TODO: figure out a better way to handle vars
-		if (iterated instanceof Var<?> v) {
-			iterated = v.unwrap();
-		}
-		switch (iterated) {
 
-			case Range<?> range -> {
-				Consumer<Var<?>> loopBody = switch (iteratorCtx) {
+		switch (iteratorCtx) {
 
-					case IteratorPlaceholderContext _ -> (_) -> {
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorUnaryContext iCtx -> (entry) -> {
-						getCurrentScope().declare(
-							iCtx.unaryIterator().identifier().getText(),
-							new VarD<>(entry.unwrap().copy())
-						);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					default -> throw new GioviException(
-						"Can't iterate over " + range + " with iterator " + iteratorCtx.getText()
-					);
-				};
-				forEach(range, loopBody);
+			case IteratorPlaceholderContext iCtx -> {
+				switch (iterated) {
+					case Range<?> range -> forEach(range);
+					case GioviList list -> forEach(list);
+					case GioviMap map -> forEach(map);
+					default -> throw unsupportedIterator(iCtx, iterated);
+				}
 			}
 
-			case GioviList list -> {
-				Consumer<Var<?>> loopBody = switch (iteratorCtx) {
-
-					case IteratorPlaceholderContext _ -> (_) -> {
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorUnaryContext iCtx -> (entry) -> {
-						getCurrentScope().declare(
-							iCtx.unaryIterator().identifier().getText(),
-							new VarD<>(entry.unwrap().copy())
-						);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorAggregateContext iCtx -> (entry) -> {
-						deconstruct(entry.copy(), iCtx);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					default -> throw new GioviException(
-						"Can't iterate over " + list + " with iterator " + iteratorCtx.getText()
-					);
-				};
-				forEach(list, loopBody);
+			case IteratorUnaryContext iCtx -> {
+				switch (iterated) {
+					case Range<?> range -> forEach(range, iCtx.unaryIterator());
+					case GioviList list -> forEach(list, iCtx.unaryIterator());
+					case GioviMap map -> forEach(map, iCtx.unaryIterator());
+					default -> throw unsupportedIterator(iCtx, iterated);
+				}
 			}
 
-			case GioviMap map -> {
-				BiConsumer<Var<?>, Var<?>> loopBody = switch (iteratorCtx) {
+			case IteratorProductContext iCtx when iterated instanceof GioviList list
+				-> forEach(list, iCtx);
 
-					case IteratorPlaceholderContext _ -> (_, _) -> {
-						gioviVisitor.visit(bodyCtx);
-					};
+			case IteratorMapContext iCtx when iterated instanceof GioviMap map
+				-> forEach(map, iCtx.key, iCtx.value);
 
-					case IteratorUnaryContext iCtx -> (key, _) -> {
-						getCurrentScope().declare(
-							iCtx.unaryIterator().identifier().getText(),
-							new VarD<>(key.unwrap().copy())
-						);
-						gioviVisitor.visit(bodyCtx);
-					};
 
-					case IteratorMapContext iCtx -> loopBodyFor(map, iCtx);
+			case IteratorNestedContext nestedCtx -> {
 
-					default -> throw new GioviException(
-						"Can't iterate over " + map + " with iterator " + iteratorCtx.getText()
-					);
-				};
-				forEach(map, loopBody);
+				// NOTE: top level nested iterators are treated the same
+				switch (nestedCtx.nestedIterator()) {
+
+					case IteratorNestedPlaceholderContext _ -> {
+						switch (iterated) {
+							case Range<?> range -> forEach(range);
+							case GioviList list -> forEach(list);
+							case GioviMap map -> forEach(map);
+							default -> throw unsupportedIterator(nestedCtx, iterated);
+						}
+					}
+
+					case IteratorNestedUnaryContext iCtx -> {
+						switch (iterated) {
+							case Range<?> range -> forEach(range, iCtx.unaryIterator());
+							case GioviList list -> forEach(list, iCtx.unaryIterator());
+							case GioviMap map -> forEach(map, iCtx.unaryIterator());
+							default -> throw unsupportedIterator(nestedCtx, iterated);
+						}
+					}
+
+					case IteratorNestedListContext iCtx when iterated instanceof GioviList list
+						-> forEach(list, iCtx.nestedIterator());
+
+					case IteratorNestedProductContext iCtx when iterated instanceof GioviList list
+						-> forEach(list, iCtx);
+
+					case IteratorNestedMapContext iCtx when iterated instanceof GioviMap map
+						-> forEach(map, iCtx.key, iCtx.value);
+
+					default -> throw unsupportedIterator(nestedCtx, iterated);
+				}
 			}
 
-			default -> throw new GioviException(
-				"Can't iterate over " + iterated + " with iterator " + iteratorCtx.getText()
-			);
+			default -> throw unsupportedIterator(iteratorCtx, iterated);
+
 		}
 		return null;
 	}
 
 	// TODO: should iterators be by value?
+	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
 
-	/**
-	 * Iterate over a map
-	 * @param map
-	 * @param bodyCtx
-	 * @param iteratorCtx
-	 */
-	private BiConsumer<Var<?>, Var<?>> loopBodyFor(
+	private void forEach(
 		GioviMap map,
-		IteratorMapContext iteratorCtx
+		NestedIteratorContext keyIteratorCtx,
+		NestedIteratorContext valueIteratorCtx
 	) {
-		var keyIteratorCtx = iteratorCtx.key;
-		var valueIteratorCtx = iteratorCtx.value;
-		return switch (keyIteratorCtx) {
-
-			case IteratorPlaceholderContext _ -> switch (valueIteratorCtx) {
-
-				case IteratorPlaceholderContext _ -> (_, _) -> gioviVisitor.visit(bodyCtx);
-
-				case IteratorUnaryContext vCtx -> (_, v) -> {
-					getCurrentScope().declare(
-						vCtx.unaryIterator().identifier().getText(),
-						new VarD<>(v.unwrap().copy())
-					);
-					gioviVisitor.visit(bodyCtx);
-				};
-
-				case IteratorAggregateContext vCtx -> (_, v) -> {
-					deconstruct(v.copy(), vCtx);
-					gioviVisitor.visit(bodyCtx);
-				};
-
-				case IteratorMapContext vCtx -> (k, v) -> {
-					if (v.unwrap() instanceof GioviMap nestedMap) {
-						forEach(nestedMap, loopBodyFor(nestedMap, vCtx));
-					}
-				};
-
-				default -> throw new GioviException("Unsupported map value");
-			};
-
-			case IteratorUnaryContext kCtx -> {
-				String keyIdentifier = kCtx.unaryIterator().identifier().getText();
-
-				yield switch (valueIteratorCtx) {
-					case IteratorPlaceholderContext _ -> (k, _) -> {
-						getCurrentScope().declare(
-							keyIdentifier,
-							new VarD<>(k.unwrap().copy())
-						);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorUnaryContext vCtx -> (k, v) -> {
-						getCurrentScope().declare(
-							keyIdentifier,
-							new VarD<>(k.unwrap().copy())
-						);
-						getCurrentScope().declare(
-							vCtx.unaryIterator().identifier().getText(),
-							new VarD<>(v.unwrap().copy())
-						);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorAggregateContext vCtx -> (k, v) -> {
-						getCurrentScope().declare(
-							keyIdentifier,
-							new VarD<>(k.unwrap().copy())
-						);
-						deconstruct(v.copy(), vCtx);
-						gioviVisitor.visit(bodyCtx);
-					};
-
-					case IteratorMapContext vCtx -> (k, v) -> {
-						getCurrentScope().declare(
-							keyIdentifier,
-							new VarD<>(k.unwrap().copy())
-						);
-						if (v.unwrap() instanceof GioviMap nestedMap) {
-							forEach(nestedMap, loopBodyFor(nestedMap, vCtx));
-						}
-					};
-
-					default -> throw new GioviException("Unsupported map value");
-				};
+		// TODO: find key deconstruction strategy, then value strategy and then iterate
+		switch (keyIteratorCtx) {
+			case IteratorNestedPlaceholderContext kCtx -> {
+				switch (valueIteratorCtx) {
+					case IteratorNestedPlaceholderContext _ -> forEach(map);
+					case IteratorNestedUnaryContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedListContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedMapContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedProductContext vCtx -> forEach(map, kCtx, vCtx);
+					default -> throw unsupportedIterator(valueIteratorCtx, map);
+				}
 			}
+			case IteratorNestedUnaryContext kCtx -> {
+				switch (valueIteratorCtx) {
+					case IteratorNestedPlaceholderContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedUnaryContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedListContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedMapContext vCtx -> forEach(map, kCtx, vCtx);
+					case IteratorNestedProductContext vCtx -> forEach(map, kCtx, vCtx);
+					default -> throw unsupportedIterator(valueIteratorCtx, map);
+				}
+			}
+			default -> throw unsupportedIterator(keyIteratorCtx, map);
+		}
+	}
 
-			case IteratorAggregateContext kCtx -> switch (valueIteratorCtx) {
+	//////////////////////////////////////////////////////////////////////////////// Placeholder
 
-				case IteratorPlaceholderContext _ -> (k, _) -> {
-					deconstruct(k.copy(), kCtx);
-					gioviVisitor.visit(bodyCtx);
-				};
+	private void forEach(Range<?> range) {
+		forEach(range, (_) -> gioviVisitor.visit(bodyCtx));
+	}
 
-				case IteratorUnaryContext vCtx -> (k, v) -> {
-					deconstruct(k.copy(), kCtx);
-					getCurrentScope().declare(
-						vCtx.unaryIterator().identifier().getText(),
-						new VarD<>(v.unwrap().copy())
-					);
-					gioviVisitor.visit(bodyCtx);
-				};
+	private void forEach(GioviList list) {
+		forEach(list, (_) -> gioviVisitor.visit(bodyCtx));
+	}
 
-				case IteratorAggregateContext vCtx -> (k, v) -> {
-					deconstruct(k.copy(), kCtx);
-					deconstruct(v.copy(), vCtx);
-					gioviVisitor.visit(bodyCtx);
-				};
+	private void forEach(GioviMap map) {
+		forEach(map, (_, _) -> gioviVisitor.visit(bodyCtx));
+	}
 
-				default -> throw new GioviException("Unsupported map value");
-			};
-			default -> throw new GioviException("Unsupported map key");
-		};
+	//////////////////////////////////////////////////////////////////////////////// Unary
+
+	private void forEach(Range<?> range, UnaryIteratorContext iCtx) {
+		forEach(range, (i) -> {
+			deconstruct(i, iCtx);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(GioviList list, UnaryIteratorContext iCtx) {
+		forEach(list, (i) -> {
+			deconstruct(i, iCtx);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(GioviMap map, UnaryIteratorContext iCtx) {
+		forEach(map, (k, _) -> {
+			deconstruct(k, iCtx);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(GioviList list, IteratorProductContext iCtx) {
+		forEach(list, (i) -> {
+			deconstruct(i, iCtx);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+
+	//////////////////////////////////////////////////////////////////////////////// Maps
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedPlaceholderContext kCtx,
+		IteratorNestedUnaryContext vCtx
+	) {
+		forEach(map, (_, v) -> {
+			deconstruct(v, vCtx.unaryIterator());
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedPlaceholderContext kCtx,
+		IteratorNestedListContext vCtx
+	) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedPlaceholderContext kCtx,
+		IteratorNestedMapContext vCtx
+	) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedPlaceholderContext kCtx,
+		IteratorNestedProductContext vCtx
+	) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedUnaryContext kCtx,
+		IteratorNestedPlaceholderContext vCtx
+	) {
+		forEach(map, (k, _) -> {
+			deconstruct(k, kCtx.unaryIterator());
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedUnaryContext kCtx,
+		IteratorNestedUnaryContext vCtx
+	) {
+		forEach(map, (k, v) -> {
+			deconstruct(k, kCtx.unaryIterator());
+			deconstruct(v, vCtx.unaryIterator());
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedUnaryContext kCtx,
+		IteratorNestedListContext vCtx
+	) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedUnaryContext kCtx,
+		IteratorNestedMapContext vCtx
+	) {
+		forEach(map, (k, v) -> {
+			deconstruct(k, kCtx.unaryIterator());
+			if (v.unwrap() instanceof GioviMap nestedMap) {
+				forEach(nestedMap, vCtx.key, vCtx.value);
+			} else {
+				throw unsupportedIterator(vCtx, v.unwrap());
+			}
+		});
+	}
+
+	private void forEach(
+		GioviMap map,
+		IteratorNestedUnaryContext kCtx,
+		IteratorNestedProductContext vCtx
+	) {
+		forEach(map, (k, v) -> {
+			deconstruct(k, kCtx.unaryIterator());
+			deconstruct(v, vCtx);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
+
+	//////////////////////////////////////////////////////////////////////////////// Nested
+
+	private void forEach(GioviList list, NestedIteratorContext nestedIterator) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	private void forEach(GioviList list, IteratorNestedProductContext nestedIterator) {
+		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
+	}
+
+	//////////////////////////////////////////////////////////////////////////////// Deconstruct
+
+	private void deconstruct(Var<?> i, UnaryIteratorContext unaryIterator) {
+		getCurrentScope().declare(
+			unaryIterator.identifier().getText(),
+			new VarD<>(i.copy().unwrap())
+		);
 	}
 
 	/**
 	 * Deconstruct a product type and declare the variables
-	 * @param aggregate
-	 * @param aggregateCtx
+	 * @param i
+	 * @param iCtx
 	 */
-	private void deconstruct(Var<?> aggregate, IteratorAggregateContext aggregateCtx) {
-		if (aggregateCtx.whole != null) {
-			getCurrentScope().declare(
-				aggregateCtx.whole.getText(),
-				new VarD<>(aggregate.unwrap())
-			);
-		}
-		switch (aggregate.unwrap()) {
-			case GioviStruct struct -> deconstruct(struct, aggregateCtx);
-			case GioviRecord tuple -> deconstruct(tuple, aggregateCtx);
-			case GioviTuple tuple -> deconstruct(tuple, aggregateCtx);
-			default -> throw new GioviException("Can't deconstruct " + aggregate);
+	private void deconstruct(Var<?> i, IteratorProductContext iCtx) {
+		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.nestedIterator());
+	}
+
+	private void deconstruct(Var<?> i, IteratorNestedProductContext iCtx) {
+		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.nestedIterator());
+	}
+
+	private void deconstruct(
+		Var<?> i,
+		Optional<UnaryIteratorContext> whole,
+		List<NestedIteratorContext> nestedIterators
+	) {
+		whole.ifPresent(
+			w -> getCurrentScope().declare(
+				w.getText(),
+				new VarD<>(i.copy().unwrap())
+			)
+		);
+		switch (i.unwrap()) {
+			case GioviStruct struct -> deconstruct(struct, nestedIterators);
+			case GioviRecord tuple -> deconstruct(tuple, nestedIterators);
+			case GioviTuple tuple -> deconstruct(tuple, nestedIterators);
+			default -> throw unsupportedDeconstruction(i, nestedIterators);
 		}
 	}
 
 	/**
 	 * Deconstruct a tuple and declare the variables
 	 * @param tuple
-	 * @param aggregateCtx
+	 * @param iCtx
 	 */
-	private void deconstruct(GioviTuple tuple, IteratorAggregateContext aggregateCtx) {
+	private void deconstruct(GioviTuple tuple, List<NestedIteratorContext> fieldsIteratorsCtx) {
 		throw new GioviException("Tuple deconstruct not implemented yet");
 	}
 
 	/**
 	 * Deconstruct a record and declare the variables
 	 * @param tuple
-	 * @param aggregateCtx
+	 * @param iCtx
 	 */
-	private void deconstruct(GioviRecord tuple, IteratorAggregateContext aggregateCtx) {
+	private void deconstruct(GioviRecord tuple, List<NestedIteratorContext> fieldsIteratorsCtx) {
 		throw new GioviException("Record deconstruct not implemented yet");
 	}
 
 	/**
 	 * Deconstruct a struct and declare the variables
 	 * @param struct
-	 * @param aggregateCtx
+	 * @param iCtx
 	 */
-	private void deconstruct(GioviStruct struct, IteratorAggregateContext aggregateCtx) {
+	private void deconstruct(GioviStruct struct, List<NestedIteratorContext> fieldsIteratorsCtx) {
 		// TODO: iterate by identifiers or by field index?
 		// TODO: should fields be by value?
 		// TODO: handle concurrent modifications
-		for (var fieldIteratorCtx : aggregateCtx.iterator()) {
+		for (var fieldIteratorCtx : fieldsIteratorsCtx) {
 			switch (fieldIteratorCtx) {
 
-				case IteratorPlaceholderContext _ -> {
+				case IteratorNestedPlaceholderContext _ -> {
 					// do nothing
 				}
 
-				case IteratorUnaryContext uCtx -> {
-					String fieldIdentifier = uCtx.unaryIterator().identifier().getText();
-					var field = struct.value().getField(fieldIdentifier)
+				case IteratorNestedUnaryContext unaryCtx -> {
+					String fieldIdentifier = unaryCtx.unaryIterator().identifier().getText();
+					var field = struct.value()
+						.getField(fieldIdentifier)
 						.orElseThrow(
-							() -> new GioviException(
-								"Can't deconstruct",
+							() -> unsupportedDeconstruction(
+								struct,
+								unaryCtx,
 								new NoSuchField(fieldIdentifier)
 							)
 						);
 					getCurrentScope().declare(fieldIdentifier, field);
 				}
 
-				case IteratorAggregateContext aCtx -> {
-					if (aCtx.whole == null) {
+				case IteratorNestedProductContext productCtx -> {
+					if (productCtx.whole == null) {
 						throw new GioviException(
-							"Can't deconstruct nested aggregate without a whole identifier"
+							"Whole identifier is needed for named deconstruction"
 						);
 					}
-					String fieldIdentifier = aCtx.whole.getText();
-					var field = struct.value().getField(fieldIdentifier)
+					String fieldIdentifier = productCtx.whole.getText();
+					var field = struct.value()
+						.getField(fieldIdentifier)
 						.orElseThrow(
-							() -> new GioviException(
-								"Can't deconstruct",
+							() -> unsupportedDeconstruction(
+								struct,
+								productCtx,
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					deconstruct(field, aCtx);
+					getCurrentScope().declare(fieldIdentifier, field);
+					if (field.unwrap() instanceof GioviStruct structField) {
+						deconstruct(structField, productCtx.nestedIterator());
+					} else {
+						throw unsupportedDeconstruction(field, productCtx);
+					}
 				}
 
 				default -> throw new GioviException("Can't deconstruct");
