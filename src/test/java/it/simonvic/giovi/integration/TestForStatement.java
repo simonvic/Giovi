@@ -275,16 +275,15 @@ public class TestForStatement {
 			);
 		}
 
-		@Disabled("Not implemented yet")
 		@Test
 		void onMap_withStructKey() {
 			visit(
 				"""
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				map [Text : Foo] <- [
-					"a" : <false, <0i, 0n>, "no">,
-					"b" : <true, <1i, 1n>, "yes">
+				map [Foo : Text] <- [
+					<false, <0i, 0n>, "no"> : "a"
+					<true, <1i, 1n>, "yes"> : "b"
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
 				for k <b, bar <i, n>, t> : v in map do "$k <$b, $bar <$i, $n>, $t> : $v" -> _out
@@ -304,6 +303,22 @@ public class TestForStatement {
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
 				for k : v <b, bar <i, n>, t> in map do "$k : $v <$b, $bar <$i, $n>, $t>" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void onMap_withStructKeyValue() {
+			visit(
+				"""
+				Bar<i Int, n Natural>
+				Foo<b Bool, bar Bar, t Text>
+				map [Foo : Bar] <- [
+					<false, <0i, 0n>, "no"> : <0i, 0n>
+					<true, <1i, 1n>, "yes"> : <1i, 1n>
+				]
+				"for <b, bar, t> : <i, n> in $map" -> _out
+				for <b, bar, t> : <i, n> in map do "<$b, $bar, $t> : <$i, $n>" -> _out
 				"""
 			);
 		}
