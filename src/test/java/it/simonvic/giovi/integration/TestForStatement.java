@@ -181,7 +181,6 @@ public class TestForStatement {
 	@Nested
 	class NestedIterators {
 
-		@Disabled("Not implemented yet")
 		@Test
 		void onNestedList() {
 			visit(
@@ -224,7 +223,23 @@ public class TestForStatement {
 			);
 		}
 
-		@Disabled("Not implemented yet")
+		@Test
+		void onMapOfLists() {
+			visit(
+				"""
+				map [Text : [Int]] <- [
+					"a" : [1 2 3]
+					"b" : [10 20 30]
+				]
+				"for u : v in $map" -> _out
+				for u : v in map do "$u : $v" -> _out
+				"for u : [v] in $map" -> _out
+				for u : [v] in map do "$u : $v" -> _out
+				"""
+			);
+		}
+
+
 		@Test
 		void onListOfNestedMaps() {
 			visit(
@@ -258,7 +273,6 @@ public class TestForStatement {
 			);
 		}
 
-		@Disabled("Not implemented yet")
 		@Test
 		void onNestedListOfNestedStruct() {
 			visit(
@@ -323,6 +337,73 @@ public class TestForStatement {
 			);
 		}
 
+		@Test
+		void onCrazy() {
+			visit(
+				"""
+				# 3d matrix of maps of nested maps of list of foo LMAO
+				Bar<i Int, n Natural>
+				Foo<b Bool, bar Bar, t Text>
+				crazy [[[[Text : [Text : [Foo]]]]]] <- [
+					[
+						[
+							[
+								"a" : [
+									"aa" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+									"ab" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+								]
+							]
+							[
+								"b" : [
+									"ba" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+									"bb" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+								]
+							]
+						]
+						[
+							[
+								"A" : [
+									"Aa" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+									"Ab" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+								]
+							]
+							[
+								"B" : [
+									"Ba" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+									"Bb" : [
+										<false, <0i, 0n>, "no">,
+										<true, <1i, 1n>, "yes">
+									]
+								]
+							]
+						]
+					]
+				]
+				for [[[[k : [kk : [<b, bar, t>]]]]]] in crazy do "[[[$k : [$kk : [<$b, $bar, $t>]]]]]" -> _out
+				"""
+			);
+		}
 
 	}
 
