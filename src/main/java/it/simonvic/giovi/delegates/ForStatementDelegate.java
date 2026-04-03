@@ -224,13 +224,24 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		};
 
 		Consumer<Var<?>> valueIterationStrategy = switch (valueIteratorCtx) {
+
 			case IteratorNestedPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
 			};
+
 			case IteratorNestedUnaryContext vCtx -> (v) -> {
 				deconstruct(v, vCtx.unaryIterator());
 				gioviVisitor.visit(bodyCtx);
 			};
+
+			case IteratorNestedListContext vCtx -> (v) -> {
+				if (v.unwrap() instanceof GioviList nestedList) {
+					forEach(nestedList, vCtx.nestedIterator());
+				} else {
+					throw unsupportedIterator(vCtx, v.unwrap());
+				}
+			};
+
 			case IteratorNestedMapContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
 					forEach(nestedMap, vCtx.key, vCtx.value);
