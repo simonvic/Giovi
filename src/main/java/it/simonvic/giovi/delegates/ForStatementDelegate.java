@@ -5,8 +5,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.antlr.v4.runtime.ParserRuleContext;
-
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.lang.*;
@@ -17,6 +15,8 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
+import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
+import it.simonvic.giovi.exceptions.UnsupportedIterator;
 
 public class ForStatementDelegate extends GioviVisitorDelegate {
 
@@ -48,44 +48,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	// TODO: check if necessary to new VarD when deconstructing
 	// TODO: check when declaring if it should be copied (by value) (e.g. iterating over a tuple)
 
-	private static GioviException unsupportedIterator(
-		ParserRuleContext iteratorCtx,
-		GioviParserVisitResult value
-		// TODO: add cause
-	) {
-		String iteratedText = (value instanceof GioviValue<?> v)
-			? v.getGioviType().toString()
-			: value.toString();
-		return new GioviException(
-			"Can't interate with " + iteratorCtx.getText() + " on " + iteratedText
-		);
-	}
-
-	private static GioviException unsupportedDeconstruction(
-		GioviParserVisitResult value,
-		ParserRuleContext iteratorCtx
-	) {
-		return new GioviException("Can't deconstruct " + value + " into " + iteratorCtx.getText());
-	}
-
-	private static GioviException unsupportedDeconstruction(
-		GioviParserVisitResult value,
-		List<NestedIteratorContext> nestedIterators
-	) {
-		return new GioviException("Can't deconstruct " + value + " into " + nestedIterators);
-	}
-
-	private static GioviException unsupportedDeconstruction(
-		GioviParserVisitResult value,
-		ParserRuleContext iteratorCtx,
-		Exception cause
-	) {
-		return new GioviException(
-			cause, "Can't deconstruct " + value + " into " + iteratorCtx.getText()
-		);
-	}
-
-
 	public GioviParserVisitResult doVisit() {
 
 		switch (iteratorCtx) {
@@ -103,7 +65,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 							case Range<?> range -> forEach(range);
 							case GioviList list -> forEach(list);
 							case GioviMap map -> forEach(map);
-							default -> throw unsupportedIterator(nestedCtx, iterated);
+							default -> throw new UnsupportedIterator(nestedCtx, iterated);
 						}
 					}
 
@@ -112,7 +74,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 							case Range<?> range -> forEach(range, iCtx.unaryIterator());
 							case GioviList list -> forEach(list, iCtx.unaryIterator());
 							case GioviMap map -> forEach(map, iCtx.unaryIterator());
-							default -> throw unsupportedIterator(nestedCtx, iterated);
+							default -> throw new UnsupportedIterator(nestedCtx, iterated);
 						}
 					}
 
@@ -125,11 +87,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case IteratorNestedMapContext iCtx when iterated instanceof GioviMap map
 						-> forEach(map, iCtx.key, iCtx.value);
 
-					default -> throw unsupportedIterator(nestedCtx, iterated);
+					default -> throw new UnsupportedIterator(nestedCtx, iterated);
 				}
 			}
 
-			default -> throw unsupportedIterator(iteratorCtx, iterated);
+			default -> throw new UnsupportedIterator(iteratorCtx, iterated);
 
 		}
 		return null;
@@ -159,7 +121,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
 					forEach(nestedMap, vCtx.key, vCtx.value);
 				} else {
-					throw unsupportedIterator(vCtx, v.unwrap());
+					throw new UnsupportedIterator(vCtx, v.unwrap());
 				}
 			};
 
@@ -167,11 +129,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				if (v.unwrap() instanceof GioviList nestedList) {
 					forEach(nestedList, iCtx.nestedIterator());
 				} else {
-					throw unsupportedIterator(iCtx.nestedIterator(), v.unwrap());
+					throw new UnsupportedIterator(iCtx.nestedIterator(), v.unwrap());
 				}
 			};
 
-			default -> throw unsupportedIterator(nestedIterator, iterated);
+			default -> throw new UnsupportedIterator(nestedIterator, iterated);
 
 		};
 
@@ -198,7 +160,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				deconstruct(k, kCtx);
 			};
 
-			default -> throw unsupportedDeconstruction(map, keyIteratorCtx);
+			default -> throw new UnsupportedDeconstruction(map, keyIteratorCtx);
 		};
 
 		Consumer<Var<?>> valueIterationStrategy = switch (valueIteratorCtx) {
@@ -216,7 +178,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				if (v.unwrap() instanceof GioviList nestedList) {
 					forEach(nestedList, vCtx.nestedIterator());
 				} else {
-					throw unsupportedIterator(vCtx, v.unwrap());
+					throw new UnsupportedIterator(vCtx, v.unwrap());
 				}
 			};
 
@@ -224,7 +186,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
 					forEach(nestedMap, vCtx.key, vCtx.value);
 				} else {
-					throw unsupportedIterator(vCtx, v.unwrap());
+					throw new UnsupportedIterator(vCtx, v.unwrap());
 				}
 			};
 
@@ -233,7 +195,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			default -> throw unsupportedDeconstruction(map, valueIteratorCtx);
+			default -> throw new UnsupportedDeconstruction(map, valueIteratorCtx);
 		};
 
 		forEach(map, (k, v) -> {
@@ -312,7 +274,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case GioviStruct struct -> deconstruct(struct, nestedIterators);
 			case GioviRecord tuple -> deconstruct(tuple, nestedIterators);
 			case GioviTuple tuple -> deconstruct(tuple, nestedIterators);
-			default -> throw unsupportedDeconstruction(i, nestedIterators);
+			default -> throw new UnsupportedDeconstruction(i, nestedIterators);
 		}
 	}
 
@@ -355,7 +317,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					var field = struct.value()
 						.getField(fieldIdentifier)
 						.orElseThrow(
-							() -> unsupportedDeconstruction(
+							() -> new UnsupportedDeconstruction(
 								struct,
 								unaryCtx,
 								new NoSuchField(fieldIdentifier)
@@ -374,7 +336,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					var field = struct.value()
 						.getField(fieldIdentifier)
 						.orElseThrow(
-							() -> unsupportedDeconstruction(
+							() -> new UnsupportedDeconstruction(
 								struct,
 								productCtx,
 								new NoSuchField(fieldIdentifier)
@@ -384,11 +346,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					if (field.unwrap() instanceof GioviStruct structField) {
 						deconstruct(structField, productCtx.nestedIterator());
 					} else {
-						throw unsupportedDeconstruction(field, productCtx);
+						throw new UnsupportedDeconstruction(field, productCtx);
 					}
 				}
 
-				default -> throw unsupportedDeconstruction(struct, fieldIteratorCtx);
+				default -> throw new UnsupportedDeconstruction(struct, fieldIteratorCtx);
 			}
 		}
 	}
