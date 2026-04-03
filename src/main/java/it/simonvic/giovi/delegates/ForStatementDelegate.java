@@ -160,6 +160,46 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	// TODO: should iterators be by value?
 	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
 
+	private void forEach(GioviList list, NestedIteratorContext nestedIterator) {
+		Consumer<Var<?>> iterationStrategy = switch (nestedIterator) {
+
+			case IteratorNestedPlaceholderContext iCtx -> (_) -> {
+				gioviVisitor.visit(bodyCtx);
+			};
+
+			case IteratorNestedUnaryContext iCtx -> (i) -> {
+				deconstruct(i, iCtx.unaryIterator());
+				gioviVisitor.visit(bodyCtx);
+			};
+
+			case IteratorNestedProductContext iCtx -> (i) -> {
+				deconstruct(i, iCtx);
+				gioviVisitor.visit(bodyCtx);
+			};
+
+			case IteratorNestedMapContext vCtx -> (v) -> {
+				if (v.unwrap() instanceof GioviMap nestedMap) {
+					forEach(nestedMap, vCtx.key, vCtx.value);
+				} else {
+					throw unsupportedIterator(vCtx, v.unwrap());
+				}
+			};
+
+			case IteratorNestedListContext iCtx -> (v) -> {
+				if (v.unwrap() instanceof GioviList nestedList) {
+					forEach(nestedList, iCtx.nestedIterator());
+				} else {
+					throw unsupportedIterator(iCtx.nestedIterator(), v.unwrap());
+				}
+			};
+
+			default -> throw unsupportedIterator(nestedIterator, iterated);
+
+		};
+
+		forEach(list, iterationStrategy);
+	}
+
 	private void forEach(
 		GioviMap map,
 		NestedIteratorContext keyIteratorCtx,
@@ -259,10 +299,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 
 	//////////////////////////////////////////////////////////////////////////////// Nested
-
-	private void forEach(GioviList list, NestedIteratorContext nestedIterator) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
 
 	private void forEach(GioviList list, IteratorNestedProductContext nestedIterator) {
 		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
