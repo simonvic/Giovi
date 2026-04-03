@@ -176,6 +176,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				deconstruct(k, kCtx.unaryIterator());
 			};
 
+			case IteratorNestedProductContext kCtx -> (k) -> {
+				deconstruct(k, kCtx);
+			};
+
 			default -> throw unsupportedDeconstruction(map, keyIteratorCtx);
 		};
 
