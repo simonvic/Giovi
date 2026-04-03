@@ -165,30 +165,48 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		NestedIteratorContext keyIteratorCtx,
 		NestedIteratorContext valueIteratorCtx
 	) {
-		// TODO: find key deconstruction strategy, then value strategy and then iterate
-		switch (keyIteratorCtx) {
-			case IteratorNestedPlaceholderContext kCtx -> {
-				switch (valueIteratorCtx) {
-					case IteratorNestedPlaceholderContext _ -> forEach(map);
-					case IteratorNestedUnaryContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedListContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedMapContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedProductContext vCtx -> forEach(map, kCtx, vCtx);
-					default -> throw unsupportedIterator(valueIteratorCtx, map);
+
+		Consumer<Var<?>> keyIterationStrategy = switch (keyIteratorCtx) {
+
+			case IteratorNestedPlaceholderContext _ -> (_) -> {
+				// do nothing
+			};
+
+			case IteratorNestedUnaryContext kCtx -> (k) -> {
+				deconstruct(k, kCtx.unaryIterator());
+			};
+
+			default -> throw unsupportedDeconstruction(map, keyIteratorCtx);
+		};
+
+		Consumer<Var<?>> valueIterationStrategy = switch (valueIteratorCtx) {
+			case IteratorNestedPlaceholderContext _ -> (_) -> {
+				gioviVisitor.visit(bodyCtx);
+			};
+			case IteratorNestedUnaryContext vCtx -> (v) -> {
+				deconstruct(v, vCtx.unaryIterator());
+				gioviVisitor.visit(bodyCtx);
+			};
+			case IteratorNestedMapContext vCtx -> (v) -> {
+				if (v.unwrap() instanceof GioviMap nestedMap) {
+					forEach(nestedMap, vCtx.key, vCtx.value);
+				} else {
+					throw unsupportedIterator(vCtx, v.unwrap());
 				}
-			}
-			case IteratorNestedUnaryContext kCtx -> {
-				switch (valueIteratorCtx) {
-					case IteratorNestedPlaceholderContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedUnaryContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedListContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedMapContext vCtx -> forEach(map, kCtx, vCtx);
-					case IteratorNestedProductContext vCtx -> forEach(map, kCtx, vCtx);
-					default -> throw unsupportedIterator(valueIteratorCtx, map);
-				}
-			}
-			default -> throw unsupportedIterator(keyIteratorCtx, map);
-		}
+			};
+
+			case IteratorNestedProductContext vCtx -> (v) -> {
+				deconstruct(v, vCtx);
+				gioviVisitor.visit(bodyCtx);
+			};
+
+			default -> throw unsupportedDeconstruction(map, valueIteratorCtx);
+		};
+
+		forEach(map, (k, v) -> {
+			keyIterationStrategy.accept(k);
+			valueIterationStrategy.accept(v);
+		});
 	}
 
 	//////////////////////////////////////////////////////////////////////////////// Placeholder
@@ -235,101 +253,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
-
-	//////////////////////////////////////////////////////////////////////////////// Maps
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedPlaceholderContext kCtx,
-		IteratorNestedUnaryContext vCtx
-	) {
-		forEach(map, (_, v) -> {
-			deconstruct(v, vCtx.unaryIterator());
-			gioviVisitor.visit(bodyCtx);
-		});
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedPlaceholderContext kCtx,
-		IteratorNestedListContext vCtx
-	) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedPlaceholderContext kCtx,
-		IteratorNestedMapContext vCtx
-	) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedPlaceholderContext kCtx,
-		IteratorNestedProductContext vCtx
-	) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedUnaryContext kCtx,
-		IteratorNestedPlaceholderContext vCtx
-	) {
-		forEach(map, (k, _) -> {
-			deconstruct(k, kCtx.unaryIterator());
-			gioviVisitor.visit(bodyCtx);
-		});
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedUnaryContext kCtx,
-		IteratorNestedUnaryContext vCtx
-	) {
-		forEach(map, (k, v) -> {
-			deconstruct(k, kCtx.unaryIterator());
-			deconstruct(v, vCtx.unaryIterator());
-			gioviVisitor.visit(bodyCtx);
-		});
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedUnaryContext kCtx,
-		IteratorNestedListContext vCtx
-	) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedUnaryContext kCtx,
-		IteratorNestedMapContext vCtx
-	) {
-		forEach(map, (k, v) -> {
-			deconstruct(k, kCtx.unaryIterator());
-			if (v.unwrap() instanceof GioviMap nestedMap) {
-				forEach(nestedMap, vCtx.key, vCtx.value);
-			} else {
-				throw unsupportedIterator(vCtx, v.unwrap());
-			}
-		});
-	}
-
-	private void forEach(
-		GioviMap map,
-		IteratorNestedUnaryContext kCtx,
-		IteratorNestedProductContext vCtx
-	) {
-		forEach(map, (k, v) -> {
-			deconstruct(k, kCtx.unaryIterator());
-			deconstruct(v, vCtx);
-			gioviVisitor.visit(bodyCtx);
-		});
-	}
 
 	//////////////////////////////////////////////////////////////////////////////// Nested
 
