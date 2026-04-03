@@ -339,12 +339,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void deconstruct(
 		Var<?> i,
-		Optional<UnaryIteratorContext> whole,
+		Optional<UnaryIteratorContext> wholeCtx,
 		List<NestedIteratorContext> nestedIterators
 	) {
-		whole.ifPresent(
-			w -> getCurrentScope().declare(
-				w.getText(),
+		wholeCtx.ifPresent(
+			wCtx -> getCurrentScope().declare(
+				wCtx.identifier().getText(),
 				new VarD<>(i.copy().unwrap())
 			)
 		);
