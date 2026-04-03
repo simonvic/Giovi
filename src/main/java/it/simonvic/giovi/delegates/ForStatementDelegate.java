@@ -428,7 +428,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					}
 				}
 
-				default -> throw new GioviException("Can't deconstruct");
+				default -> throw unsupportedDeconstruction(struct, fieldIteratorCtx);
 			}
 		}
 	}
