@@ -90,34 +90,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 		switch (iteratorCtx) {
 
-			case IteratorPlaceholderContext iCtx -> {
-				switch (iterated) {
-					case Range<?> range -> forEach(range);
-					case GioviList list -> forEach(list);
-					case GioviMap map -> forEach(map);
-					default -> throw unsupportedIterator(iCtx, iterated);
-				}
-			}
-
-			case IteratorUnaryContext iCtx -> {
-				switch (iterated) {
-					case Range<?> range -> forEach(range, iCtx.unaryIterator());
-					case GioviList list -> forEach(list, iCtx.unaryIterator());
-					case GioviMap map -> forEach(map, iCtx.unaryIterator());
-					default -> throw unsupportedIterator(iCtx, iterated);
-				}
-			}
-
-			case IteratorProductContext iCtx when iterated instanceof GioviList list
-				-> forEach(list, iCtx);
-
-			case IteratorMapContext iCtx when iterated instanceof GioviMap map
+			case IteratorTopLevelMapContext iCtx when iterated instanceof GioviMap map
 				-> forEach(map, iCtx.key, iCtx.value);
 
 
-			case IteratorNestedContext nestedCtx -> {
+			case IteratorTopLevelNestedContext nestedCtx -> {
 
-				// NOTE: top level nested iterators are treated the same
 				switch (nestedCtx.nestedIterator()) {
 
 					case IteratorNestedPlaceholderContext _ -> {
@@ -163,7 +141,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	private void forEach(GioviList list, NestedIteratorContext nestedIterator) {
 		Consumer<Var<?>> iterationStrategy = switch (nestedIterator) {
 
-			case IteratorNestedPlaceholderContext iCtx -> (_) -> {
+			case IteratorNestedPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -301,20 +279,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
-	private void forEach(GioviList list, IteratorProductContext iCtx) {
-		forEach(list, (i) -> {
-			deconstruct(i, iCtx);
-			gioviVisitor.visit(bodyCtx);
-		});
-	}
-
-
-	//////////////////////////////////////////////////////////////////////////////// Nested
-
-	private void forEach(GioviList list, IteratorNestedProductContext nestedIterator) {
-		throw new UnsupportedOperationException("Unimplemented method 'forEach'");
-	}
-
 	//////////////////////////////////////////////////////////////////////////////// Deconstruct
 
 	private void deconstruct(Var<?> i, UnaryIteratorContext unaryIterator) {
@@ -324,19 +288,15 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		);
 	}
 
-	/**
-	 * Deconstruct a product type and declare the variables
-	 * @param i
-	 * @param iCtx
-	 */
-	private void deconstruct(Var<?> i, IteratorProductContext iCtx) {
-		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.nestedIterator());
-	}
-
 	private void deconstruct(Var<?> i, IteratorNestedProductContext iCtx) {
 		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.nestedIterator());
 	}
 
+	/**
+	 * @param i
+	 * @param wholeCtx
+	 * @param nestedIterators
+	 */
 	private void deconstruct(
 		Var<?> i,
 		Optional<UnaryIteratorContext> wholeCtx,
