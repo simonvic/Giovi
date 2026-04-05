@@ -55,7 +55,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		switch (iteratorCtx) {
 
 			case IteratorTopLevelMapContext iCtx when iterated instanceof GioviMap map
-				-> forEach(map, iCtx.key, iCtx.value);
+				-> forEach(map, iCtx.iteratorMap());
 
 			case IteratorTopLevelProductContext iCtx when iterated instanceof GioviList list
 				-> forEach(list, Optional.empty(), iCtx.iteratorProductFields());
@@ -93,7 +93,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 						);
 
 					case IteratorNestedMapContext iCtx when iterated instanceof GioviMap map
-						-> forEach(map, iCtx.key, iCtx.value);
+						-> forEach(map, iCtx.iteratorMap());
 
 					default -> throw new UnsupportedIterator(nestedCtx, iterated);
 				}
@@ -144,7 +144,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 			case IteratorNestedMapContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
-					forEach(nestedMap, vCtx.key, vCtx.value);
+					forEach(nestedMap, vCtx.iteratorMap());
 				} else {
 					throw new UnsupportedIterator(vCtx, v.unwrap());
 				}
@@ -167,11 +167,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void forEach(
 		GioviMap map,
-		NestedIteratorContext keyIteratorCtx,
-		NestedIteratorContext valueIteratorCtx
+		IteratorMapContext iteratorMapCtx
 	) {
 
-		Consumer<Var<?>> keyIterationStrategy = switch (keyIteratorCtx) {
+		Consumer<Var<?>> keyIterationStrategy = switch (iteratorMapCtx.key) {
 
 			case IteratorNestedPlaceholderContext _ -> (_) -> {
 				// do nothing
@@ -185,10 +184,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				deconstruct(k, kCtx);
 			};
 
-			default -> throw new UnsupportedDeconstruction(map, keyIteratorCtx);
+			default -> throw new UnsupportedDeconstruction(map, iteratorMapCtx.key);
 		};
 
-		Consumer<Var<?>> valueIterationStrategy = switch (valueIteratorCtx) {
+		Consumer<Var<?>> valueIterationStrategy = switch (iteratorMapCtx.value) {
 
 			case IteratorNestedPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
@@ -209,7 +208,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 			case IteratorNestedMapContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
-					forEach(nestedMap, vCtx.key, vCtx.value);
+					forEach(nestedMap, vCtx.iteratorMap());
 				} else {
 					throw new UnsupportedIterator(vCtx, v.unwrap());
 				}
@@ -220,7 +219,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			default -> throw new UnsupportedDeconstruction(map, valueIteratorCtx);
+			default -> throw new UnsupportedDeconstruction(map, iteratorMapCtx.value);
 		};
 
 		forEach(map, (k, v) -> {
