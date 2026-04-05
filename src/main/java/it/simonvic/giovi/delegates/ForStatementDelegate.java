@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 
 import giovi.GioviParserVisitResult;
 import giovi.Range;
+import giovi.Record;
+import giovi.Tuple;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
@@ -55,6 +57,8 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case IteratorTopLevelMapContext iCtx when iterated instanceof GioviMap map
 				-> forEach(map, iCtx.key, iCtx.value);
 
+			case IteratorTopLevelProductContext iCtx when iterated instanceof GioviList list
+				-> forEach(list, Optional.empty(), iCtx.iteratorProductFields());
 
 			case IteratorTopLevelNestedContext nestedCtx -> {
 
@@ -82,7 +86,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 						-> forEach(list, iCtx.nestedIterator());
 
 					case IteratorNestedProductContext iCtx when iterated instanceof GioviList list
-						-> forEach(list, iCtx);
+						-> forEach(
+							list,
+							Optional.ofNullable(iCtx.whole),
+							iCtx.iteratorProductFields()
+						);
 
 					case IteratorNestedMapContext iCtx when iterated instanceof GioviMap map
 						-> forEach(map, iCtx.key, iCtx.value);
@@ -99,6 +107,23 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	// TODO: should iterators be by value?
 	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
+
+	/**
+	 * Positional
+	 * @param list
+	 * @param wholeOpt
+	 * @param iteratorProductFields
+	 */
+	private void forEach(
+		GioviList list,
+		Optional<UnaryIteratorContext> wholeOpt,
+		IteratorProductFieldsContext iteratorProductFields
+	) {
+		forEach(list, (i) -> {
+			deconstruct(i, wholeOpt, iteratorProductFields);
+			gioviVisitor.visit(bodyCtx);
+		});
+	}
 
 	private void forEach(GioviList list, NestedIteratorContext nestedIterator) {
 		Consumer<Var<?>> iterationStrategy = switch (nestedIterator) {
@@ -251,18 +276,13 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	private void deconstruct(Var<?> i, IteratorNestedProductContext iCtx) {
-		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.nestedIterator());
+		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.iteratorProductFields());
 	}
 
-	/**
-	 * @param i
-	 * @param wholeCtx
-	 * @param nestedIterators
-	 */
 	private void deconstruct(
 		Var<?> i,
 		Optional<UnaryIteratorContext> wholeCtx,
-		List<NestedIteratorContext> nestedIterators
+		IteratorProductFieldsContext iCtx
 	) {
 		wholeCtx.ifPresent(
 			wCtx -> getCurrentScope().declare(
@@ -270,87 +290,101 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				new VarD<>(i.copy().unwrap())
 			)
 		);
-		switch (i.unwrap()) {
-			case GioviStruct struct -> deconstruct(struct, nestedIterators);
-			case GioviRecord tuple -> deconstruct(tuple, nestedIterators);
-			case GioviTuple tuple -> deconstruct(tuple, nestedIterators);
-			default -> throw new UnsupportedDeconstruction(i, nestedIterators);
+		switch (iCtx) {
+			case IteratorProductPositionalContext pCtx -> {
+				switch (i.unwrap()) {
+					case GioviStruct struct
+						-> deconstructPositional(struct.value(), pCtx.nestedIterator());
+					case GioviRecord record
+						-> deconstructPositional(record.value(), pCtx.nestedIterator());
+					case GioviTuple tuple
+						-> deconstructPositional(tuple.value(), pCtx.nestedIterator());
+					default
+						-> throw new UnsupportedDeconstruction(i.unwrap(), pCtx.nestedIterator());
+				}
+			}
+			case IteratorProductNamedContext nCtx -> {
+				switch (i.unwrap()) {
+					case GioviStruct struct
+						-> deconstructNamed(struct.value(), nCtx.nestedIterator());
+					case GioviRecord record
+						-> deconstructNamed(record.value(), nCtx.nestedIterator());
+					default
+						-> throw new UnsupportedDeconstruction(i.unwrap(), nCtx.nestedIterator());
+				}
+			}
+			default -> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 		}
 	}
 
-	/**
-	 * Deconstruct a tuple and declare the variables
-	 * @param tuple
-	 * @param iCtx
-	 */
-	private void deconstruct(GioviTuple tuple, List<NestedIteratorContext> fieldsIteratorsCtx) {
-		throw new GioviException("Tuple deconstruct not implemented yet");
-	}
-
-	/**
-	 * Deconstruct a record and declare the variables
-	 * @param tuple
-	 * @param iCtx
-	 */
-	private void deconstruct(GioviRecord tuple, List<NestedIteratorContext> fieldsIteratorsCtx) {
-		throw new GioviException("Record deconstruct not implemented yet");
-	}
-
-	/**
-	 * Deconstruct a struct and declare the variables
-	 * @param struct
-	 * @param iCtx
-	 */
-	private void deconstruct(GioviStruct struct, List<NestedIteratorContext> fieldsIteratorsCtx) {
-		// TODO: iterate by identifiers or by field index?
-		// TODO: should fields be by value?
-		// TODO: handle concurrent modifications
-		for (var fieldIteratorCtx : fieldsIteratorsCtx) {
-			switch (fieldIteratorCtx) {
+	private void deconstructNamed(
+		Record record,
+		List<NestedIteratorContext> list
+	) {
+		for (var iteratorCtx : list) {
+			switch (iteratorCtx) {
 
 				case IteratorNestedPlaceholderContext _ -> {
 					// do nothing
 				}
 
-				case IteratorNestedUnaryContext unaryCtx -> {
-					String fieldIdentifier = unaryCtx.unaryIterator().identifier().getText();
-					var field = struct.value()
-						.getField(fieldIdentifier)
+				case IteratorNestedUnaryContext iCtx -> {
+					String fieldIdentifier = iCtx.unaryIterator().identifier().getText();
+					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
 							() -> new UnsupportedDeconstruction(
-								struct,
-								unaryCtx,
+								record,
+								iCtx.unaryIterator(),
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					getCurrentScope().declare(fieldIdentifier, field);
+					deconstruct(field, iCtx.unaryIterator());
 				}
 
-				case IteratorNestedProductContext productCtx -> {
-					if (productCtx.whole == null) {
-						throw new GioviException(
-							"Whole identifier is needed for named deconstruction"
+				case IteratorNestedProductContext iCtx -> {
+					if (iCtx.whole == null) {
+						throw new UnsupportedDeconstruction(
+							record,
+							iCtx,
+							new GioviException("Whole field is required with named deconstruction")
 						);
 					}
-					String fieldIdentifier = productCtx.whole.getText();
-					var field = struct.value()
-						.getField(fieldIdentifier)
+					String fieldIdentifier = iCtx.whole.identifier().getText();
+					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
 							() -> new UnsupportedDeconstruction(
-								struct,
-								productCtx,
+								record,
+								iCtx.unaryIterator(),
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					getCurrentScope().declare(fieldIdentifier, field);
-					if (field.unwrap() instanceof GioviStruct structField) {
-						deconstruct(structField, productCtx.nestedIterator());
-					} else {
-						throw new UnsupportedDeconstruction(field, productCtx);
-					}
+					deconstruct(field, iCtx);
 				}
 
-				default -> throw new UnsupportedDeconstruction(struct, fieldIteratorCtx);
+				default -> throw new UnsupportedDeconstruction(record, iteratorCtx);
+			}
+		}
+	}
+
+	private void deconstructPositional(
+		Tuple tuple,
+		List<NestedIteratorContext> iterators
+	) {
+		for (int i = 0; i < iterators.size(); i++) {
+			final int j = i;
+			var field = tuple.getField(i)
+				.orElseThrow(
+					() -> new UnsupportedDeconstruction(
+						tuple,
+						new NoSuchField(j)
+					)
+				);
+			var iteratorCtx = iterators.get(i);
+			switch (iteratorCtx) {
+				case IteratorNestedPlaceholderContext _ -> { /* do nothing */ }
+				case IteratorNestedUnaryContext iCtx -> deconstruct(field, iCtx.unaryIterator());
+				case IteratorNestedProductContext iCtx -> deconstruct(field, iCtx);
+				default -> throw new UnsupportedDeconstruction(tuple, iterators);
 			}
 		}
 	}

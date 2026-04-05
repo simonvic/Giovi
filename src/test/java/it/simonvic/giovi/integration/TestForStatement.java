@@ -127,7 +127,7 @@ public class TestForStatement {
 	class ProductIterator {
 
 		@Test
-		void onList() {
+		void positional_onList() {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
@@ -139,7 +139,19 @@ public class TestForStatement {
 		}
 
 		@Test
-		void onList_withWhole() {
+		void named_onList() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				"for <.b, .i, .t> in $list" -> _out
+				for <.b, .i, .t> in list do "$b $i $t" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void positional_onList_withWhole() {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
@@ -151,19 +163,43 @@ public class TestForStatement {
 		}
 
 		@Test
-		void onList_withSubsetOfFields() {
+		void named_onList_withWhole() {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
-				"for <t, b> in $list" -> _out
-				for <t, b> in list do "$t $b" -> _out
+				"for w <.b, .i, .t> in $list" -> _out
+				for w <.b, .i, .t> in list do "$w    $b $i $t" -> _out
 				"""
 			);
 		}
 
 		@Test
-		void onListOfNestedStructs() {
+		void positional_onList_withSubsetOfFields() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				"for <b, _, t> in $list" -> _out
+				for <b, _, t> in list do "$b $t" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void named_onList_withSubsetOfFields() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				"for <.t, .b> in $list" -> _out
+				for <.t, .b> in list do "$b $t" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void positional_onListOfNestedStructs() {
 			visit(
 				"""
 				Bar<i Int, n Natural>
@@ -261,7 +297,7 @@ public class TestForStatement {
 		}
 
 		@Test
-		void onListOfNestedStructs() {
+		void onListOfNestedStructs_positional() {
 			visit(
 				"""
 				Bar<i Int, n Natural>
@@ -269,6 +305,19 @@ public class TestForStatement {
 				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
 				"for <b, bar <i, n>, t> in $list" -> _out
 				for <b, bar <i, n>, t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void onListOfNestedStructs_named() {
+			visit(
+				"""
+				Bar<i Int, n Natural>
+				Foo<b Bool, bar Bar, t Text>
+				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
+				"for <.b, .bar <.i, .n>, .t> in $list" -> _out
+				for <.b, .bar <.i, .n>, .t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
 				"""
 			);
 		}
