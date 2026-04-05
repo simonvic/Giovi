@@ -7,6 +7,7 @@ import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
 @DescribedBy(GioviTypeStruct.class)
+// TODO: implements product type
 public record GioviStruct(GioviTypeStruct type, Struct value)
 	implements GioviValue<Struct> {
 
