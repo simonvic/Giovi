@@ -299,7 +299,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case GioviTuple tuple
 						-> deconstructPositional(tuple.value(), pCtx.nestedIterator());
 					default
-						-> throw new UnsupportedDeconstruction(i.unwrap(), pCtx.nestedIterator());
+						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 				}
 			}
 			case IteratorProductNamedContext nCtx -> {
@@ -309,7 +309,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					case GioviRecord record
 						-> deconstructNamed(record.value(), nCtx.nestedIterator());
 					default
-						-> throw new UnsupportedDeconstruction(i.unwrap(), nCtx.nestedIterator());
+						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 				}
 			}
 			default -> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
@@ -383,7 +383,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				case IteratorNestedPlaceholderContext _ -> { /* do nothing */ }
 				case IteratorNestedUnaryContext iCtx -> deconstruct(field, iCtx.unaryIterator());
 				case IteratorNestedProductContext iCtx -> deconstruct(field, iCtx);
-				default -> throw new UnsupportedDeconstruction(tuple, iterators);
+				default -> throw new UnsupportedDeconstruction(tuple, iteratorCtx);
 			}
 		}
 	}
