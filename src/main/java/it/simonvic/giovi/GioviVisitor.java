@@ -1248,6 +1248,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	//////////////////////////////////////////////////////////////////////////////////////////////// Type
 
 	@Override
+	public GioviParserVisitResult visitExpressionTypeCreation(ExpressionTypeCreationContext ctx) {
+		return visit(ctx.type()).asGioviType();
+	}
+
+	@Override
 	public GioviParserVisitResult visitTypeQualified(TypeQualifiedContext ctx) {
 		var scope = getCurrentScope();
 		for (int i = 0; i < ctx.identifier().size() - 1; i++) { // NOTE: last identifier is the typename

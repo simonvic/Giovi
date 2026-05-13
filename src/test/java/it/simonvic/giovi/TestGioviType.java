@@ -1,8 +1,9 @@
 package it.simonvic.giovi;
 
+import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
@@ -244,6 +245,43 @@ public class TestGioviType {
 			var someInt = new GioviInt();
 			assertThat(someInt.getGioviType().getGioviType().spawn().spawn())
 				.isEqualTo(new GioviInt());
+		}
+
+	}
+
+	@Nested
+	class Creation {
+
+		@Test
+		void testPrimitiveTypeCreation() {
+			assertThat(visitExpression("""
+					type.Int
+					"""))
+				.isEqualTo(GioviType.INT);
+		}
+
+		@Test
+		void testListTypeCreation() {
+			assertThat(visitExpression("""
+					type.[Int]
+					"""))
+				.isEqualTo(GioviType.LIST_OF_INT);
+		}
+
+		@Test
+		void testListOfListTypeCreation() {
+			assertThat(visitExpression("""
+					type.[[Int]]
+					"""))
+				.isEqualTo(new GioviTypeList(GioviType.LIST_OF_INT));
+		}
+
+		@Test
+		void testMapTypeCreation() {
+			assertThat(visitExpression("""
+					type.[Text:Int]
+					"""))
+				.isEqualTo(new GioviTypeMap(GioviType.TEXT, GioviType.INT));
 		}
 
 	}
