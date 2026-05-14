@@ -234,7 +234,7 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> GioviValue.super.access(right);
 			};
-			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
+			case Range<?> range when range instanceof Range(Integer _, _, _, _) -> {
 				var gioviList = new GioviList(this.type);
 				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 				yield gioviList;
