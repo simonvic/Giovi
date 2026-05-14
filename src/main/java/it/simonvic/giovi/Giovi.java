@@ -23,18 +23,18 @@ public class Giovi {
 		.option("h")
 		.longOpt("help")
 		.desc("Show this help")
-		.build();
+		.get();
 
 	private static final Option OPT_VERBOSE = Option.builder()
 		.option("v")
 		.longOpt("verbose")
 		.desc("")
-		.build();
+		.get();
 
 	private static final Option OPT_SHELL = Option.builder()
 		.longOpt("shell")
 		.desc("Launch interactive REPL Giovi shell")
-		.build();
+		.get();
 
 	private static final Option OPT_FROM_ARG = Option.builder()
 		.option("f")
@@ -42,26 +42,26 @@ public class Giovi {
 		.hasArg()
 		.argName("code")
 		.desc("Interpret code from argument")
-		.build();
+		.get();
 
 	private static final Option OPT_FORMAT = Option.builder()
 		.longOpt("format")
 		.hasArg()
 		.argName("file")
 		.desc("Format a giovi file")
-		.build();
+		.get();
 
 	private static final Option OPT_FORMAT_OUTPUT = Option.builder()
 		.longOpt("format-output")
 		.hasArg()
 		.argName("output-file")
 		.desc("Choose where to output formatted Giovi file")
-		.build();
+		.get();
 
 	private static final Option OPT_DEBUG_AST = Option.builder()
 		.longOpt("debug-ast")
 		.desc("Debug AST")
-		.build();
+		.get();
 
 	private static final Options OPTIONS = optionsOf(
 		OPT_HELP,
