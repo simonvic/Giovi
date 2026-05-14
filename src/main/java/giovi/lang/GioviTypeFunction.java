@@ -2,7 +2,6 @@ package giovi.lang;
 
 import giovi.Function;
 import giovi.GFunction;
-import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native.Describes;

@@ -1,6 +1,5 @@
 package giovi.lang;
 
-import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)

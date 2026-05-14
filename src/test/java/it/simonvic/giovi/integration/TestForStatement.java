@@ -2,7 +2,6 @@ package it.simonvic.giovi.integration;
 
 import static it.simonvic.giovi.GioviVisitorUtils.visit;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
