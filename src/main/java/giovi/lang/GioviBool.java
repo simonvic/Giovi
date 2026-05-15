@@ -6,6 +6,8 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeBool.class)
 public record GioviBool(Boolean value) implements GioviPrimitive<Boolean> {
 
+	// TODO: add constant TRUE and FALSE to avoid instantiations
+
 	public static GioviBool valueOf(String s) {
 		return new GioviBool(Boolean.valueOf(s));
 	}
