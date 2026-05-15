@@ -19,7 +19,7 @@ import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.delegates.ForStatementDelegate;
 import it.simonvic.giovi.delegates.ImportStatementDelegate;
-import it.simonvic.giovi.delegates.SwitchStatementDelegate;
+import it.simonvic.giovi.delegates.MultiIfStatementDelegate;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -218,9 +218,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitSwitchStatement(SwitchStatementContext ctx) {
+	public GioviParserVisitResult visitMultiIfStatement(MultiIfStatementContext ctx) {
 		var subject = visit(ctx.expression());
-		var matchedLabel = SwitchStatementDelegate.evaluate(this, ctx.switchBlock(), subject);
+		var matchedLabel = MultiIfStatementDelegate.evaluate(this, ctx.multiIfBody(), subject);
 		if (matchedLabel.isPresent()) {
 			enterScope();
 			var matchedLabelCtx = matchedLabel.orElseThrow();

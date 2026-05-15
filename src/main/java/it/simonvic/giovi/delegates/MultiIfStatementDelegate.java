@@ -10,14 +10,14 @@ import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.util.VisitorUtils;
 
-public class SwitchStatementDelegate extends GioviVisitorDelegate {
+public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 
-	private final SwitchBlockContext ctx;
+	private final MultiIfBodyContext ctx;
 	private final GioviParserVisitResult subject;
 
-	public SwitchStatementDelegate(
+	public MultiIfStatementDelegate(
 		GioviVisitor gioviVisitor,
-		SwitchBlockContext ctx,
+		MultiIfBodyContext ctx,
 		GioviParserVisitResult subject
 	) {
 		super(gioviVisitor);
@@ -25,16 +25,16 @@ public class SwitchStatementDelegate extends GioviVisitorDelegate {
 		this.subject = subject;
 	}
 
-	public static Optional<SwitchLabelContext> evaluate(
+	public static Optional<MultiIfConditionContext> evaluate(
 		GioviVisitor gioviVisitor,
-		SwitchBlockContext ctx,
+		MultiIfBodyContext ctx,
 		GioviParserVisitResult subject
 	) {
-		return new SwitchStatementDelegate(gioviVisitor, ctx, subject).evaluate();
+		return new MultiIfStatementDelegate(gioviVisitor, ctx, subject).evaluate();
 	}
 
-	public Optional<SwitchLabelContext> evaluate() {
-		for (SwitchLabelContext ctx : ctx.switchLabel()) {
+	public Optional<MultiIfConditionContext> evaluate() {
+		for (MultiIfConditionContext ctx : ctx.multiIfCondition()) {
 			if (visit(ctx.caseMatch()).asNativeBool()
 				&& (ctx.guard == null || gioviVisitor.visit(ctx.guard).asNativeBool())) {
 				return Optional.of(ctx);
