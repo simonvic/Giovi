@@ -188,11 +188,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitIfStatement(IfStatementContext ctx) {
 		if (visit(ctx.expression()).unwrapAsGioviValue().asNativeBool()) {
 			enterScope();
-			visit(ctx.ifBody);
+			visit(ctx.consequence);
 			exitScope();
-		} else if (ctx.elseBody != null) {
+		} else if (ctx.alternative != null) {
 			enterScope();
-			visit(ctx.elseBody);
+			visit(ctx.alternative);
 			exitScope();
 		}
 		return null;
@@ -237,11 +237,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				};
 				getCurrentScope().declare(typeCheckCtx.identifier().getText(), casted);
 			}
-			visit(matchedLabelCtx.body);
+			visit(matchedLabelCtx.consequence);
 			exitScope();
-		} else if (ctx.elseBody != null) {
+		} else if (ctx.alternative != null) {
 			enterScope();
-			visit(ctx.elseBody);
+			visit(ctx.alternative);
 			exitScope();
 		}
 		return null;
