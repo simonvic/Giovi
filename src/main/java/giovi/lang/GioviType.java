@@ -62,6 +62,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			// NOTE: unlike other values, a Type's default is the zero value rather than its Type's zero (i.e. TypeType.zero)
+			// TODO: when types as first-class citizens are implemented, the spawning should be moved to `access` instead
 			case GioviDefault _ -> spawn();
 			case MemberKey(var identifier)
 				-> GioviValue.findSymbol(identifier, this.getClass())
