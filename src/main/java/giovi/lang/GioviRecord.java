@@ -93,6 +93,7 @@ public record GioviRecord(GioviTypeRecord type, Record value)
 					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
 					this.value.copy((Range<Integer>) right)
 				);
+			// TODO: make this available for tuple only? More explicit that we're discarding names
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
