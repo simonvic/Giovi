@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 public class TestForStatement {
 
 	@Nested
-	class PlaceholderIterator {
+	class PlaceholderPattern {
 
 		@Test
 		void onRange() {
@@ -43,7 +43,7 @@ public class TestForStatement {
 	}
 
 	@Nested
-	class UnaryIterator {
+	class UnaryPattern {
 
 		@Test
 		void onRange() {
@@ -78,7 +78,7 @@ public class TestForStatement {
 	}
 
 	@Nested
-	class MapIterator {
+	class MapPattern {
 
 		@Test
 		void onMap_withPlaceholderKeyAndPlaceholderValue() {
@@ -123,7 +123,7 @@ public class TestForStatement {
 	}
 
 	@Nested
-	class ProductIterator {
+	class ProductPattern {
 
 		@Test
 		void positional_onList() {
@@ -214,7 +214,7 @@ public class TestForStatement {
 
 
 	@Nested
-	class NestedIterators {
+	class NestedPatterns {
 
 		@Test
 		void onNestedList() {
