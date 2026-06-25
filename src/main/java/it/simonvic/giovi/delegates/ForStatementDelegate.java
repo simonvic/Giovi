@@ -33,14 +33,14 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private final ForStatementContext ctx;
 	private final StatementOrBlockContext bodyCtx;
-	private final PatternContext patternCtx;
+	private final IteratorPatternContext iteratorPatternCtx;
 	private final GioviParserVisitResult iterated;
 
 	public ForStatementDelegate(GioviVisitor gioviVisitor, ForStatementContext ctx) {
 		super(gioviVisitor);
 		this.ctx = ctx;
 		this.bodyCtx = ctx.statementOrBlock();
-		this.patternCtx = ctx.pattern();
+		this.iteratorPatternCtx = ctx.iteratorPattern();
 		var iterated = gioviVisitor.visit(ctx.iterable());
 		this.iterated = (iterated instanceof Var<?> v) // TODO: figure out a better way to handle vars
 			? v.unwrap()
@@ -52,51 +52,51 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	public GioviParserVisitResult doVisit() {
 
-		switch (patternCtx) {
+		switch (iteratorPatternCtx.getChild(0)) {
 
-			case PatternTopLevelMapContext iCtx when iterated instanceof GioviMap map
-				-> forEach(map, iCtx.patternMap());
+			case PatternMapNakedContext iCtx when iterated instanceof GioviMap map
+				-> forEach(map, iCtx);
 
-			case PatternTopLevelNestedContext nestedCtx -> {
+			case PatternContext iCtx -> {
 
-				switch (nestedCtx.patternNested()) {
+				switch (iCtx.getChild(0)) {
 
-					case PatternNestedPlaceholderContext _ -> {
+					case LiteralPlaceholderContext _ -> {
 						switch (iterated) {
 							case Range<?> range -> forEach(range);
 							case GioviList list -> forEach(list);
 							case GioviMap map -> forEach(map);
-							default -> throw new UnsupportedPattern(nestedCtx, iterated);
+							default -> throw new UnsupportedPattern(iCtx, iterated);
 						}
 					}
 
-					case PatternNestedUnaryContext iCtx -> {
+					case PatternUnaryContext pCtx -> {
 						switch (iterated) {
-							case Range<?> range -> forEach(range, iCtx.patternUnary());
-							case GioviList list -> forEach(list, iCtx.patternUnary());
-							case GioviMap map -> forEach(map, iCtx.patternUnary());
-							default -> throw new UnsupportedPattern(nestedCtx, iterated);
+							case Range<?> range -> forEach(range, pCtx);
+							case GioviList list -> forEach(list, pCtx);
+							case GioviMap map -> forEach(map, pCtx);
+							default -> throw new UnsupportedPattern(iCtx, iterated);
 						}
 					}
 
-					case PatternNestedListContext iCtx when iterated instanceof GioviList list
-						-> forEach(list, iCtx.patternNested());
+					case PatternListContext pCtx when iterated instanceof GioviList list
+						-> forEach(list, pCtx.pattern());
 
-					case PatternNestedProductContext iCtx when iterated instanceof GioviList list
+					case PatternProductContext pCtx when iterated instanceof GioviList list
 						-> forEach(
 							list,
-							Optional.ofNullable(iCtx.whole),
-							iCtx.patternProductMembers()
+							Optional.ofNullable(pCtx.whole),
+							pCtx.patternProductMembers()
 						);
 
-					case PatternNestedMapContext iCtx when iterated instanceof GioviMap map
-						-> forEach(map, iCtx.patternMap());
+					case PatternMapContext pCtx when iterated instanceof GioviMap map
+						-> forEach(map, pCtx.patternMapNaked());
 
-					default -> throw new UnsupportedPattern(nestedCtx, iterated);
+					default -> throw new UnsupportedPattern(iCtx, iterated);
 				}
 			}
 
-			default -> throw new UnsupportedPattern(patternCtx, iterated);
+			default -> throw new UnsupportedPattern(iteratorPatternCtx, iterated);
 
 		}
 		return null;
@@ -122,40 +122,40 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
-	private void forEach(GioviList list, PatternNestedContext patternNested) {
-		Consumer<Var<?>> iterationStrategy = switch (patternNested) {
+	private void forEach(GioviList list, PatternContext patternCtx) {
+		Consumer<Var<?>> iterationStrategy = switch (patternCtx.getChild(0)) {
 
-			case PatternNestedPlaceholderContext _ -> (_) -> {
+			case LiteralPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			case PatternNestedUnaryContext iCtx -> (i) -> {
-				deconstruct(i, iCtx.patternUnary());
-				gioviVisitor.visit(bodyCtx);
-			};
-
-			case PatternNestedProductContext iCtx -> (i) -> {
+			case PatternUnaryContext iCtx -> (i) -> {
 				deconstruct(i, iCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			case PatternNestedMapContext vCtx -> (v) -> {
+			case PatternProductContext iCtx -> (i) -> {
+				deconstruct(i, iCtx);
+				gioviVisitor.visit(bodyCtx);
+			};
+
+			case PatternMapContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
-					forEach(nestedMap, vCtx.patternMap());
+					forEach(nestedMap, vCtx.patternMapNaked());
 				} else {
 					throw new UnsupportedPattern(vCtx, v.unwrap());
 				}
 			};
 
-			case PatternNestedListContext iCtx -> (v) -> {
+			case PatternListContext iCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviList nestedList) {
-					forEach(nestedList, iCtx.patternNested());
+					forEach(nestedList, iCtx.pattern());
 				} else {
-					throw new UnsupportedPattern(iCtx.patternNested(), v.unwrap());
+					throw new UnsupportedPattern(iCtx.pattern(), v.unwrap());
 				}
 			};
 
-			default -> throw new UnsupportedPattern(patternNested, iterated);
+			default -> throw new UnsupportedPattern(patternCtx, iterated);
 
 		};
 
@@ -164,54 +164,54 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void forEach(
 		GioviMap map,
-		PatternMapContext patternMapCtx
+		PatternMapNakedContext patternMapCtx
 	) {
 
-		Consumer<Var<?>> keyIterationStrategy = switch (patternMapCtx.key) {
+		Consumer<Var<?>> keyIterationStrategy = switch (patternMapCtx.key.getChild(0)) {
 
-			case PatternNestedPlaceholderContext _ -> (_) -> {
+			case LiteralPlaceholderContext _ -> (_) -> {
 				// do nothing
 			};
 
-			case PatternNestedUnaryContext kCtx -> (k) -> {
-				deconstruct(k, kCtx.patternUnary());
+			case PatternUnaryContext kCtx -> (k) -> {
+				deconstruct(k, kCtx);
 			};
 
-			case PatternNestedProductContext kCtx -> (k) -> {
+			case PatternProductContext kCtx -> (k) -> {
 				deconstruct(k, kCtx);
 			};
 
 			default -> throw new UnsupportedDeconstruction(map, patternMapCtx.key);
 		};
 
-		Consumer<Var<?>> valueIterationStrategy = switch (patternMapCtx.value) {
+		Consumer<Var<?>> valueIterationStrategy = switch (patternMapCtx.value.getChild(0)) {
 
-			case PatternNestedPlaceholderContext _ -> (_) -> {
+			case LiteralPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			case PatternNestedUnaryContext vCtx -> (v) -> {
-				deconstruct(v, vCtx.patternUnary());
+			case PatternUnaryContext vCtx -> (v) -> {
+				deconstruct(v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
-			case PatternNestedListContext vCtx -> (v) -> {
+			case PatternListContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviList nestedList) {
-					forEach(nestedList, vCtx.patternNested());
+					forEach(nestedList, vCtx.pattern());
 				} else {
 					throw new UnsupportedPattern(vCtx, v.unwrap());
 				}
 			};
 
-			case PatternNestedMapContext vCtx -> (v) -> {
+			case PatternMapContext vCtx -> (v) -> {
 				if (v.unwrap() instanceof GioviMap nestedMap) {
-					forEach(nestedMap, vCtx.patternMap());
+					forEach(nestedMap, vCtx.patternMapNaked());
 				} else {
 					throw new UnsupportedPattern(vCtx, v.unwrap());
 				}
 			};
 
-			case PatternNestedProductContext vCtx -> (v) -> {
+			case PatternProductContext vCtx -> (v) -> {
 				deconstruct(v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
@@ -271,7 +271,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		);
 	}
 
-	private void deconstruct(Var<?> i, PatternNestedProductContext iCtx) {
+	private void deconstruct(Var<?> i, PatternProductContext iCtx) {
 		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.patternProductMembers());
 	}
 
@@ -290,11 +290,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case PatternProductPositionalContext pCtx -> {
 				switch (i.unwrap()) {
 					case GioviStruct struct
-						-> deconstructPositional(struct.value(), pCtx.patternNested());
+						-> deconstructPositional(struct.value(), pCtx.patternMember());
 					case GioviRecord record
-						-> deconstructPositional(record.value(), pCtx.patternNested());
+						-> deconstructPositional(record.value(), pCtx.patternMember());
 					case GioviTuple tuple
-						-> deconstructPositional(tuple.value(), pCtx.patternNested());
+						-> deconstructPositional(tuple.value(), pCtx.patternMember());
 					default
 						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 				}
@@ -302,9 +302,9 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case PatternProductNamedContext nCtx -> {
 				switch (i.unwrap()) {
 					case GioviStruct struct
-						-> deconstructNamed(struct.value(), nCtx.patternNested());
+						-> deconstructNamed(struct.value(), nCtx.patternMember());
 					case GioviRecord record
-						-> deconstructNamed(record.value(), nCtx.patternNested());
+						-> deconstructNamed(record.value(), nCtx.patternMember());
 					default
 						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 				}
@@ -315,29 +315,29 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void deconstructNamed(
 		Record record,
-		List<PatternNestedContext> list
+		List<PatternMemberContext> list
 	) {
 		for (var patternCtx : list) {
-			switch (patternCtx) {
+			switch (patternCtx.getChild(0)) {
 
-				case PatternNestedPlaceholderContext _ -> {
+				case LiteralPlaceholderContext _ -> {
 					// do nothing
 				}
 
-				case PatternNestedUnaryContext iCtx -> {
-					String fieldIdentifier = iCtx.patternUnary().identifier().getText();
+				case PatternUnaryContext iCtx -> {
+					String fieldIdentifier = iCtx.identifier().getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
 							() -> new UnsupportedDeconstruction(
 								record,
-								iCtx.patternUnary(),
+								iCtx,
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					deconstruct(field, iCtx.patternUnary());
+					deconstruct(field, iCtx);
 				}
 
-				case PatternNestedProductContext iCtx -> {
+				case PatternProductContext iCtx -> {
 					if (iCtx.whole == null) {
 						throw new UnsupportedDeconstruction(
 							record,
@@ -364,7 +364,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void deconstructPositional(
 		Tuple tuple,
-		List<PatternNestedContext> patterns
+		List<PatternMemberContext> patterns
 	) {
 		for (int i = 0; i < patterns.size(); i++) {
 			final int j = i;
@@ -376,10 +376,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 					)
 				);
 			var patternCtx = patterns.get(i);
-			switch (patternCtx) {
-				case PatternNestedPlaceholderContext _ -> { /* do nothing */ }
-				case PatternNestedUnaryContext iCtx -> deconstruct(field, iCtx.patternUnary());
-				case PatternNestedProductContext iCtx -> deconstruct(field, iCtx);
+			switch (patternCtx.getChild(0)) {
+				case LiteralPlaceholderContext _ -> { /* do nothing */ }
+				case PatternUnaryContext iCtx -> deconstruct(field, iCtx);
+				case PatternProductContext iCtx -> deconstruct(field, iCtx);
 				default -> throw new UnsupportedDeconstruction(tuple, patternCtx);
 			}
 		}
