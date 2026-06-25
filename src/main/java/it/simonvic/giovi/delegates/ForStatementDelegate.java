@@ -57,9 +57,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case PatternTopLevelMapContext iCtx when iterated instanceof GioviMap map
 				-> forEach(map, iCtx.patternMap());
 
-			case PatternTopLevelProductContext iCtx when iterated instanceof GioviList list
-				-> forEach(list, Optional.empty(), iCtx.patternProductMembers());
-
 			case PatternTopLevelNestedContext nestedCtx -> {
 
 				switch (nestedCtx.patternNested()) {
