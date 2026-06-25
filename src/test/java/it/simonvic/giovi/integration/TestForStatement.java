@@ -130,7 +130,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b, i, t> in $list" -> _out
 				for <b, i, t> in list do "$b $i $t" -> _out
 				"""
@@ -142,7 +142,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <.b, .i, .t> in $list" -> _out
 				for <.b, .i, .t> in list do "$b $i $t" -> _out
 				"""
@@ -154,7 +154,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for w <b, i, t> in $list" -> _out
 				for w <b, i, t> in list do "$w    $b $i $t" -> _out
 				"""
@@ -166,7 +166,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for w <.b, .i, .t> in $list" -> _out
 				for w <.b, .i, .t> in list do "$w    $b $i $t" -> _out
 				"""
@@ -178,7 +178,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b, _, t> in $list" -> _out
 				for <b, _, t> in list do "$b $t" -> _out
 				"""
@@ -190,7 +190,7 @@ public class TestForStatement {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 0, "no">, <true, 1, "yes">]
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <.t, .b> in $list" -> _out
 				for <.t, .b> in list do "$b $t" -> _out
 				"""
@@ -203,7 +203,7 @@ public class TestForStatement {
 				"""
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
+				list [Foo] <- [<false, <1i, 2n>, "no">, <true, <10i, 20n>, "yes">]
 				"for <b, bar, t> in $list" -> _out
 				for <b, bar, t> in list do "$b $bar $t" -> _out
 				"""
@@ -222,14 +222,14 @@ public class TestForStatement {
 				"""
 				nestedList [[[Int]]] <- [
 					[
-						[1 0 0]
-						[0 1 0]
-						[0 0 1]
+						[1      2      3]
+						[10     20     30]
+						[100    200    300]
 					]
 					[
-						[2 0 0]
-						[0 2 0]
-						[0 0 2]
+						[1000   2000   3000]
+						[10000  20000  30000]
+						[100000 200000 300000]
 					]
 				]
 				"for i in $nestedList" -> _out
@@ -250,7 +250,7 @@ public class TestForStatement {
 				"""
 				graph [Text : [Text : Int]] <- [
 					"a" : ["x":1 "y":2 "z":3]
-					"b" : ["X":10 "Y":20 "Z":30]
+					"b" : ["u":10 "v":20 "w":30]
 				]
 				"for u : [v : cost] in $graph" -> _out
 				for u : [v : cost] in graph do "$u --$cost--> $v" -> _out
@@ -282,11 +282,11 @@ public class TestForStatement {
 				graphs [[Text : [Text : Int]]] <- [
 					[
 						"a" : ["x":1 "y":2 "z":3]
-						"b" : ["X":10 "Y":20 "Z":30]
+						"b" : ["u":10 "v":20 "w":30]
 					]
 					[
-						"a" : ["x":1 "y":2 "z":3]
-						"b" : ["X":10 "Y":20 "Z":30]
+						"A" : ["X":100 "Y":200 "Z":300]
+						"B" : ["U":1000 "V":2000 "W":3000]
 					]
 				]
 				"for [[u : [v : cost]]] in $graphs" -> _out
@@ -328,8 +328,16 @@ public class TestForStatement {
 				Foo<a Int, b Int, c Int>
 				Bar<x Int, y Int, z Foo>
 				matrixOfNestedStruct [[Bar]] <- [
-					[Bar.<1, 1, Foo.<1, 1, 1>>, Bar.<2, 2, Foo.<2, 2, 2>>, Bar.<3, 3, Foo.<3, 3, 3>>]
-					[Bar.<1, 1, Foo.<1, 1, 1>>, Bar.<2, 2, Foo.<2, 2, 2>>, Bar.<3, 3, Foo.<3, 3, 3>>]
+					[
+						Bar.<1,      2,      Foo.<3,      4,      5>>,
+						Bar.<10,     20,     Foo.<30,     40,     50>>,
+						Bar.<100,    200,    Foo.<300,    400,    500>>,
+					]
+					[
+						Bar.<1000,   2000,   Foo.<3000,   4000,   5000>>,
+						Bar.<10000,  20000,  Foo.<30000,  40000,  50000>>,
+						Bar.<100000, 200000, Foo.<300000, 400000, 500000>>,
+					]
 				]
 				"for [[<x, y, z <a, b, c>>]] in $matrixOfNestedStruct" -> _out
 				for [[<x, y, z <a, b, c>>]] in matrixOfNestedStruct do "<$x $y $z <$a $b $c>>" -> _out
@@ -344,8 +352,8 @@ public class TestForStatement {
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
 				map [Foo : Text] <- [
-					<false, <0i, 0n>, "no"> : "a"
-					<true, <1i, 1n>, "yes"> : "b"
+					<false, <1i, 2n>, "no"> : "a"
+					<true, <10i, 20n>, "yes"> : "b"
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
 				for k <b, bar <i, n>, t> : v in map do "$k <$b, $bar <$i, $n>, $t> : $v" -> _out
@@ -360,8 +368,8 @@ public class TestForStatement {
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
 				map [Text : Foo] <- [
-					"a" : <false, <0i, 0n>, "no">,
-					"b" : <true, <1i, 1n>, "yes">
+					"a" : <false, <1i, 2n>, "no">,
+					"b" : <true, <10i, 20n>, "yes">
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
 				for k : v <b, bar <i, n>, t> in map do "$k : $v <$b, $bar <$i, $n>, $t>" -> _out
@@ -376,8 +384,8 @@ public class TestForStatement {
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
 				map [Foo : Bar] <- [
-					<false, <0i, 0n>, "no"> : <0i, 0n>
-					<true, <1i, 1n>, "yes"> : <1i, 1n>
+					<false, <1i, 2n>, "no"> : <3i, 4n>
+					<true, <10i, 20n>, "yes"> : <30i, 40n>
 				]
 				"for <b, bar, t> : <i, n> in $map" -> _out
 				for <b, bar, t> : <i, n> in map do "<$b, $bar, $t> : <$i, $n>" -> _out
