@@ -15,10 +15,7 @@ import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.NoSuchField;
-import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
-import it.simonvic.giovi.exceptions.UnsupportedPattern;
+import it.simonvic.giovi.exceptions.*;
 
 public class ForStatementDelegate extends GioviVisitorDelegate {
 
@@ -265,10 +262,19 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	//////////////////////////////////////////////////////////////////////////////// Deconstruct
 
 	private void deconstruct(Var<?> i, PatternUnaryContext patternUnary) {
-		getCurrentScope().declare(
-			patternUnary.identifier().getText(),
-			new VarD<>(i.copy().unwrap())
-		);
+		String identifier = patternUnary.identifier().getText();
+		GioviValue<?> value;
+		if (patternUnary.type() == null) {
+			value = i.copy().unwrap();
+		} else {
+			var type = gioviVisitor.visit(patternUnary.type()).asGioviType();
+			try {
+				value = type.widen(i.unwrap());
+			} catch (NonWideneable e) {
+				throw new UnsupportedDeconstruction(i.unwrap(), patternUnary, e);
+			}
+		}
+		getCurrentScope().declare(identifier, new VarD<>(value));
 	}
 
 	private void deconstruct(Var<?> i, PatternProductContext iCtx) {
