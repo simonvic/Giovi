@@ -10,7 +10,6 @@ import giovi.Tuple;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.*;
@@ -213,39 +212,63 @@ public class VisitorUtils {
 		deconstruct(visitor, content, destination.patternProduct());
 	}
 
+	/**
+	 * Deconstruct the given content (value) into a unary pattern
+	 * @param visitor with which to perform the deconstruction
+	 * @param content to deconstruct
+	 * @param patternCtx
+	 */
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
-		PatternUnaryContext patternUnary
+		PatternUnaryContext patternCtx
 	) {
-		String identifier = patternUnary.identifier().getText();
+		String identifier = patternCtx.identifier().getText();
 		GioviValue<?> value;
-		if (patternUnary.type() == null) {
+		if (patternCtx.type() == null) {
 			value = content.unwrapAsGioviValue().copy();
 		} else {
-			var type = visitor.visit(patternUnary.type()).asGioviType();
+			var type = visitor.visit(patternCtx.type()).asGioviType();
 			try {
 				value = type.widen(content.unwrapAsGioviValue());
 			} catch (NonWideneable e) {
-				throw new UnsupportedDeconstruction(content, patternUnary, e);
+				throw new UnsupportedDeconstruction(content, patternCtx, e);
 			}
 		}
 		visitor.getCurrentScope().declare(identifier, new VarD<>(value));
 	}
 
+	/**
+	 * Deconstruct the given content (value) with a product pattern
+	 * @param visitor
+	 * @param content to deconstruct; must be a product value
+	 * @param patternCtx
+	 */
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
-		PatternProductContext iCtx
+		PatternProductContext patternCtx
 	) {
-		deconstruct(visitor, content, Optional.ofNullable(iCtx.whole), iCtx.patternProductMembers());
+		deconstruct(
+			visitor,
+			content,
+			Optional.ofNullable(patternCtx.whole),
+			patternCtx.patternProductMembers()
+		);
 	}
 
+	/**
+	 * Deconstruct the given content (value) with a product pattern
+	 * @param visitor
+	 * @param content to deconstruct; must be a product value
+	 * @param wholeCtx
+	 * @param patternCtx
+	 */
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
 		Optional<PatternUnaryContext> wholeCtx,
-		PatternProductMembersContext iCtx
+		PatternProductMembersContext patternCtx
 	) {
 		var value = content.unwrapAsGioviValue();
 		wholeCtx.ifPresent(
@@ -254,7 +277,7 @@ public class VisitorUtils {
 				new VarD<>(value.copy())
 			)
 		);
-		switch (iCtx) {
+		switch (patternCtx) {
 			case PatternProductPositionalContext pCtx -> {
 				switch (value) {
 					case GioviStruct struct
@@ -264,7 +287,7 @@ public class VisitorUtils {
 					case GioviTuple tuple
 						-> deconstructPositional(visitor, tuple.value(), pCtx.patternMember());
 					default
-						-> throw new UnsupportedDeconstruction(value, iCtx);
+						-> throw new UnsupportedDeconstruction(value, patternCtx);
 				}
 			}
 			case PatternProductNamedContext nCtx -> {
@@ -274,19 +297,25 @@ public class VisitorUtils {
 					case GioviRecord record
 						-> deconstructNamed(visitor, record.value(), nCtx.patternMemberNamed());
 					default
-						-> throw new UnsupportedDeconstruction(value, iCtx);
+						-> throw new UnsupportedDeconstruction(value, patternCtx);
 				}
 			}
-			default -> throw new UnsupportedDeconstruction(value, iCtx);
+			default -> throw new UnsupportedDeconstruction(value, patternCtx);
 		}
 	}
 
+	/**
+	 * Deconstruct a record using named approach
+	 * @param visitor
+	 * @param record
+	 * @param patternsCtx
+	 */
 	public static void deconstructNamed(
 		GioviVisitor visitor,
 		Record record,
-		List<PatternMemberNamedContext> list
+		List<PatternMemberNamedContext> patternsCtx
 	) {
-		for (var patternCtx : list) {
+		for (var patternCtx : patternsCtx) {
 			switch (patternCtx) {
 				case PatternMemberNamedExplicitContext explicitCtx -> {
 					String fieldIdentifier = explicitCtx.name.getText();
@@ -324,12 +353,18 @@ public class VisitorUtils {
 
 	}
 
+	/**
+	 * Deconstruct a tuple using a positional approach
+	 * @param visitor
+	 * @param tuple
+	 * @param patternsCtx
+	 */
 	public static void deconstructPositional(
 		GioviVisitor visitor,
 		Tuple tuple,
-		List<PatternMemberContext> patterns
+		List<PatternMemberContext> patternsCtx
 	) {
-		for (int i = 0; i < patterns.size(); i++) {
+		for (int i = 0; i < patternsCtx.size(); i++) {
 			final int j = i;
 			var field = tuple.getField(i)
 				.orElseThrow(
@@ -338,7 +373,7 @@ public class VisitorUtils {
 						new NoSuchField(j)
 					)
 				);
-			var patternCtx = patterns.get(i);
+			var patternCtx = patternsCtx.get(i);
 			switch (patternCtx.getChild(0)) {
 				case LiteralPlaceholderContext _ -> { /* do nothing */ }
 				case PatternUnaryContext iCtx -> deconstruct(visitor, field, iCtx);
