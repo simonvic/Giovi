@@ -308,9 +308,9 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			case PatternProductNamedContext nCtx -> {
 				switch (i.unwrap()) {
 					case GioviStruct struct
-						-> deconstructNamed(struct.value(), nCtx.patternMember());
+						-> deconstructNamed(struct.value(), nCtx.patternMemberNamed());
 					case GioviRecord record
-						-> deconstructNamed(record.value(), nCtx.patternMember());
+						-> deconstructNamed(record.value(), nCtx.patternMemberNamed());
 					default
 						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
 				}
@@ -321,51 +321,44 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void deconstructNamed(
 		Record record,
-		List<PatternMemberContext> list
+		List<PatternMemberNamedContext> list
 	) {
 		for (var patternCtx : list) {
-			switch (patternCtx.getChild(0)) {
-
-				case LiteralPlaceholderContext _ -> {
-					// do nothing
-				}
-
-				case PatternUnaryContext iCtx -> {
-					String fieldIdentifier = iCtx.identifier().getText();
+			switch (patternCtx) {
+				case PatternMemberNamedExplicitContext explicitCtx -> {
+					String fieldIdentifier = explicitCtx.name.getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
 							() -> new UnsupportedDeconstruction(
 								record,
-								iCtx,
+								explicitCtx,
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					deconstruct(field, iCtx);
-				}
-
-				case PatternProductContext iCtx -> {
-					if (iCtx.whole == null) {
-						throw new UnsupportedDeconstruction(
-							record,
-							iCtx,
-							new GioviException("Whole field is required with named deconstruction")
-						);
+					switch (explicitCtx.patternMember().getChild(0)) {
+						case LiteralPlaceholderContext _ -> {/* do nothing */}
+						case PatternUnaryContext pCtx -> deconstruct(field, pCtx);
+						case PatternProductContext pCtx -> deconstruct(field, pCtx);
+						default -> throw new UnsupportedDeconstruction(record, explicitCtx);
 					}
-					String fieldIdentifier = iCtx.whole.identifier().getText();
+				}
+				case PatternMemberNamedImplicitContext implicitCtx -> {
+					var unaryCtx = implicitCtx.patternUnary();
+					String fieldIdentifier = unaryCtx.identifier().getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
 							() -> new UnsupportedDeconstruction(
 								record,
-								iCtx.patternUnary(),
+								unaryCtx,
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					deconstruct(field, iCtx);
+					deconstruct(field, unaryCtx);
 				}
-
 				default -> throw new UnsupportedDeconstruction(record, patternCtx);
 			}
 		}
+
 	}
 
 	private void deconstructPositional(

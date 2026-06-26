@@ -138,13 +138,37 @@ public class TestForStatement {
 		}
 
 		@Test
-		void named_onList() {
+		void namedImplicit_onList() {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for <.b, .i, .t> in $list" -> _out
-				for <.b, .i, .t> in list do "$b $i $t" -> _out
+				"for <:b, :i, :t> in $list" -> _out
+				for <:b, :i, :t> in list do "$b $i $t" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void namedExplicit_onList() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				"for <b:b1, i:i1, t:t1> in $list" -> _out
+				for <b:b1, i:i1, t:t1> in list do "$b1 $i1 $t1" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void namedMixed_onList() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				"for <b:b1, :i, t:t> in $list" -> _out
+				for <b:b1, :i, t:t> in list do "$b1 $i $t" -> _out
 				"""
 			);
 		}
@@ -162,13 +186,25 @@ public class TestForStatement {
 		}
 
 		@Test
-		void named_onList_withWhole() {
+		void namedImplicit_onList_withWhole() {
 			visit(
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for w <.b, .i, .t> in $list" -> _out
-				for w <.b, .i, .t> in list do "$w    $b $i $t" -> _out
+				"for w <:b, :i, :t> in $list" -> _out
+				for w <:b, :i, :t> in list do "$w    $b $i $t" -> _out
+				"""
+			);
+		}
+
+		@Test
+		void namedExplicit_onList_withWhole() {
+			visit(
+				"""
+				Foo<b Bool, i Int, t Text>
+				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				"for w <b:b1, i:i1, t:t1> in $list" -> _out
+				for w <b:b1, i:i1, t:t1> in list do "$w    $b1 $i1 $t1" -> _out
 				"""
 			);
 		}
@@ -191,8 +227,8 @@ public class TestForStatement {
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for <.t, .b> in $list" -> _out
-				for <.t, .b> in list do "$b $t" -> _out
+				"for <:t, :b> in $list" -> _out
+				for <:t, :b> in list do "$b $t" -> _out
 				"""
 			);
 		}
@@ -315,8 +351,8 @@ public class TestForStatement {
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
 				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
-				"for <.b, .bar <.i, .n>, .t> in $list" -> _out
-				for <.b, .bar <.i, .n>, .t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
+				"for <:b, bar:bar<:i, :n>, :t> in $list" -> _out
+				for <:b, bar:bar<:i, :n>, :t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
 				"""
 			);
 		}
