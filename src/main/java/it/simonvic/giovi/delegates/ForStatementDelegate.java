@@ -1,25 +1,22 @@
 package it.simonvic.giovi.delegates;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import giovi.Record;
-import giovi.Tuple;
-import giovi.lang.*;
+import giovi.lang.GioviList;
+import giovi.lang.GioviMap;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.Var;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
-import it.simonvic.giovi.exceptions.*;
+import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
+import it.simonvic.giovi.exceptions.UnsupportedPattern;
+import it.simonvic.giovi.util.VisitorUtils;
 
 public class ForStatementDelegate extends GioviVisitorDelegate {
-
-	// TODO: based on pattern, flatten iterated value first and then iterate, instead of doing whatever this is
 
 	public static GioviParserVisitResult doVisit(
 		GioviVisitor gioviVisitor,
@@ -43,9 +40,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			? v.unwrap()
 			: iterated;
 	}
-
-	// TODO: check if necessary to new VarD when deconstructing
-	// TODO: check when declaring if it should be copied (by value) (e.g. iterating over a tuple)
 
 	public GioviParserVisitResult doVisit() {
 
@@ -100,7 +94,6 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	// TODO: should iterators be by value?
-	// TODO: for r Real in [1 2 3] do {} declare r first, then widen the entries
 
 	/**
 	 * Positional
@@ -114,7 +107,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		PatternProductMembersContext patternMembers
 	) {
 		forEach(list, (i) -> {
-			deconstruct(i, wholeOpt, patternMembers);
+			VisitorUtils.deconstruct(gioviVisitor, i, wholeOpt, patternMembers);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
@@ -127,12 +120,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternUnaryContext iCtx -> (i) -> {
-				deconstruct(i, iCtx);
+				VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
 			case PatternProductContext iCtx -> (i) -> {
-				deconstruct(i, iCtx);
+				VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -171,11 +164,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternUnaryContext kCtx -> (k) -> {
-				deconstruct(k, kCtx);
+				VisitorUtils.deconstruct(gioviVisitor, k, kCtx);
 			};
 
 			case PatternProductContext kCtx -> (k) -> {
-				deconstruct(k, kCtx);
+				VisitorUtils.deconstruct(gioviVisitor, k, kCtx);
 			};
 
 			default -> throw new UnsupportedDeconstruction(map, patternMapCtx.key);
@@ -188,7 +181,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternUnaryContext vCtx -> (v) -> {
-				deconstruct(v, vCtx);
+				VisitorUtils.deconstruct(gioviVisitor, v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -209,7 +202,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternProductContext vCtx -> (v) -> {
-				deconstruct(v, vCtx);
+				VisitorUtils.deconstruct(gioviVisitor, v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -240,148 +233,23 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	private void forEach(Range<?> range, PatternUnaryContext iCtx) {
 		forEach(range, (i) -> {
-			deconstruct(i, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
 
 	private void forEach(GioviList list, PatternUnaryContext iCtx) {
 		forEach(list, (i) -> {
-			deconstruct(i, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
 
 	private void forEach(GioviMap map, PatternUnaryContext iCtx) {
 		forEach(map, (k, _) -> {
-			deconstruct(k, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, k, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
-	}
-
-	//////////////////////////////////////////////////////////////////////////////// Deconstruct
-
-	private void deconstruct(Var<?> i, PatternUnaryContext patternUnary) {
-		String identifier = patternUnary.identifier().getText();
-		GioviValue<?> value;
-		if (patternUnary.type() == null) {
-			value = i.copy().unwrap();
-		} else {
-			var type = gioviVisitor.visit(patternUnary.type()).asGioviType();
-			try {
-				value = type.widen(i.unwrap());
-			} catch (NonWideneable e) {
-				throw new UnsupportedDeconstruction(i.unwrap(), patternUnary, e);
-			}
-		}
-		getCurrentScope().declare(identifier, new VarD<>(value));
-	}
-
-	private void deconstruct(Var<?> i, PatternProductContext iCtx) {
-		deconstruct(i, Optional.ofNullable(iCtx.whole), iCtx.patternProductMembers());
-	}
-
-	private void deconstruct(
-		Var<?> i,
-		Optional<PatternUnaryContext> wholeCtx,
-		PatternProductMembersContext iCtx
-	) {
-		wholeCtx.ifPresent(
-			wCtx -> getCurrentScope().declare(
-				wCtx.identifier().getText(),
-				new VarD<>(i.copy().unwrap())
-			)
-		);
-		switch (iCtx) {
-			case PatternProductPositionalContext pCtx -> {
-				switch (i.unwrap()) {
-					case GioviStruct struct
-						-> deconstructPositional(struct.value(), pCtx.patternMember());
-					case GioviRecord record
-						-> deconstructPositional(record.value(), pCtx.patternMember());
-					case GioviTuple tuple
-						-> deconstructPositional(tuple.value(), pCtx.patternMember());
-					default
-						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
-				}
-			}
-			case PatternProductNamedContext nCtx -> {
-				switch (i.unwrap()) {
-					case GioviStruct struct
-						-> deconstructNamed(struct.value(), nCtx.patternMemberNamed());
-					case GioviRecord record
-						-> deconstructNamed(record.value(), nCtx.patternMemberNamed());
-					default
-						-> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
-				}
-			}
-			default -> throw new UnsupportedDeconstruction(i.unwrap(), iCtx);
-		}
-	}
-
-	private void deconstructNamed(
-		Record record,
-		List<PatternMemberNamedContext> list
-	) {
-		for (var patternCtx : list) {
-			switch (patternCtx) {
-				case PatternMemberNamedExplicitContext explicitCtx -> {
-					String fieldIdentifier = explicitCtx.name.getText();
-					var field = record.getField(fieldIdentifier)
-						.orElseThrow(
-							() -> new UnsupportedDeconstruction(
-								record,
-								explicitCtx,
-								new NoSuchField(fieldIdentifier)
-							)
-						);
-					switch (explicitCtx.patternMember().getChild(0)) {
-						case LiteralPlaceholderContext _ -> {/* do nothing */}
-						case PatternUnaryContext pCtx -> deconstruct(field, pCtx);
-						case PatternProductContext pCtx -> deconstruct(field, pCtx);
-						default -> throw new UnsupportedDeconstruction(record, explicitCtx);
-					}
-				}
-				case PatternMemberNamedImplicitContext implicitCtx -> {
-					var unaryCtx = implicitCtx.patternUnary();
-					String fieldIdentifier = unaryCtx.identifier().getText();
-					var field = record.getField(fieldIdentifier)
-						.orElseThrow(
-							() -> new UnsupportedDeconstruction(
-								record,
-								unaryCtx,
-								new NoSuchField(fieldIdentifier)
-							)
-						);
-					deconstruct(field, unaryCtx);
-				}
-				default -> throw new UnsupportedDeconstruction(record, patternCtx);
-			}
-		}
-
-	}
-
-	private void deconstructPositional(
-		Tuple tuple,
-		List<PatternMemberContext> patterns
-	) {
-		for (int i = 0; i < patterns.size(); i++) {
-			final int j = i;
-			var field = tuple.getField(i)
-				.orElseThrow(
-					() -> new UnsupportedDeconstruction(
-						tuple,
-						new NoSuchField(j)
-					)
-				);
-			var patternCtx = patterns.get(i);
-			switch (patternCtx.getChild(0)) {
-				case LiteralPlaceholderContext _ -> { /* do nothing */ }
-				case PatternUnaryContext iCtx -> deconstruct(field, iCtx);
-				case PatternProductContext iCtx -> deconstruct(field, iCtx);
-				default -> throw new UnsupportedDeconstruction(tuple, patternCtx);
-			}
-		}
 	}
 
 	/**
