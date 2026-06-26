@@ -1,14 +1,19 @@
 package it.simonvic.giovi.util;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.GioviBool;
+import giovi.Record;
+import giovi.Tuple;
+import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
-import it.simonvic.giovi.antlr.GioviParser.RedirectionPatternContext;
-import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.RedirectionException;
+import it.simonvic.giovi.GioviVisitor;
+import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.antlr.GioviParser.*;
+import it.simonvic.giovi.exceptions.*;
 
 public class VisitorUtils {
 
@@ -196,6 +201,7 @@ public class VisitorUtils {
 	}
 
 	public static void redirectionToPattern(
+		GioviVisitor visitor,
 		GioviParserVisitResult content,
 		GioviToken operator,
 		RedirectionPatternContext destination
@@ -204,9 +210,143 @@ public class VisitorUtils {
 			// do nothing
 			return;
 		}
-		throw new GioviException(
-			"Redirection not implemented yet for pattern " + destination.getText()
-		);
+		deconstruct(visitor, content, destination.patternProduct());
 	}
+
+	public static void deconstruct(
+		GioviVisitor visitor,
+		GioviParserVisitResult content,
+		PatternUnaryContext patternUnary
+	) {
+		String identifier = patternUnary.identifier().getText();
+		GioviValue<?> value;
+		if (patternUnary.type() == null) {
+			value = content.unwrapAsGioviValue().copy();
+		} else {
+			var type = visitor.visit(patternUnary.type()).asGioviType();
+			try {
+				value = type.widen(content.unwrapAsGioviValue());
+			} catch (NonWideneable e) {
+				throw new UnsupportedDeconstruction(content, patternUnary, e);
+			}
+		}
+		visitor.getCurrentScope().declare(identifier, new VarD<>(value));
+	}
+
+	public static void deconstruct(
+		GioviVisitor visitor,
+		GioviParserVisitResult content,
+		PatternProductContext iCtx
+	) {
+		deconstruct(visitor, content, Optional.ofNullable(iCtx.whole), iCtx.patternProductMembers());
+	}
+
+	public static void deconstruct(
+		GioviVisitor visitor,
+		GioviParserVisitResult content,
+		Optional<PatternUnaryContext> wholeCtx,
+		PatternProductMembersContext iCtx
+	) {
+		var value = content.unwrapAsGioviValue();
+		wholeCtx.ifPresent(
+			wCtx -> visitor.getCurrentScope().declare(
+				wCtx.identifier().getText(),
+				new VarD<>(value.copy())
+			)
+		);
+		switch (iCtx) {
+			case PatternProductPositionalContext pCtx -> {
+				switch (value) {
+					case GioviStruct struct
+						-> deconstructPositional(visitor, struct.value(), pCtx.patternMember());
+					case GioviRecord record
+						-> deconstructPositional(visitor, record.value(), pCtx.patternMember());
+					case GioviTuple tuple
+						-> deconstructPositional(visitor, tuple.value(), pCtx.patternMember());
+					default
+						-> throw new UnsupportedDeconstruction(value, iCtx);
+				}
+			}
+			case PatternProductNamedContext nCtx -> {
+				switch (value) {
+					case GioviStruct struct
+						-> deconstructNamed(visitor, struct.value(), nCtx.patternMemberNamed());
+					case GioviRecord record
+						-> deconstructNamed(visitor, record.value(), nCtx.patternMemberNamed());
+					default
+						-> throw new UnsupportedDeconstruction(value, iCtx);
+				}
+			}
+			default -> throw new UnsupportedDeconstruction(value, iCtx);
+		}
+	}
+
+	public static void deconstructNamed(
+		GioviVisitor visitor,
+		Record record,
+		List<PatternMemberNamedContext> list
+	) {
+		for (var patternCtx : list) {
+			switch (patternCtx) {
+				case PatternMemberNamedExplicitContext explicitCtx -> {
+					String fieldIdentifier = explicitCtx.name.getText();
+					var field = record.getField(fieldIdentifier)
+						.orElseThrow(
+							() -> new UnsupportedDeconstruction(
+								record,
+								explicitCtx,
+								new NoSuchField(fieldIdentifier)
+							)
+						);
+					switch (explicitCtx.patternMember().getChild(0)) {
+						case LiteralPlaceholderContext _ -> {/* do nothing */}
+						case PatternUnaryContext pCtx -> deconstruct(visitor, field, pCtx);
+						case PatternProductContext pCtx -> deconstruct(visitor, field, pCtx);
+						default -> throw new UnsupportedDeconstruction(record, explicitCtx);
+					}
+				}
+				case PatternMemberNamedImplicitContext implicitCtx -> {
+					var unaryCtx = implicitCtx.patternUnary();
+					String fieldIdentifier = unaryCtx.identifier().getText();
+					var field = record.getField(fieldIdentifier)
+						.orElseThrow(
+							() -> new UnsupportedDeconstruction(
+								record,
+								unaryCtx,
+								new NoSuchField(fieldIdentifier)
+							)
+						);
+					deconstruct(visitor, field, unaryCtx);
+				}
+				default -> throw new UnsupportedDeconstruction(record, patternCtx);
+			}
+		}
+
+	}
+
+	public static void deconstructPositional(
+		GioviVisitor visitor,
+		Tuple tuple,
+		List<PatternMemberContext> patterns
+	) {
+		for (int i = 0; i < patterns.size(); i++) {
+			final int j = i;
+			var field = tuple.getField(i)
+				.orElseThrow(
+					() -> new UnsupportedDeconstruction(
+						tuple,
+						new NoSuchField(j)
+					)
+				);
+			var patternCtx = patterns.get(i);
+			switch (patternCtx.getChild(0)) {
+				case LiteralPlaceholderContext _ -> { /* do nothing */ }
+				case PatternUnaryContext iCtx -> deconstruct(visitor, field, iCtx);
+				case PatternProductContext iCtx -> deconstruct(visitor, field, iCtx);
+				default -> throw new UnsupportedDeconstruction(tuple, patternCtx);
+			}
+		}
+	}
+
 
 }

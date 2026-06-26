@@ -445,6 +445,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRedirectionToPattern(RedirectionToPatternContext ctx) {
 		VisitorUtils.redirectionToPattern(
+			this,
 			visit(ctx.content),
 			GioviToken.of(ctx.bop.getText()),
 			ctx.dest
