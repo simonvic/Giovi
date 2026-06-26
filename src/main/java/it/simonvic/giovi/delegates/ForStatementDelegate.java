@@ -41,6 +41,10 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			: iterated;
 	}
 
+	/**
+	 * Perform the visit of the loop
+	 * @return null
+	 */
 	public GioviParserVisitResult doVisit() {
 
 		switch (iteratorPatternCtx.getChild(0)) {
@@ -96,7 +100,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	// TODO: should iterators be by value?
 
 	/**
-	 * Positional
+	 * Iterator over list with product pattern
 	 * @param list
 	 * @param wholeOpt
 	 * @param patternMembers
@@ -112,6 +116,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
+	/**
+	 * Iterator over list with a pattern
+	 * @param list
+	 * @param patternCtx
+	 */
 	private void forEach(GioviList list, PatternContext patternCtx) {
 		Consumer<Var<?>> iterationStrategy = switch (patternCtx.getChild(0)) {
 
@@ -152,11 +161,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		forEach(list, iterationStrategy);
 	}
 
-	private void forEach(
-		GioviMap map,
-		PatternMapNakedContext patternMapCtx
-	) {
-
+	/**
+	 * Iterator over map with a map pattern
+	 * @param map
+	 * @param patternMapCtx
+	 */
+	private void forEach(GioviMap map, PatternMapNakedContext patternMapCtx) {
 		Consumer<Var<?>> keyIterationStrategy = switch (patternMapCtx.key.getChild(0)) {
 
 			case LiteralPlaceholderContext _ -> (_) -> {
@@ -217,20 +227,37 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 
 	//////////////////////////////////////////////////////////////////////////////// Placeholder
 
+	/**
+	 * Iterate over range with placeholder pattern
+	 * @param range
+	 */
 	private void forEach(Range<?> range) {
 		forEach(range, (_) -> gioviVisitor.visit(bodyCtx));
 	}
 
+	/**
+	 * Iterate over list with placeholder pattern
+	 * @param list
+	 */
 	private void forEach(GioviList list) {
 		forEach(list, (_) -> gioviVisitor.visit(bodyCtx));
 	}
 
+	/**
+	 * Iterate over map with placeholder pattern
+	 * @param map
+	 */
 	private void forEach(GioviMap map) {
 		forEach(map, (_, _) -> gioviVisitor.visit(bodyCtx));
 	}
 
 	//////////////////////////////////////////////////////////////////////////////// Unary
 
+	/**
+	 * Iterate over range with unary pattern
+	 * @param range
+	 * @param iCtx
+	 */
 	private void forEach(Range<?> range, PatternUnaryContext iCtx) {
 		forEach(range, (i) -> {
 			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
@@ -238,6 +265,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
+	/**
+	 * Iterate over list with unary pattern
+	 * @param list
+	 * @param iCtx
+	 */
 	private void forEach(GioviList list, PatternUnaryContext iCtx) {
 		forEach(list, (i) -> {
 			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
@@ -245,6 +277,11 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		});
 	}
 
+	/**
+	 * Iterate over map with unary context
+	 * @param map
+	 * @param iCtx
+	 */
 	private void forEach(GioviMap map, PatternUnaryContext iCtx) {
 		forEach(map, (k, _) -> {
 			VisitorUtils.deconstruct(gioviVisitor, k, iCtx);
@@ -253,6 +290,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	/**
+	 * Iterate over range and visit the loop body
 	 * @param range
 	 * @param loopBody
 	 */
@@ -277,6 +315,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	/**
+	 * Iterate over list and visit the loop body
 	 * @param list
 	 * @param loopBody
 	 */
@@ -300,6 +339,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	}
 
 	/**
+	 * Iterate over map and visit the loop body
 	 * @param map
 	 * @param loopBody
 	 */
