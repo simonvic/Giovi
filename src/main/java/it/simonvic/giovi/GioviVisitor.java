@@ -442,6 +442,28 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return null;
 	}
 
+	@Override
+	public GioviParserVisitResult visitRedirectionToPattern(RedirectionToPatternContext ctx) {
+		if (ctx.dest.literalPlaceholder() != null) {
+			// do nothing
+			return null;
+		}
+		throw new GioviException(
+			"Redirection not implemented yet for pattern " + ctx.dest.getText()
+		);
+	}
+
+	@Override
+	public GioviParserVisitResult visitRedirectionToPatternRTL(RedirectionToPatternRTLContext ctx) {
+		if (ctx.dest.literalPlaceholder() != null) {
+			// do nothing
+			return null;
+		}
+		throw new GioviException(
+			"Redirection not implemented yet for pattern " + ctx.dest.getText()
+		);
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// Expressions
 
 	@Override
