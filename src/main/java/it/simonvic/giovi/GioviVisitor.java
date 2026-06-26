@@ -400,7 +400,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
 		VisitorUtils.redirection(
 			visit(ctx.content),
-			GioviToken.of(ctx.redirectionOperator().getText()),
+			GioviToken.of(ctx.bop.getText()),
 			visit(ctx.dest)
 		);
 		return null;
@@ -412,7 +412,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirection(
 			visit(ctx.content),
-			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
+			GioviToken.of(ctx.bop.getText()),
 			visit(ctx.dest)
 		);
 		return null;
@@ -424,7 +424,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.content),
-			GioviToken.of(ctx.redirectionOperator().getText()),
+			GioviToken.of(ctx.bop.getText()),
 			ctx.reservedIdentifier().getText()
 		);
 		return null;
@@ -436,7 +436,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.content),
-			GioviToken.of(ctx.redirectionOperatorRTL().getText()),
+			GioviToken.of(ctx.bop.getText()),
 			ctx.reservedIdentifier().getText()
 		);
 		return null;
