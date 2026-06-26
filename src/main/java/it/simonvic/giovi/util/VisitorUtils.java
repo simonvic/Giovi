@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviBool;
 import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.antlr.GioviParser.RedirectionPatternContext;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
@@ -192,6 +193,20 @@ public class VisitorUtils {
 				"Operator not supported for primitive destination: " + operator
 			);
 		}
+	}
+
+	public static void redirectionToPattern(
+		GioviParserVisitResult content,
+		GioviToken operator,
+		RedirectionPatternContext destination
+	) {
+		if (destination.literalPlaceholder() != null) {
+			// do nothing
+			return;
+		}
+		throw new GioviException(
+			"Redirection not implemented yet for pattern " + destination.getText()
+		);
 	}
 
 }
