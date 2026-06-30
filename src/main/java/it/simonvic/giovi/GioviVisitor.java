@@ -218,8 +218,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitMultiIfStatement(MultiIfStatementContext ctx) {
-		var subject = visit(ctx.expression());
+	public GioviParserVisitResult visitMultiIfStatementSubjected(
+		MultiIfStatementSubjectedContext ctx
+	) {
+		var subject = visit(ctx.subject);
 		var matchedLabel = MultiIfStatementDelegate.evaluate(this, ctx.multiIfBody(), subject);
 		if (matchedLabel.isPresent()) {
 			enterScope();
@@ -240,6 +242,29 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			visit(matchedLabelCtx.consequence);
 			exitScope();
 		} else if (ctx.alternative != null) {
+			enterScope();
+			visit(ctx.alternative);
+			exitScope();
+		}
+		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitMultiIfStatementSubjectless(
+		MultiIfStatementSubjectlessContext ctx
+	) {
+		// TODO: enterScope here so that `is` statement can declare
+		for (var conditionCtx : ctx.subjectlessMultiIfBody().subjectlessMultiIfCondition()) {
+			if (visit(conditionCtx.condition).asNativeBool()) {
+				if (conditionCtx.guard == null || visit(conditionCtx.guard).asNativeBool()) {
+					enterScope();
+					visit(conditionCtx.consequence);
+					exitScope();
+					return null;
+				}
+			}
+		}
+		if (ctx.alternative != null) {
 			enterScope();
 			visit(ctx.alternative);
 			exitScope();
