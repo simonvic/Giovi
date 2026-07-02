@@ -11,6 +11,7 @@ import giovi.lang.GioviInt;
 import giovi.lang.GioviNatural;
 import giovi.lang.GioviReal;
 import it.simonvic.giovi.util.GioviRecords;
+import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 
 
@@ -66,6 +67,55 @@ public class TestPatterns {
 		assertThat(scope.getVariable("y2").orElseThrow().unwrap())
 			.isEqualTo(new GioviInt(3));
 	}
+
+	@Test
+	void tuple_toPositionalPattern_withWhole() {
+		var scope = visit("""
+			<1n, 2i, 3r> -> w <x, y, z>
+			""")
+			.getCurrentScope();
+		assertAll(
+			() -> assertThat(scope.getVariable("w").orElseThrow().unwrap())
+				.isEqualTo(GioviTuples.of(1, 2d, 3d)),
+			() -> assertThat(scope.getVariable("x").orElseThrow().unwrap())
+				.isEqualTo(new GioviNatural(new Natural(1))),
+			() -> assertThat(scope.getVariable("y").orElseThrow().unwrap())
+				.isEqualTo(new GioviInt(2)),
+			() -> assertThat(scope.getVariable("z").orElseThrow().unwrap())
+				.isEqualTo(new GioviReal(3d))
+		);
+	}
+
+
+	// TODO(opsem): how should the members be deconstructed?
+	// From the whole (possibly widened/narrowed from the deconstruction)?
+	// Or from the original value?
+	@Test
+	void tuple_toPositionalPattern_withWiderWhole() {
+		var scope = visit("""
+			struct Foo <a Int, b Real, c Real>
+			<1n, 2i, 3r> -> w Foo <x, y, z>
+			""")
+			.getCurrentScope();
+		assertAll(
+			() -> assertThat(scope.getVariable("w").orElseThrow().unwrap())
+				.isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", 1,
+						"b", 2d,
+						"c", 3d
+					)
+				),
+			() -> assertThat(scope.getVariable("x").orElseThrow().unwrap())
+				.isEqualTo(new GioviNatural(new Natural(1))),
+			() -> assertThat(scope.getVariable("y").orElseThrow().unwrap())
+				.isEqualTo(new GioviInt(2)),
+			() -> assertThat(scope.getVariable("z").orElseThrow().unwrap())
+				.isEqualTo(new GioviReal(3d))
+		);
+	}
+
 
 	@Test
 	void record_toPositionalPattern() {
