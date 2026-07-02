@@ -480,13 +480,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitRedirectionToPatternRTL(RedirectionToPatternRTLContext ctx) {
-		if (ctx.dest.literalPlaceholder() != null) {
-			// do nothing
-			return null;
-		}
-		throw new GioviException(
-			"Redirection not implemented yet for pattern " + ctx.dest.getText()
+		VisitorUtils.redirectionToPattern(
+			this,
+			visit(ctx.content),
+			GioviToken.of(ctx.bop.getText()),
+			ctx.dest
 		);
+		return null;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Expressions

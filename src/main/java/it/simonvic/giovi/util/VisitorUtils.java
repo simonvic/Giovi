@@ -205,11 +205,33 @@ public class VisitorUtils {
 		GioviToken operator,
 		RedirectionPatternContext destination
 	) {
-		if (destination.literalPlaceholder() != null) {
-			// do nothing
-			return;
+		switch (destination) {
+			case RedirectionPatternPlaceholderContext _ -> {/* noop */}
+			case RedirectionPatternProductContext pCtx
+				-> deconstruct(visitor, content, pCtx.productPattern());
+			default -> throw new UnsupportedDeconstruction(content, destination);
 		}
-		deconstruct(visitor, content, destination.patternProduct());
+	}
+
+	/**
+	 * Deconstruct the given content (value) into a pattern
+	 * @param visitor with which to perform the deconstruction
+	 * @param content to deconstruct
+	 * @param patternCtx
+	 */
+	public static void deconstruct(
+		GioviVisitor visitor,
+		GioviParserVisitResult content,
+		PatternContext patternCtx
+	) {
+		switch (patternCtx) {
+			// case PatternListContext pCtx -> deconstruct(visitor, content, pCtx.listPattern());
+			// case PatternMapContext pCtx -> deconstruct(visitor, content, pCtx.mapPattern());
+			case PatternProductContext pCtx -> deconstruct(visitor, content, pCtx.productPattern());
+			case PatternUnaryContext pCtx -> deconstruct(visitor, content, pCtx.unaryPattern());
+			case PatternPlaceholderContext _ -> {/* noop */}
+			default -> throw new UnsupportedDeconstruction(content, patternCtx);
+		}
 	}
 
 	/**
@@ -221,7 +243,7 @@ public class VisitorUtils {
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
-		PatternUnaryContext patternCtx
+		UnaryPatternContext patternCtx
 	) {
 		String identifier = patternCtx.identifier().getText();
 		GioviValue<?> value;
@@ -247,7 +269,7 @@ public class VisitorUtils {
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
-		PatternProductContext patternCtx
+		ProductPatternContext patternCtx
 	) {
 		deconstruct(
 			visitor,
@@ -261,22 +283,17 @@ public class VisitorUtils {
 	 * Deconstruct the given content (value) with a product pattern
 	 * @param visitor
 	 * @param content to deconstruct; must be a product value
-	 * @param wholeCtx
+	 * @param optWholeCtx
 	 * @param patternCtx
 	 */
 	public static void deconstruct(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
-		Optional<PatternUnaryContext> wholeCtx,
+		Optional<UnaryPatternContext> optWholeCtx,
 		PatternProductMembersContext patternCtx
 	) {
 		var value = content.unwrapAsGioviValue();
-		wholeCtx.ifPresent(
-			wCtx -> visitor.getCurrentScope().declare(
-				wCtx.identifier().getText(),
-				new VarD<>(value.copy())
-			)
-		);
+		optWholeCtx.ifPresent(wholeCtx -> deconstruct(visitor, value, wholeCtx));
 		switch (patternCtx) {
 			case PatternProductPositionalContext pCtx -> {
 				switch (value) {
@@ -327,15 +344,10 @@ public class VisitorUtils {
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					switch (explicitCtx.patternMember().getChild(0)) {
-						case LiteralPlaceholderContext _ -> {/* do nothing */}
-						case PatternUnaryContext pCtx -> deconstruct(visitor, field, pCtx);
-						case PatternProductContext pCtx -> deconstruct(visitor, field, pCtx);
-						default -> throw new UnsupportedDeconstruction(record, explicitCtx);
-					}
+					deconstruct(visitor, field, explicitCtx.patternMember());
 				}
 				case PatternMemberNamedImplicitContext implicitCtx -> {
-					var unaryCtx = implicitCtx.patternUnary();
+					var unaryCtx = implicitCtx.unaryPattern();
 					String fieldIdentifier = unaryCtx.identifier().getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
@@ -367,19 +379,30 @@ public class VisitorUtils {
 		for (int i = 0; i < patternsCtx.size(); i++) {
 			final int j = i;
 			var field = tuple.getField(i)
-				.orElseThrow(
-					() -> new UnsupportedDeconstruction(
-						tuple,
-						new NoSuchField(j)
-					)
-				);
-			var patternCtx = patternsCtx.get(i);
-			switch (patternCtx.getChild(0)) {
-				case LiteralPlaceholderContext _ -> { /* do nothing */ }
-				case PatternUnaryContext iCtx -> deconstruct(visitor, field, iCtx);
-				case PatternProductContext iCtx -> deconstruct(visitor, field, iCtx);
-				default -> throw new UnsupportedDeconstruction(tuple, patternCtx);
-			}
+				.orElseThrow(() -> new UnsupportedDeconstruction(tuple, new NoSuchField(j)));
+			deconstruct(visitor, field, patternsCtx.get(i));
+		}
+	}
+
+	/**
+	 * Deconstruct a product member
+	 * @param visitor
+	 * @param field
+	 * @param patternCtx
+	 */
+	public static void deconstruct(
+		GioviVisitor visitor,
+		VarD<?> field,
+		PatternMemberContext patternCtx
+	) {
+		switch (patternCtx) {
+			case PatternMemberPlaceholderContext _
+				-> {/* noop */}
+			case PatternMemberUnaryContext pCtx
+				-> deconstruct(visitor, field, pCtx.unaryPattern());
+			case PatternMemberProductContext pCtx
+				-> deconstruct(visitor, field, pCtx.productPattern());
+			default -> throw new UnsupportedDeconstruction(field, patternCtx);
 		}
 	}
 
