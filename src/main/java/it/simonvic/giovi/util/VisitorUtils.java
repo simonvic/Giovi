@@ -294,6 +294,9 @@ public class VisitorUtils {
 	) {
 		var value = content.unwrapAsGioviValue();
 		optWholeCtx.ifPresent(wholeCtx -> deconstruct(visitor, value, wholeCtx));
+		// TODO(opsem): how should the members be deconstructed?
+		// From the whole (possibly widened/narrowed from the deconstruction)?
+		// Or from the original value?
 		switch (patternCtx) {
 			case PatternProductPositionalContext pCtx -> {
 				switch (value) {
