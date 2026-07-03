@@ -111,7 +111,13 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		PatternProductMembersContext patternMembers
 	) {
 		forEach(list, (i) -> {
-			VisitorUtils.deconstruct(gioviVisitor, i, wholeOpt, patternMembers);
+			VisitorUtils.deconstruct(
+				gioviVisitor,
+				gioviVisitor.getCurrentScope(),
+				i,
+				wholeOpt,
+				patternMembers
+			);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
@@ -129,12 +135,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternUnaryContext iCtx -> (i) -> {
-				VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
+				VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), i, iCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
 			case PatternProductContext iCtx -> (i) -> {
-				VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
+				VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), i, iCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -174,11 +180,15 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternMapKeyUnaryContext kCtx -> (k) -> {
-				VisitorUtils.deconstruct(gioviVisitor, k, kCtx.unaryPattern());
+				VisitorUtils.deconstruct(
+					gioviVisitor, gioviVisitor.getCurrentScope(), k, kCtx.unaryPattern()
+				);
 			};
 
 			case PatternMapKeyProductContext kCtx -> (k) -> {
-				VisitorUtils.deconstruct(gioviVisitor, k, kCtx.productPattern());
+				VisitorUtils.deconstruct(
+					gioviVisitor, gioviVisitor.getCurrentScope(), k, kCtx.productPattern()
+				);
 			};
 
 			default -> throw new UnsupportedDeconstruction(map, patternMapCtx.key);
@@ -191,7 +201,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternUnaryContext vCtx -> (v) -> {
-				VisitorUtils.deconstruct(gioviVisitor, v, vCtx);
+				VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -212,7 +222,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			};
 
 			case PatternProductContext vCtx -> (v) -> {
-				VisitorUtils.deconstruct(gioviVisitor, v, vCtx);
+				VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), v, vCtx);
 				gioviVisitor.visit(bodyCtx);
 			};
 
@@ -260,7 +270,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(Range<?> range, PatternUnaryContext iCtx) {
 		forEach(range, (i) -> {
-			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), i, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
@@ -272,7 +282,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(GioviList list, PatternUnaryContext iCtx) {
 		forEach(list, (i) -> {
-			VisitorUtils.deconstruct(gioviVisitor, i, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), i, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}
@@ -284,7 +294,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(GioviMap map, PatternUnaryContext iCtx) {
 		forEach(map, (k, _) -> {
-			VisitorUtils.deconstruct(gioviVisitor, k, iCtx);
+			VisitorUtils.deconstruct(gioviVisitor, gioviVisitor.getCurrentScope(), k, iCtx);
 			gioviVisitor.visit(bodyCtx);
 		});
 	}

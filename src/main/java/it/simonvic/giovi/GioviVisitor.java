@@ -186,11 +186,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitIfStatement(IfStatementContext ctx) {
+		enterScope();
 		if (visit(ctx.expression()).unwrapAsGioviValue().asNativeBool()) {
-			enterScope();
 			visit(ctx.consequence);
 			exitScope();
-		} else if (ctx.alternative != null) {
+			return null;
+		}
+		exitScope();
+		if (ctx.alternative != null) {
 			enterScope();
 			visit(ctx.alternative);
 			exitScope();
@@ -225,21 +228,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var matchedLabel = MultiIfStatementDelegate.evaluate(this, ctx.multiIfBody(), subject);
 		if (matchedLabel.isPresent()) {
 			enterScope();
-			var matchedLabelCtx = matchedLabel.orElseThrow();
-			if (matchedLabelCtx.caseMatch() instanceof CaseMatchTypeCheckContext typeCheckCtx
-				&& typeCheckCtx.identifier() != null) {
-				var type = visit(typeCheckCtx.type());
-				// TODO: clafiry requirements. Should a type check be a type = type or a widening check?
-				// A widening check could be useful for struct/tuple matching and destructing
-				var castedSubject = subject.as(type);
-				VarD<?> casted = switch (castedSubject) {
-					case VarD<?> v -> v.copy();
-					case Var<?> v -> new VarD<>(v.unwrap());
-					default -> new VarD<>(castedSubject.asGioviValue());
-				};
-				getCurrentScope().declare(typeCheckCtx.identifier().getText(), casted);
-			}
-			visit(matchedLabelCtx.consequence);
+			visit(matchedLabel.orElseThrow().consequence);
 			exitScope();
 		} else if (ctx.alternative != null) {
 			enterScope();
@@ -660,6 +649,28 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitExpressionCast(ExpressionCastContext ctx) {
 		return visit(ctx.expression()).as(visit(ctx.type()));
+	}
+
+	@Override
+	public GioviParserVisitResult visitExpressionPatternMatching(
+		ExpressionPatternMatchingContext ctx
+	) {
+		var value = visit(ctx.expression()).unwrapAsGioviValue();
+		boolean matched;
+		// TODO: clean up this mess. Make deconstruct() return temporary scope
+		var targetScope = new Scope();
+		try {
+			VisitorUtils.deconstruct(this, targetScope, value, ctx.pattern());
+			matched = true;
+		} catch (Exception e) {
+			matched = false;
+		}
+		if (ctx.NOT() != null) {
+			matched = !matched;
+		} else if (matched) {
+			getCurrentScope().merge(targetScope);
+		}
+		return new GioviBool(matched);
 	}
 
 	@Override

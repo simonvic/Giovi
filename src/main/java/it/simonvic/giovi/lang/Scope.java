@@ -304,4 +304,8 @@ public class Scope {
 		return Optional.empty();
 	}
 
+	public void merge(Scope scope) {
+		scope.variables.forEach((k, v) -> this.declare(k, v));
+	}
+
 }

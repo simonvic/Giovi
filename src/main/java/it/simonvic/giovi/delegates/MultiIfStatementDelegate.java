@@ -8,6 +8,7 @@ import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.antlr.GioviParser.*;
+import it.simonvic.giovi.lang.Scope;
 import it.simonvic.giovi.util.VisitorUtils;
 
 public class MultiIfStatementDelegate extends GioviVisitorDelegate {
@@ -102,6 +103,24 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 			return new GioviBool(!equals);
 		}
 		return new GioviBool(equals);
+	}
+
+	@Override
+	public GioviParserVisitResult visitCaseMatchPattern(CaseMatchPatternContext ctx) {
+		boolean matched;
+		var targetScope = new Scope();
+		try {
+			VisitorUtils.deconstruct(gioviVisitor, targetScope, subject, ctx.pattern());
+			matched = true;
+		} catch (Exception e) {
+			matched = false;
+		}
+		if (ctx.NOT() != null) {
+			matched = !matched;
+		} else if (matched) {
+			getCurrentScope().merge(targetScope);
+		}
+		return new GioviBool(matched);
 	}
 
 }
