@@ -199,6 +199,10 @@ public class VisitorUtils {
 		}
 	}
 
+	// TODO: potential idea for refactoring: don't deconstruct imperatively; visit the patterns and
+	// build a strategy, and then deconstruct at once with the built strategy. Similar to the
+	// ForStatementDelegate
+
 	public static void redirectionToPattern(
 		GioviVisitor visitor,
 		GioviParserVisitResult content,
