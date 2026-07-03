@@ -76,7 +76,7 @@ public class TestPatterns {
 			.getCurrentScope();
 		assertAll(
 			() -> assertThat(scope.getVariable("w").orElseThrow().unwrap())
-				.isEqualTo(GioviTuples.of(1, 2d, 3d)),
+				.isEqualTo(GioviTuples.of(new Natural(1), 2, 3d)),
 			() -> assertThat(scope.getVariable("x").orElseThrow().unwrap())
 				.isEqualTo(new GioviNatural(new Natural(1))),
 			() -> assertThat(scope.getVariable("y").orElseThrow().unwrap())
