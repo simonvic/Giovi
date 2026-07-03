@@ -55,6 +55,11 @@ public class GioviVisitorUtils {
 		return visitor;
 	}
 
+	public static GioviVisitor visit(String code, GioviVisitor visitor) {
+		visitor.visit(parserOf(code).begin());
+		return visitor;
+	}
+
 	public static GioviParserVisitResult visitExpression(GioviVisitor visitor, String code) {
 		return visitor.visit(parserOf(code).expression());
 	}
