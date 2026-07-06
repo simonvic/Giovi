@@ -670,7 +670,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		} else if (matched) {
 			getCurrentScope().merge(targetScope);
 		}
-		return new GioviBool(matched);
+		return GioviBool.of(matched);
 	}
 
 	@Override
@@ -679,9 +679,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var type = visit(ctx.type()).asGioviType();
 		boolean equals = value.getGioviType().equals(type);
 		if (ctx.NOT() != null) {
-			return new GioviBool(!equals);
+			return GioviBool.of(!equals);
 		}
-		return new GioviBool(equals);
+		return GioviBool.of(equals);
 	}
 
 	@Override

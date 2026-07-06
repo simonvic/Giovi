@@ -171,9 +171,9 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNatural(var v) -> new GioviBool(value.intValue() == v.intValue());
-			case GioviInt(var v) -> new GioviBool(value.intValue() == v);
-			case GioviReal(var v) -> new GioviBool(value.doubleValue() == v);
+			case GioviNatural(var v) -> GioviBool.of(value.intValue() == v.intValue());
+			case GioviInt(var v) -> GioviBool.of(value.intValue() == v);
+			case GioviReal(var v) -> GioviBool.of(value.doubleValue() == v);
 			default -> GioviNumber.super.equal(right);
 		};
 	}
@@ -187,9 +187,9 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNatural(var v) -> new GioviBool(value.intValue() < v.intValue());
-			case GioviInt(var v) -> new GioviBool(value.intValue() < v);
-			case GioviReal(var v) -> new GioviBool(value.doubleValue() < v);
+			case GioviNatural(var v) -> GioviBool.of(value.intValue() < v.intValue());
+			case GioviInt(var v) -> GioviBool.of(value.intValue() < v);
+			case GioviReal(var v) -> GioviBool.of(value.doubleValue() < v);
 			default -> GioviNumber.super.less(right);
 		};
 	}
@@ -197,9 +197,9 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNatural(var v) -> new GioviBool(value.intValue() <= v.intValue());
-			case GioviInt(var v) -> new GioviBool(value.intValue() <= v);
-			case GioviReal(var v) -> new GioviBool(value.doubleValue() <= v);
+			case GioviNatural(var v) -> GioviBool.of(value.intValue() <= v.intValue());
+			case GioviInt(var v) -> GioviBool.of(value.intValue() <= v);
+			case GioviReal(var v) -> GioviBool.of(value.doubleValue() <= v);
 			default -> GioviNumber.super.lessEqual(right);
 		};
 	}
@@ -207,9 +207,9 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNatural(var v) -> new GioviBool(value.intValue() > v.intValue());
-			case GioviInt(var v) -> new GioviBool(value.intValue() > v);
-			case GioviReal(var v) -> new GioviBool(value.doubleValue() > v);
+			case GioviNatural(var v) -> GioviBool.of(value.intValue() > v.intValue());
+			case GioviInt(var v) -> GioviBool.of(value.intValue() > v);
+			case GioviReal(var v) -> GioviBool.of(value.doubleValue() > v);
 			default -> GioviNumber.super.greater(right);
 		};
 	}
@@ -217,9 +217,9 @@ public record GioviNatural(Natural value) implements GioviNumber<Natural> {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviNatural(var v) -> new GioviBool(value.intValue() >= v.intValue());
-			case GioviInt(var v) -> new GioviBool(value.intValue() >= v);
-			case GioviReal(var v) -> new GioviBool(value.doubleValue() >= v);
+			case GioviNatural(var v) -> GioviBool.of(value.intValue() >= v.intValue());
+			case GioviInt(var v) -> GioviBool.of(value.intValue() >= v);
+			case GioviReal(var v) -> GioviBool.of(value.doubleValue() >= v);
 			default -> GioviNumber.super.greaterEqual(right);
 		};
 	}

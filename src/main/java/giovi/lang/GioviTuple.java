@@ -54,9 +54,9 @@ public record GioviTuple(GioviTypeTuple type, Tuple value)
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviStruct(_, var v) -> new GioviBool(this.value.equal(v));
-			case GioviRecord(_, var v) -> new GioviBool(this.value.equal(v));
-			case GioviTuple(_, var v) -> new GioviBool(this.value.equal(v));
+			case GioviStruct(_, var v) -> GioviBool.of(this.value.equal(v));
+			case GioviRecord(_, var v) -> GioviBool.of(this.value.equal(v));
+			case GioviTuple(_, var v) -> GioviBool.of(this.value.equal(v));
 			default -> GioviValue.super.equal(right);
 		};
 	}

@@ -84,8 +84,8 @@ public class TestWidening {
 
 		@Test
 		void testWideningBoolToBool() throws NonWideneable {
-			assertThat(new GioviBool(true).widenTo(GioviType.BOOL))
-				.isEqualTo(new GioviBool(true));
+			assertThat(GioviBool.TRUE.widenTo(GioviType.BOOL))
+				.isEqualTo(GioviBool.TRUE);
 		}
 
 	}
@@ -334,7 +334,7 @@ public class TestWidening {
 						"r", new VarD<>(new GioviReal(69d)),
 						"lr",
 						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)),
-						"b", new VarD<>(new GioviBool())
+						"b", new VarD<>(GioviBool.FALSE)
 					)
 				)
 			);
@@ -448,7 +448,7 @@ public class TestWidening {
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"b", new VarD<>(new GioviBool())
+							"b", new VarD<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -570,7 +570,7 @@ public class TestWidening {
 								GioviLists.of(69, 420),
 								new GioviList(GioviType.LIST_OF_INT)
 							),
-							"d", new VarD<>(new GioviBool())
+							"d", new VarD<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -653,7 +653,7 @@ public class TestWidening {
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"d", new VarD<>(new GioviBool())
+							"d", new VarD<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -684,7 +684,7 @@ public class TestWidening {
 								new GioviList(GioviType.LIST_OF_INT)
 							),
 							"c", new VarD<>(new GioviReal()),
-							"d", new VarD<>(new GioviBool())
+							"d", new VarD<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -713,7 +713,7 @@ public class TestWidening {
 							new GioviList(GioviType.LIST_OF_INT)
 						),
 						"c", new VarD<>(new GioviReal()),
-						"d", new VarD<>(new GioviBool())
+						"d", new VarD<>(GioviBool.FALSE)
 					)
 				)
 			);

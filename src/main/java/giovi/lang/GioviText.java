@@ -122,7 +122,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.compareTo(v) == 0);
+			case GioviText(var v) -> GioviBool.of(value.compareTo(v) == 0);
 			default -> GioviPrimitive.super.equal(right);
 		};
 	}
@@ -135,7 +135,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.compareTo(v) < 0);
+			case GioviText(var v) -> GioviBool.of(value.compareTo(v) < 0);
 			default -> GioviPrimitive.super.less(right);
 		};
 	}
@@ -143,7 +143,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.compareTo(v) <= 0);
+			case GioviText(var v) -> GioviBool.of(value.compareTo(v) <= 0);
 			default -> GioviPrimitive.super.lessEqual(right);
 		};
 	}
@@ -151,7 +151,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.compareTo(v) > 0);
+			case GioviText(var v) -> GioviBool.of(value.compareTo(v) > 0);
 			default -> GioviPrimitive.super.greater(right);
 		};
 	}
@@ -159,7 +159,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.compareTo(v) >= 0);
+			case GioviText(var v) -> GioviBool.of(value.compareTo(v) >= 0);
 			default -> GioviPrimitive.super.greaterEqual(right);
 		};
 	}
@@ -167,7 +167,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviText(var v) -> new GioviBool(value.contains(v));
+			case GioviText(var v) -> GioviBool.of(value.contains(v));
 			default -> GioviPrimitive.super.contains(right);
 		};
 	}

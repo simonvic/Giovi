@@ -31,7 +31,7 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 
 	@Override
 	public GioviBool spawn() {
-		return new GioviBool();
+		return GioviBool.FALSE;
 	}
 
 	@Override

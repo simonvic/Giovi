@@ -27,7 +27,7 @@ public sealed interface GioviValue<T>
 			case Natural v -> new GioviNatural(v);
 			case Integer v -> new GioviInt(v);
 			case Double v -> new GioviReal(v);
-			case Boolean v -> new GioviBool(v);
+			case Boolean v -> GioviBool.of(v);
 			case String v -> new GioviText(v);
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);

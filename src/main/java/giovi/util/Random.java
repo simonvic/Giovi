@@ -24,7 +24,7 @@ public class Random {
 
 	@Func
 	public static GioviBool bool() {
-		return new GioviBool(random.nextBoolean());
+		return GioviBool.of(random.nextBoolean());
 	}
 
 	@Func

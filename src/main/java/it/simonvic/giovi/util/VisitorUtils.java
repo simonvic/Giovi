@@ -116,12 +116,12 @@ public class VisitorUtils {
 			switch (operator) {
 				case AND, AND_SYM -> {
 					if (!b.value()) {
-						return new GioviBool(false);
+						return GioviBool.FALSE;
 					}
 				}
 				case OR, OR_SYM -> {
 					if (b.value()) {
-						return new GioviBool(true);
+						return GioviBool.TRUE;
 					}
 				}
 			}

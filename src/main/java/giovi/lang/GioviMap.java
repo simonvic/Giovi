@@ -205,10 +205,10 @@ public record GioviMap(
 				var thisEntrySet = this.value.entrySet();
 				var otherEntrySet = v.value.entrySet();
 				if (thisEntrySet.size() != otherEntrySet.size()) {
-					yield new GioviBool(false);
+					yield GioviBool.FALSE;
 				}
 				if (!this.type.equals(v.type) && !this.type.isWidenableTo(v.type)) {
-					yield new GioviBool(false);
+					yield GioviBool.FALSE;
 				}
 				var thisIterator = thisEntrySet.iterator();
 				var otherIterator = otherEntrySet.iterator();
@@ -218,15 +218,15 @@ public record GioviMap(
 					var thisKey = thisEntry.getKey();
 					var otherKey = otherEntry.getKey();
 					if (!thisKey.equal(otherKey).asNativeBool()) {
-						yield new GioviBool(false);
+						yield GioviBool.FALSE;
 					}
 					var thisValue = thisEntry.getValue();
 					var otherValue = otherEntry.getValue();
 					if (!thisValue.equal(otherValue).asNativeBool()) {
-						yield new GioviBool(false);
+						yield GioviBool.FALSE;
 					}
 				}
-				yield new GioviBool(true);
+				yield GioviBool.TRUE;
 			}
 			default -> GioviValue.super.equal(right);
 		};
@@ -240,18 +240,18 @@ public record GioviMap(
 					var key = entry.getKey();
 					if (!this.value.containsKey(key)
 						|| !this.value.get(key).equal(entry.getValue()).asNativeBool()) {
-						yield new GioviBool(false);
+						yield GioviBool.FALSE;
 					}
 				}
-				yield new GioviBool(true);
+				yield GioviBool.TRUE;
 			}
 			case GioviValue<?> v -> {
 				for (var key : value.keySet()) {
 					if (key.equal(v).asNativeBool()) {
-						yield new GioviBool(true);
+						yield GioviBool.TRUE;
 					}
 				}
-				yield new GioviBool(false);
+				yield GioviBool.FALSE;
 			}
 			default -> GioviValue.super.contains(right);
 		};

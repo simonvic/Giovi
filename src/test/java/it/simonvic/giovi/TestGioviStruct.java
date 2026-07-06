@@ -81,7 +81,7 @@ public class TestGioviStruct {
 				.isEqualTo(new StructSignature(
 					"Foo",
 					new RecordFieldSignature("i", GioviType.INT, new GioviInt(69)),
-					new RecordFieldSignature("b", GioviType.BOOL, new GioviBool(true)),
+					new RecordFieldSignature("b", GioviType.BOOL, GioviBool.TRUE),
 					new RecordFieldSignature("t", GioviType.TEXT, new GioviText("hello"))));
 		}
 

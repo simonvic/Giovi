@@ -210,8 +210,8 @@ public class TestGioviType {
 
 			@Test
 			void toBool() {
-				var expected = new GioviBool(true);
-				var actual = new GioviBool(true)
+				var expected = GioviBool.TRUE;
+				var actual = GioviBool.TRUE
 					.as(GioviType.BOOL)
 					.asGioviBool();
 				assertEquals(expected, actual);

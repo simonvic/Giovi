@@ -76,7 +76,7 @@ public class TestUtils {
 				Arguments.of(new GioviNatural(new Natural(69)), new GioviNatural(new Natural(69))),
 				Arguments.of(new GioviInt(69), new GioviInt(69)),
 				Arguments.of(new GioviReal(4.20), new GioviReal(4.20)),
-				Arguments.of(new GioviBool(true), new GioviBool(true)),
+				Arguments.of(GioviBool.TRUE, GioviBool.TRUE),
 				Arguments.of(new GioviText("hello"), new GioviText("hello"))
 			);
 		}
@@ -97,7 +97,7 @@ public class TestUtils {
 				Arguments.of(new GioviNatural(new Natural(69)), new GioviNatural(new Natural(420))),
 				Arguments.of(new GioviInt(420), new GioviInt(69)),
 				Arguments.of(new GioviReal(4.20), new GioviReal(6.9)),
-				Arguments.of(new GioviBool(true), new GioviBool(false)),
+				Arguments.of(GioviBool.TRUE, GioviBool.FALSE),
 				Arguments.of(new GioviText("hello"), new GioviText("heLLo"))
 			);
 		}

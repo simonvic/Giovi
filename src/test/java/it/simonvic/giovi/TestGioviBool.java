@@ -122,7 +122,7 @@ public class TestGioviBool {
 					"""), """
 					x.default
 					"""))
-					.isEqualTo(new GioviBool(true));
+					.isEqualTo(GioviBool.TRUE);
 			}
 
 		}

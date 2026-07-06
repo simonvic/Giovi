@@ -100,9 +100,9 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 		var checkType = gioviVisitor.visit(ctx.type());
 		boolean equals = valueType.equals(checkType);
 		if (ctx.NOT() != null) {
-			return new GioviBool(!equals);
+			return GioviBool.of(!equals);
 		}
-		return new GioviBool(equals);
+		return GioviBool.of(equals);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 		} else if (matched) {
 			getCurrentScope().merge(targetScope);
 		}
-		return new GioviBool(matched);
+		return GioviBool.of(matched);
 	}
 
 }

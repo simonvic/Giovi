@@ -434,7 +434,7 @@ public class TestDefaults {
 				visitExpression("""
 				true.default
 				""")
-			).isEqualTo(new GioviBool());
+			).isEqualTo(GioviBool.FALSE);
 		}
 
 		@Test
@@ -542,7 +542,7 @@ public class TestDefaults {
 			assertThat(visitExpression(visitor, """
 				x.default
 				"""))
-				.isEqualTo(new GioviBool(true));
+				.isEqualTo(GioviBool.TRUE);
 		}
 
 		@Test
@@ -665,7 +665,7 @@ public class TestDefaults {
 			assertThat(visitExpression("""
 				Bool.default
 				"""))
-				.isEqualTo(new GioviBool());
+				.isEqualTo(GioviBool.FALSE);
 		}
 
 		@Test

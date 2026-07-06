@@ -174,18 +174,18 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 			case GioviList v -> {
 				// NOTE: we are checking if entries are **equal** instead of **equals**
 				if (this.value.size() != v.value.size()) {
-					yield new GioviBool(false);
+					yield GioviBool.FALSE;
 				}
 				if (!this.type.entryType().equals(v.type.entryType())
 					&& !this.type.entryType().isWidenableTo(v.type.entryType())) {
-					yield new GioviBool(false);
+					yield GioviBool.FALSE;
 				}
 				for (int i = 0; i < this.value.size(); i++) {
 					if (!this.value.get(i).equal(v.value.get(i)).asGioviBool().value()) {
-						yield new GioviBool(false);
+						yield GioviBool.FALSE;
 					}
 				}
-				yield new GioviBool(true);
+				yield GioviBool.TRUE;
 			}
 			default -> GioviValue.super.equal(right);
 		};
@@ -200,14 +200,14 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviList v when v.type.entryType().equals(this.type.entryType())
-				-> new GioviBool(this.value.containsAll(v.value));
+				-> GioviBool.of(this.value.containsAll(v.value));
 			case GioviValue<?> v -> {
 				for (var entry : this.value) {
 					if (entry.unwrap().equal(v).asNativeBool()) {
-						yield new GioviBool(true);
+						yield GioviBool.TRUE;
 					}
 				}
-				yield new GioviBool(false);
+				yield GioviBool.FALSE;
 			}
 			default -> GioviValue.super.contains(right);
 		};
