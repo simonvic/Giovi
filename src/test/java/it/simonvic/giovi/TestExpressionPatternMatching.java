@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.antlr.GioviParser.IfStatementContext;
-import it.simonvic.giovi.utils.TestVisitor;
+import it.simonvic.giovi.utils.TestsVisitor;
 
 public class TestExpressionPatternMatching {
 
@@ -22,7 +22,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if 69 is i Int do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -49,7 +49,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if 69 is not i Int or true do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -76,7 +76,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if 69 is not i Text or true do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -103,7 +103,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if <69, "foo"> is <a Int, b Text> do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -124,7 +124,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if <69, "foo"> is <a Int, b Bool> or true do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -154,7 +154,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if <69, "foo"> is not <a Int, b Bool> or true do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
@@ -184,7 +184,7 @@ public class TestExpressionPatternMatching {
 			"""
 			if true or 69 is i Int do { }
 			""",
-			new TestVisitor() {
+			new TestsVisitor() {
 
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {

@@ -4,16 +4,15 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import giovi.GioviParserVisitResult;
-import giovi.Module.NativeModule;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.antlr.GioviLexer;
 import it.simonvic.giovi.antlr.GioviParser;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.utils.TestVisitor;
+import it.simonvic.giovi.utils.TestsVisitor;
 
 public class GioviVisitorUtils {
 
-	private static class DummyTestVisitor extends TestVisitor {
+	private static class DummyTestsVisitor extends TestsVisitor {
 	}
 
 	public static GioviParser parserOf(String code) {
@@ -24,19 +23,19 @@ public class GioviVisitorUtils {
 		return parser;
 	}
 
-	public static TestVisitor visit(String code) {
-		return visit(new DummyTestVisitor(), code);
+	public static TestsVisitor visit(String code) {
+		return visit(new DummyTestsVisitor(), code);
 	}
 
 	public static GioviParserVisitResult visitExpression(String code) {
-		return visitExpression(new DummyTestVisitor(), code);
+		return visitExpression(new DummyTestsVisitor(), code);
 	}
 
 	public static boolean visitNativeBool(String code) {
 		return visitExpression(code).asNativeBool();
 	}
 
-	public static boolean visitNativeBool(TestVisitor visitor, String code) {
+	public static boolean visitNativeBool(TestsVisitor visitor, String code) {
 		return visitExpression(visitor, code).asNativeBool();
 	}
 
@@ -44,7 +43,7 @@ public class GioviVisitorUtils {
 		return visitExpression(code).asGioviValue();
 	}
 
-	public static GioviValue<?> visitValue(TestVisitor visitor, String code) {
+	public static GioviValue<?> visitValue(TestsVisitor visitor, String code) {
 		return visitExpression(visitor, code).asGioviValue();
 	}
 
@@ -52,25 +51,25 @@ public class GioviVisitorUtils {
 		return visitExpression(code).asVar();
 	}
 
-	public static TestVisitor visit(TestVisitor visitor, String code) {
+	public static TestsVisitor visit(TestsVisitor visitor, String code) {
 		visitor.visit(parserOf(code).begin());
 		return visitor;
 	}
 
-	public static TestVisitor visit(String code, TestVisitor visitor) {
+	public static TestsVisitor visit(String code, TestsVisitor visitor) {
 		visitor.visit(parserOf(code).begin());
 		return visitor;
 	}
 
-	public static GioviParserVisitResult visitExpression(TestVisitor visitor, String code) {
+	public static GioviParserVisitResult visitExpression(TestsVisitor visitor, String code) {
 		return visitor.visit(parserOf(code).expression());
 	}
 
 	public static FunctionSignature visitFunctionDeclaration(String code) {
-		return visitFunctionDeclaration(new DummyTestVisitor(), code);
+		return visitFunctionDeclaration(new DummyTestsVisitor(), code);
 	}
 
-	public static FunctionSignature visitFunctionDeclaration(TestVisitor visitor, String code) {
+	public static FunctionSignature visitFunctionDeclaration(TestsVisitor visitor, String code) {
 		return (FunctionSignature) visitor.visit(parserOf(code).functionDeclaration());
 	}
 

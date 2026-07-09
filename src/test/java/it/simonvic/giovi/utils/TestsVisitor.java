@@ -6,9 +6,9 @@ import giovi.GioviParserVisitResult;
 import giovi.Module.NativeModule;
 import it.simonvic.giovi.GioviVisitor;
 
-public abstract class TestVisitor extends GioviVisitor {
+public abstract class TestsVisitor extends GioviVisitor {
 
-	public TestVisitor() {
+	public TestsVisitor() {
 		super(new NativeModule("test", GioviVisitor.ROOT_MODULE));
 	}
 
