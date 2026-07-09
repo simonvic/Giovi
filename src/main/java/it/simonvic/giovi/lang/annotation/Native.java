@@ -3,6 +3,7 @@ package it.simonvic.giovi.lang.annotation;
 import java.lang.annotation.*;
 
 import giovi.lang.GioviType;
+import giovi.lang.GioviTypeAny;
 import giovi.lang.GioviTypePrimitive;
 import giovi.lang.GioviTypeVoid;
 import giovi.lang.GioviValue;
@@ -165,6 +166,23 @@ public interface Native {
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Documented
 	public @interface Self {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Repeatable(TypesAny.class)
+	@Documented
+	public @interface TypeAny {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE })
+	@Documented
+	public @interface TypesAny {
+
+		TypeAny[] value();
 
 	}
 

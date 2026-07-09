@@ -218,6 +218,9 @@ public class Natives {
 				throw new RuntimeException(e);
 			}
 		}
+		if (GioviTypeAny.class.isAssignableFrom(clazz)) {
+			return GioviType.ANY;
+		}
 		return new GioviTypeStruct(structSignatureOf(annotation.nativ()));
 	}
 
@@ -304,6 +307,11 @@ public class Natives {
 		var typeAnnotation = param.getAnnotation(Native.Type.class);
 		if (typeAnnotation != null) {
 			return gioviTypeFrom(typeAnnotation);
+		}
+
+		var typeDynAnnotation = param.getAnnotation(Native.TypeAny.class);
+		if (typeDynAnnotation != null) {
+			return GioviType.ANY;
 		}
 
 		var descriptor = param.getType().getAnnotation(DescribedBy.class);
