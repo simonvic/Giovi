@@ -27,7 +27,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
 			case GioviTypeRecord(var signature) -> signature.canWiden(this.signature);
 			case GioviTypeTuple(var signature) -> signature.canWiden(this.signature);
-			default -> false;
+			default -> GioviType.super.isWidenableTo(type);
 		};
 	}
 
@@ -35,7 +35,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 	public GioviTuple widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviTuple v -> new GioviTuple(this, signature.widen(v.value()));
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 

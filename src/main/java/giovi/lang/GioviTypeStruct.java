@@ -22,8 +22,8 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
-			case GioviTypeStruct v -> v.signature.canWiden(this.signature);
-			default -> false;
+			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
+			default -> GioviType.super.isWidenableTo(type);
 		};
 	}
 
@@ -33,7 +33,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 			case GioviTuple v -> new GioviStruct(this, signature.widen(v.value()));
 			case GioviRecord v -> new GioviStruct(this, signature.widen(v.value()));
 			case GioviStruct v -> new GioviStruct(this, signature.widen(v.value()));
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 

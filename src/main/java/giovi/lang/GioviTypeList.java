@@ -31,7 +31,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeList t -> this.entryType.isWidenableTo(t.entryType);
-			default -> false;
+			default -> GioviType.super.isWidenableTo(type);
 		};
 	}
 
@@ -46,7 +46,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 				}
 				yield widened;
 			}
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 

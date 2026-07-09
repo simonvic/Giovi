@@ -18,14 +18,17 @@ public record GioviTypeBool() implements GioviTypePrimitive<GioviBool> {
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return type instanceof GioviTypeBool;
+		return switch (type) {
+			case GioviTypeBool _ -> true;
+			default -> GioviTypePrimitive.super.isWidenableTo(type);
+		};
 	}
 
 	@Override
 	public GioviBool widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviBool v -> v;
-			default -> throw new NonWideneable(value, this);
+			default -> GioviTypePrimitive.super.widen(value);
 		};
 	}
 

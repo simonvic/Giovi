@@ -20,7 +20,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeNatural _, GioviTypeInt _, GioviTypeReal _ -> true;
-			default -> false;
+			default -> GioviTypeNumber.super.isWidenableTo(type);
 		};
 	}
 
@@ -28,7 +28,7 @@ public record GioviTypeNatural() implements GioviTypeNumber<GioviNatural> {
 	public GioviNatural widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviNatural v -> v;
-			default -> throw new NonWideneable(value, this);
+			default -> GioviTypeNumber.super.widen(value);
 		};
 	}
 

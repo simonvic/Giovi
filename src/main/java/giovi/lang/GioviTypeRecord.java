@@ -26,7 +26,7 @@ public record GioviTypeRecord(RecordSignature signature) implements GioviType<Gi
 		return switch (type) {
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
 			case GioviTypeRecord(var signature) -> signature.canWiden(this.signature);
-			default -> false;
+			default -> GioviType.super.isWidenableTo(type);
 		};
 	}
 
@@ -35,7 +35,7 @@ public record GioviTypeRecord(RecordSignature signature) implements GioviType<Gi
 		return switch (value) {
 			case GioviTuple v -> new GioviRecord(this, signature.widen(v.value()));
 			case GioviRecord v -> new GioviRecord(this, signature.widen(v.value()));
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 

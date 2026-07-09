@@ -28,14 +28,17 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
 		// TODO: clarify requirements. Should we check for describedType widenability?
-		return type instanceof GioviTypeType;
+		return switch (type) {
+			case GioviTypeType<?> _ -> true;
+			default -> GioviTypePrimitive.super.isWidenableTo(type);
+		};
 	}
 
 	@Override
 	public GioviType<T> widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviType<?> v -> (GioviType<T>) v;
-			default -> throw new NonWideneable(value, this);
+			default -> GioviTypePrimitive.super.widen(value);
 			// TODO: more robust
 		};
 	}

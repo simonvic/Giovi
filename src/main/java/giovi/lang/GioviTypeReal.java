@@ -19,14 +19,17 @@ public record GioviTypeReal() implements GioviTypeNumber<GioviReal> {
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return type instanceof GioviTypeReal;
+		return switch (type) {
+			case GioviTypeReal _ -> true;
+			default -> GioviTypeNumber.super.isWidenableTo(type);
+		};
 	}
 
 	@Override
 	public GioviReal widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviNumber<?> v -> v.realValue();
-			default -> throw new NonWideneable(value, this);
+			default -> GioviTypeNumber.super.widen(value);
 		};
 	}
 

@@ -23,10 +23,10 @@ public record GioviTypeVoid() implements GioviTypePrimitive<GioviVoid> {
 
 	@Override
 	public GioviVoid widen(GioviValue<?> value) throws NonWideneable {
-		if (value instanceof GioviVoid v) {
-			return v;
-		}
-		throw new NonWideneable(value, this);
+		return switch (value) {
+			case GioviVoid v -> v;
+			default -> GioviTypePrimitive.super.widen(value);
+		};
 	}
 
 	@Override

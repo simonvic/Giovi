@@ -20,7 +20,10 @@ public record GioviTypeSelf() implements GioviType<GioviSelf> {
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return type instanceof GioviTypeStruct;
+		return switch (type) {
+			case GioviTypeStruct _ -> true;
+			default -> GioviType.super.isWidenableTo(type);
+		};
 	}
 
 	@Override

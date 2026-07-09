@@ -25,7 +25,10 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return type instanceof GioviTypeFunction f && f.signature.canWiden(this.signature);
+		return switch (type) {
+			case GioviTypeFunction(var signature) -> signature.canWiden(this.signature);
+			default -> GioviType.super.isWidenableTo(type);
+		};
 	}
 
 	@Override
@@ -42,7 +45,7 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 			// case GioviFunction(JFunction(var method, var signature))
 			// 	-> new GioviFunction(new JFunction(method, this.signature.widen(signature)));
 
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 

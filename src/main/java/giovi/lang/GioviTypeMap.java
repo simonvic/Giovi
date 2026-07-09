@@ -27,11 +27,12 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 
 	@Override
 	public boolean isWidenableTo(GioviType<?> type) {
-		return type instanceof
-
-		GioviTypeMap(var keyType, var elementType)
-			&& this.keyType.isWidenableTo(keyType)
-			&& this.elementType.isWidenableTo(elementType);
+		return switch (type) {
+			case GioviTypeMap(var keyType, var elementType)
+				-> this.keyType.isWidenableTo(keyType)
+					&& this.elementType.isWidenableTo(elementType);
+			default -> GioviType.super.isWidenableTo(type);
+		};
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 					throw new NonWideneable(ex);
 				}
 			}
-			default -> throw new NonWideneable(value, this);
+			default -> GioviType.super.widen(value);
 		};
 	}
 
