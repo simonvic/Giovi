@@ -17,7 +17,7 @@ import giovi.RecordFieldSignature;
 import giovi.StructSignature;
 import giovi.lang.*;
 import giovi.util.Color.Rgb;
-import giovi.util.TestModule.TestStruct;
+import giovi.util.NativeTestingModule.TestStruct;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
@@ -27,26 +27,26 @@ public class TestNative {
 	@Test
 	void foo() {
 		visit("""
-			_out <- giovi.util.TestModule.TestStruct.<>
+			_out <- giovi.util.NativeTestingModule.TestStruct.<>
 			""");
 	}
 
 	static Stream<Arguments> produceArgs_testModuleSignatures() {
 		return Stream.of(
 			Arguments.of(
-				"giovi.util.TestModule.minimal",
+				"giovi.util.NativeTestingModule.minimal",
 				new FunctionSignature("minimal")
 			),
 			Arguments.of(
-				"giovi.util.TestModule.onlyReturn",
+				"giovi.util.NativeTestingModule.onlyReturn",
 				new FunctionSignature("onlyReturn", GioviType.TEXT)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.onlyReturn",
+				"giovi.util.NativeTestingModule.onlyReturn",
 				new FunctionSignature("onlyReturn", GioviType.TEXT)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.manyParams",
+				"giovi.util.NativeTestingModule.manyParams",
 				new FunctionSignature(
 					"manyParams",
 					new FormalParameters(
@@ -57,7 +57,7 @@ public class TestNative {
 				)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.paramWithLabel",
+				"giovi.util.NativeTestingModule.paramWithLabel",
 				new FunctionSignature(
 					"paramWithLabel",
 					new FormalParameters(
@@ -66,7 +66,7 @@ public class TestNative {
 				)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.oneParamWithReturn",
+				"giovi.util.NativeTestingModule.oneParamWithReturn",
 				new FunctionSignature(
 					"oneParamWithReturn",
 					new FormalParameters(
@@ -76,7 +76,7 @@ public class TestNative {
 				)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.complex",
+				"giovi.util.NativeTestingModule.complex",
 				new FunctionSignature(
 					"complex",
 					new FormalParameters(
@@ -95,14 +95,14 @@ public class TestNative {
 				)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.getListOfPrimitive",
+				"giovi.util.NativeTestingModule.getListOfPrimitive",
 				new FunctionSignature(
 					"getListOfPrimitive",
 					GioviType.LIST_OF_INT
 				)
 			),
 			Arguments.of(
-				"giovi.util.TestModule.getMapOfPrimitive",
+				"giovi.util.NativeTestingModule.getMapOfPrimitive",
 				new FunctionSignature(
 					"getMapOfPrimitive",
 					new GioviTypeMap(GioviType.TEXT, GioviType.INT)
@@ -137,7 +137,7 @@ public class TestNative {
 			"someFunc",
 			new GioviFunction(new JFunction(TestStruct.class.getMethod("someFunc")))
 		);
-		var actualSignature = visitExpression("giovi.util.TestModule.TestStruct");
+		var actualSignature = visitExpression("giovi.util.NativeTestingModule.TestStruct");
 		assertThat(actualSignature)
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
@@ -159,7 +159,7 @@ public class TestNative {
 			),
 			new RecordFieldSignature("i2", GioviType.INT, new GioviInt(420))
 		);
-		assertThat(visitExpression("giovi.util.TestModule.TestSubModule.TestStructExtends"))
+		assertThat(visitExpression("giovi.util.NativeTestingModule.TestSubModule.TestStructExtends"))
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
 
@@ -167,15 +167,15 @@ public class TestNative {
 	void test_struct_recursive() {
 		visit(
 			"""
-			root giovi.util.TestModule.Node
+			root giovi.util.NativeTestingModule.Node
 			root.data <- "root"
 
 			root.next.next.next -> _out
 			root -> _out
 			root.toText -> _out
 			root.toText() -> _out
-			giovi.util.TestModule.Node.newSelf -> _out
-			giovi.util.TestModule.Node.newSelf() -> _out
+			giovi.util.NativeTestingModule.Node.newSelf -> _out
+			giovi.util.NativeTestingModule.Node.newSelf() -> _out
 			root.capitalize -> _out
 			root.capitalize() -> _out
 

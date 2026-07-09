@@ -13,7 +13,7 @@ import it.simonvic.giovi.util.GioviMaps;
 import it.simonvic.giovi.util.Natives;
 
 @Module
-public class TestModule {
+public class NativeTestingModule {
 
 	@Const
 	public static final GioviText TEST_CONST = new GioviText("test const");
