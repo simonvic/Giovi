@@ -6,6 +6,7 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
+// TODO: extend with Member, FunctionParam?
 public class VarD<T extends GioviValue<?>> extends Var<T> {
 
 	public static <T> VarD<? extends GioviValue<?>> of(T value) {
