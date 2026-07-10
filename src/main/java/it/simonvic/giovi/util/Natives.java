@@ -73,7 +73,7 @@ public class Natives {
 				try {
 					return (StructSignature) field.get(null);
 				} catch (IllegalArgumentException | IllegalAccessException e) {
-					continue;
+					throw new RuntimeException("Error in retrieving struct signature", e);
 				}
 			}
 		}
