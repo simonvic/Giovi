@@ -89,7 +89,8 @@ public class TestNative {
 								GioviType.TEXT,
 								new GioviTypeStruct(structSignatureOf(Rgb.class))
 							)
-						)
+						),
+						new FormalParameter("t", new GioviTypeType<>(GioviType.ANY))
 					),
 					GioviType.INT
 				)
@@ -106,6 +107,20 @@ public class TestNative {
 				new FunctionSignature(
 					"getMapOfPrimitive",
 					new GioviTypeMap(GioviType.TEXT, GioviType.INT)
+				)
+			),
+			Arguments.of(
+				"giovi.util.NativeTestingModule.getTypeAny",
+				new FunctionSignature(
+					"getTypeAny",
+					new GioviTypeType<>(GioviType.ANY)
+				)
+			),
+			Arguments.of(
+				"giovi.util.NativeTestingModule.getTypeInt",
+				new FunctionSignature(
+					"getTypeInt",
+					new GioviTypeType<>(GioviType.INT)
 				)
 			)
 		);

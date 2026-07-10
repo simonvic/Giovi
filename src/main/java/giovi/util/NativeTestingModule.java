@@ -48,12 +48,14 @@ public class NativeTestingModule {
 		@TypeMap(
 			key = @Type(GioviTypeText.class),
 			val = @Type(nativ = Rgb.class)
-		) GioviMap m
+		) GioviMap m,
+		@TypeType(@Type) GioviType<?> t
 	) {
 		System.out.println(i);
 		System.out.println(s);
 		System.out.println(l);
 		System.out.println(m);
+		System.out.println(t);
 		return new GioviInt(69);
 	}
 
@@ -71,6 +73,16 @@ public class NativeTestingModule {
 			"b", 2,
 			"c", 3
 		);
+	}
+
+	@Func
+	public static @TypeType(@Type) GioviType<?> getTypeAny() {
+		return GioviType.ANY;
+	}
+
+	@Func
+	public static @TypeType(@Type(GioviTypeInt.class)) GioviType<?> getTypeInt() {
+		return GioviType.INT;
 	}
 
 	@Struct
