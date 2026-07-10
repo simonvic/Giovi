@@ -112,7 +112,7 @@ public record StructSignature(
 	 * @return widened struct
 	 * @throws NonWideneable
 	 */
-	public Struct widen(Record narrow) throws NonWideneable {
+	public Struct widen(GRecord narrow) throws NonWideneable {
 		return new Struct(this.typename, RecordSignature.widenRecord(narrow, this.fields));
 	}
 

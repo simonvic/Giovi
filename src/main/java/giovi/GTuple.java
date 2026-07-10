@@ -8,7 +8,7 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class GTuple permits Record {
+public sealed class GTuple permits GRecord {
 
 	private final List<VarD<?>> fields;
 	// TODO: should we use Var instead? Same for record?
@@ -97,7 +97,7 @@ public sealed class GTuple permits Record {
 		return this.equal((GTuple) other);
 	}
 
-	public boolean equal(Record other) {
+	public boolean equal(GRecord other) {
 		return this.equal((GTuple) other);
 	}
 

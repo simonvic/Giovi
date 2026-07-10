@@ -2,7 +2,7 @@ package it.simonvic.giovi.util;
 
 import java.util.LinkedHashMap;
 
-import giovi.Record;
+import giovi.GRecord;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
 import giovi.lang.*;
@@ -12,11 +12,11 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviRecords {
 
-	public static GioviTypeRecord typeFrom(Record v) {
+	public static GioviTypeRecord typeFrom(GRecord v) {
 		return new GioviTypeRecord(signatureFrom(v));
 	}
 
-	public static RecordSignature signatureFrom(Record value) {
+	public static RecordSignature signatureFrom(GRecord value) {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>(value.getFieldsCount());
 		value.forEach(
 			(identifier, field) -> fields.put(
@@ -36,7 +36,7 @@ public class GioviRecords {
 	) {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
-		var value = new Record(s);
+		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
 
@@ -47,7 +47,7 @@ public class GioviRecords {
 		var s = new LinkedHashMap<String, VarD<?>>();
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
-		var value = new Record(s);
+		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
 
@@ -60,7 +60,7 @@ public class GioviRecords {
 		s.put(i1, VarD.of(v1));
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
-		var value = new Record(s);
+		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
 
@@ -75,7 +75,7 @@ public class GioviRecords {
 		s.put(i2, VarD.of(v2));
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
-		var value = new Record(s);
+		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
 
@@ -92,7 +92,7 @@ public class GioviRecords {
 		s.put(i3, VarD.of(v3));
 		s.put(i4, VarD.of(v4));
 		s.put(i5, VarD.of(v5));
-		var value = new Record(s);
+		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
 

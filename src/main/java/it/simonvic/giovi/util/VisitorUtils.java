@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import giovi.GioviParserVisitResult;
-import giovi.Record;
+import giovi.GRecord;
 import giovi.GTuple;
+import giovi.GioviParserVisitResult;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
@@ -372,7 +372,7 @@ public class VisitorUtils {
 	public static void deconstructNamed(
 		GioviVisitor visitor,
 		Scope targetScope,
-		Record record,
+		GRecord record,
 		List<PatternMemberNamedContext> patternsCtx
 	) {
 		for (var patternCtx : patternsCtx) {

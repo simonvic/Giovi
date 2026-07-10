@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import giovi.*;
-import giovi.Record;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -32,7 +31,7 @@ public sealed interface GioviValue<T>
 			case List<?> v -> GioviLists.of(v);
 			case Map<?, ?> v -> GioviMaps.of(v);
 			case Struct v -> new GioviStruct(GioviStructs.typeFrom(v), v);
-			case Record v -> new GioviRecord(GioviRecords.typeFrom(v), v);
+			case GRecord v -> new GioviRecord(GioviRecords.typeFrom(v), v);
 			case GTuple v -> new GioviTuple(GioviTuples.typeFrom(v), v);
 			case Function v -> new GioviFunction(v);
 			default -> throw new GioviException(

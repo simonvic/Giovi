@@ -2,8 +2,8 @@ package it.simonvic.giovi.exceptions;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import giovi.GioviParserVisitResult;
 import giovi.GTuple;
+import giovi.GioviParserVisitResult;
 
 public class UnsupportedDeconstruction extends GioviException {
 

@@ -15,9 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import giovi.Natural;
-import giovi.Record;
+import giovi.GRecord;
 import giovi.GTuple;
+import giovi.Natural;
 import giovi.lang.*;
 import it.simonvic.giovi.util.*;
 
@@ -55,7 +55,7 @@ public class TestUtils {
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
 				Arguments.of(GTuple.class, GioviValue.of(Tuples.ofNative("a", "a"))),
-				Arguments.of(Record.class, GioviValue.of(Records.of("a", VarD.of("a"))))
+				Arguments.of(GRecord.class, GioviValue.of(Records.of("a", VarD.of("a"))))
 			);
 		}
 

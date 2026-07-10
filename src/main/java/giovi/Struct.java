@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import it.simonvic.giovi.VarD;
 
-public final class Struct extends Record {
+public final class Struct extends GRecord {
 
 	private final String typename;
 

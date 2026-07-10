@@ -46,8 +46,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * Spawn a record described by this signature
 	 * @return record
 	 */
-	public Record spawn() {
-		return new Record(RecordSignature.spawn(this.fields));
+	public GRecord spawn() {
+		return new GRecord(RecordSignature.spawn(this.fields));
 	}
 
 	/**
@@ -81,8 +81,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @return widened tuple
 	 */
-	public Record widen(GTuple narrow) throws NonWideneable {
-		return new Record(RecordSignature.widenTuple(narrow, this.fields));
+	public GRecord widen(GTuple narrow) throws NonWideneable {
+		return new GRecord(RecordSignature.widenTuple(narrow, this.fields));
 	}
 
 	/**
@@ -101,8 +101,8 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return widened record
 	 * @throws NonWideneable
 	 */
-	public Record widen(Record narrow) throws NonWideneable {
-		return new Record(RecordSignature.widenRecord(narrow, this.fields));
+	public GRecord widen(GRecord narrow) throws NonWideneable {
+		return new GRecord(RecordSignature.widenRecord(narrow, this.fields));
 	}
 
 	/**
@@ -253,7 +253,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @throws NonWideneable
 	 */
 	public static LinkedHashMap<String, VarD<?>> widenRecord(
-		Record narrow,
+		GRecord narrow,
 		LinkedHashMap<String, RecordFieldSignature> wide
 	) throws NonWideneable {
 		if (narrow.getFieldsCount() > wide.size()) {

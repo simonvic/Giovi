@@ -1,21 +1,17 @@
 package giovi.lang;
 
-import giovi.AccessKey;
-import giovi.GioviParserVisitResult;
-import giovi.MemberKey;
-import giovi.Range;
-import giovi.Record;
+import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 
 @DescribedBy(GioviTypeRecord.class)
-public record GioviRecord(GioviTypeRecord type, Record value)
-	implements GioviValue<Record> {
+public record GioviRecord(GioviTypeRecord type, GRecord value)
+	implements GioviValue<GRecord> {
 
 	public GioviRecord() {
-		this(new GioviTypeRecord(), new Record());
+		this(new GioviTypeRecord(), new GRecord());
 	}
 
 	@Override

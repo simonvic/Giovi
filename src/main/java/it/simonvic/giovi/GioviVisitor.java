@@ -13,7 +13,6 @@ import giovi.*;
 import giovi.Module;
 import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
-import giovi.Record;
 import giovi.lang.*;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
@@ -1294,7 +1293,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		return new GioviRecord(
 			new GioviTypeRecord(new RecordSignature(fieldsSignature)),
-			new Record(fields)
+			new GRecord(fields)
 		);
 	}
 

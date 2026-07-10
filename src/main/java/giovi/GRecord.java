@@ -9,17 +9,16 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-// TODO: rename to GRecord
-public sealed class Record extends GTuple permits Struct {
+public sealed class GRecord extends GTuple permits Struct {
 
 	protected final LinkedHashMap<String, VarD<?>> fields;
 
-	public Record() {
+	public GRecord() {
 		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
-	public Record(LinkedHashMap<String, VarD<?>> fields) {
+	public GRecord(LinkedHashMap<String, VarD<?>> fields) {
 		super(new ArrayList<>(fields.values()));
 		this.fields = fields;
 	}
@@ -58,19 +57,19 @@ public sealed class Record extends GTuple permits Struct {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
-		Record other = (Record) obj;
+		GRecord other = (GRecord) obj;
 		return Objects.equals(fields, other.fields);
 	}
 
 	@Override
-	public Record copy() {
+	public GRecord copy() {
 		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
-		return new Record(a);
+		return new GRecord(a);
 	}
 
 	@Override
-	public Record copy(Range<Integer> range) {
+	public GRecord copy(Range<Integer> range) {
 		var a = new LinkedHashMap<String, VarD<?>>();
 		var fieldNames = new ArrayList<>(this.fields.keySet());
 		range.iterate(i -> {
@@ -78,11 +77,11 @@ public sealed class Record extends GTuple permits Struct {
 			String fieldName = fieldNames.get(i);
 			a.put(fieldName, fieldValue);
 		});
-		return new Record(a);
+		return new GRecord(a);
 	}
 
 	@Override
-	public boolean equal(Record other) {
+	public boolean equal(GRecord other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {
 			try {
