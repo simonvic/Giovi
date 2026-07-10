@@ -99,7 +99,7 @@ public class NativeTestingModule {
 		}
 
 		@Native.Struct.Signature
-		private static final StructSignature _SIGNATURE = Natives
+		public static final StructSignature SIGNATURE = Natives
 			.structSignatureFrom(TestStruct.class);
 
 	}
@@ -114,7 +114,7 @@ public class NativeTestingModule {
 			public static final GioviInt i2 = new GioviInt(420);
 
 			@Native.Struct.Signature
-			private static final StructSignature _SIGNATURE = Natives
+			public static final StructSignature SIGNATURE = Natives
 				.structSignatureFrom(TestStructExtends.class);
 
 		}
@@ -139,7 +139,7 @@ public class NativeTestingModule {
 
 		@Func
 		public static @Self GioviStruct newSelf() {
-			return new GioviStruct(new GioviTypeStruct(_SIGNATURE), _SIGNATURE.spawn());
+			return new GioviStruct(new GioviTypeStruct(SIGNATURE), SIGNATURE.spawn());
 		}
 
 		@Func
@@ -150,8 +150,7 @@ public class NativeTestingModule {
 		}
 
 		@Native.Struct.Signature
-		private static final StructSignature _SIGNATURE = Natives
-			.structSignatureFrom(Node.class);
+		public static final StructSignature SIGNATURE = Natives.structSignatureFrom(Node.class);
 
 	}
 

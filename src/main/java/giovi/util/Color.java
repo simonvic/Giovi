@@ -85,7 +85,7 @@ public class Color {
 		// }
 
 		@Native.Struct.Signature
-		private static final StructSignature SIGNATURE = Natives.structSignatureFrom(Rgb.class);
+		public static final StructSignature SIGNATURE = Natives.structSignatureFrom(Rgb.class);
 
 	}
 
@@ -97,7 +97,7 @@ public class Color {
 		public static final GioviInt a = new GioviInt(255);
 
 		@Native.Struct.Signature
-		private static final StructSignature _SIGNATURE = Natives.structSignatureFrom(Rgba.class);
+		public static final StructSignature SIGNATURE = Natives.structSignatureFrom(Rgba.class);
 
 	}
 

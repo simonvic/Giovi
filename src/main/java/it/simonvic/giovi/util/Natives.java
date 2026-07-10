@@ -78,6 +78,7 @@ public class Natives {
 			}
 		}
 		// ... or build it if not defined
+		System.err.println("Struct signature not found! Building it on the fly");
 		return Natives.structSignatureFrom(clazz);
 	}
 
