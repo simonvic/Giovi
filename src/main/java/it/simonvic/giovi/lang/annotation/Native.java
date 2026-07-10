@@ -4,8 +4,6 @@ import java.lang.annotation.*;
 
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeAny;
-import giovi.lang.GioviTypePrimitive;
-import giovi.lang.GioviTypeVoid;
 import giovi.lang.GioviValue;
 
 /// For a full implementation this depends on:
@@ -126,8 +124,7 @@ public interface Native {
 	@Documented
 	public @interface Type {
 
-		Class<? extends GioviTypePrimitive<?>> value() default GioviTypeVoid.class;
-		// TODO: use a dummy Type instead of Void which might be actually used
+		Class<? extends GioviType<?>> value() default GioviTypeAny.class;
 
 		Class<?> nativ() default Object.class;
 

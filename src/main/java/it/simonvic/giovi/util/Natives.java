@@ -203,29 +203,17 @@ public class Natives {
 	}
 
 	private static GioviType<?> gioviTypeFrom(Native.Type annotation) {
-		Class<? extends GioviTypePrimitive<?>> clazz = annotation.value();
-		if (clazz != GioviTypeVoid.class) {
-			try {
-				return clazz.getConstructor().newInstance();
-			} catch (
-				InstantiationException
-				| IllegalAccessException
-				| IllegalArgumentException
-				| InvocationTargetException
-				| NoSuchMethodException
-				| SecurityException e
-			) {
-				throw new RuntimeException(e);
-			}
+		if (annotation.nativ() != Object.class) {
+			return new GioviTypeStruct(structSignatureOf(annotation.nativ()));
 		}
-		if (GioviTypeAny.class.isAssignableFrom(clazz)) {
-			return GioviType.ANY;
-		}
-		return new GioviTypeStruct(structSignatureOf(annotation.nativ()));
+		return gioviTypeFrom(annotation.value());
 	}
 
 	private static GioviType<?> gioviTypeFrom(Class<? extends GioviType<?>> clazz) {
-		if (clazz != GioviTypeVoid.class) {
+		if (clazz == GioviTypeAny.class) {
+			return GioviType.ANY;
+		}
+		if (GioviTypePrimitive.class.isAssignableFrom(clazz)) {
 			try {
 				return clazz.getConstructor().newInstance();
 			} catch (
