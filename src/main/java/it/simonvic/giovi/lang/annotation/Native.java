@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeAny;
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.lang.annotation.Native.Type.Type_repeat;
 
 /// For a full implementation this depends on:
 /// 1. ~Struct constants~
@@ -120,9 +121,18 @@ public interface Native {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
-	@Repeatable(Types.class)
+	@Repeatable(Type_repeat.class)
 	@Documented
 	public @interface Type {
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE_USE })
+		@Documented
+		public @interface Type_repeat {
+
+			Type[] value();
+
+		}
 
 		Class<? extends GioviType<?>> value() default GioviTypeAny.class;
 
@@ -130,14 +140,6 @@ public interface Native {
 
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE })
-	@Documented
-	public @interface Types {
-
-		Type[] value();
-
-	}
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
