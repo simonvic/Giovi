@@ -61,6 +61,11 @@ public sealed interface GioviType<T extends GioviValue<?>>
 		};
 	}
 
+	/**
+	 * Spawn a new instance of a value described by this type.
+	 * The value should be equal to the "zero" value of the type
+	 * @return zero value
+	 */
 	T spawn();
 
 	@Override
