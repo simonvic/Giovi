@@ -93,7 +93,7 @@ public sealed class GTuple permits GRecord {
 
 	// TODO: clarify requirements. Should a Point.<x y z> be equal to a Color.<r g b>?
 	// FIXME: also using this.equal(Tuple) is wrong
-	public boolean equal(Struct other) {
+	public boolean equal(GStruct other) {
 		return this.equal((GTuple) other);
 	}
 

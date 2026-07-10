@@ -9,7 +9,7 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class GRecord extends GTuple permits Struct {
+public sealed class GRecord extends GTuple permits GStruct {
 
 	protected final LinkedHashMap<String, VarD<?>> fields;
 

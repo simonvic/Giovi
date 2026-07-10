@@ -52,8 +52,8 @@ public record StructSignature(
 	 * Spawn a struct described by this signature
 	 * @return struct
 	 */
-	public Struct spawn() {
-		return new Struct(this.typename, RecordSignature.spawn(this.fields));
+	public GStruct spawn() {
+		return new GStruct(this.typename, RecordSignature.spawn(this.fields));
 	}
 
 	/**
@@ -93,8 +93,8 @@ public record StructSignature(
 	 * @param narrow
 	 * @return widened tuple
 	 */
-	public Struct widen(GTuple narrow) throws NonWideneable {
-		return new Struct(this.typename, RecordSignature.widenTuple(narrow, this.fields));
+	public GStruct widen(GTuple narrow) throws NonWideneable {
+		return new GStruct(this.typename, RecordSignature.widenTuple(narrow, this.fields));
 	}
 
 	/**
@@ -112,8 +112,8 @@ public record StructSignature(
 	 * @return widened struct
 	 * @throws NonWideneable
 	 */
-	public Struct widen(GRecord narrow) throws NonWideneable {
-		return new Struct(this.typename, RecordSignature.widenRecord(narrow, this.fields));
+	public GStruct widen(GRecord narrow) throws NonWideneable {
+		return new GStruct(this.typename, RecordSignature.widenRecord(narrow, this.fields));
 	}
 
 	/**
@@ -133,7 +133,7 @@ public record StructSignature(
 	 * @return widened struct
 	 * @throws NonWideneable
 	 */
-	public Struct widen(Struct narrow) throws NonWideneable {
+	public GStruct widen(GStruct narrow) throws NonWideneable {
 		if (narrow.getTypename().equals(this.typename)) {
 			return narrow;
 		}

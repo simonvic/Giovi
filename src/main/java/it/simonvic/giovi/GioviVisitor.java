@@ -1209,7 +1209,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private void initStruct(
 		GioviTypeStruct structType,
-		Struct struct,
+		GStruct struct,
 		RecordCreationBodyContext fieldsCtx
 	) throws NonWideneable {
 		for (var fieldCtx : fieldsCtx.recordEntry()) {
@@ -1223,7 +1223,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private void initStruct(
 		GioviTypeStruct structType,
-		Struct struct,
+		GStruct struct,
 		TupleCreationBodyContext ctx
 	) throws NonWideneable {
 		List<ExpressionContext> expressions = ctx.expression();

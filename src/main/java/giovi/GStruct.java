@@ -5,16 +5,16 @@ import java.util.Objects;
 
 import it.simonvic.giovi.VarD;
 
-public final class Struct extends GRecord {
+public final class GStruct extends GRecord {
 
 	private final String typename;
 
-	public Struct(String typename, LinkedHashMap<String, VarD<?>> fields) {
+	public GStruct(String typename, LinkedHashMap<String, VarD<?>> fields) {
 		super(fields);
 		this.typename = typename;
 	}
 
-	public Struct(String typename) {
+	public GStruct(String typename) {
 		super();
 		this.typename = typename;
 	}
@@ -41,15 +41,15 @@ public final class Struct extends GRecord {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
-		Struct other = (Struct) obj;
+		GStruct other = (GStruct) obj;
 		return Objects.equals(typename, other.typename);
 	}
 
 	@Override
-	public Struct copy() {
+	public GStruct copy() {
 		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
 		fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
-		return new Struct(typename, a);
+		return new GStruct(typename, a);
 	}
 
 }

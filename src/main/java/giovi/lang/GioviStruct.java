@@ -8,8 +8,8 @@ import it.simonvic.giovi.util.GioviStructs;
 
 @DescribedBy(GioviTypeStruct.class)
 // TODO: implements product type
-public record GioviStruct(GioviTypeStruct type, Struct value)
-	implements GioviValue<Struct> {
+public record GioviStruct(GioviTypeStruct type, GStruct value)
+	implements GioviValue<GStruct> {
 
 	@Override
 	public String toString() {
