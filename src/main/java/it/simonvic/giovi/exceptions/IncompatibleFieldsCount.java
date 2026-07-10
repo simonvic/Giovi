@@ -1,10 +1,10 @@
 package it.simonvic.giovi.exceptions;
 
-import giovi.Tuple;
+import giovi.GTuple;
 
 public class IncompatibleFieldsCount extends RedirectionException {
 
-	public IncompatibleFieldsCount(Tuple expected, Tuple got) {
+	public IncompatibleFieldsCount(GTuple expected, GTuple got) {
 		super(
 			"Different fields count.\n"
 				+ "Expecting:\t" + expected.getFieldsCount() + " for " + expected + "\n"

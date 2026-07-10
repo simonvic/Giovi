@@ -1275,7 +1275,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		return new GioviTuple(
 			new GioviTypeTuple(new TupleSignature(fieldsSignature)),
-			new Tuple(fields)
+			new GTuple(fields)
 		);
 
 	}

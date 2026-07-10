@@ -8,22 +8,22 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class Tuple permits Record {
+public sealed class GTuple permits Record {
 
 	private final List<VarD<?>> fields;
 	// TODO: should we use Var instead? Same for record?
 	// Probably not. What about when we'll implement Tuple type?
 	// A function might return => <Int default 69, Int default 420> for example
 
-	public Tuple() {
+	public GTuple() {
 		fields = new ArrayList<>();
 	}
 
-	public Tuple(List<VarD<?>> fields) {
+	public GTuple(List<VarD<?>> fields) {
 		this.fields = fields;
 	}
 
-	public Tuple(VarD<?>... fields) {
+	public GTuple(VarD<?>... fields) {
 		this.fields = new ArrayList<>(Arrays.asList(fields));
 	}
 
@@ -51,17 +51,17 @@ public sealed class Tuple permits Record {
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		Tuple other = (Tuple) obj;
+		GTuple other = (GTuple) obj;
 		return Objects.equals(fields, other.fields);
 	}
 
-	public Tuple copy() {
+	public GTuple copy() {
 		var a = new ArrayList<VarD<?>>(fields.size());
 		this.fields.forEach(value -> a.add(value.copy()));
-		return new Tuple(a);
+		return new GTuple(a);
 	}
 
-	public Tuple copy(Range<Integer> range) {
+	public GTuple copy(Range<Integer> range) {
 		var list = new ArrayList<VarD<?>>();
 		range.iterate(
 			index -> list.add(
@@ -70,7 +70,7 @@ public sealed class Tuple permits Record {
 					.copy()
 			)
 		);
-		return new Tuple(list);
+		return new GTuple(list);
 	}
 
 	public int getFieldsCount() {
@@ -94,14 +94,14 @@ public sealed class Tuple permits Record {
 	// TODO: clarify requirements. Should a Point.<x y z> be equal to a Color.<r g b>?
 	// FIXME: also using this.equal(Tuple) is wrong
 	public boolean equal(Struct other) {
-		return this.equal((Tuple) other);
+		return this.equal((GTuple) other);
 	}
 
 	public boolean equal(Record other) {
-		return this.equal((Tuple) other);
+		return this.equal((GTuple) other);
 	}
 
-	public boolean equal(Tuple other) {
+	public boolean equal(GTuple other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (int i = 0; i < fields.size(); i++) {
 			var thisField = this.fields.get(i);

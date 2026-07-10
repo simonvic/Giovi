@@ -3,7 +3,7 @@ package it.simonvic.giovi.exceptions;
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import giovi.GioviParserVisitResult;
-import giovi.Tuple;
+import giovi.GTuple;
 
 public class UnsupportedDeconstruction extends GioviException {
 
@@ -16,7 +16,7 @@ public class UnsupportedDeconstruction extends GioviException {
 	}
 
 	public UnsupportedDeconstruction(
-		Tuple value,
+		GTuple value,
 		ParserRuleContext iteratorCtx,
 		Exception cause
 	) {
@@ -31,13 +31,13 @@ public class UnsupportedDeconstruction extends GioviException {
 	}
 
 	public UnsupportedDeconstruction(
-		Tuple value,
+		GTuple value,
 		ParserRuleContext iteratorCtx
 	) {
 		super("Can't deconstruct " + value + " into " + iteratorCtx.getText());
 	}
 
-	public UnsupportedDeconstruction(Tuple value, Exception cause) {
+	public UnsupportedDeconstruction(GTuple value, Exception cause) {
 		super(cause, "Can't deconstruct " + value);
 	}
 

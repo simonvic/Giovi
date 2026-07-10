@@ -93,7 +93,7 @@ public record StructSignature(
 	 * @param narrow
 	 * @return widened tuple
 	 */
-	public Struct widen(Tuple narrow) throws NonWideneable {
+	public Struct widen(GTuple narrow) throws NonWideneable {
 		return new Struct(this.typename, RecordSignature.widenTuple(narrow, this.fields));
 	}
 

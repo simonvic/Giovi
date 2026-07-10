@@ -10,7 +10,7 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 // TODO: rename to GRecord
-public sealed class Record extends Tuple permits Struct {
+public sealed class Record extends GTuple permits Struct {
 
 	protected final LinkedHashMap<String, VarD<?>> fields;
 

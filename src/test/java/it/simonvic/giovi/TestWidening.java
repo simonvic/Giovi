@@ -214,7 +214,7 @@ public class TestWidening {
 			);
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
-					new Tuple(
+					new GTuple(
 						VarD.of(69),
 						VarD.of(69d),
 						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL))
@@ -237,7 +237,7 @@ public class TestWidening {
 			);
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
-					new Tuple(
+					new GTuple(
 						VarD.of(69),
 						VarD.of(69d),
 						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)),

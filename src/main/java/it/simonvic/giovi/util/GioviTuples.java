@@ -3,7 +3,7 @@ package it.simonvic.giovi.util;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import giovi.Tuple;
+import giovi.GTuple;
 import giovi.TupleFieldSignature;
 import giovi.TupleSignature;
 import giovi.lang.GioviSelf;
@@ -15,12 +15,12 @@ import it.simonvic.giovi.exceptions.NoSuchField;
 
 public class GioviTuples {
 
-	public static GioviTypeTuple typeFrom(Tuple v) {
+	public static GioviTypeTuple typeFrom(GTuple v) {
 		return new GioviTypeTuple(signatureFrom(v));
 	}
 
 	// TODO: delete this
-	public static TupleSignature signatureFrom(Tuple value) {
+	public static TupleSignature signatureFrom(GTuple value) {
 		var fields = new ArrayList<TupleFieldSignature>(value.getFieldsCount());
 		value.forEach(
 			field -> fields.add(

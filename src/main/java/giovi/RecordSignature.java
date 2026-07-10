@@ -81,7 +81,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @return widened tuple
 	 */
-	public Record widen(Tuple narrow) throws NonWideneable {
+	public Record widen(GTuple narrow) throws NonWideneable {
 		return new Record(RecordSignature.widenTuple(narrow, this.fields));
 	}
 
@@ -184,7 +184,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return widened tuple
 	 */
 	public static LinkedHashMap<String, VarD<?>> widenTuple(
-		Tuple narrow,
+		GTuple narrow,
 		LinkedHashMap<String, RecordFieldSignature> wide
 	) throws NonWideneable {
 		if (narrow.getFieldsCount() > wide.size()) {

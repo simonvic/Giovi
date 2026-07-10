@@ -35,12 +35,12 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 	 * Spawn a tuple described by this signature
 	 * @return tuple
 	 */
-	public Tuple spawn() {
+	public GTuple spawn() {
 		var f = new ArrayList<VarD<?>>(fields.size());
 		for (var field : fields) {
 			f.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
 		}
-		return new Tuple(f);
+		return new GTuple(f);
 	}
 
 	/**
@@ -95,7 +95,7 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 	 * @return widened tuple
 	 * @throws NonWideneable
 	 */
-	public Tuple widen(Tuple narrow) throws NonWideneable {
+	public GTuple widen(GTuple narrow) throws NonWideneable {
 		if (narrow.getFieldsCount() > this.fields.size()) {
 			throw new NonWideneable("Widening target tuple signature has less fields");
 		}
@@ -121,7 +121,7 @@ public record TupleSignature(List<TupleFieldSignature> fields) {
 				)
 			);
 		}
-		return new Tuple(widenedFields);
+		return new GTuple(widenedFields);
 	}
 
 }

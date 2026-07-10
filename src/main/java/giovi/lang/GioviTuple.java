@@ -3,17 +3,17 @@ package giovi.lang;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import giovi.Tuple;
+import giovi.GTuple;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.GioviTuples;
 
 @DescribedBy(GioviTypeTuple.class)
-public record GioviTuple(GioviTypeTuple type, Tuple value)
-	implements GioviValue<Tuple> {
+public record GioviTuple(GioviTypeTuple type, GTuple value)
+	implements GioviValue<GTuple> {
 
 	public GioviTuple() {
-		this(new GioviTypeTuple(), new Tuple());
+		this(new GioviTypeTuple(), new GTuple());
 	}
 
 	@Override

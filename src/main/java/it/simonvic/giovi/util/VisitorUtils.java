@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import giovi.GioviParserVisitResult;
 import giovi.Record;
-import giovi.Tuple;
+import giovi.GTuple;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
@@ -418,7 +418,7 @@ public class VisitorUtils {
 	public static void deconstructPositional(
 		GioviVisitor visitor,
 		Scope targetScope,
-		Tuple tuple,
+		GTuple tuple,
 		List<PatternMemberContext> patternsCtx
 	) {
 		for (int i = 0; i < patternsCtx.size(); i++) {
