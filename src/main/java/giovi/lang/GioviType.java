@@ -43,7 +43,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	 * @return true if this type is equal or narrower than the provided type, false otherwise
 	 */
 	default boolean isWidenableTo(GioviType<?> type) {
-		return false;
+		return type instanceof GioviTypeAny;
 	}
 
 	// TODO: add isWider(type) or isNarrowableTo(type)
@@ -55,7 +55,10 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	 * @throws NonWideneable
 	 */
 	default T widen(GioviValue<?> value) throws NonWideneable {
-		throw new NonWideneable(value, this);
+		return switch (value) {
+			case GioviAny(var anyValue) -> widen(anyValue);
+			default -> throw new NonWideneable(value, this);
+		};
 	}
 
 	T spawn();
