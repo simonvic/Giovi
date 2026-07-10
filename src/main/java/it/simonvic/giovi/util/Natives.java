@@ -16,10 +16,7 @@ import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
-import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
-import it.simonvic.giovi.lang.annotation.Native.Self;
-import it.simonvic.giovi.lang.annotation.Native.TypeList;
-import it.simonvic.giovi.lang.annotation.Native.TypeMap;
+import it.simonvic.giovi.lang.annotation.Native.*;
 
 public class Natives {
 
@@ -241,6 +238,10 @@ public class Natives {
 		);
 	}
 
+	private static GioviType<?> gioviTypeFrom(TypeType typeTypeAnnotation) {
+		return new GioviTypeType<>(gioviTypeFrom(typeTypeAnnotation.value()));
+	}
+
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
 		if (method.getReturnType().equals(Void.TYPE)) {
 			return GioviType.VOID;
@@ -266,6 +267,11 @@ public class Natives {
 			);
 		}
 
+		var typeTypeAnnotation = annotatedReturnType.getAnnotation(Native.TypeType.class);
+		if (typeTypeAnnotation != null) {
+			return gioviTypeFrom(typeTypeAnnotation);
+		}
+
 		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
 		var typeAnnotation = annotatedReturnType.getAnnotation(Native.Type.class);
 		if (typeAnnotation != null) {
@@ -289,6 +295,11 @@ public class Natives {
 		var typeMapAnnotation = param.getAnnotation(Native.TypeMap.class);
 		if (typeMapAnnotation != null) {
 			return gioviTypeFrom(typeMapAnnotation);
+		}
+
+		var typeTypeAnnotation = param.getAnnotation(Native.TypeType.class);
+		if (typeTypeAnnotation != null) {
+			return gioviTypeFrom(typeTypeAnnotation);
 		}
 
 		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
