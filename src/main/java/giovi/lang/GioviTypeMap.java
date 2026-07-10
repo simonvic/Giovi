@@ -5,7 +5,7 @@ import it.simonvic.giovi.lang.annotation.Native.Describes;
 
 @Describes(GioviMap.class)
 public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
-	implements GioviType<GioviMap> {
+	implements GioviTypeComposite<GioviMap> {
 
 	public GioviType<?> getKeyType() {
 		return keyType;
@@ -31,7 +31,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 			case GioviTypeMap(var keyType, var elementType)
 				-> this.keyType.isWidenableTo(keyType)
 					&& this.elementType.isWidenableTo(elementType);
-			default -> GioviType.super.isWidenableTo(type);
+			default -> GioviTypeComposite.super.isWidenableTo(type);
 		};
 	}
 
@@ -45,7 +45,7 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 					throw new NonWideneable(ex);
 				}
 			}
-			default -> GioviType.super.widen(value);
+			default -> GioviTypeComposite.super.widen(value);
 		};
 	}
 

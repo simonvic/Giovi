@@ -6,7 +6,7 @@ import it.simonvic.giovi.lang.annotation.Native.Describes;
 
 @Describes(GioviList.class)
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
-	implements GioviType<GioviList> {
+	implements GioviTypeComposite<GioviList> {
 
 	public GioviTypeList(GioviType<?> entryType) {
 		this(entryType, 0);
@@ -31,7 +31,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeList t -> this.entryType.isWidenableTo(t.entryType);
-			default -> GioviType.super.isWidenableTo(type);
+			default -> GioviTypeComposite.super.isWidenableTo(type);
 		};
 	}
 
@@ -46,7 +46,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 				}
 				yield widened;
 			}
-			default -> GioviType.super.widen(value);
+			default -> GioviTypeComposite.super.widen(value);
 		};
 	}
 

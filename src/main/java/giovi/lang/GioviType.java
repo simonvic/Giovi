@@ -9,8 +9,8 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 //@DescribedBy(GioviTypeType.class)
 public sealed interface GioviType<T extends GioviValue<?>>
 	extends GioviPrimitive<Class<? extends T>>
-	permits GioviTypeAny, GioviTypePrimitive, GioviTypeList, GioviTypeMap, GioviTypeProduct,
-	GioviTypeSelf, GioviTypeFunction {
+	permits GioviTypeAny, GioviTypePrimitive, GioviTypeComposite, GioviTypeProduct, GioviTypeSelf,
+	GioviTypeFunction {
 
 	public static final GioviTypeAny ANY = new GioviTypeAny();
 	public static final GioviTypeVoid VOID = new GioviTypeVoid();

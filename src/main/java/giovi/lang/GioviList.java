@@ -14,7 +14,7 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
 @DescribedBy(GioviTypeList.class)
 public record GioviList(GioviTypeList type, List<Var<?>> value)
-	implements GioviValue<List<Var<?>>> {
+	implements GioviComposite<List<Var<?>>> {
 
 	public GioviList(GioviTypeList type, List<Var<?>> value) {
 		this.type = type;
@@ -108,7 +108,7 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 			}
 			return newGioviList;
 		}
-		return GioviValue.super.as(right);
+		return GioviComposite.super.as(right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
@@ -120,7 +120,7 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				-> new GioviList(this.type, copyOf(v.value()));
 			case GioviList v when v.type.entryType().isWidenableTo(this.type.entryType())
 				-> new GioviList(this.type, copyOf(v.value()));
-			default -> GioviValue.super.redirection(content);
+			default -> GioviComposite.super.redirection(content);
 		};
 	}
 
@@ -135,10 +135,10 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				try {
 					add(new Var<>(v.copy()));
 				} catch (IllegalArgumentException ex) {
-					GioviValue.super.redirectionPlus(right);
+					GioviComposite.super.redirectionPlus(right);
 				}
 			}
-			default -> GioviValue.super.redirectionPlus(right);
+			default -> GioviComposite.super.redirectionPlus(right);
 		}
 		return this;
 	}
@@ -154,10 +154,10 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				try {
 					remove(new Var<>(this.type.entryType().widen(v)));
 				} catch (IllegalArgumentException | NonWideneable e) {
-					return GioviValue.super.redirectionMinus(right);
+					return GioviComposite.super.redirectionMinus(right);
 				}
 			}
-			default -> GioviValue.super.redirectionMinus(right);
+			default -> GioviComposite.super.redirectionMinus(right);
 		}
 		return this;
 	}
@@ -187,7 +187,7 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				}
 				yield GioviBool.TRUE;
 			}
-			default -> GioviValue.super.equal(right);
+			default -> GioviComposite.super.equal(right);
 		};
 	}
 
@@ -209,7 +209,7 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				}
 				yield GioviBool.FALSE;
 			}
-			default -> GioviValue.super.contains(right);
+			default -> GioviComposite.super.contains(right);
 		};
 	}
 
@@ -227,19 +227,19 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 					index = index >= 0 ? index : value.size() + index;
 					yield value.get(index);
 				}
-				default -> GioviValue.super.access(right);
+				default -> GioviComposite.super.access(right);
 			};
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value().size());
 				case KEYS -> Range.of(0, value().size() - 1, 1);
-				case VALUES -> GioviValue.super.access(right);
+				case VALUES -> GioviComposite.super.access(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _, _) -> {
 				var gioviList = new GioviList(this.type);
 				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 				yield gioviList;
 			}
-			default -> GioviValue.super.access(right);
+			default -> GioviComposite.super.access(right);
 		};
 	}
 

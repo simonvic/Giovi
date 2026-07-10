@@ -18,7 +18,7 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 public record GioviMap(
 	GioviTypeMap type,
 	LinkedHashMap<Var<?>, Var<?>> value
-) implements GioviValue<LinkedHashMap<Var<?>, Var<?>>> {
+) implements GioviComposite<LinkedHashMap<Var<?>, Var<?>>> {
 
 	public GioviMap(GioviTypeMap type) {
 		this(type, new LinkedHashMap<>());
@@ -146,7 +146,7 @@ public record GioviMap(
 			);
 			return map;
 		}
-		return GioviValue.super.as(right);
+		return GioviComposite.super.as(right);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
@@ -160,7 +160,7 @@ public record GioviMap(
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type)
 				-> new GioviMap(this.type, copyOf(value));
 
-			default -> GioviValue.super.redirection(content);
+			default -> GioviComposite.super.redirection(content);
 		};
 	}
 
@@ -168,7 +168,7 @@ public record GioviMap(
 	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
 		switch (right) {
 			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> putAll(value);
-			default -> GioviValue.super.redirectionPlus(right);
+			default -> GioviComposite.super.redirectionPlus(right);
 		}
 		return this;
 	}
@@ -183,10 +183,10 @@ public record GioviMap(
 				try {
 					value.remove(new Var<>(this.type.keyType().widen(v)));
 				} catch (NonWideneable e) {
-					return GioviValue.super.redirectionMinus(right);
+					return GioviComposite.super.redirectionMinus(right);
 				}
 			}
-			default -> GioviValue.super.redirectionMinus(right);
+			default -> GioviComposite.super.redirectionMinus(right);
 		}
 		return this;
 	}
@@ -228,7 +228,7 @@ public record GioviMap(
 				}
 				yield GioviBool.TRUE;
 			}
-			default -> GioviValue.super.equal(right);
+			default -> GioviComposite.super.equal(right);
 		};
 	}
 
@@ -253,7 +253,7 @@ public record GioviMap(
 				}
 				yield GioviBool.FALSE;
 			}
-			default -> GioviValue.super.contains(right);
+			default -> GioviComposite.super.contains(right);
 		};
 	}
 
@@ -274,7 +274,7 @@ public record GioviMap(
 					new ArrayList<>(value().values())
 				);
 			};
-			default -> GioviValue.super.access(right);
+			default -> GioviComposite.super.access(right);
 		};
 	}
 

@@ -18,7 +18,7 @@ import it.simonvic.giovi.util.*;
 
 public sealed interface GioviValue<T>
 	extends GioviObject
-	permits GioviAny, GioviPrimitive, GioviList, GioviMap, GioviProduct, GioviSelf, GioviFunction {
+	permits GioviAny, GioviPrimitive, GioviComposite, GioviProduct, GioviSelf, GioviFunction {
 
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
