@@ -35,7 +35,7 @@ public class TestUtils {
 				Arguments.of(GioviText.class, GioviValue.of("hello")),
 				Arguments.of(GioviList.class, GioviValue.of(List.of(69))),
 				Arguments.of(GioviMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(GioviTuple.class, GioviValue.of(Tuples.ofNative("a", "a")))
+				Arguments.of(GioviTuple.class, GioviValue.of(GTuples.ofNative("a", "a")))
 			);
 		}
 
@@ -54,8 +54,8 @@ public class TestUtils {
 				Arguments.of(String.class, GioviValue.of("hello")),
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
-				Arguments.of(GTuple.class, GioviValue.of(Tuples.ofNative("a", "a"))),
-				Arguments.of(GRecord.class, GioviValue.of(Records.of("a", VarD.of("a"))))
+				Arguments.of(GTuple.class, GioviValue.of(GTuples.ofNative("a", "a"))),
+				Arguments.of(GRecord.class, GioviValue.of(GRecords.of("a", VarD.of("a"))))
 			);
 		}
 
@@ -249,11 +249,11 @@ public class TestUtils {
 		@Test
 		void testEquals() {
 			assertEquals(
-				Records.of(
+				GRecords.of(
 					"foo", VarD.of("lol"),
 					"bar", VarD.of(true)
 				),
-				Records.of(
+				GRecords.of(
 					"foo", VarD.of("lol"),
 					"bar", VarD.of(true)
 				)
@@ -263,21 +263,21 @@ public class TestUtils {
 		@Test
 		void testEqualsNested() {
 			assertEquals(
-				Records.of(
+				GRecords.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
 					"foobar", VarD.of(
-						Records.of(
+						GRecords.of(
 							"x", VarD.of(0),
 							"y", VarD.of(0)
 						)
 					)
 				),
-				Records.of(
+				GRecords.of(
 					"foo", VarD.of(69),
 					"bar", VarD.of(true),
 					"foobar", VarD.of(
-						Records.of(
+						GRecords.of(
 							"x", VarD.of(0),
 							"y", VarD.of(0)
 						)

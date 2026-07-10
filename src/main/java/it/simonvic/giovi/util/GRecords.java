@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import giovi.GRecord;
 import it.simonvic.giovi.VarD;
 
-public class Records {
+public class GRecords {
 
 	public static GRecord of(
 		String f1, VarD<?> v1

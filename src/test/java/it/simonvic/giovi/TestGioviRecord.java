@@ -16,8 +16,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Range;
 import giovi.lang.GioviRecord;
 import it.simonvic.giovi.util.GioviRecords;
-import it.simonvic.giovi.util.Records;
-import it.simonvic.giovi.util.Tuples;
+import it.simonvic.giovi.util.GRecords;
+import it.simonvic.giovi.util.GTuples;
 
 public class TestGioviRecord {
 
@@ -54,7 +54,7 @@ public class TestGioviRecord {
 				""")).isEqualTo(GioviRecords.of(
 				"a", 69,
 				"b", true,
-				"c", Records.of(
+				"c", GRecords.of(
 					"foo", VarD.of("foo"),
 					"bar", VarD.of("bar"))));
 		}
@@ -74,10 +74,10 @@ public class TestGioviRecord {
 				""")).isEqualTo(GioviRecords.of(
 				"a", 69,
 				"b", true,
-				"c", Records.of(
+				"c", GRecords.of(
 					"foo", VarD.of("foo"),
 					"bar", VarD.of("bar")),
-				"d", Tuples.ofNative(1, 2, 3)));
+				"d", GTuples.ofNative(1, 2, 3)));
 		}
 
 	}

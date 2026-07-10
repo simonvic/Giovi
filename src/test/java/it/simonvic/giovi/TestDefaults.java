@@ -149,11 +149,11 @@ public class TestDefaults {
 				.value();
 			assertThat(def)
 				.isEqualTo(
-					Structs.of(
+					GStructs.of(
 						"Foo",
 						"foo", VarD.of("foo"),
 						"bar", VarD.of(
-							Structs.of(
+							GStructs.of(
 								"Bar",
 								"baz", VarD.of("baz"),
 								"foobar", new VarD<>(
@@ -161,7 +161,7 @@ public class TestDefaults {
 									new GioviList(GioviType.LIST_OF_INT)
 								)
 							),
-							Structs.of(
+							GStructs.of(
 								"Bar",
 								"baz", VarD.of(""),
 								"foobar", new VarD<>(
@@ -203,16 +203,16 @@ public class TestDefaults {
 				.value();
 			assertThat(def)
 				.isEqualTo(
-					Structs.of(
+					GStructs.of(
 						"Foo",
 						"foo", VarD.of("foo", "foodefault"),
 						"bar", VarD.of(
-							Structs.of(
+							GStructs.of(
 								"Bar",
 								"baz", VarD.of("baz", "bazdefault"),
 								"foobar", VarD.of(List.of(1, 2, 3), List.of(69))
 							),
-							Structs.of(
+							GStructs.of(
 								"Bar",
 								"baz", VarD.of("overriden bazdefault", "bazdefault"),
 								"foobar", VarD.of(List.of(420), List.of(69))
@@ -371,11 +371,11 @@ public class TestDefaults {
 					.unwrap()
 					.value()
 			).isEqualTo(
-				Structs.of(
+				GStructs.of(
 					"Foo",
 					"foo", VarD.of("foo"),
 					"bar", VarD.of(
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
@@ -383,7 +383,7 @@ public class TestDefaults {
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
@@ -473,7 +473,7 @@ public class TestDefaults {
 					"""
 				).asGioviValue().value()
 			).isEqualTo(
-				Tuples.ofNative(
+				GTuples.ofNative(
 					0, false, ""
 				)
 			);
@@ -488,7 +488,7 @@ public class TestDefaults {
 					"""
 				).asGioviValue().value()
 			).isEqualTo(
-				Records.of(
+				GRecords.of(
 					"a", VarD.of(0),
 					"b", VarD.of(false),
 					"c", VarD.of("")
@@ -606,11 +606,11 @@ public class TestDefaults {
 				).asGioviValue()
 					.value()
 			).isEqualTo(
-				Structs.of(
+				GStructs.of(
 					"Foo",
 					"foo", VarD.of("foo"),
 					"bar", VarD.of(
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of("baz"),
 							"foobar", new VarD<>(
@@ -618,7 +618,7 @@ public class TestDefaults {
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of(""),
 							"foobar", new VarD<>(
@@ -725,23 +725,23 @@ public class TestDefaults {
 					""").asGioviValue()
 					.value()
 			).isEqualTo(
-				Structs.of(
+				GStructs.of(
 					"Foo",
 					"foo", VarD.of("foo", "foo"),
 					"bar", VarD.of(
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of("baz", "baz"),
 							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3))
 						)
 					),
 					"foobar", VarD.of(
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of("BAZ", "baz"),
 							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))
 						),
-						Structs.of(
+						GStructs.of(
 							"Bar",
 							"baz", VarD.of("BAZ", "baz"),
 							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))

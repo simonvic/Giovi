@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import giovi.GTuple;
 import it.simonvic.giovi.VarD;
 
-public class Tuples {
+public class GTuples {
 
 	public static GTuple ofNative(Object... fields) {
 		var l = new ArrayList<VarD<?>>(fields.length);

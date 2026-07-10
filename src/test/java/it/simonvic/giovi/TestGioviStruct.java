@@ -29,7 +29,7 @@ import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 import it.simonvic.giovi.util.GioviStructs;
-import it.simonvic.giovi.util.Structs;
+import it.simonvic.giovi.util.GStructs;
 
 public class TestGioviStruct {
 
@@ -143,7 +143,7 @@ public class TestGioviStruct {
 					new RecordFieldSignature(
 						"favoriteColor",
 						rgbType,
-						new GioviStruct(rgbType, Structs.of(
+						new GioviStruct(rgbType, GStructs.of(
 							"RGB",
 							"r", VarD.of(255, 0),
 							"g", VarD.of(250, 0),
@@ -597,8 +597,8 @@ public class TestGioviStruct {
 				"i", VarD.of(420, 69),
 				"t", VarD.of("foo", "foo"),
 				"s", VarD.of(
-					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
-					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
+					GStructs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					GStructs.of("Bar", "r", VarD.of(6.9, 4.20)))));
 		}
 
 		@Disabled("Not implemented yet")
@@ -625,8 +625,8 @@ public class TestGioviStruct {
 				"i", VarD.of(420, 69),
 				"t", VarD.of("foo", "foo"),
 				"s", VarD.of(
-					Structs.of("Bar", "r", VarD.of(6.9, 4.20)),
-					Structs.of("Bar", "r", VarD.of(6.9, 4.20)))));
+					GStructs.of("Bar", "r", VarD.of(6.9, 4.20)),
+					GStructs.of("Bar", "r", VarD.of(6.9, 4.20)))));
 		}
 
 	}

@@ -34,7 +34,7 @@ public class GioviTuples {
 	}
 
 	public static GioviTuple of(Object... fields) {
-		var value = Tuples.ofNative(fields);
+		var value = GTuples.ofNative(fields);
 		return new GioviTuple(typeFrom(value), value);
 	}
 

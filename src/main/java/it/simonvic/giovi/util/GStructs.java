@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import giovi.GStruct;
 import it.simonvic.giovi.VarD;
 
-public class Structs {
+public class GStructs {
 
 	public static GStruct of(String typename) {
 		return new GStruct(typename);
