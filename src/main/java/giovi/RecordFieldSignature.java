@@ -7,7 +7,7 @@ public record RecordFieldSignature(
 	String identifier,
 	GioviType<?> type,
 	GioviValue<?> defaultValue
-) implements FieldSignature {
+) implements ProductFieldSignature {
 
 	public RecordFieldSignature(String identifier, GioviType<?> type) {
 		this(identifier, type, type.spawn());

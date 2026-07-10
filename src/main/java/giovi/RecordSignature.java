@@ -8,7 +8,8 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields) {
+public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields)
+	implements ProductSignature {
 
 	public RecordSignature(RecordFieldSignature... fields) {
 		this(new LinkedHashMap<>());

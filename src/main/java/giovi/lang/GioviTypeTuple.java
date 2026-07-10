@@ -5,7 +5,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.Describes;
 
 @Describes(GioviTuple.class)
-public record GioviTypeTuple(TupleSignature signature) implements GioviType<GioviTuple> {
+public record GioviTypeTuple(TupleSignature signature) implements GioviTypeProduct<GioviTuple> {
 
 	public GioviTypeTuple() {
 		this(new TupleSignature());
@@ -27,7 +27,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
 			case GioviTypeRecord(var signature) -> signature.canWiden(this.signature);
 			case GioviTypeTuple(var signature) -> signature.canWiden(this.signature);
-			default -> GioviType.super.isWidenableTo(type);
+			default -> GioviTypeProduct.super.isWidenableTo(type);
 		};
 	}
 
@@ -35,7 +35,7 @@ public record GioviTypeTuple(TupleSignature signature) implements GioviType<Giov
 	public GioviTuple widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviTuple v -> new GioviTuple(this, signature.widen(v.value()));
-			default -> GioviType.super.widen(value);
+			default -> GioviTypeProduct.super.widen(value);
 		};
 	}
 

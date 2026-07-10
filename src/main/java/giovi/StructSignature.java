@@ -13,7 +13,7 @@ public record StructSignature(
 	LinkedHashMap<String, RecordFieldSignature> fields,
 	Map<String, GioviValue<?>> constants,
 	Map<String, GioviFunction> functions
-) {
+) implements ProductSignature {
 
 	public StructSignature(String typename, LinkedHashMap<String, RecordFieldSignature> fields) {
 		this(typename, fields, new LinkedHashMap<>(), new LinkedHashMap<>());

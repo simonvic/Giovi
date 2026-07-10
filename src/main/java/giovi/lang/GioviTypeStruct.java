@@ -7,7 +7,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.Describes;
 
 @Describes(GioviStruct.class)
-public record GioviTypeStruct(StructSignature signature) implements GioviType<GioviStruct> {
+public record GioviTypeStruct(StructSignature signature) implements GioviTypeProduct<GioviStruct> {
 
 	@Override
 	public String toString() {
@@ -23,7 +23,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 	public boolean isWidenableTo(GioviType<?> type) {
 		return switch (type) {
 			case GioviTypeStruct(var signature) -> signature.canWiden(this.signature);
-			default -> GioviType.super.isWidenableTo(type);
+			default -> GioviTypeProduct.super.isWidenableTo(type);
 		};
 	}
 
@@ -33,7 +33,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 			case GioviTuple v -> new GioviStruct(this, signature.widen(v.value()));
 			case GioviRecord v -> new GioviStruct(this, signature.widen(v.value()));
 			case GioviStruct v -> new GioviStruct(this, signature.widen(v.value()));
-			default -> GioviType.super.widen(value);
+			default -> GioviTypeProduct.super.widen(value);
 		};
 	}
 
@@ -56,7 +56,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 				-> signature.getConstant(identifier);
 			case MemberKey(var identifier) when signature.containsFunction(identifier)
 				-> signature.getFunction(identifier);
-			default -> GioviType.super.dot(right);
+			default -> GioviTypeProduct.super.dot(right);
 		};
 	}
 
@@ -65,7 +65,7 @@ public record GioviTypeStruct(StructSignature signature) implements GioviType<Gi
 		return switch (right) {
 			case MemberKey(var identifier) when signature.containsFunction(identifier)
 				-> signature.getFunction(identifier);
-			default -> GioviType.super.dotRef(right);
+			default -> GioviTypeProduct.super.dotRef(right);
 		};
 	}
 

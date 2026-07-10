@@ -7,7 +7,8 @@ import java.util.List;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record TupleSignature(List<TupleFieldSignature> fields) {
+public record TupleSignature(List<TupleFieldSignature> fields)
+	implements ProductSignature {
 
 	public TupleSignature(TupleFieldSignature... fields) {
 		this(Arrays.asList(fields));

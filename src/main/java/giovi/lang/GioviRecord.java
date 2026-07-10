@@ -8,7 +8,7 @@ import it.simonvic.giovi.util.GioviRecords;
 
 @DescribedBy(GioviTypeRecord.class)
 public record GioviRecord(GioviTypeRecord type, GRecord value)
-	implements GioviValue<GRecord> {
+	implements GioviProduct<GRecord> {
 
 	public GioviRecord() {
 		this(new GioviTypeRecord(), new GRecord());
@@ -40,7 +40,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 		return switch (content) {
 			case GioviTuple v -> GioviRecords.redirection(this, v);
 			case GioviRecord v -> GioviRecords.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> GioviProduct.super.redirection(content);
 		};
 	}
 
@@ -56,7 +56,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 			case GioviStruct(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviRecord(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviTuple(_, var v) -> GioviBool.of(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> GioviProduct.super.equal(right);
 		};
 	}
 
@@ -72,7 +72,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 		return switch (right) {
 			case MemberKey(var identifier)
 				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
-			default -> GioviValue.super.dot(right);
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 
@@ -93,7 +93,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> GioviProduct.super.access(right);
 		};
 	}
 

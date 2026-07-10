@@ -8,7 +8,7 @@ import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
-public sealed class GTuple permits GRecord {
+public sealed class GTuple implements GProduct permits GRecord {
 
 	private final List<VarD<?>> fields;
 	// TODO: should we use Var instead? Same for record?

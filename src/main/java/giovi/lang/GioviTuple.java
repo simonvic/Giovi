@@ -10,7 +10,7 @@ import it.simonvic.giovi.util.GioviTuples;
 
 @DescribedBy(GioviTypeTuple.class)
 public record GioviTuple(GioviTypeTuple type, GTuple value)
-	implements GioviValue<GTuple> {
+	implements GioviProduct<GTuple> {
 
 	public GioviTuple() {
 		this(new GioviTypeTuple(), new GTuple());
@@ -41,7 +41,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
 		return switch (content) {
 			case GioviTuple v -> GioviTuples.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> GioviProduct.super.redirection(content);
 		};
 	}
 
@@ -57,7 +57,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 			case GioviStruct(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviRecord(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviTuple(_, var v) -> GioviBool.of(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> GioviProduct.super.equal(right);
 		};
 	}
 
@@ -74,7 +74,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				default -> GioviValue.super.access(right);
+				default -> GioviProduct.super.access(right);
 			};
 			case Range(Integer _, _, _, _)
 				-> new GioviTuple(
@@ -84,7 +84,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> GioviProduct.super.access(right);
 		};
 	}
 

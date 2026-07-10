@@ -7,9 +7,8 @@ import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviStructs;
 
 @DescribedBy(GioviTypeStruct.class)
-// TODO: implements product type
 public record GioviStruct(GioviTypeStruct type, GStruct value)
-	implements GioviValue<GStruct> {
+	implements GioviProduct<GStruct> {
 
 	@Override
 	public String toString() {
@@ -34,7 +33,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviTypeStruct t when t.equals(this.type) -> this;
-			default -> GioviValue.super.as(right);
+			default -> GioviProduct.super.as(right);
 		};
 	}
 
@@ -47,7 +46,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 			case GioviTuple v -> GioviStructs.redirection(this, v);
 			case GioviRecord v -> GioviStructs.redirection(this, v);
 			case GioviStruct v -> GioviStructs.redirection(this, v);
-			default -> GioviValue.super.redirection(content);
+			default -> GioviProduct.super.redirection(content);
 		};
 	}
 
@@ -63,7 +62,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 			case GioviStruct(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviRecord(_, var v) -> GioviBool.of(this.value.equal(v));
 			case GioviTuple(_, var v) -> GioviBool.of(this.value.equal(v));
-			default -> GioviValue.super.equal(right);
+			default -> GioviProduct.super.equal(right);
 		};
 	}
 
@@ -89,7 +88,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 				-> type.signature().getConstant(identifier);
 			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
 				-> type.signature().getFunction(identifier);
-			default -> GioviValue.super.dot(right);
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 
@@ -109,7 +108,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 			case GioviInt(var index)
 				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviValue.super.access(right);
+			default -> GioviProduct.super.access(right);
 		};
 	}
 
@@ -118,7 +117,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 		return switch (right) {
 			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
 				-> type.signature().getFunction(identifier);
-			default -> GioviValue.super.dotRef(right);
+			default -> GioviProduct.super.dotRef(right);
 		};
 	}
 

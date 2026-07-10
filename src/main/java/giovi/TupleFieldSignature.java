@@ -6,7 +6,7 @@ import giovi.lang.GioviValue;
 public record TupleFieldSignature(
 	GioviType<?> type,
 	GioviValue<?> defaultValue
-) implements FieldSignature {
+) implements ProductFieldSignature {
 
 	public TupleFieldSignature(GioviType<?> type) {
 		this(type, type.spawn());
