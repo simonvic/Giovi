@@ -5,6 +5,11 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 public record GioviTypeAny() implements GioviType<GioviAny> {
 
 	@Override
+	public String toString() {
+		return "Any";
+	}
+
+	@Override
 	public Class<? extends GioviAny> value() {
 		return GioviAny.class;
 	}
