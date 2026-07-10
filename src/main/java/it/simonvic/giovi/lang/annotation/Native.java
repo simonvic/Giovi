@@ -166,21 +166,5 @@ public interface Native {
 
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
-	@Repeatable(TypesAny.class)
-	@Documented
-	public @interface TypeAny {
-
-	}
-
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE })
-	@Documented
-	public @interface TypesAny {
-
-		TypeAny[] value();
-
-	}
 
 }

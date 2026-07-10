@@ -297,11 +297,6 @@ public class Natives {
 			return gioviTypeFrom(typeAnnotation);
 		}
 
-		var typeDynAnnotation = param.getAnnotation(Native.TypeAny.class);
-		if (typeDynAnnotation != null) {
-			return GioviType.ANY;
-		}
-
 		var descriptor = param.getType().getAnnotation(DescribedBy.class);
 		if (descriptor != null) {
 			return gioviTypeFrom(descriptor.value());
