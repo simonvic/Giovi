@@ -20,6 +20,8 @@ public sealed interface GioviValue<T>
 	extends GioviObject
 	permits GioviAny, GioviPrimitive, GioviComposite, GioviProduct, GioviSelf, GioviFunction {
 
+	// TODO: cache primitive instances (e.g. Void)
+
 	public static <U> GioviValue<?> of(U value) {
 		return switch (value) {
 			case Natural v -> new GioviNatural(v);
