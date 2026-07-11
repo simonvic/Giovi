@@ -92,8 +92,8 @@ public record FormalParameters(
 					widerIdentifier,
 					widerType,
 					narrowParams.containsKey(widerIdentifier)
-						? narrowParams.get(widerIdentifier).param().widenTo(widerType)
-						: widerParam.param().copy(),
+						? narrowParams.get(widerIdentifier).defaultValue().widenTo(widerType)
+						: widerParam.defaultValue().copy(),
 					widerParam.isOptional()
 				)
 			);

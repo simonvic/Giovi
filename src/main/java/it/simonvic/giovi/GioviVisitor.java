@@ -814,7 +814,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var type = visit(ctx.type()).asGioviType();
 		var param = spawnType(type, ctx.defaultDefinition());
 		boolean isOptional = ctx.defaultDefinition() != null;
-		return new FormalParameter(label, identifier, type, param, isOptional);
+		return new FormalParameter(label, identifier, type, param.unwrap(), isOptional);
 	}
 
 	@Override

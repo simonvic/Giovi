@@ -9,12 +9,12 @@ public record FormalParameter(
 	String label,
 	String identifier,
 	GioviType<?> type,
-	VarD<?> param, // TODO: replace with just a GioviValue
+	GioviValue<?> defaultValue,
 	boolean isOptional
 ) implements GioviParserVisitResult {
 
 	public FormalParameter(String identifier, GioviType<?> type, GioviValue<?> defaultValue) {
-		this(identifier, identifier, type, new VarD<>(defaultValue, defaultValue.copy()), true);
+		this(identifier, identifier, type, defaultValue, true);
 	}
 
 	public FormalParameter(String identifier, GioviValue<?> defaultValue) {
@@ -22,11 +22,11 @@ public record FormalParameter(
 	}
 
 	public FormalParameter(String identifier, GioviType<?> type) {
-		this(identifier, identifier, type, new VarD<>(type.spawn()), false);
+		this(identifier, identifier, type, type.spawn(), false);
 	}
 
 	public FormalParameter(String label, String identifier, GioviType<?> type) {
-		this(label, identifier, type, new VarD<>(type.spawn()), false);
+		this(label, identifier, type, type.spawn(), false);
 	}
 
 	@Override
@@ -37,17 +37,17 @@ public record FormalParameter(
 		}
 		sb.append(identifier).append(" ").append(type);
 		if (isOptional) {
-			sb.append(" ? ").append(param);
+			sb.append(" ? ").append(defaultValue);
 		}
 		return sb.toString();
 	}
 
 	public FormalParameter copy() {
-		return new FormalParameter(label, identifier, type.copy(), param.copy(), isOptional);
+		return new FormalParameter(label, identifier, type.copy(), defaultValue.copy(), isOptional);
 	}
 
 	public VarD<?> spawn() {
-		return param.copy();
+		return new VarD<>(defaultValue.copy());
 	}
 
 }
