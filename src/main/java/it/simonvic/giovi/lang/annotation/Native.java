@@ -93,6 +93,13 @@ public interface Native {
 
 
 		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.FIELD })
+		@Documented
+		public @interface Defaults {
+		}
+
+
+		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.PARAMETER)
 		@Documented
 		public @interface Param {

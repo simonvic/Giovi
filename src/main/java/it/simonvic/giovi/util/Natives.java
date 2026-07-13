@@ -4,6 +4,7 @@ import java.lang.reflect.*;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import giovi.JFunction;
 import giovi.Module;
@@ -160,6 +161,14 @@ public class Natives {
 		}
 		GioviType<?> returnType = gioviReturnTypeFrom(method);
 		var parameters = new LinkedHashMap<String, FormalParameter>();
+
+		Map<String, GioviValue<?>> defaultValues;
+		try {
+			defaultValues = Natives.getDefaultValues(method);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+
 		for (Parameter param : method.getParameters()) {
 			if (param.isAnnotationPresent(Native.Self.class)) {
 				parameters.put("self", new FormalParameter("self", GioviType.SELF));
@@ -176,13 +185,36 @@ public class Natives {
 			GioviType<?> paramType = gioviTypeFrom(param);
 
 			var optionalAnnotation = param.getAnnotation(Native.Func.Param.Optional.class);
-			FormalParameter formalParam = (optionalAnnotation != null)
-				? new FormalParameter(label, paramName, paramType, paramType.spawn(), true)
-				: new FormalParameter(label, paramName, paramType);
+			FormalParameter formalParam;
+			if (optionalAnnotation != null) {
+				GioviValue<?> defaultValue = defaultValues.get(paramName);
+				if (defaultValue == null) {
+					defaultValue = paramType.spawn();
+				}
+				formalParam = new FormalParameter(label, paramName, paramType, defaultValue, true);
+			} else {
+				formalParam = new FormalParameter(label, paramName, paramType);
+			}
 
 			parameters.put(paramName, formalParam);
 		}
 		return new FunctionSignature(identifier, new FormalParameters(parameters), returnType);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Map<String, GioviValue<?>> getDefaultValues(Method method)
+		throws IllegalArgumentException, IllegalAccessException {
+		try {
+			Field defaultValuesField = method.getDeclaringClass()
+				.getField(method.getName() + "_optionals");
+			if (defaultValuesField != null
+				&& defaultValuesField.isAnnotationPresent(Native.Func.Defaults.class)) {
+				return (Map<String, GioviValue<?>>) defaultValuesField.get(null);
+			}
+		} catch (NoSuchFieldException _) {
+			// we ignore
+		}
+		return Map.of();
 	}
 
 	private static GioviType<?> gioviTypeFrom(Native.Type annotation) {
