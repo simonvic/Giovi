@@ -839,21 +839,29 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		GioviParserVisitResult invoked,
 		ActualParametersContext parametersCtx
 	) {
-		if (!(invoked.unwrapAsGioviValue() instanceof GioviFunction gioviFunction)) {
+		if (!(invoked.unwrapAsGioviValue() instanceof GioviFunction(Function function))) {
 			throw new GioviException("Invokation error: " + invoked);
 		}
-		Function function = gioviFunction.value();
+		var actualParamsCtx = new ArrayList<>(parametersCtx.actualParameter());
+		// NOTE: if parameters are either positional or named depends on the first callParameter
+		// If no parameters have been specified, positional approach is used
+		boolean isPositional = actualParamsCtx.isEmpty()
+			|| actualParamsCtx.getFirst().identifier() == null;
+		boolean isSelfFunction = function.signature().hasParameter("self");
+		if (isSelfFunction) {
+			// TODO: lol hack
+			actualParamsCtx.addFirst(new ActualParameterContext(null, -1));
+		}
 		enterFunctionScope();
 		LinkedHashMap<String, VarD<?>> actualParams;
 		try {
-			actualParams = setupFunctionParameters(
-				parametersCtx,
-				function.signature()
-			);
+			actualParams = (isPositional)
+				? setupFunctionParametersIteratively(actualParamsCtx, function.signature())
+				: setupNamedFunctionParameters(actualParamsCtx, function.signature());
 		} catch (NonWideneable e) {
 			throw new GioviException(e, "Invokation error");
 		}
-		if (function.signature().hasParameter("self")) {
+		if (isSelfFunction) {
 			// TODO: passing by reference yields much better performance, but
 			// it's different from other params getting passed by value.
 			// Clarify requirements
@@ -884,32 +892,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		exitScope();
 		return returnValue;
-	}
-
-	/**
-	 * Visit function call parameters and declare actual parameters
-	 * @param actualParamsContext Function call context
-	 * @param signature Function signature
-	 * @throws NonWideneable
-	 */
-	private LinkedHashMap<String, VarD<?>> setupFunctionParameters(
-		ActualParametersContext actualParamsContext,
-		FunctionSignature signature
-	) throws NonWideneable {
-		// NOTE: if parameters are either positional or named depends on the first callParameter
-		// If no parameters have been specified, positional approach is used
-		List<ActualParameterContext> actualParameters = new ArrayList<>(
-			actualParamsContext.actualParameter()
-		);
-		if (signature.hasParameter("self")) {
-			// TODO: lol hack
-			actualParameters.addFirst(new ActualParameterContext(null, -1));
-		}
-		if (actualParameters.isEmpty() || actualParameters.getFirst().identifier() == null) {
-			return setupFunctionParametersIteratively(actualParameters, signature);
-		} else {
-			return setupNamedFunctionParameters(actualParameters, signature);
-		}
 	}
 
 	/**
