@@ -85,7 +85,12 @@ public interface Native {
 	@Documented
 	public @interface Func {
 
-		// TODO: eventually add @OverloadOf(@Func) and enhance method lookup
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.FIELD })
+		@Documented
+		public @interface Signature {
+		}
+
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.PARAMETER)
@@ -108,11 +113,6 @@ public interface Native {
 			@Target(ElementType.PARAMETER)
 			@Documented
 			public @interface Optional {
-
-				/**
-				 * Method source for the default value; leave empty to use the type's default
-				 */
-				String value() default "";
 
 			}
 

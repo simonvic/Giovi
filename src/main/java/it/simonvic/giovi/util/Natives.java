@@ -17,6 +17,8 @@ import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.*;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
 
 public class Natives {
 
@@ -146,6 +148,16 @@ public class Natives {
 	// TODO: not robust enough
 	public static FunctionSignature functionSignatureFrom(Method method) {
 		String identifier = method.getName();
+		try {
+			Field signatureField = method.getDeclaringClass().getField(identifier);
+			if (signatureField.isAnnotationPresent(Native.Func.Signature.class)) {
+				return (FunctionSignature) signatureField.get(null);
+			}
+		} catch (NoSuchFieldException e) {
+			// no signature field... we build it
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			throw new GioviException(e);
+		}
 		GioviType<?> returnType = gioviReturnTypeFrom(method);
 		var parameters = new LinkedHashMap<String, FormalParameter>();
 		for (Parameter param : method.getParameters()) {
@@ -163,36 +175,10 @@ public class Natives {
 
 			GioviType<?> paramType = gioviTypeFrom(param);
 
-			FormalParameter formalParam;
 			var optionalAnnotation = param.getAnnotation(Native.Func.Param.Optional.class);
-			if (optionalAnnotation == null) {
-				formalParam = new FormalParameter(label, paramName, paramType);
-			} else {
-				GioviValue<?> defaultValue;
-				String defaultMethodSource = optionalAnnotation.value();
-				if (defaultMethodSource.isEmpty()) {
-					defaultValue = paramType.spawn(); // Type's default
-				} else {
-					try {
-						defaultValue = (GioviValue<?>) method
-							.getDeclaringClass()
-							.getMethod(defaultMethodSource)
-							.invoke(null);
-						defaultValue = paramType.widen(defaultValue);
-					} catch (
-						IllegalAccessException
-						| InvocationTargetException
-						| NoSuchMethodException
-						| SecurityException
-						| NonWideneable e
-					) {
-						throw new RuntimeException(
-							"Can't invoke parameter default value method source", e
-						);
-					}
-				}
-				formalParam = new FormalParameter(paramName, paramType, defaultValue);
-			}
+			FormalParameter formalParam = (optionalAnnotation != null)
+				? new FormalParameter(label, paramName, paramType, paramType.spawn(), true)
+				: new FormalParameter(label, paramName, paramType);
 
 			parameters.put(paramName, formalParam);
 		}
