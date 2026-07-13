@@ -12,9 +12,9 @@ public record GFunction(
 		this(signature, null);
 	}
 
+	@Override
 	public GFunction copy() {
-		// TODO: is signature copy necessary?
-		return new GFunction(signature.copy(), bodyCtx);
+		return this;
 	}
 
 	@Override

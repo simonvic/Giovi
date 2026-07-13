@@ -20,9 +20,9 @@ public record JFunction(
 		this(body, Natives.functionSignatureFrom(body));
 	}
 
+	@Override
 	public JFunction copy() {
-		// TODO: is signature copy necessary?
-		return new JFunction(method, signature.copy());
+		return this;
 	}
 
 	@Override
