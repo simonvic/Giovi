@@ -849,7 +849,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			|| actualParamsCtx.getFirst().identifier() == null;
 		boolean isSelfFunction = function.signature().hasParameter("self");
 		if (isSelfFunction) {
-			// TODO: lol hack
+			// HACK: lol
 			actualParamsCtx.addFirst(new ActualParameterContext(null, -1));
 		}
 		enterFunctionScope();
@@ -917,6 +917,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
 			if (formalParamIdentifier.equals("self")) {
+				// We skip the self parameter
 				continue;
 			}
 
