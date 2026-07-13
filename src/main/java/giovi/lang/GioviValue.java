@@ -304,7 +304,6 @@ public sealed interface GioviValue<T>
 		for (Method method : clazz.getMethods()) {
 			if (method.getName().equals(identifier)
 				&& method.isAnnotationPresent(Func.class)) {
-				// TODO: fails on overloaded methods
 				return Optional.of(new GioviFunction(new JFunction(method)));
 			}
 		}

@@ -11,7 +11,6 @@ import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.util.Natives;
 
 public record JFunction(
-	// TODO: what if we dynamically fetch the method based on arguments? In case of defaults
 	Method method,
 	FunctionSignature signature
 ) implements Function {
