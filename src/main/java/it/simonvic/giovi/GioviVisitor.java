@@ -965,6 +965,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		// cache actual params contexts mapped by their invocation label
 		var cachedCtxs = new LinkedHashMap<String, ActualParameterContext>();
 		for (var actualParamCtx : actualParamCtxList) {
+			if (actualParamCtx.label == null) {
+				// HACK: skip self parameter lol, lmao even
+				continue;
+			}
 			cachedCtxs.put(actualParamCtx.label.getText(), actualParamCtx);
 		}
 
@@ -997,6 +1001,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 		// no more actual params found, expecting remaining formal parameters to be optional
 		undeclaredParameters.forEach((formalParamIdentifier, formalParam) -> {
+			if (formalParamIdentifier.equals("self")) return;
 			if (!formalParam.isOptional()) {
 				throw new GioviException(
 					"Required parameter not specified: " + formalParamIdentifier
