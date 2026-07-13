@@ -47,6 +47,7 @@ public interface Native {
 	public @interface Module {
 
 		boolean autoimport() default true;
+		// TODO: add testing scope
 
 	}
 
