@@ -3,9 +3,9 @@ package giovi;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import giovi.lang.GioviValue;
-import giovi.lang.GioviVoid;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.util.Natives;
@@ -30,19 +30,34 @@ public record JFunction(
 		return signature.toString() + " {" + method.toString() + "}";
 	}
 
-	public GioviParserVisitResult invoke(
+	/**
+	 * Invoke the native method described by the signature, using positional parameters
+	 * @param actualParams
+	 * @return return value of the function
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 */
+	public GioviValue<?> invoke(
+		List<VarD<?>> actualParams
+	) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		// Method method = Natives.lookupMethod(clazz, signature, actualParams);
+		return Natives.invoke(method, actualParams);
+	}
+
+	/**
+	 * Invoke the native method described by the signature, using named parameters.
+	 * @param actualParams
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws NoSuchMethodException
+	 */
+	public GioviValue<?> invoke(
 		LinkedHashMap<String, VarD<?>> actualParams
-	) throws IllegalAccessException, InvocationTargetException {
-		var args = new GioviValue<?>[actualParams.size()];
-		int i = 0;
-		for (var actualParam : actualParams.entrySet()) {
-			args[i++] = actualParam.getValue().unwrap();
-		}
-		Object returnValue = method.invoke(null, (Object[]) args);
-		if (method.getReturnType().equals(Void.TYPE)) {
-			return new GioviVoid();
-		}
-		return (GioviParserVisitResult) returnValue;
+	) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		// Method method = Natives.lookupMethod(clazz, signature, actualParams);
+		return Natives.invoke(method, signature, actualParams);
 	}
 
 }

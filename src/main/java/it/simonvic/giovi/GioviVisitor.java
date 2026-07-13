@@ -872,8 +872,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var returnValue = switch (function) {
 			case JFunction jFunction -> {
 				try {
-					yield jFunction.invoke(actualParams);
-				} catch (IllegalAccessException | InvocationTargetException e) {
+					yield (isPositional)
+						? jFunction.invoke(new ArrayList<>(actualParams.values()))
+						: jFunction.invoke(actualParams);
+				} catch (
+					IllegalAccessException
+					| InvocationTargetException
+					| NoSuchMethodException e
+				) {
 					throw new GioviException("Invocation fail", e);
 				}
 			}
