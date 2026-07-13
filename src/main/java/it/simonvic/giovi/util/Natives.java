@@ -10,6 +10,7 @@ import giovi.Module;
 import giovi.RecordFieldSignature;
 import giovi.StructSignature;
 import giovi.lang.*;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FormalParameter;
@@ -312,6 +313,209 @@ public class Natives {
 
 	public static GioviTypeStruct structTypeOf(Class<?> clazz) {
 		return new GioviTypeStruct(Natives.structSignatureOf(clazz));
+	}
+
+	/**
+	 * Lookup native method based on signature
+	 * @param clazz
+	 * @param signature
+	 * @param actualParams
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static Method lookupMethod(
+		Class<?> clazz,
+		FunctionSignature signature
+	) throws NoSuchMethodException {
+		return lookupMethod(clazz, signature, List.of());
+	}
+
+	/**
+	 * Lookup native method based on signature and actual (positional) parameters
+	 * @param clazz
+	 * @param signature
+	 * @param actualParams
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static Method lookupMethod(
+		Class<?> clazz,
+		FunctionSignature signature,
+		List<VarD<?>> actualParams
+	) throws NoSuchMethodException {
+		String identifier = signature.identifier();
+		method_loop: for (var method : clazz.getMethods()) {
+			if (!method.isAnnotationPresent(Func.class)) {
+				continue;
+			}
+			if (!method.getName().equals(identifier)) {
+				continue;
+			}
+			if (!Natives.gioviReturnTypeFrom(method).equals(signature.returnType())) {
+				continue;
+			}
+
+			var nativeParams = method.getParameters();
+			int nativeParamsCount = nativeParams.length;
+			int actualParamsCount = actualParams.size();
+			if (actualParamsCount > nativeParamsCount) {
+				continue;
+			}
+			for (int i = 0; i < actualParamsCount; i++) {
+				var nativeParam = nativeParams[i];
+				if (nativeParam.isAnnotationPresent(Self.class)) {
+					// We skip the self parameter
+					continue;
+				}
+				var actualParam = actualParams.get(i);
+				if (!Natives.gioviTypeFrom(nativeParam).equals(actualParam.getGioviType())) {
+					continue method_loop;
+				}
+			}
+
+			// expecting remaining formal parameters to be optional
+			var formalParams = signature.getParametersList();
+			for (int i = actualParamsCount; i < nativeParamsCount; i++) {
+				var nativeParam = nativeParams[i];
+				if (nativeParam.isAnnotationPresent(Self.class)) {
+					// We ignore the self parameter
+					continue;
+				}
+				if (!formalParams.get(i).isOptional()) {
+					// found a mandatory formal parameter, so method doesn't match
+					continue method_loop;
+				}
+			}
+
+			return method;
+		}
+		throw new NoSuchMethodException();
+	}
+
+	/**
+	 * Lookup native method based on signature and actual (named) parameters
+	 * @param clazz
+	 * @param signature
+	 * @param actualParams
+	 * @return
+	 * @throws NoSuchMethodException
+	 */
+	public static Method lookupMethod(
+		Class<?> clazz,
+		FunctionSignature signature,
+		LinkedHashMap<String, VarD<?>> actualParams
+	) throws NoSuchMethodException {
+		String identifier = signature.identifier();
+		method_loop: for (var method : clazz.getMethods()) {
+			if (!method.isAnnotationPresent(Func.class)) {
+				continue;
+			}
+			if (!method.getName().equals(identifier)) {
+				continue;
+			}
+			if (!Natives.gioviReturnTypeFrom(method).equals(signature.returnType())) {
+				continue;
+			}
+
+			var nativeParams = method.getParameters();
+			int nativeParamsCount = nativeParams.length;
+			int actualParamsCount = actualParams.size();
+			if (actualParamsCount > nativeParamsCount) {
+				continue;
+			}
+
+			var nativeParamsByLabel = new HashMap<String, Parameter>();
+			for (var parameter : nativeParams) {
+				var labelAnnotation = parameter.getAnnotation(Label.class);
+				nativeParamsByLabel.put(
+					(labelAnnotation != null) ? labelAnnotation.value() : parameter.getName(),
+					parameter
+				);
+			}
+
+			for (var actualParamPair : actualParams.entrySet()) {
+				var actualParamName = actualParamPair.getKey();
+				var nativeParam = nativeParamsByLabel.remove(actualParamName); // pop the parameter
+				if (nativeParam == null) {
+					// actual parameter not present in native method
+					continue method_loop;
+				}
+				if (actualParamName.equals("self") && nativeParam.isAnnotationPresent(Self.class)) {
+					// We skip the self parameter
+					continue;
+				}
+				var actualParamType = actualParamPair.getValue().getGioviType();
+				if (!Natives.gioviTypeFrom(nativeParam).equals(actualParamType)) {
+					// type mismatch
+					continue method_loop;
+				}
+			}
+
+			// expecting remaining native params to be optional
+			for (var nativeParam : nativeParamsByLabel.values()) {
+				if (!nativeParam.isAnnotationPresent(Optional.class)) {
+					continue method_loop;
+				}
+			}
+
+			return method;
+		}
+		throw new NoSuchMethodException();
+	}
+
+	/**
+	 * Setup actual parameters and invoke the native method.
+	 * @param method; has to be looked up correctly
+	 * @param signature
+	 * @param actualParams
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	public static GioviValue<?> invoke(
+		Method method,
+		FunctionSignature signature,
+		LinkedHashMap<String, VarD<?>> actualParams
+	) throws IllegalAccessException, InvocationTargetException {
+		Parameter[] nativeParams = method.getParameters();
+		var args = new Object[nativeParams.length];
+		for (int i = 0; i < nativeParams.length; i++) {
+			var nativeParam = nativeParams[i];
+			String nativeParamName = nativeParam.getName();
+			var actualParam = actualParams.get(nativeParamName);
+			args[i] = (actualParam != null)
+				? actualParam.unwrap()
+				: signature.getParameter(nativeParamName).defaultValue().copy();
+		}
+		var returnValue = method.invoke(null, args);
+		if (method.getReturnType().equals(Void.TYPE)) {
+			return new GioviVoid();
+		}
+		return (GioviValue<?>) returnValue;
+	}
+
+	/**
+	 * Setup actual parameters and invoke the native method.
+	 * @param method; has to be looked up correctly
+	 * @param actualParams
+	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
+	public static GioviValue<?> invoke(
+		Method method,
+		List<VarD<?>> actualParams
+	) throws IllegalAccessException, InvocationTargetException {
+		Parameter[] nativeParams = method.getParameters();
+		var args = new Object[nativeParams.length];
+		for (int i = 0; i < nativeParams.length; i++) {
+			args[i] = actualParams.get(i).unwrap();
+		}
+		var returnValue = method.invoke(null, args);
+		if (method.getReturnType().equals(Void.TYPE)) {
+			return new GioviVoid();
+		}
+		return (GioviValue<?>) returnValue;
 	}
 
 
