@@ -4,9 +4,14 @@ import static it.simonvic.giovi.GioviVisitorUtils.visit;
 import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static it.simonvic.giovi.util.Natives.structSignatureOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -21,6 +26,9 @@ import giovi.util.NativeTestingModule.TestStruct;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.annotation.Native.Func;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
+import it.simonvic.giovi.util.Natives;
 
 public class TestNative {
 
@@ -174,7 +182,9 @@ public class TestNative {
 			),
 			new RecordFieldSignature("i2", GioviType.INT, new GioviInt(420))
 		);
-		assertThat(visitExpression("giovi.util.NativeTestingModule.TestSubModule.TestStructExtends"))
+		assertThat(
+			visitExpression("giovi.util.NativeTestingModule.TestSubModule.TestStructExtends")
+		)
 			.isEqualTo(new GioviTypeStruct(expectedSignature));
 	}
 
@@ -196,6 +206,293 @@ public class TestNative {
 
 			"""
 		);
+	}
+
+	@Nested
+	class TestNativeFunctionsLookupAndInvocation {
+
+		private class Foo {
+
+			@Func
+			public static void simple() {
+			}
+
+			@Func
+			public static GioviInt simpleWithReturn() {
+				return new GioviInt();
+			}
+
+			@Func
+			public static void simpleWithParams(GioviInt a, GioviText b) {
+			}
+
+			@Func.Signature
+			public static final FunctionSignature overloaded = new FunctionSignature(
+				"overloaded",
+				new FormalParameters(
+					new FormalParameter("a", GioviType.INT, new GioviInt(1)),
+					new FormalParameter("b", GioviType.INT, new GioviInt(10)),
+					new FormalParameter("c", GioviType.INT, new GioviInt(100))
+				),
+				GioviType.INT
+			);
+
+			@Func
+			public static GioviInt overloaded(
+				@Optional GioviInt a,
+				@Optional GioviInt b,
+				@Optional GioviInt c
+			) {
+				return new GioviInt(a.value() + b.value() + c.value());
+			}
+
+			static final Method _simple;
+			static final Method _simpleWithReturn;
+			static final Method _simpleWithParams;
+			static final Method _overloaded;
+			static {
+				try {
+					_simple = Foo.class.getMethod("simple");
+					_simpleWithReturn = Foo.class.getMethod("simpleWithReturn");
+					_simpleWithParams = Foo.class.getMethod(
+						"simpleWithParams",
+						GioviInt.class,
+						GioviText.class
+					);
+					_overloaded = Foo.class.getMethod(
+						"overloaded",
+						GioviInt.class,
+						GioviInt.class,
+						GioviInt.class
+					);
+				} catch (NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				}
+			}
+
+		}
+
+		@Nested
+		class PositionalActualParams {
+
+			@Test
+			void test_lookup_simple() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature("simple")
+					)
+				).isEqualTo(Foo._simple);
+			}
+
+			@Test
+			void test_lookup_simple_withExtraParams_shouldFail() throws NoSuchMethodException {
+				assertThatExceptionOfType(NoSuchMethodException.class).isThrownBy(
+					() -> Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature("simple"),
+						List.of(VarD.of("foo"))
+					)
+				);
+			}
+
+			@Test
+			void test_lookup_simpleWithReturn() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature("simpleWithReturn", GioviType.INT)
+					)
+				).isEqualTo(Foo._simpleWithReturn);
+			}
+
+
+			@Test
+			void test_lookup_simpleWithParams() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature(
+							"simpleWithParams",
+							new FormalParameters(
+								new FormalParameter("a", GioviType.INT),
+								new FormalParameter("b", GioviType.TEXT)
+							)
+						),
+						List.of(
+							VarD.of(69),
+							VarD.of("hello")
+						)
+					)
+				).isEqualTo(Foo._simpleWithParams);
+			}
+
+			@Test
+			void test_lookup_overloaded_allParams() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						List.of(
+							VarD.of(2),
+							VarD.of(20),
+							VarD.of(200)
+						)
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+			@Test
+			void test_lookup_overloaded_subsetParams() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						List.of(
+							VarD.of(2),
+							VarD.of(20)
+						)
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+			@Test
+			void test_lookup_overloaded_subsetParams_2() throws NoSuchMethodException {
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						List.of()
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+		}
+
+		@Nested
+		class NamedActualParams {
+
+			@Test
+			void test_lookup_simpleWithParams() throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("a", VarD.of(69));
+				actualParams.put("b", VarD.of("hello"));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature(
+							"simpleWithParams",
+							new FormalParameters(
+								new FormalParameter("a", GioviType.INT),
+								new FormalParameter("b", GioviType.TEXT)
+							)
+						),
+						actualParams
+					)
+				).isEqualTo(Foo._simpleWithParams);
+			}
+
+			@Test
+			void test_lookup_simpleWithParams_disorganizedActual()
+				throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("b", VarD.of("hello"));
+				actualParams.put("a", VarD.of(69));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature(
+							"simpleWithParams",
+							new FormalParameters(
+								new FormalParameter("a", GioviType.INT),
+								new FormalParameter("b", GioviType.TEXT)
+							)
+						),
+						actualParams
+					)
+				).isEqualTo(Foo._simpleWithParams);
+			}
+
+			@Test
+			void test_lookup_simpleWithParams_subsetWithNoDefault_shouldFail()
+				throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("a", VarD.of(69));
+				assertThatExceptionOfType(NoSuchMethodException.class).isThrownBy(
+					() -> Natives.lookupMethod(
+						Foo.class,
+						new FunctionSignature(
+							"simpleWithParams",
+							new FormalParameters(
+								new FormalParameter("a", GioviType.INT),
+								new FormalParameter("b", GioviType.TEXT)
+							)
+						),
+						actualParams
+					)
+				);
+			}
+
+			@Test
+			void test_lookup_overloaded_allParams() throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("a", VarD.of(2));
+				actualParams.put("b", VarD.of(20));
+				actualParams.put("c", VarD.of(200));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						actualParams
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+			@Test
+			void test_lookup_overloaded_allParamsDisorganized() throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("b", VarD.of(20));
+				actualParams.put("a", VarD.of(2));
+				actualParams.put("c", VarD.of(200));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						actualParams
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+			@Test
+			void test_lookup_overloaded_subsetParams() throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("a", VarD.of(2));
+				actualParams.put("b", VarD.of(20));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						actualParams
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+			@Test
+			void test_lookup_overloaded_subsetAndDisorganizedParams() throws NoSuchMethodException {
+				var actualParams = new LinkedHashMap<String, VarD<?>>();
+				actualParams.put("c", VarD.of(200));
+				actualParams.put("b", VarD.of(20));
+				assertThat(
+					Natives.lookupMethod(
+						Foo.class,
+						Foo.overloaded,
+						actualParams
+					)
+				).isEqualTo(Foo._overloaded);
+			}
+
+		}
+
 	}
 
 }
