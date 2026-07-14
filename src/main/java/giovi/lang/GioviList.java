@@ -1,6 +1,7 @@
 package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviLists.copyOf;
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,11 +223,8 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 		}
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
-				case GioviInt i -> {
-					int index = i.value();
-					index = index >= 0 ? index : value.size() + index;
-					yield value.get(index);
-				}
+				case GioviInt(var index)
+					-> value.get(nativeIndexOf(index, value.size()));
 				default -> GioviComposite.super.access(right);
 			};
 			case AccessKey accessKey -> switch (accessKey) {

@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
+
 import giovi.AccessKey;
 import giovi.GTuple;
 import giovi.GioviParserVisitResult;
@@ -82,7 +84,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 					this.value.copy((Range<Integer>) right)
 				);
 			case GioviInt(var index)
-				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviProduct.super.access(right);
 		};

@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
+
 import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
@@ -91,7 +93,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 				);
 			// TODO: make this available for tuple only? More explicit that we're discarding names
 			case GioviInt(var index)
-				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviProduct.super.access(right);
 		};

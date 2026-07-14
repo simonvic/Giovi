@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
+
 import giovi.*;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
@@ -106,7 +108,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 					this.value.copy((Range<Integer>) right)
 				);
 			case GioviInt(var index)
-				-> value.getField(index >= 0 ? index : value.getFieldsCount() + index)
+				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
 			default -> GioviProduct.super.access(right);
 		};

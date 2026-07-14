@@ -1,5 +1,7 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
+
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -190,11 +192,10 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				range.iterate(index -> sb.append(this.value.charAt((int) index)));
 				yield new GioviText(sb.toString());
 			}
-			case GioviInt i -> {
-				int index = i.value();
-				index = index >= 0 ? index : value.length() + index;
-				yield new GioviText(String.valueOf(value.charAt(index)));
-			}
+			case GioviInt(var index)
+				-> new GioviText(
+					String.valueOf(value.charAt(nativeIndexOf(index, value.length())))
+				);
 			default -> GioviPrimitive.super.access(right);
 		};
 	}
