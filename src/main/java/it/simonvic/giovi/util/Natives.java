@@ -206,7 +206,7 @@ public class Natives {
 		throws IllegalArgumentException, IllegalAccessException {
 		try {
 			Field defaultValuesField = method.getDeclaringClass()
-				.getField(method.getName() + "_optionals");
+				.getField(method.getName() + "_defaults");
 			if (defaultValuesField != null
 				&& defaultValuesField.isAnnotationPresent(Native.Func.Defaults.class)) {
 				return (Map<String, GioviValue<?>>) defaultValuesField.get(null);
