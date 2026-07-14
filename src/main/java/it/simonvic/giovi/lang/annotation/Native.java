@@ -7,8 +7,6 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviTypeAny;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.annotation.Native.Type.Type_repeat;
-import it.simonvic.giovi.lang.annotation.Native.TypeType.TypeType_repeat;
 import it.simonvic.giovi.util.Natives;
 
 /// For a full implementation this depends on:
@@ -221,22 +219,22 @@ public interface Native {
 	/// @see GioviTypeAny
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
-	@Repeatable(Type_repeat.class)
+	@Repeatable(Type.Repeat.class)
 	@Documented
 	public @interface Type {
-
-		@Retention(RetentionPolicy.RUNTIME)
-		@Target({ ElementType.TYPE_USE })
-		@Documented
-		public @interface Type_repeat {
-
-			Type[] value();
-
-		}
 
 		Class<? extends GioviType<?>> value() default GioviTypeAny.class;
 
 		Class<?> nativ() default Object.class;
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE_USE })
+		@Documented
+		public @interface Repeat {
+
+			Type[] value();
+
+		}
 
 	}
 
@@ -277,7 +275,7 @@ public interface Native {
 	/// Used to specify a GioviTypeType
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
-	@Repeatable(TypeType_repeat.class)
+	@Repeatable(TypeType.Repeat.class)
 	@Documented
 	public @interface TypeType {
 
@@ -287,7 +285,7 @@ public interface Native {
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.TYPE_USE })
 		@Documented
-		public @interface TypeType_repeat {
+		public @interface Repeat {
 
 			TypeType[] value();
 
