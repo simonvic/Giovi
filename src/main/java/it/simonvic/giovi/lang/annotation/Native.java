@@ -256,9 +256,13 @@ public interface Native {
 
 	/// Used to specify a map type
 	/// 
+	/// If you have to annotate a method return type to be of type map, you'll have
+	/// to move the annotation from the return type to the method instead; this is
+	/// because it's not possible to reapeat [Type].
+	///
 	/// @see Type
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD })
 	@Documented
 	public @interface TypeMap {
 

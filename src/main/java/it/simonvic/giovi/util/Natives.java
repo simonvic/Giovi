@@ -265,6 +265,11 @@ public class Natives {
 			return GioviType.VOID;
 		}
 
+		if (method.getReturnType().equals(GioviMap.class)) {
+			// NOTE: we can't use @TypeMap on return types (can't repeat annotations)
+			return gioviTypeFrom(method.getAnnotation(Native.TypeMap.class));
+		}
+
 		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
 
 		if (annotatedReturnType.isAnnotationPresent(Self.class)) {
@@ -274,15 +279,6 @@ public class Natives {
 		var typeListAnnotation = annotatedReturnType.getAnnotation(TypeList.class);
 		if (typeListAnnotation != null) {
 			return gioviTypeFrom(typeListAnnotation);
-		}
-
-		if (annotatedReturnType.getType() == GioviMap.class) {
-			// NOTE: we can't use @TypeMap on return types (can't repeat annotations)
-			var typeMapAnnotation = annotatedReturnType.getAnnotationsByType(Native.Type.class);
-			return new GioviTypeMap(
-				gioviTypeFrom(typeMapAnnotation[0]),
-				gioviTypeFrom(typeMapAnnotation[1])
-			);
 		}
 
 		var typeTypeAnnotation = annotatedReturnType.getAnnotation(Native.TypeType.class);

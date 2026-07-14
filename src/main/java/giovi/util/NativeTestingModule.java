@@ -65,9 +65,11 @@ public class NativeTestingModule {
 	}
 
 	@Func
-	public static @Type(GioviTypeText.class) @Type(
-		GioviTypeInt.class
-	) GioviMap getMapOfPrimitive() {
+	@TypeMap(
+		key = @Type(GioviTypeText.class),
+		val = @Type(GioviTypeInt.class)
+	)
+	public static GioviMap getMapOfPrimitive() {
 		return GioviMaps.of(
 			"a", 1,
 			"b", 2,
