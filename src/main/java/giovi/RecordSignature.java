@@ -81,6 +81,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * Check if the provided signature can be widened to this signature
 	 * @param narrow
 	 * @return widened tuple
+	 * @throws NonWideneable
 	 */
 	public GRecord widen(GTuple narrow) throws NonWideneable {
 		return new GRecord(RecordSignature.widenTuple(narrow, this.fields));
@@ -90,7 +91,6 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * Widen the provided tuple to a record described by this signature
 	 * @param narrow
 	 * @return widened record
-	 * @throws NonWideneable
 	 */
 	public boolean canWiden(RecordSignature narrow) {
 		return RecordSignature.canWiden(narrow.fields(), this.fields);
@@ -223,7 +223,6 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @param wide
 	 * @return
-	 * @throws NonWideneable
 	 */
 	public static boolean canWiden(
 		LinkedHashMap<String, RecordFieldSignature> narrow,

@@ -105,7 +105,9 @@ public interface GioviParserVisitResult {
 	default Var<?> asVar() { return (Var<?>) this; }
 
 	/**
+	 * Get the underlying GioviValue.
 	 * To be used ONLY when we know we can discard/ignore the default value of a variable
+	 * @return
 	 */
 	default GioviValue<?> unwrapAsGioviValue() {
 		return switch (this) {

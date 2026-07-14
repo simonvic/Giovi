@@ -350,7 +350,6 @@ public class Natives {
 	 * Lookup native method based on signature
 	 * @param clazz
 	 * @param signature
-	 * @param actualParams
 	 * @return
 	 * @throws NoSuchMethodException
 	 */

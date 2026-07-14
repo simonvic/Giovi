@@ -53,7 +53,7 @@ public sealed interface GioviValue<T>
 	GioviType<? extends GioviValue<T>> getGioviType();
 
 	/**
-	 * Widen the value to the specified type if it's wider (e.g. Natural <= Int <= Real)
+	 * Widen the value to the specified type if it's wider (e.g. {@code Natural <= Int <= Real})
 	 * Lossless conversion
 	 * @param type
 	 * @return widened value

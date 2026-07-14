@@ -7,7 +7,6 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviTypeAny;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.lang.FunctionSignature;
-import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Type.Type_repeat;
 import it.simonvic.giovi.lang.annotation.Native.TypeType.TypeType_repeat;
 import it.simonvic.giovi.util.Natives;
@@ -88,7 +87,7 @@ public interface Native {
 		///
 		/// The field must be of type [StructSignature]
 		/// 
-		/// @see [Natives#structSignatureFrom()]
+		/// @see Natives#structSignatureFrom(Class)
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)
 		@Documented
@@ -119,7 +118,7 @@ public interface Native {
 	/// [Struct], it will be declared within the struct, hence associated to the
 	/// type.
 	///
-	/// @see [Self]
+	/// @see Self
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.METHOD })
 	@Documented
@@ -158,7 +157,7 @@ public interface Native {
 		/// ) { }
 		/// ```
 		///
-		/// @see [Param.Optional]
+		/// @see Param.Optional
 		//@formatter:on
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.FIELD })

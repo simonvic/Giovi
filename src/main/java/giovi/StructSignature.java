@@ -120,7 +120,6 @@ public record StructSignature(
 	 * Widen the provided record to a struct described by this signature
 	 * @param narrow
 	 * @return widened struct
-	 * @throws NonWideneable
 	 */
 	public boolean canWiden(StructSignature narrow) {
 		// TODO: do we ignore constants and functions? Clarify requirements
@@ -131,7 +130,6 @@ public record StructSignature(
 	 * Widen the provided struct to a struct described by this signature
 	 * @param narrow
 	 * @return widened struct
-	 * @throws NonWideneable
 	 */
 	public GStruct widen(GStruct narrow) throws NonWideneable {
 		if (narrow.getTypename().equals(this.typename)) {
