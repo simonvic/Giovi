@@ -2,11 +2,15 @@ package it.simonvic.giovi.lang.annotation;
 
 import java.lang.annotation.*;
 
+import giovi.StructSignature;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeAny;
 import giovi.lang.GioviValue;
+import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param;
 import it.simonvic.giovi.lang.annotation.Native.Type.Type_repeat;
 import it.simonvic.giovi.lang.annotation.Native.TypeType.TypeType_repeat;
+import it.simonvic.giovi.util.Natives;
 
 /// For a full implementation this depends on:
 /// 1. ~Struct constants~
@@ -23,6 +27,7 @@ public interface Native {
 
 	// TODO: add @Descriptor or @Type for method/fields to provide instance
 
+	/// To be used on Value classes to indicate the Type class by which is modeled
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	@Documented
@@ -32,6 +37,7 @@ public interface Native {
 
 	}
 
+	/// To be used on Type classes to indicate the Value class that it models
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	@Documented
@@ -42,37 +48,62 @@ public interface Native {
 	}
 
 
+	/// Indicates that the class needs is exposed in Giovi as a Module
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	@Documented
 	public @interface Module {
 
-		boolean autoimport() default true;
+		// boolean autoimport() default true;
 		// TODO: add testing scope
 
 	}
 
+	/// Indicates that the field is exposed in Giovi as a Constant.
+	///
+	/// The field must be a [GioviValue]
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
+	@Target({ ElementType.FIELD })
 	@Documented
 	public @interface Const {
 	}
 
+	/// Indicates that the class is exposed in Giovi as a native Struct
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.TYPE)
 	@Documented
 	public @interface Struct {
 
+		/// Specify the typename to expose.
+		///
+		/// If left unspecified, the class name will be used.
 		String typename() default "";
 
+		/// Specify that the struct should inherit from another struct.
+		///
+		/// The extended class must be annotated with [Struct]
 		Class<?> inherit() default Object.class;
 
+		/// Used on a field to provide a manually created signature of the struct.
+		///
+		/// The field must be of type [StructSignature]
+		/// 
+		/// @see [Natives#structSignatureFrom()]
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)
 		@Documented
 		public @interface Signature {
 		}
 
+		/// Used on a field to specify a field of the struct.
+		///
+		/// Must be a [GioviValue] and its value will be used as a default value for the
+		/// struct field.
+		///
+		/// Used on a field to specify a field of the struct.
+		///
+		/// Must be a [GioviValue] and its value will be used as a default value for the
+		/// struct field.
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.FIELD)
 		@Documented
@@ -81,11 +112,22 @@ public interface Native {
 
 	}
 
+	/// Used on a method to be exposed as a function in Giovi.
+	///
+	/// If the method is declared within a class annotated with [Module], the
+	/// function will be declared within the module. If it's declared within a
+	/// [Struct], it will be declared within the struct, hence associated to the
+	/// type.
+	///
+	/// @see [Self]
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.METHOD, ElementType.PARAMETER })
+	@Target({ ElementType.METHOD })
 	@Documented
 	public @interface Func {
 
+		/// Used to provide a manually created function signature.
+		///
+		/// Must be of type [FunctionSignature]
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.FIELD })
 		@Documented
@@ -93,6 +135,31 @@ public interface Native {
 		}
 
 
+		//@formatter:off
+		/// Used to provide a default value for an [Param.Optional] [Param] of a [Func].
+		///
+		/// The field must be named with the same name of the function, with a
+		/// `_defaults` suffix.
+		///
+		/// Must be of type `Map<String, GioviValue<?>>` and should map the param name to
+		/// its default value.
+		///
+		/// ```java
+		/// @Func.Defaults
+		/// public static final Map<String, GioviValue<?>> makePizza_defaults = Map.of(
+		/// 	"type", new GioviText("margherita"),
+		/// );
+		///
+		/// @Func
+		/// public static void makePizza(
+		/// 	GioviInt tableNumber,
+		/// 	@Optional GioviText type,
+		/// 	@Optional GioviBool hasPineapple
+		/// ) { }
+		/// ```
+		///
+		/// @see [Param.Optional]
+		//@formatter:on
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.FIELD })
 		@Documented
@@ -100,13 +167,21 @@ public interface Native {
 		}
 
 
+		/// By default, all parameters of a [Func] annotated method, will be considered
+		/// as a parameter in the function signature, whose name is the same as the
+		/// method parameter.
+		///
+		/// If some reserved keywords has to be used, the parameter can be annotated with
+		/// this annotation by providing a String for the name of the parameter.
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target(ElementType.PARAMETER)
 		@Documented
 		public @interface Param {
 
-			String value() default "";
+			String value();
 
+			/// Used on a parameter of a [Func] annotated method to declare the invocation
+			/// label of the parameter
 			@Retention(RetentionPolicy.RUNTIME)
 			@Target(ElementType.PARAMETER)
 			@Documented
@@ -116,7 +191,11 @@ public interface Native {
 
 			}
 
-
+			/// Used on a parameter of a [Func] annotated method to declare the paramater as
+			/// optional.
+			///
+			/// If a [Defaults] annotated field is not declared, the parameter default value
+			/// will be equal to its type's zero value
 			@Retention(RetentionPolicy.RUNTIME)
 			@Target(ElementType.PARAMETER)
 			@Documented
@@ -129,6 +208,18 @@ public interface Native {
 
 	}
 
+	/// By default, where possible, the Giovi type will be inferred from the native
+	/// class.
+	///
+	/// Where needed, a GioviType class can be specified with this annotation. If a
+	/// class is not provided, GioviTypeAny.class is used; in that case, the element
+	/// type must be of the abstract type `GioviValue<?>` and the type conversions
+	/// must be handled manually
+	///
+	/// If the `nativ`(e) attribute is specified, the provided class will be looked
+	/// up for native types; in this case, the `value` will be ignored
+	///
+	/// @see GioviTypeAny
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Repeatable(Type_repeat.class)
@@ -151,39 +242,43 @@ public interface Native {
 	}
 
 
+	/// Used to specify a list type
+	/// 
+	/// @see Type
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Documented
 	public @interface TypeList {
 
+		/// The entry type of the list
 		Type value();
 
 	}
 
+	/// Used to specify a map type
+	/// 
+	/// @see Type
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Documented
 	public @interface TypeMap {
 
+		/// The map key type
 		Type key();
 
+		/// The map value type
 		Type val();
 
 	}
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
-	@Documented
-	public @interface Self {
-
-	}
-
+	/// Used to specify a GioviTypeType
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
 	@Repeatable(TypeType_repeat.class)
 	@Documented
 	public @interface TypeType {
 
+		/// The type that this type describes :)
 		Type value();
 
 		@Retention(RetentionPolicy.RUNTIME)
@@ -195,6 +290,35 @@ public interface Native {
 
 		}
 
+	}
+
+	//@formatter:off
+	/// Similarily to the `self` keyword, the annotation can be used on the return type of a [Func]
+	/// annotated method to indicate that the function returns the `Self` type; can be used on a
+	/// "self" named parameter to mark the function as `self`
+	///
+	/// ```java
+	/// @Func
+	/// public static GioviText getName(@Self Pizza self) {
+	/// 	return new GioviText(self.name());
+	/// }
+	///
+	/// @Func
+	/// public static @Self Pizza makePizza() {
+	/// 	return new Pizza();
+	/// }
+	///
+	/// @Func
+	/// public static @Self Pizza cookPizza(@Self Pizza self) {
+	/// 	self.cook();
+	/// 	return self;
+	/// }
+	/// ```
+	//@formatter:on
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Documented
+	public @interface Self {
 	}
 
 }
