@@ -11,13 +11,14 @@ import it.simonvic.giovi.lang.annotation.Native.TypeType.TypeType_repeat;
 /// For a full implementation this depends on:
 /// 1. ~Struct constants~
 /// 2. ~Struct functions~
-/// 3. Function overloading?
-/// 4. Better way to get Types from Values
-///    1. Eventually performance improvements to primitive types
-/// 5. Expose Range and Types as GioviValues (or reimplement them as Native)
-/// 6. Find a way to handle Generic-like types (List,Maps,Range)
+/// 3. ~Function overloading?~
+/// 4. ~Better way to get Types from Values~
+///    1. ~Eventually performance improvements to primitive types~
+/// 5. Expose Range ~and Types~ as GioviValues (or reimplement them as Native)
+/// 6. ~Find a way to handle Generic-like types (List,Maps,Range)~
 /// 7. ~Import statements~
-/// 8. Some sort of generic typing
+/// 8. ~Some sort of generic typing~
+/// 9. Functions as parameters (how to invoke?)
 public interface Native {
 
 	// TODO: add @Descriptor or @Type for method/fields to provide instance
