@@ -34,10 +34,13 @@ public class TestGioviRecord {
 					b: true
 					c: "foo"
 				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", "foo"));
+				""")).isEqualTo(
+				GioviRecords.of(
+					"a", 69,
+					"b", true,
+					"c", "foo"
+				)
+			);
 		}
 
 		@Test
@@ -51,12 +54,16 @@ public class TestGioviRecord {
 						bar: "bar"
 					>
 				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", GRecords.of(
-					"foo", VarD.of("foo"),
-					"bar", VarD.of("bar"))));
+				""")).isEqualTo(
+				GioviRecords.of(
+					"a", 69,
+					"b", true,
+					"c", GRecords.of(
+						"foo", VarD.of("foo"),
+						"bar", VarD.of("bar")
+					)
+				)
+			);
 		}
 
 		@Test
@@ -71,13 +78,17 @@ public class TestGioviRecord {
 					>
 					d: <1 2 3>
 				>
-				""")).isEqualTo(GioviRecords.of(
-				"a", 69,
-				"b", true,
-				"c", GRecords.of(
-					"foo", VarD.of("foo"),
-					"bar", VarD.of("bar")),
-				"d", GTuples.ofNative(1, 2, 3)));
+				""")).isEqualTo(
+				GioviRecords.of(
+					"a", 69,
+					"b", true,
+					"c", GRecords.of(
+						"foo", VarD.of("foo"),
+						"bar", VarD.of("bar")
+					),
+					"d", GTuples.ofNative(1, 2, 3)
+				)
+			);
 		}
 
 	}
@@ -202,37 +213,49 @@ public class TestGioviRecord {
 				return Stream.of(
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@0..4",
-						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3, "e", 4)),
+						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3, "e", 4)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@0..3",
-						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3)),
+						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@0..2",
-						GioviRecords.of("a", 0, "b", 1, "c", 2)),
+						GioviRecords.of("a", 0, "b", 1, "c", 2)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@0..1",
-						GioviRecords.of("a", 0, "b", 1)),
+						GioviRecords.of("a", 0, "b", 1)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@0..0",
-						GioviRecords.of("a", 0)),
+						GioviRecords.of("a", 0)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@1..4",
-						GioviRecords.of("b", 1, "c", 2, "d", 3, "e", 4)),
+						GioviRecords.of("b", 1, "c", 2, "d", 3, "e", 4)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@2..4",
-						GioviRecords.of("c", 2, "d", 3, "e", 4)),
+						GioviRecords.of("c", 2, "d", 3, "e", 4)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@3..4",
-						GioviRecords.of("d", 3, "e", 4)),
+						GioviRecords.of("d", 3, "e", 4)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@4..4",
-						GioviRecords.of("e", 4)),
+						GioviRecords.of("e", 4)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@1..3",
-						GioviRecords.of("b", 1, "c", 2, "d", 3)),
+						GioviRecords.of("b", 1, "c", 2, "d", 3)
+					),
 					Arguments.of(
 						"<a:0 b:1 c:2 d:3 e:4>@2..4",
-						GioviRecords.of("c", 2, "d", 3, "e", 4)));
+						GioviRecords.of("c", 2, "d", 3, "e", 4)
+					)
+				);
 			}
 
 			@ParameterizedTest
@@ -243,11 +266,12 @@ public class TestGioviRecord {
 
 			@Test
 			void access_withLengthOperator_shouldReturnFieldsCount() {
-				assertThat(visitValue("""
-					<a:0 b:1 c:2 d:3 e:4>@%
-					""")
-					.value())
-					.isEqualTo(5);
+				assertThat(
+					visitValue("""
+						<a:0 b:1 c:2 d:3 e:4>@%
+						""")
+						.value()
+				).isEqualTo(5);
 			}
 
 			@Test

@@ -26,18 +26,28 @@ public class TestGioviTuple {
 
 		@Test
 		void testCreation_emptyTuple() {
-			assertThat(visitExpression("""
-				<>
-				""")).isEqualTo(new GioviTuple());
+			assertThat(
+				visitExpression("""
+					<>
+					""")
+			).isEqualTo(
+				new GioviTuple()
+			);
 		}
 
 		@Test
 		void testCreation_tupleWithMultipleFields() {
-			assertThat(visitExpression("""
-				<69 true "foo">
-				""")).isEqualTo(GioviTuples.of(
-				69, true, "foo"));
+			assertThat(
+				visitExpression("""
+					<69 true "foo">
+					""")
+			).isEqualTo(
+				GioviTuples.of(
+					69, true, "foo"
+				)
+			);
 		}
+
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -160,7 +170,8 @@ public class TestGioviTuple {
 					Arguments.of("<0 1 2 3 4>@3..4", GioviTuples.of(3, 4)),
 					Arguments.of("<0 1 2 3 4>@4..4", GioviTuples.of(4)),
 					Arguments.of("<0 1 2 3 4>@1..3", GioviTuples.of(1, 2, 3)),
-					Arguments.of("<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4)));
+					Arguments.of("<0 1 2 3 4>@2..4", GioviTuples.of(2, 3, 4))
+				);
 			}
 
 			@ParameterizedTest
@@ -179,7 +190,8 @@ public class TestGioviTuple {
 					Arguments.of("<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)),
 					Arguments.of("<0 1 2 3 4>@4..3", GioviTuples.of(4, 3)),
 					Arguments.of("<0 1 2 3 4>@3..1", GioviTuples.of(3, 2, 1)),
-					Arguments.of("<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2)));
+					Arguments.of("<0 1 2 3 4>@4..2", GioviTuples.of(4, 3, 2))
+				);
 			}
 
 			@ParameterizedTest
@@ -203,7 +215,8 @@ public class TestGioviTuple {
 					Arguments.of("<0 1 2 3 4>@3..4..2", GioviTuples.of(3)),
 					Arguments.of("<0 1 2 3 4>@4..4..2", GioviTuples.of(4)),
 					Arguments.of("<0 1 2 3 4>@1..3..2", GioviTuples.of(1, 3)),
-					Arguments.of("<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4)));
+					Arguments.of("<0 1 2 3 4>@2..4..2", GioviTuples.of(2, 4))
+				);
 			}
 
 			@ParameterizedTest
@@ -222,7 +235,8 @@ public class TestGioviTuple {
 					Arguments.of("<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)),
 					Arguments.of("<0 1 2 3 4>@4..3..2", GioviTuples.of(4)),
 					Arguments.of("<0 1 2 3 4>@3..1..2", GioviTuples.of(3, 1)),
-					Arguments.of("<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2)));
+					Arguments.of("<0 1 2 3 4>@4..2..2", GioviTuples.of(4, 2))
+				);
 			}
 
 			@ParameterizedTest
@@ -236,11 +250,12 @@ public class TestGioviTuple {
 
 			@Test
 			void access_withLengthOperator_shouldReturnFieldsCount() {
-				assertThat(visitValue("""
-					<0 1 2 3 4>@%
-					""")
-					.value())
-					.isEqualTo(5);
+				assertThat(
+					visitValue("""
+						<0 1 2 3 4>@%
+						""")
+						.value()
+				).isEqualTo(5);
 			}
 
 			@Test

@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
@@ -31,45 +32,53 @@ public class TestGioviList {
 
 		@Test
 		void listOfInt_shouldBe_listOfGioviInt() {
-			assertThat(visitExpression("""
-				[ 1 2 3 4 ]
-				""").asGioviList()
-				.type()
-				.entryType()
-				.value())
-				.isEqualTo(GioviInt.class);
+			assertThat(
+				visitExpression("""
+					[ 1 2 3 4 ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+					.value()
+			).isEqualTo(GioviInt.class);
 		}
 
 		@Test
 		void listOfReal_shouldBe_listOfGioviReal() {
-			assertThat(visitExpression("""
-				[ 1.0 2.0 3.0 4.0 ]
-				""").asGioviList()
-				.type()
-				.entryType()
-				.value())
-				.isEqualTo(GioviReal.class);
+			assertThat(
+				visitExpression("""
+					[ 1.0 2.0 3.0 4.0 ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+					.value()
+			).isEqualTo(GioviReal.class);
 		}
 
 		@Test
 		void listOfText_shouldBe_listOfGioviText() {
-			assertThat(visitExpression("""
-				[ "A" "B" "C" ]
-				""").asGioviList()
-				.type()
-				.entryType()
-				.value())
-				.isEqualTo(GioviText.class);
+			assertThat(
+				visitExpression("""
+					[ "A" "B" "C" ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+					.value()
+			).isEqualTo(GioviText.class);
 		}
 
 		@Test
 		void listOfBool_shouldBe_listOfGioviBool() {
-			assertThat(visitExpression("""
-				[ true false true true ]
-				""").asGioviList()
-				.type()
-				.entryType().value())
-				.isEqualTo(GioviBool.class);
+			assertThat(
+				visitExpression("""
+					[ true false true true ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType().value()
+			).isEqualTo(GioviBool.class);
 		}
 
 		@Test
@@ -81,43 +90,53 @@ public class TestGioviList {
 
 		@Test
 		void listOfMixedButCompatibleTypes_shouldInferWidestType() {
-			assertThat(visitExpression("""
-				[1n 1i 1r]
-				""").asGioviList()
-				.type()
-				.entryType()
-				.value())
-				.isEqualTo(GioviReal.class);
+			assertThat(
+				visitExpression("""
+					[1n 1i 1r]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+					.value()
+			).isEqualTo(GioviReal.class);
 		}
 
 		@Test
 		void listOfMixedButCompatibleTypes_shouldHaveAllValuesWidened() {
-			assertThat(visitExpression("""
-				[1n 1i 1r]
-				""").asGioviList().value())
-				.allSatisfy(entry -> assertThat(entry
-					.getGioviType())
-					.isEqualTo(GioviType.REAL));
+			assertThat(
+				visitExpression("""
+					[1n 1i 1r]
+					""")
+					.asGioviList()
+					.value()
+			).allSatisfy(
+				entry -> assertThat(entry.getGioviType())
+					.isEqualTo(GioviType.REAL)
+			);
 		}
 
 		@Test
 		void listOfListOfPrimitive_shouldHaveGioviTypeOfListOfPrimitive() {
-			assertThat(visitExpression("""
-				[ [1 2 3] [1 2 3] ]
-				""").asGioviList()
-				.type()
-				.entryType())
-				.isEqualTo(GioviType.LIST_OF_INT);
+			assertThat(
+				visitExpression("""
+					[ [1 2 3] [1 2 3] ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+			).isEqualTo(GioviType.LIST_OF_INT);
 		}
 
 		@Test
 		void listOfMixedButCompatibleListOfPrimitive_shouldHaveGioviTypeOfListOfWidestType() {
-			assertThat(visitExpression("""
-				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
-				""").asGioviList()
-				.type()
-				.entryType())
-				.isEqualTo(GioviType.LIST_OF_REAL);
+			assertThat(
+				visitExpression("""
+					[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
+					""")
+					.asGioviList()
+					.type()
+					.entryType()
+			).isEqualTo(GioviType.LIST_OF_REAL);
 		}
 
 		@Test
@@ -126,12 +145,16 @@ public class TestGioviList {
 		// or at least can be widened to Real (Int, Natural)
 		// When is it wiser to widen the entry? What about a very deep tuple?
 		void listOfMixedButCompatibleListOfPrimitive_shouldCastAllEntriesToWidestType() {
-			assertThat(visitExpression("""
-				[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
-				""").asGioviList().value())
-				.allSatisfy(entry -> assertThat(entry
-					.getGioviType())
-					.isEqualTo(GioviType.LIST_OF_REAL));
+			assertThat(
+				visitExpression("""
+					[ [1n 2n 3n] [1i 2i 3i] [1r 2r 3r] ]
+					""")
+					.asGioviList()
+					.value()
+			).allSatisfy(
+				entry -> assertThat(entry.getGioviType())
+					.isEqualTo(GioviType.LIST_OF_REAL)
+			);
 		}
 
 		@Test
@@ -156,26 +179,30 @@ public class TestGioviList {
 
 			@Test
 			void redir_shouldChangeValue() {
-				assertThat(visit("""
-					x [Int]
-					[1 2 3] -> x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						x [Int]
+						[1 2 3] -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redir_wideneableList_shouldWidenEntries() {
-				assertThat(visit("""
-					x [Real]
-					[1 2 3] -> x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1d, 2d, 3d));
+				assertThat(
+					visit("""
+						x [Real]
+						[1 2 3] -> x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
 			@Test
@@ -189,26 +216,30 @@ public class TestGioviList {
 
 			@Test
 			void redirPlusValue_shouldInsert() {
-				assertThat(visit("""
-					[1 2] -> x [Int]
-					3 ->+ x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[1 2] -> x [Int]
+						3 ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirPlus_wideneableValue_shouldWiden() {
-				assertThat(visit("""
-					[1r 2r] -> x [Real]
-					3 ->+ x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1d, 2d, 3d));
+				assertThat(
+					visit("""
+						[1r 2r] -> x [Real]
+						3 ->+ x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1d, 2d, 3d));
 			}
 
 			@Test
@@ -222,139 +253,165 @@ public class TestGioviList {
 
 			@Test
 			void redirMinusValue_shouldRemove() {
-				assertThat(visit("""
-					[1 2 3 4] -> x [Int]
-					4 ->- x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[1 2 3 4] -> x [Int]
+						4 ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirMinusValue_shouldRemoveFirstOccurence() {
-				assertThat(visit("""
-					[1 2 4 3 4] -> x [Int]
-					4 ->- x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3, 4));
+				assertThat(
+					visit("""
+						[1 2 4 3 4] -> x [Int]
+						4 ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3, 4));
 			}
 
 			@Test
 			void redirMinus_narrowerValue_shouldRemove() {
-				assertThat(visit("""
-					[1 2 3 4] -> x [Int]
-					4n ->- x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[1 2 3 4] -> x [Int]
+						4n ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirPlusList_shouldInsertAll() {
-				assertThat(visit("""
-					[1 2 3] -> x [Int]
-					x +<- [4 5 6]
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3, 4, 5, 6));
+				assertThat(
+					visit("""
+						[1 2 3] -> x [Int]
+						x +<- [4 5 6]
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3, 4, 5, 6));
 			}
 
 			@Test
 			void redirMinusList_shouldRemoveAll() {
-				assertThat(visit("""
-					[1 2 3 4 5 6] -> x [Int]
-					x -<- [4 5 6]
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[1 2 3 4 5 6] -> x [Int]
+						x -<- [4 5 6]
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirMinus_narrowerList_shouldRemove() {
-				assertThat(visit("""
-					[1 2 3 4] -> x [Int]
-					[4n] ->- x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[1 2 3 4] -> x [Int]
+						[4n] ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirMinusList_shouldRemoveAllOccurences() {
-				assertThat(visit("""
-					[4 5 1 6 5 2 3 4 5 6] -> x [Int]
-					[4 5 6] ->- x
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 2, 3));
+				assertThat(
+					visit("""
+						[4 5 1 6 5 2 3 4 5 6] -> x [Int]
+						[4 5 6] ->- x
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 2, 3));
 			}
 
 			@Test
 			void redirMinusValueOfMatrix_shouldRemoveFirstOccurence() {
-				assertThat(visit("""
-					x [[Int]] <- [
-						[1 0 0]
-						[1 1 1]
-						[0 1 0]
-						[0 0 1]
-					]
-					x -<- [1 1 1]
-					""")
-					.getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(
+				assertThat(
+					visit("""
+						x [[Int]] <- [
+							[1 0 0]
+							[1 1 1]
+							[0 1 0]
+							[0 0 1]
+						]
+						x -<- [1 1 1]
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(
+					GioviLists.of(
 						List.of(1, 0, 0),
 						List.of(0, 1, 0),
-						List.of(0, 0, 1)));
+						List.of(0, 0, 1)
+					)
+				);
 			}
 
 			@Test
 			void redirMinusMatrix_shouldRemoveAllOccurences() {
-				assertThat(visit("""
-					x [[Int]] <- [
-						[1 0 0]
-						[1 1 1]
-						[0 1 0]
-						[2 2 2]
-						[0 0 1]
-					]
-					x -<- [[1 1 1] [2 2 2]]
-					""").getCurrentScope().getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(
+				assertThat(
+					visit("""
+						x [[Int]] <- [
+							[1 0 0]
+							[1 1 1]
+							[0 1 0]
+							[2 2 2]
+							[0 0 1]
+						]
+						x -<- [[1 1 1] [2 2 2]]
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(
+					GioviLists.of(
 						List.of(1, 0, 0),
 						List.of(0, 1, 0),
-						List.of(0, 0, 1)));
+						List.of(0, 0, 1)
+					)
+				);
 			}
 
 			@Test
 			void redirToListAccess_shouldChangeValueAtPosition() {
-				assertThat(visit("""
-					[1 2 3] -> x [Int]
-					69 -> x@1
-					""").getCurrentScope()
-					.getVariable("x")
-					.orElseThrow()
-					.unwrap())
-					.isEqualTo(GioviLists.of(1, 69, 3));
+				assertThat(
+					visit("""
+						[1 2 3] -> x [Int]
+						69 -> x@1
+						""")
+						.getCurrentScope()
+						.getVariable("x")
+						.orElseThrow()
+						.unwrap()
+				).isEqualTo(GioviLists.of(1, 69, 3));
 			}
 
 			@Test
@@ -527,10 +584,7 @@ public class TestGioviList {
 				[0 1 2 3 4]@4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
-				assertThat(visitExpression(expression)
-					.asVar()
-					.unwrap()
-					.value())
+				assertThat(visitExpression(expression).asVar().unwrap().value())
 					.isEqualTo(expected);
 			}
 
@@ -546,10 +600,7 @@ public class TestGioviList {
 				String expression,
 				Integer expected
 			) {
-				assertThat(visitExpression(expression)
-					.asVar()
-					.unwrap()
-					.value())
+				assertThat(visitExpression(expression).asVar().unwrap().value())
 					.isEqualTo(expected);
 			}
 
@@ -566,7 +617,8 @@ public class TestGioviList {
 					Arguments.of("[0 1 2 3 4]@3..4", GioviLists.of(3, 4)),
 					Arguments.of("[0 1 2 3 4]@4..4", GioviLists.of(4)),
 					Arguments.of("[0 1 2 3 4]@1..3", GioviLists.of(1, 2, 3)),
-					Arguments.of("[0 1 2 3 4]@2..4", GioviLists.of(2, 3, 4)));
+					Arguments.of("[0 1 2 3 4]@2..4", GioviLists.of(2, 3, 4))
+				);
 			}
 
 			@ParameterizedTest
@@ -585,7 +637,8 @@ public class TestGioviList {
 					Arguments.of("[0 1 2 3 4]@4..2", GioviLists.of(4, 3, 2)),
 					Arguments.of("[0 1 2 3 4]@4..3", GioviLists.of(4, 3)),
 					Arguments.of("[0 1 2 3 4]@3..1", GioviLists.of(3, 2, 1)),
-					Arguments.of("[0 1 2 3 4]@4..2", GioviLists.of(4, 3, 2)));
+					Arguments.of("[0 1 2 3 4]@4..2", GioviLists.of(4, 3, 2))
+				);
 			}
 
 			@ParameterizedTest
@@ -621,30 +674,41 @@ public class TestGioviList {
 
 			@Test
 			void testUpcasting() {
-				assertThat(visitExpression("""
-					[1 2 3] as [Real]
-					""").asGioviList().value())
-					.allSatisfy(entry -> assertThat(entry
-						.getGioviType())
-						.isEqualTo(GioviType.REAL));
+				assertThat(
+					visitExpression("""
+						[1 2 3] as [Real]
+						""")
+						.asGioviList()
+						.value()
+				).allSatisfy(
+					entry -> assertThat(entry.getGioviType())
+						.isEqualTo(GioviType.REAL)
+				);
 			}
 
 			@Test
 			void testDowncasting() {
-				assertThat(visitExpression("""
+				assertThat(
+					visitExpression("""
 					[1.69 2.69 3.69] as [Int]
-					""").asGioviList().value())
-					.allSatisfy(entry -> assertThat(entry
-						.getGioviType())
-						.isEqualTo(GioviType.INT));
+					""")
+						.asGioviList()
+						.value()
+				).allSatisfy(
+					entry -> assertThat(entry.getGioviType())
+						.isEqualTo(GioviType.INT)
+				);
 			}
 
 			@Test
 			void downcasting_shouldDowncastAllValues() {
 				assertThat(visitExpression("""
 					[1.69 2.69 3.69] as [Int]
-					""")).isEqualTo(GioviLists.of(
-					1, 2, 3));
+					""")).isEqualTo(
+					GioviLists.of(
+						1, 2, 3
+					)
+				);
 
 			}
 
