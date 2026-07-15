@@ -293,6 +293,71 @@ public interface Native {
 
 	}
 
+	/// Used to specify a GioviTuple type
+	///
+	/// If you have to annotate a method return type, you'll have to move the
+	/// annotation from the return type to the method instead; this is because it's
+	/// not possible to reapeat [Type].
+	///
+	/// @see Type
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD })
+	@Repeatable(TypeTuple.Repeat.class)
+	@Documented
+	public @interface TypeTuple {
+
+		Type[] value();
+
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE_USE })
+		@Documented
+		public @interface Repeat {
+
+			TypeTuple[] value();
+
+		}
+
+	}
+
+	/// Used to specify a GioviRecord type
+	///
+	/// If you have to annotate a method return type, you'll have to move the
+	/// annotation from the return type to the method instead; this is because it's
+	/// not possible to reapeat [Type].
+	///
+	/// @see Type
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD })
+	@Repeatable(TypeRecord.Repeat.class)
+	@Documented
+	public @interface TypeRecord {
+
+		Member[] value();
+
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.PARAMETER })
+		@Documented
+		public @interface Member {
+
+			String name();
+
+			Type type();
+
+		}
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@Target({ ElementType.TYPE_USE })
+		@Documented
+		public @interface Repeat {
+
+			TypeRecord[] value();
+
+		}
+
+	}
+
 	//@formatter:off
 	/// Similarily to the `self` keyword, the annotation can be used on the return type of a [Func]
 	/// annotated method to indicate that the function returns the `Self` type; can be used on a

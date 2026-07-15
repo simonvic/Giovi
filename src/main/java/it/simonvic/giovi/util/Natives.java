@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import giovi.JFunction;
+import giovi.*;
 import giovi.Module;
-import giovi.RecordFieldSignature;
-import giovi.StructSignature;
 import giovi.lang.*;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.GioviException;
@@ -20,6 +19,7 @@ import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
+import it.simonvic.giovi.lang.annotation.Native.TypeRecord.Member;
 
 public class Natives {
 
@@ -260,14 +260,50 @@ public class Natives {
 		return new GioviTypeType<>(gioviTypeFrom(typeTypeAnnotation.value()));
 	}
 
+	private static GioviTypeTuple gioviTypeFrom(TypeTuple typeTupleAnnotation) {
+		return new GioviTypeTuple(
+			new TupleSignature(
+				Stream.of(typeTupleAnnotation.value())
+					.map(Natives::gioviTypeFrom)
+					.map(TupleFieldSignature::new)
+					.toList()
+			)
+		);
+	}
+
+	private static GioviTypeRecord gioviTypeFrom(TypeRecord typeRecordAnnotation) {
+		var fields = new LinkedHashMap<String, RecordFieldSignature>();
+		Stream.of(typeRecordAnnotation.value())
+			.map(Natives::recordFieldSignatureFrom)
+			.forEach(f -> fields.put(f.identifier(), f));
+		return new GioviTypeRecord(new RecordSignature(fields));
+	}
+
+	private static RecordFieldSignature recordFieldSignatureFrom(Member memberAnnotation) {
+		return new RecordFieldSignature(
+			memberAnnotation.name(),
+			gioviTypeFrom(memberAnnotation.type())
+		);
+	}
+
+
 	private static GioviType<?> gioviReturnTypeFrom(Method method) {
 		if (method.getReturnType().equals(Void.TYPE)) {
 			return GioviType.VOID;
 		}
 
+		// NOTE: we can't use these annotations on return types (can't repeat @Type)
+
 		if (method.getReturnType().equals(GioviMap.class)) {
-			// NOTE: we can't use @TypeMap on return types (can't repeat annotations)
 			return gioviTypeFrom(method.getAnnotation(Native.TypeMap.class));
+		}
+
+		if (method.getReturnType().equals(GioviTuple.class)) {
+			return gioviTypeFrom(method.getAnnotation(Native.TypeTuple.class));
+		}
+
+		if (method.getReturnType().equals(GioviRecord.class)) {
+			return gioviTypeFrom(method.getAnnotation(Native.TypeRecord.class));
 		}
 
 		AnnotatedType annotatedReturnType = method.getAnnotatedReturnType();
@@ -314,6 +350,16 @@ public class Natives {
 		var typeTypeAnnotation = param.getAnnotation(Native.TypeType.class);
 		if (typeTypeAnnotation != null) {
 			return gioviTypeFrom(typeTypeAnnotation);
+		}
+
+		var typeTupleAnnotation = param.getAnnotation(Native.TypeTuple.class);
+		if (typeTupleAnnotation != null) {
+			return gioviTypeFrom(typeTupleAnnotation);
+		}
+
+		var typeRecordAnnotation = param.getAnnotation(Native.TypeRecord.class);
+		if (typeRecordAnnotation != null) {
+			return gioviTypeFrom(typeRecordAnnotation);
 		}
 
 		// NOTE: getAnnotation(Type) will return the nested Type. E.g. TypeList(Type). So we do this last
