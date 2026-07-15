@@ -361,7 +361,9 @@ public interface Native {
 	//@formatter:off
 	/// Similarily to the `self` keyword, the annotation can be used on the return type of a [Func]
 	/// annotated method to indicate that the function returns the `Self` type; can be used on a
-	/// "self" named parameter to mark the function as `self`
+	/// "self" named parameter to mark the function as `self`.
+	///
+	/// If the return type is a complex type, the annotation must be put on the method instead
 	///
 	/// ```java
 	/// @Func
@@ -379,10 +381,16 @@ public interface Native {
 	/// 	self.cook();
 	/// 	return self;
 	/// }
+	///
+	/// @Func
+	/// @Self
+	/// public static GioviMap getIngredients(@Self Pizza self) {
+	/// 	return self.getMapOfIngredients();
+	/// }
 	/// ```
 	//@formatter:on
 	@Retention(RetentionPolicy.RUNTIME)
-	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER })
+	@Target({ ElementType.TYPE_USE, ElementType.PARAMETER, ElementType.METHOD })
 	@Documented
 	public @interface Self {
 	}

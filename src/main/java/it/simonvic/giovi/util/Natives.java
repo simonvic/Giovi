@@ -292,6 +292,10 @@ public class Natives {
 			return GioviType.VOID;
 		}
 
+		if (method.isAnnotationPresent(Self.class)) {
+			return GioviType.SELF;
+		}
+
 		// NOTE: we can't use these annotations on return types (can't repeat @Type)
 
 		if (method.getReturnType().equals(GioviMap.class)) {
