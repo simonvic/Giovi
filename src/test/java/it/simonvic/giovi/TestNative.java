@@ -17,9 +17,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import giovi.JFunction;
-import giovi.RecordFieldSignature;
-import giovi.StructSignature;
+import giovi.*;
 import giovi.lang.*;
 import giovi.util.Color.Rgb;
 import giovi.util.NativeTestingModule.TestStruct;
@@ -88,17 +86,47 @@ public class TestNative {
 				new FunctionSignature(
 					"complex",
 					new FormalParameters(
-						new FormalParameter("i", GioviType.INT),
-						new FormalParameter("s", new GioviTypeStruct(structSignatureOf(Rgb.class))),
-						new FormalParameter("l", GioviType.LIST_OF_INT),
 						new FormalParameter(
-							"m",
+							"integer",
+							GioviType.INT
+						),
+						new FormalParameter(
+							"rgb",
+							new GioviTypeStruct(structSignatureOf(Rgb.class))
+						),
+						new FormalParameter(
+							"list",
+							GioviType.LIST_OF_INT
+						),
+						new FormalParameter(
+							"map",
 							new GioviTypeMap(
 								GioviType.TEXT,
 								new GioviTypeStruct(structSignatureOf(Rgb.class))
 							)
 						),
-						new FormalParameter("t", new GioviTypeType<>(GioviType.ANY))
+						new FormalParameter(
+							"type",
+							new GioviTypeType<>(GioviType.ANY)
+						),
+						new FormalParameter(
+							"tuple",
+							new GioviTypeTuple(
+								new TupleSignature(
+									new TupleFieldSignature(GioviType.REAL),
+									new TupleFieldSignature(GioviType.BOOL)
+								)
+							)
+						),
+						new FormalParameter(
+							"record",
+							new GioviTypeRecord(
+								new RecordSignature(
+									new RecordFieldSignature("foo", GioviType.REAL),
+									new RecordFieldSignature("bar", GioviType.BOOL)
+								)
+							)
+						)
 					),
 					GioviType.INT
 				)
@@ -115,6 +143,30 @@ public class TestNative {
 				new FunctionSignature(
 					"getMapOfPrimitive",
 					new GioviTypeMap(GioviType.TEXT, GioviType.INT)
+				)
+			),
+			Arguments.of(
+				"giovi.util.NativeTestingModule.getTuple",
+				new FunctionSignature(
+					"getTuple",
+					new GioviTypeTuple(
+						new TupleSignature(
+							new TupleFieldSignature(GioviType.REAL),
+							new TupleFieldSignature(GioviType.BOOL)
+						)
+					)
+				)
+			),
+			Arguments.of(
+				"giovi.util.NativeTestingModule.getRecord",
+				new FunctionSignature(
+					"getRecord",
+					new GioviTypeRecord(
+						new RecordSignature(
+							new RecordFieldSignature("foo", GioviType.REAL),
+							new RecordFieldSignature("bar", GioviType.BOOL)
+						)
+					)
 				)
 			),
 			Arguments.of(

@@ -8,9 +8,8 @@ import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
-import it.simonvic.giovi.util.GioviLists;
-import it.simonvic.giovi.util.GioviMaps;
-import it.simonvic.giovi.util.Natives;
+import it.simonvic.giovi.lang.annotation.Native.TypeRecord.Member;
+import it.simonvic.giovi.util.*;
 
 @Module
 public class NativeTestingModule {
@@ -42,20 +41,27 @@ public class NativeTestingModule {
 
 	@Func
 	public static GioviInt complex(
-		GioviInt i,
-		@Type(nativ = Rgb.class) GioviStruct s,
-		@TypeList(@Type(GioviTypeInt.class)) GioviList l,
+		GioviInt integer,
+		@Type(nativ = Rgb.class) GioviStruct rgb,
+		@TypeList(@Type(GioviTypeInt.class)) GioviList list,
 		@TypeMap(
 			key = @Type(GioviTypeText.class),
 			val = @Type(nativ = Rgb.class)
-		) GioviMap m,
-		@TypeType(@Type) GioviType<?> t
+		) GioviMap map,
+		@TypeType(@Type) GioviType<?> type,
+		@TypeTuple({ @Type(GioviTypeReal.class), @Type(GioviTypeBool.class) }) GioviTuple tuple,
+		@TypeRecord({
+			@Member(name = "foo", type = @Type(GioviTypeReal.class)),
+			@Member(name = "bar", type = @Type(GioviTypeBool.class)),
+		}) GioviRecord record
 	) {
-		System.out.println(i);
-		System.out.println(s);
-		System.out.println(l);
-		System.out.println(m);
-		System.out.println(t);
+		System.out.println(integer);
+		System.out.println(rgb);
+		System.out.println(list);
+		System.out.println(map);
+		System.out.println(type);
+		System.out.println(tuple);
+		System.out.println(record);
 		return new GioviInt(69);
 	}
 
@@ -74,6 +80,24 @@ public class NativeTestingModule {
 			"a", 1,
 			"b", 2,
 			"c", 3
+		);
+	}
+
+	@Func
+	@TypeTuple({ @Type(GioviTypeReal.class), @Type(GioviTypeBool.class) })
+	public static GioviTuple getTuple() {
+		return GioviTuples.of(1.0, true);
+	}
+
+	@Func
+	@TypeRecord({
+		@Member(name = "foo", type = @Type(GioviTypeReal.class)),
+		@Member(name = "bar", type = @Type(GioviTypeBool.class))
+	})
+	public static GioviRecord getRecord() {
+		return GioviRecords.of(
+			"foo", 1.0,
+			"bar", true
 		);
 	}
 
