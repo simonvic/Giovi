@@ -6,6 +6,7 @@ import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 import java.util.Collections;
 import java.util.Map;
 
+import giovi.Range;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
 import it.simonvic.giovi.Var;
@@ -77,6 +78,8 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Native
 
+	// TODO: range() once range is implemented as a type
+
 	@Func
 	public static GioviInt count(@Self GioviList self) {
 		return new GioviInt(self.value().size());
@@ -88,7 +91,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	}
 
 	@Func
-	public static @Self GioviList clear(@Self GioviList self) throws NonWideneable {
+	public static @Self GioviList clear(@Self GioviList self) {
 		self.value().clear();
 		return self;
 	}
