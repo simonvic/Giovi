@@ -22,6 +22,7 @@ import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.util.GioviLists;
+import it.simonvic.giovi.util.GioviRecords;
 
 public class TestGioviList {
 
@@ -712,6 +713,162 @@ public class TestGioviList {
 
 			}
 
+		}
+
+	}
+
+	@Nested
+	class NativeBindings {
+
+
+		@Test
+		void test_selfMutatingFunction_shouldMutateSameInstance() {
+			// TODO: clarify requirements
+			var visitor = visit("""
+				l [Int]
+				""");
+			var l = visitor.lookup("l").orElseThrow();
+			visit(visitor, """
+				l.reverse()
+				""");
+			assertThat(visitor.lookup("l"))
+				.containsSame(l);
+		}
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			[].count(), 0
+			[1].count(), 1
+			[1 2 3 4].count(), 4
+			"""
+		)
+		void test_count(String code, int expected) {
+			assertThat(visitExpression(code))
+				.isEqualTo(new GioviInt(expected));
+		}
+
+		@ParameterizedTest
+		@CsvSource(textBlock = """
+			[].isEmpty(), true
+			[1].isEmpty(), false
+			"""
+		)
+		void test_isEmpty(String code, boolean expected) {
+			assertThat(visitExpression(code))
+				.isEqualTo(GioviBool.of(expected));
+		}
+
+		@Test
+		void testThat_add_returnsSameInstance() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				""");
+			var l = visitor.lookup("l").orElseThrow().unwrapAsGioviValue();
+			assertThat(visitExpression(visitor, """
+				l.add(69)
+				"""))
+				.isSameAs(l);
+		}
+
+		@Test
+		void testThat_add_shouldAdd_atEnd() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				l.add(69)
+				""");
+			assertThat(visitor.lookup("l"))
+				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)
+				.contains(GioviLists.of(0, 1, 2, 3, 4, 69));
+		}
+
+		@Test
+		void testThat_add_shouldAdd_atSpecifiedIndex() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				l.add(69, 2)
+				l.add(420, -2)
+				""");
+			assertThat(visitor.lookup("l"))
+				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)
+				.contains(GioviLists.of(0, 1, 69, 2, 3, 420, 4));
+		}
+
+		@Test
+		void test_replace() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				l.replace(index:1, element:69)
+				""");
+			assertThat(visitor.lookup("l"))
+				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)
+				.contains(GioviLists.of(0, 69, 2, 3, 4));
+		}
+
+		@Test
+		void test_remove() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				l.remove(1)
+				""");
+			assertThat(visitor.lookup("l"))
+				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)
+				.contains(GioviLists.of(0, 2, 3, 4));
+		}
+
+		@Test
+		void test_reverse() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				l.reverse()
+				""");
+			assertThat(visitor.lookup("l"))
+				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)
+				.contains(GioviLists.of(4, 3, 2, 1, 0));
+		}
+
+		@Test
+		void test_reversed() {
+			var visitor = visit("""
+				l [Int] <- [0 1 2 3 4]
+				""");
+			var l = visitor.lookup("l").orElseThrow().unwrapAsGioviValue();
+			assertThat(visitExpression(visitor, """
+				l.reversed()
+				"""))
+				.isNotSameAs(l)
+				.isEqualTo(GioviLists.of(4, 3, 2, 1, 0));
+		}
+
+		@Test
+		void test_find() {
+			var visitor = visit("""
+				l [Real] <- [0r 1r 2r 3r 4r]
+				""");
+			assertThat(visitExpression(visitor, """
+				l.find(2n)
+				"""))
+				.isEqualTo(
+					GioviRecords.of(
+						"found", true,
+						"index", 2
+					)
+				);
+		}
+
+		@Test
+		void testThat_find_notEqualElement_returnsFalse() {
+			var visitor = visit("""
+				l [Real] <- [0r 1r 2r 3r 4r]
+				""");
+			assertThat(visitExpression(visitor, """
+				l.find(69)
+				"""))
+				.isEqualTo(
+					GioviRecords.of(
+						"found", false,
+						"index", 0
+					)
+				);
 		}
 
 	}
