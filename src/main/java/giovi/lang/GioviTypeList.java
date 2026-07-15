@@ -1,8 +1,20 @@
 package giovi.lang;
 
+import static it.simonvic.giovi.util.GioviLists.copyOf;
+import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
+
+import java.util.Collections;
+import java.util.Map;
+
+import giovi.RecordFieldSignature;
+import giovi.RecordSignature;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.lang.annotation.Native.Describes;
+import it.simonvic.giovi.lang.annotation.Native.*;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
+import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
+import it.simonvic.giovi.util.GRecords;
 
 @Describes(GioviList.class)
 public record GioviTypeList(GioviType<?> entryType, Integer initSize)
@@ -61,6 +73,115 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 			rawList.add(new Var<>(this.entryType.spawn()));
 		}
 		return list;
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////// Native
+
+	@Func
+	public static GioviInt count(@Self GioviList self) {
+		return new GioviInt(self.value().size());
+	}
+
+	@Func
+	public static GioviBool isEmpty(@Self GioviList self) {
+		return GioviBool.of(self.value().isEmpty());
+	}
+
+	@Func
+	public static @Self GioviList clear(@Self GioviList self) throws NonWideneable {
+		self.value().clear();
+		return self;
+	}
+
+	@Func.Defaults
+	public static final Map<String, GioviValue<?>> add_defaults = Map.of(
+		"index", new GioviInt(-1)
+	);
+
+	@Func
+	public static @Self GioviList add(
+		@Self GioviList self,
+		GioviAny element,
+		@Label("to") @Optional GioviInt index
+	) throws NonWideneable {
+		int idx = index.value();
+		self.value().add(
+			idx >= 0 ? idx : nativeIndexOf(idx, self.value().size()) + 1,
+			new Var<>(self.getGioviType().entryType.widen(element.value()))
+		);
+		return self;
+	}
+
+	@Func
+	public static @Self GioviList replace(
+		@Self GioviList self,
+		GioviAny element,
+		GioviInt index
+	) throws NonWideneable {
+		self.value().set(
+			nativeIndexOf(index.value(), self.value().size()),
+			new Var<>(self.getGioviType().entryType.widen(element))
+		);
+		return self;
+	}
+
+	@Func
+	public static @Self GioviList remove(
+		@Self GioviList self,
+		GioviInt index
+	) throws NonWideneable {
+		self.value().remove(nativeIndexOf(index.value(), self.value().size()));
+		return self;
+	}
+
+	// @Func
+	// public static @Self GioviList sort(
+	// 	@Self GioviList self,
+	// 	@Optional GioviBool descending
+	// ) throws NonWideneable {
+	// 	self.value().sort((v1, v2) -> 0);
+	// 	return self;
+	// }
+
+	@Func
+	public static @Self GioviList reverse(@Self GioviList self) {
+		Collections.reverse(self.value());
+		return self;
+	}
+
+	@Func
+	public static @Self GioviList reversed(@Self GioviList self) {
+		return new GioviList(self.getGioviType(), copyOf(self.value()).reversed());
+	}
+
+	private static final GioviTypeRecord find_returnType = new GioviTypeRecord(
+		new RecordSignature(
+			new RecordFieldSignature("found", GioviType.BOOL),
+			new RecordFieldSignature("index", GioviType.INT)
+		)
+	);
+
+	@Func
+	@TypeRecord({
+		@TypeRecord.Member(name = "found", type = @Type(GioviTypeBool.class)),
+		@TypeRecord.Member(name = "index", type = @Type(GioviTypeInt.class))
+	})
+	public static GioviRecord find(
+		@Self GioviList self,
+		GioviAny element
+	) {
+		for (int i = 0; i < self.value().size(); i++) {
+			if (self.value().get(i).equal(element.value()).asNativeBool()) {
+				return new GioviRecord(
+					find_returnType,
+					GRecords.of(
+						"found", new VarD<>(GioviBool.of(true)),
+						"index", new VarD<>(new GioviInt(i))
+					)
+				);
+			}
+		}
+		return find_returnType.spawn();
 	}
 
 }
