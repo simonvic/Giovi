@@ -92,6 +92,15 @@ public sealed interface GioviType<T extends GioviValue<?>>
 		};
 	}
 
+	@Override
+	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		return switch (right) {
+			case MemberKey(var identifier)
+				-> findFunction(identifier, this.getClass())
+					.orElseGet(() -> GioviPrimitive.super.dotRef(right).asGioviFunction());
+			default -> GioviPrimitive.super.dotRef(right);
+		};
+	}
 
 	/// Lookup a native symbol
 	///

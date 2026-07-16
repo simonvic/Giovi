@@ -276,4 +276,14 @@ public sealed interface GioviValue<T>
 		};
 	}
 
+	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		return switch (right) {
+			case MemberKey(var identifier) when this
+				.getClass().getAnnotation(DescribedBy.class) instanceof DescribedBy annotation
+				-> GioviType.findFunction(identifier, annotation.value())
+					.orElseGet(() -> GioviObject.super.dotRef(right).asGioviFunction());
+			default -> GioviObject.super.dotRef(right);
+		};
+	}
+
 }
