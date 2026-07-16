@@ -128,8 +128,10 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	) {
 		try {
 			Field field = clazz.getField(identifier);
-			if (field.isAnnotationPresent(Const.class)
-				&& field.get(null) instanceof GioviValue<?> v) {
+			if (
+				field.isAnnotationPresent(Const.class)
+					&& field.get(null) instanceof GioviValue<?> v
+			) {
 				return Optional.of(v);
 			}
 		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException _) {
@@ -148,8 +150,10 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	) {
 		// Method
 		for (Method method : clazz.getMethods()) {
-			if (method.getName().equals(identifier)
-				&& method.isAnnotationPresent(Func.class)) {
+			if (
+				method.getName().equals(identifier)
+					&& method.isAnnotationPresent(Func.class)
+			) {
 				return Optional.of(new GioviFunction(new JFunction(method)));
 			}
 		}

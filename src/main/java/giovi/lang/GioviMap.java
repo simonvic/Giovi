@@ -238,8 +238,10 @@ public record GioviMap(
 			case GioviMap(var type, var value) when type.equals(this.type) -> {
 				for (var entry : value.entrySet()) {
 					var key = entry.getKey();
-					if (!this.value.containsKey(key)
-						|| !this.value.get(key).equal(entry.getValue()).asNativeBool()) {
+					if (
+						!this.value.containsKey(key)
+							|| !this.value.get(key).equal(entry.getValue()).asNativeBool()
+					) {
 						yield GioviBool.FALSE;
 					}
 				}

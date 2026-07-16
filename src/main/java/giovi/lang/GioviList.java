@@ -177,8 +177,10 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 				if (this.value.size() != v.value.size()) {
 					yield GioviBool.FALSE;
 				}
-				if (!this.type.entryType().equals(v.type.entryType())
-					&& !this.type.entryType().isWidenableTo(v.type.entryType())) {
+				if (
+					!this.type.entryType().equals(v.type.entryType())
+						&& !this.type.entryType().isWidenableTo(v.type.entryType())
+				) {
 					yield GioviBool.FALSE;
 				}
 				for (int i = 0; i < this.value.size(); i++) {

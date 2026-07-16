@@ -207,8 +207,10 @@ public class Scope {
 	public void declare(InnerModule module) {
 		var declaredModule = modules.get(module.identifier());
 		if (declaredModule != null) {
-			if (declaredModule instanceof InnerModule(_, _, _, var bodyCtx)
-				&& bodyCtx == module.bodyCtx()) {
+			if (
+				declaredModule instanceof InnerModule(_, _, _, var bodyCtx)
+					&& bodyCtx == module.bodyCtx()
+			) {
 				// NOTE: module already declared with early eager inner module scan
 				return;
 			}

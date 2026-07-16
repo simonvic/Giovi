@@ -28,8 +28,10 @@ public sealed interface Module extends GioviParserVisitResult {
 	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
 		if (right instanceof MemberKey(var identifier)) {
 			var symbolOpt = scope().getSymbol(identifier);
-			if (symbolOpt.isPresent()
-				&& symbolOpt.orElseThrow() instanceof GioviFunction function) {
+			if (
+				symbolOpt.isPresent()
+					&& symbolOpt.orElseThrow() instanceof GioviFunction function
+			) {
 				return function;
 			}
 		}

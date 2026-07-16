@@ -892,8 +892,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			}
 
 		};
-		if (returnValue instanceof GioviVoid
-			&& !(function.signature().returnType() instanceof GioviTypeVoid)) {
+		if (
+			returnValue instanceof GioviVoid
+				&& !(function.signature().returnType() instanceof GioviTypeVoid)
+		) {
 			throw new GioviException("Missing return statement in function");
 		}
 		exitScope();
@@ -1038,8 +1040,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 					// HACK: is there a more elegant way of retrieving self type?
 					returnType = getCurrentScope().getVariable("self").orElseThrow().getGioviType();
 				}
-				if (!(returnedValue instanceof GioviVoid)
-					&& returnType instanceof GioviTypeVoid) {
+				if (
+					!(returnedValue instanceof GioviVoid)
+						&& returnType instanceof GioviTypeVoid
+				) {
 					throw new GioviException(
 						"Can't return " + returnedValue + " in a function with no return type"
 					);

@@ -36,9 +36,11 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 
 	public Optional<MultiIfConditionContext> evaluate() {
 		for (MultiIfConditionContext ctx : ctx.multiIfCondition()) {
-			if (visit(ctx.caseMatch()).asNativeBool()
-				&& (ctx.guard == null
-					|| gioviVisitor.visit(ctx.guard).unwrapAsGioviValue().asNativeBool())) {
+			if (
+				visit(ctx.caseMatch()).asNativeBool()
+					&& (ctx.guard == null
+						|| gioviVisitor.visit(ctx.guard).unwrapAsGioviValue().asNativeBool())
+			) {
 				return Optional.of(ctx);
 			}
 		}

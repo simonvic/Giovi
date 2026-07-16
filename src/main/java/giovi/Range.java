@@ -41,7 +41,8 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 
 	public GioviList expandAsGioviList() {
 		var gioviList = new ArrayList<Var<?>>(
-			expand().stream().map(Var::of).toList());
+			expand().stream().map(Var::of).toList()
+		);
 		return new GioviList(new GioviTypeList(GioviTypes.inferGioviType(gioviList)), gioviList);
 	}
 
@@ -59,7 +60,8 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 			return Range.of(
 				start.asNativeNumber().doubleValue(),
 				end.asNativeNumber().doubleValue(),
-				stepNumber == null ? 1d : stepNumber.doubleValue());
+				stepNumber == null ? 1d : stepNumber.doubleValue()
+			);
 		}
 
 		int stepInt = step == null ? 1 : stepNumber.intValue();
@@ -148,7 +150,8 @@ public record Range<T>(T start, T end, Number step, IterationStrategy<T> iterati
 		}
 		if (!start.matches("[a-zA-Z]") || !end.matches("[a-zA-Z]")) {
 			throw new GioviException(
-				"A Range is not applicable to given characters: start=" + start + " end=" + end);
+				"A Range is not applicable to given characters: start=" + start + " end=" + end
+			);
 		}
 
 		char startChar = start.toCharArray()[0];
