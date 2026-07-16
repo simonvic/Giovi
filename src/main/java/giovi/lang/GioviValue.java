@@ -274,7 +274,6 @@ public sealed interface GioviValue<T>
 		return switch (right) {
 			case GioviDefault _ -> getGioviType().spawn();
 			case Var<?> v -> dot(v.unwrap());
-			// TODO: lookup for self functions in the Value instance
 			case MemberKey(var identifier) when this
 				.getClass().getAnnotation(DescribedBy.class) instanceof DescribedBy annotation
 				-> findSymbol(identifier, annotation.value())
