@@ -1,8 +1,16 @@
 package giovi.lang;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Optional;
+
 import giovi.GioviParserVisitResult;
+import giovi.JFunction;
 import giovi.MemberKey;
 import it.simonvic.giovi.exceptions.NonWideneable;
+import it.simonvic.giovi.lang.Scope;
+import it.simonvic.giovi.lang.annotation.Native.Const;
+import it.simonvic.giovi.lang.annotation.Native.Func;
 
 // TODO: is generic needed? Why not just extends GioviPrimitive<Class<? extends GioviValue<?>>>
 // TODO: better integrate types with values instead of having two separate hierarchies (maybe with nested Annotated classes?)
@@ -78,11 +86,65 @@ public sealed interface GioviType<T extends GioviValue<?>>
 			// TODO: when types as first-class citizens are implemented, the spawning should be moved to `access` instead
 			case GioviDefault _ -> spawn();
 			case MemberKey(var identifier)
-				-> GioviValue.findSymbol(identifier, this.getClass())
+				-> findSymbol(identifier, this.getClass())
 					.orElseGet(() -> GioviPrimitive.super.dot(right));
 			default -> GioviPrimitive.super.dot(right);
 		};
 	}
 
+
+	/// Lookup a native symbol
+	///
+	/// Lookup order is the same of [Scope#getSymbol(String)]
+	/// 
+	/// @param identifier identifier of the symbol
+	/// @param clazz      class to inspect
+	/// @return optional symbol
+	public static Optional<GioviParserVisitResult> findSymbol(
+		String identifier,
+		Class<?> clazz
+	) {
+		return findConstant(identifier, clazz).map(GioviParserVisitResult.class::cast)
+			.or(() -> findFunction(identifier, clazz));
+	}
+
+	/// Lookup a native constant
+	///
+	/// @param identifier identifier of the constant
+	/// @param clazz      class to inspect
+	/// @return optional constant
+	public static Optional<GioviValue<?>> findConstant(
+		String identifier,
+		Class<?> clazz
+	) {
+		try {
+			Field field = clazz.getField(identifier);
+			if (field.isAnnotationPresent(Const.class)
+				&& field.get(null) instanceof GioviValue<?> v) {
+				return Optional.of(v);
+			}
+		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException _) {
+		}
+		return Optional.empty();
+	}
+
+	/// Lookup a native function
+	///
+	/// @param identifier identifier of the function
+	/// @param clazz      class to inspect
+	/// @return optional function
+	public static Optional<GioviFunction> findFunction(
+		String identifier,
+		Class<?> clazz
+	) {
+		// Method
+		for (Method method : clazz.getMethods()) {
+			if (method.getName().equals(identifier)
+				&& method.isAnnotationPresent(Func.class)) {
+				return Optional.of(new GioviFunction(new JFunction(method)));
+			}
+		}
+		return Optional.empty();
+	}
 
 }

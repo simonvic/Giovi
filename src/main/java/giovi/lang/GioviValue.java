@@ -1,19 +1,13 @@
 package giovi.lang;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import giovi.*;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.lang.Scope;
-import it.simonvic.giovi.lang.annotation.Native.Const;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
-import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.util.*;
 
 public sealed interface GioviValue<T>
@@ -276,39 +270,10 @@ public sealed interface GioviValue<T>
 			case Var<?> v -> dot(v.unwrap());
 			case MemberKey(var identifier) when this
 				.getClass().getAnnotation(DescribedBy.class) instanceof DescribedBy annotation
-				-> findSymbol(identifier, annotation.value())
+				-> GioviType.findSymbol(identifier, annotation.value())
 					.orElseGet(() -> GioviObject.super.dot(right));
 			default -> GioviObject.super.dot(right);
 		};
 	}
-
-	/// Lookup a native symbol
-	///
-	/// Lookup order is the same of [Scope]
-	public static Optional<GioviParserVisitResult> findSymbol(
-		String identifier,
-		Class<?> clazz
-	) {
-		// Constants
-		try {
-			Field field = clazz.getField(identifier);
-			if (field.isAnnotationPresent(Const.class)
-				&& field.get(null) instanceof GioviValue<?> v) {
-				return Optional.of(v);
-			}
-		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException _) {
-		}
-
-		// Method
-		for (Method method : clazz.getMethods()) {
-			if (method.getName().equals(identifier)
-				&& method.isAnnotationPresent(Func.class)) {
-				return Optional.of(new GioviFunction(new JFunction(method)));
-			}
-		}
-
-		return Optional.empty();
-	}
-
 
 }
