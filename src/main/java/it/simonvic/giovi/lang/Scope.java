@@ -253,14 +253,8 @@ public class Scope {
 	);
 
 	public Optional<GioviType<?>> getType(String typename) {
-		if (primitiveTypes.containsKey(typename)) {
-			return Optional.of(primitiveTypes.get(typename));
-		}
-		var structSignatureOpt = getStructType(typename);
-		if (structSignatureOpt.isPresent()) {
-			return Optional.of(structSignatureOpt.orElseThrow());
-		}
-		return Optional.empty();
+		return Optional.<GioviType<?>>ofNullable(primitiveTypes.get(typename))
+			.or(() -> getStructType(typename));
 	}
 
 	/// Breadth-first search of a symbol.
@@ -271,37 +265,19 @@ public class Scope {
 	/// - functions
 	/// - types
 	/// - modules
+	///
+	/// @param identifier identifier of the symbol
+	/// @return symbol
 	public Optional<GioviParserVisitResult> getSymbol(String identifier) {
-		if (variables.containsKey(identifier)) {
-			return Optional.of(variables.get(identifier));
-		}
-
-		if (constants.containsKey(identifier)) {
-			return Optional.of(constants.get(identifier));
-		}
-
 		// TODO(grammar): since we use `::` prefix to explicitly refer to functions, why not use `$` prefix to refer to modules? Why not extending the concept to types for consistency?
-		if (functions.containsKey(identifier)) {
-			return Optional.of(new GioviFunction(functions.get(identifier)));
-		}
-
-		if (primitiveTypes.containsKey(identifier)) {
-			return Optional.of(primitiveTypes.get(identifier));
-		}
-
-		if (structDefinitions.containsKey(identifier)) {
-			return Optional.of(structDefinitions.get(identifier));
-		}
-
-		if (modules.containsKey(identifier)) {
-			return Optional.of(modules.get(identifier));
-		}
-
-		if (parent != null) {
-			return parent.getSymbol(identifier);
-		}
-
-		return Optional.empty();
+		return Optional
+			.<GioviParserVisitResult>ofNullable(variables.get(identifier))
+			.or(() -> Optional.ofNullable(constants.get(identifier)))
+			.or(() -> Optional.ofNullable(functions.get(identifier)).map(GioviFunction::new))
+			.or(() -> Optional.ofNullable(primitiveTypes.get(identifier)))
+			.or(() -> Optional.ofNullable(structDefinitions.get(identifier)))
+			.or(() -> Optional.ofNullable(modules.get(identifier)))
+			.or(() -> parent.getSymbol(identifier));
 	}
 
 	public void merge(Scope scope) {
