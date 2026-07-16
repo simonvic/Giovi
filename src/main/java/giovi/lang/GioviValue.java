@@ -293,7 +293,7 @@ public sealed interface GioviValue<T>
 		try {
 			Field field = clazz.getField(identifier);
 			if (field.isAnnotationPresent(Const.class)
-				&& field.get(null) instanceof GioviParserVisitResult v) {
+				&& field.get(null) instanceof GioviValue<?> v) {
 				return Optional.of(v);
 			}
 		} catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException _) {
