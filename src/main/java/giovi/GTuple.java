@@ -55,6 +55,7 @@ public sealed class GTuple implements GProduct permits GRecord {
 		return Objects.equals(fields, other.fields);
 	}
 
+	@Override
 	public GTuple copy() {
 		var a = new ArrayList<VarD<?>>(fields.size());
 		this.fields.forEach(value -> a.add(value.copy()));
