@@ -121,6 +121,56 @@ public sealed interface GioviValue<T>
 		};
 	}
 
+	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
+
+	default GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseAnd(getGioviType().spawn());
+			case Var<?> v -> bitwiseAnd(v.unwrap());
+			default -> GioviObject.super.bitwiseAnd(right);
+		};
+	}
+
+	default GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseOr(getGioviType().spawn());
+			case Var<?> v -> bitwiseOr(v.unwrap());
+			default -> GioviObject.super.bitwiseOr(right);
+		};
+	}
+
+	default GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseXor(getGioviType().spawn());
+			case Var<?> v -> bitwiseXor(v.unwrap());
+			default -> GioviObject.super.bitwiseXor(right);
+		};
+	}
+
+	default GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseLeftShift(getGioviType().spawn());
+			case Var<?> v -> bitwiseLeftShift(v.unwrap());
+			default -> GioviObject.super.bitwiseLeftShift(right);
+		};
+	}
+
+	default GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseRightShift(getGioviType().spawn());
+			case Var<?> v -> bitwiseRightShift(v.unwrap());
+			default -> GioviObject.super.bitwiseRightShift(right);
+		};
+	}
+
+	default GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviDefault _ -> bitwiseRightUnsignedShift(getGioviType().spawn());
+			case Var<?> v -> bitwiseRightUnsignedShift(v.unwrap());
+			default -> GioviObject.super.bitwiseRightUnsignedShift(right);
+		};
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	default GioviParserVisitResult plus(GioviParserVisitResult right) {
