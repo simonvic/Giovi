@@ -51,7 +51,7 @@ public record FormalParameter(
 	}
 
 	public VarD<?> spawn() {
-		return new VarD<>(defaultValue.copy());
+		return new VarD<>(defaultValue.copy(), defaultValue.copy());
 	}
 
 }
