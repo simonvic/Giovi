@@ -78,12 +78,11 @@ public sealed class GTuple implements GProduct permits GRecord {
 	public GTuple as(TupleSignature signature) {
 		var casted = signature.spawn();
 		for (int i = 0; i < signature.fields().size(); i++) {
-			var fieldSignature = signature.fields().get(i);
 			var castedField = casted.getField(i).orElseThrow();
 			if (i < this.getFieldsCount()) {
 				this.getField(i).ifPresent(
 					field -> castedField.setValueWithRedirection(
-						field.as(fieldSignature.type())
+						field.as(castedField.getGioviType())
 					)
 				);
 			}
@@ -94,7 +93,6 @@ public sealed class GTuple implements GProduct permits GRecord {
 	@Override
 	public GRecord as(RecordSignature signature) {
 		var casted = signature.spawn();
-		// var signatureFields = new ArrayList<>(signature.fields().values());
 		for (int i = 0; i < signature.fields().size(); i++) {
 			var castedField = casted.getField(i).orElseThrow();
 			if (i < this.getFieldsCount()) {
@@ -111,7 +109,6 @@ public sealed class GTuple implements GProduct permits GRecord {
 	@Override
 	public GStruct as(StructSignature signature) {
 		var casted = signature.spawn();
-		// var signatureFields = new ArrayList<>(signature.fields().values());
 		for (int i = 0; i < signature.fields().size(); i++) {
 			var castedField = casted.getField(i).orElseThrow();
 			if (i < this.getFieldsCount()) {
