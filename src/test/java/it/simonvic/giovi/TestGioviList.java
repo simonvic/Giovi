@@ -427,27 +427,148 @@ public class TestGioviList {
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
 		@Nested
-		@Disabled("Candidate not implemented yet")
 		class Arithmetic {
 
 			@Test
-			@Disabled("Candidate not implemented")
-			void plus_shouldConcatenate() {
-				assertThat(visitExpression("""
-					[1 2] + [2 3]
-					"""))
-					.isEqualTo(GioviLists.of(1, 2, 2, 3));
+			void plus_list_shouldConcatenate() {
+				assertThat(
+					visitExpression("""
+						[1 2] + [2 3]
+						""")
+				).isEqualTo(
+					GioviLists.of(1, 2, 2, 3)
+				);
 			}
 
 			@Test
-			@Disabled("Candidate not implemented")
-			void minus_shouldIntersecate() {
-				assertThat(visitExpression("""
-					[1 2 3] - [3 4]
-					"""))
-					.isEqualTo(GioviLists.of(1, 2));
+			void plus_narrowerList_shouldConcatenate() {
+				assertThat(
+					visitExpression("""
+						[1r 2r] + [2 3]
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 2d, 2d, 3d)
+				);
 			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void plus_widerList_shouldConcatenate() {
+				assertThat(
+					visitExpression("""
+						[1 2] + [2r 3r]
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 2d, 2d, 3d)
+				);
+			}
+
+			@Test
+			void plus_entry_shouldAdd() {
+				assertThat(
+					visitExpression("""
+						[1 2] + 3
+						""")
+				).isEqualTo(
+					GioviLists.of(1, 2, 3)
+				);
+			}
+
+			@Test
+			void plus_narrowerEntry_shouldAdd() {
+				assertThat(
+					visitExpression("""
+						[1r 2r] + 3
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 2d, 3d)
+				);
+			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void plus_widerEntry_shouldAdd() {
+				assertThat(
+					visitExpression("""
+						[1 2] + 3r
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 2d, 3d)
+				);
+			}
+
+			@Test
+			void minus_list_shouldIntersecate() {
+				assertThat(
+					visitExpression("""
+						[1 2 3 2] - [2 4]
+						""")
+				).isEqualTo(
+					GioviLists.of(1, 3)
+				);
+			}
+
+			@Test
+			void minus_narrowerList_shouldIntersecate() {
+				assertThat(
+					visitExpression("""
+						[1 2 3 2] - [2n 4n]
+						""")
+				).isEqualTo(
+					GioviLists.of(1, 3)
+				);
+			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void minus_widerList_shouldIntersecate() {
+				assertThat(
+					visitExpression("""
+						[1 2 3 2] - [2r 4r]
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 3d)
+				);
+			}
+
+			// TODO(requirements): clarify
+
+			@Test
+			void minus_entry_shouldRemoveFirstEntry() {
+				assertThat(
+					visitExpression("""
+						[1 3 2 3] - 3
+						""")
+				).isEqualTo(
+					GioviLists.of(1, 2, 3)
+				);
+			}
+
+			@Test
+			void minus_narrowerEntry_shouldRemoveFirstEntry() {
+				assertThat(
+					visitExpression("""
+					[1 3 2 3] - 3n
+					""")
+				).isEqualTo(
+					GioviLists.of(1, 2, 3)
+				);
+			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void minus_widerEntry_shouldRemoveFirstEntry() {
+				assertThat(
+					visitExpression("""
+						[1 3 2 3] - 3r
+						""")
+				).isEqualTo(
+					GioviLists.of(1d, 2d, 3d)
+				);
+			}
+
 
 		}
 
