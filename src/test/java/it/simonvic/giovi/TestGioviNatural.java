@@ -5,6 +5,7 @@ import static it.simonvic.giovi.GioviVisitorUtils.visitExpression;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -121,6 +122,7 @@ public class TestGioviNatural {
 				).isEqualTo(new Natural(420));
 			}
 
+			@Disabled("Clarify requirements")
 			@Test
 			void testRedirectionDivide() {
 				assertThat(

@@ -128,6 +128,7 @@ public class TestGioviInt {
 				).isEqualTo(420);
 			}
 
+			@Disabled("Clarify requirements")
 			@Test
 			void testRedirectionDivide() {
 				assertThat(

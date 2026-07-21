@@ -131,44 +131,6 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviList v when v.type.entryType().equals(this.type.entryType())
-				-> addAll(copyOf(v.value));
-			case GioviList v when v.type.entryType().isWidenableTo(this.type.entryType())
-				-> addAll(copyOf(v.value));
-			case GioviValue<?> v -> {
-				try {
-					add(new Var<>(v.copy()));
-				} catch (IllegalArgumentException ex) {
-					GioviComposite.super.redirectionPlus(right);
-				}
-			}
-			default -> GioviComposite.super.redirectionPlus(right);
-		}
-		return this;
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviList v when v.type.entryType().equals(type.entryType())
-				-> removeAll(v.value);
-			case GioviList v when v.type.entryType().isWidenableTo(type.entryType())
-				-> removeAllWidened(v.value);
-			case GioviValue<?> v -> {
-				try {
-					remove(new Var<>(this.type.entryType().widen(v)));
-				} catch (IllegalArgumentException | NonWideneable e) {
-					return GioviComposite.super.redirectionMinus(right);
-				}
-			}
-			default -> GioviComposite.super.redirectionMinus(right);
-		}
-		return this;
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

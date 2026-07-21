@@ -59,22 +59,6 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviText(var v) -> new GioviText(value + v);
-			default -> GioviPrimitive.super.redirectionPlus(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviText(var v) -> new GioviText(value.replace(v, ""));
-			default -> GioviPrimitive.super.redirectionMinus(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

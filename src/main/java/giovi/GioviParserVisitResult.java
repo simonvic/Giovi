@@ -27,11 +27,10 @@ public interface GioviParserVisitResult {
 
 	// Redirection methods will produce a new value based on the assignement
 	default GioviParserVisitResult redirection(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR, content); }
-	// TODO: default to Operator and then redirection?
-	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_PLUS, content); }
-	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MINUS, content); }
-	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_MULT, content); }
-	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { throw new OperatorNotSupported(this, GioviToken.REDIR_DIV, content); }
+	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult content) { return redirection(plus(content)); }
+	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult content) { return redirection(minus(content)); }
+	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult content) { return redirection(multiply(content)); }
+	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult content) { return redirection(divide(content)); }
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
 

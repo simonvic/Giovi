@@ -71,42 +71,6 @@ public record GioviInt(Integer value) implements GioviNumber<Integer> {
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviNatural(var v) -> new GioviInt(value + v.intValue());
-			case GioviInt(var v) -> new GioviInt(value + v);
-			default -> GioviNumber.super.redirectionPlus(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviNatural(var v) -> new GioviInt(value - v.intValue());
-			case GioviInt(var v) -> new GioviInt(value - v);
-			default -> GioviNumber.super.redirectionMinus(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviNatural(var v) -> new GioviInt(value * v.intValue());
-			case GioviInt(var v) -> new GioviInt(value * v);
-			default -> GioviNumber.super.redirectionMultiply(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviNatural(var v) -> new GioviInt(value / v.intValue());
-			case GioviInt(var v) -> new GioviInt(value / v);
-			default -> GioviNumber.super.redirectionDivide(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
 
 	@Override

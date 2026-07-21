@@ -165,33 +165,6 @@ public record GioviMap(
 		};
 	}
 
-	@Override
-	public GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviMap(var type, var value) when type.isWidenableTo(this.type) -> putAll(value);
-			default -> GioviComposite.super.redirectionPlus(right);
-		}
-		return this;
-	}
-
-	@Override
-	public GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		switch (right) {
-			case GioviMap(var type, var value) when type.equals(this.type) -> removeAll(value);
-			case GioviMap(var type, var value) when type.isWidenableTo(this.type)
-				-> removeAllWidened(value);
-			case GioviValue<?> v -> {
-				try {
-					value.remove(new Var<>(this.type.keyType().widen(v)));
-				} catch (NonWideneable e) {
-					return GioviComposite.super.redirectionMinus(right);
-				}
-			}
-			default -> GioviComposite.super.redirectionMinus(right);
-		}
-		return this;
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 	@Override

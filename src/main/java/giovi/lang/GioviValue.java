@@ -89,38 +89,6 @@ public sealed interface GioviValue<T>
 		};
 	}
 
-	default GioviParserVisitResult redirectionPlus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> redirectionPlus(getGioviType().spawn());
-			case Var<?> v -> redirectionPlus(v.unwrap());
-			default -> GioviObject.super.redirectionPlus(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionMinus(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> redirectionMinus(getGioviType().spawn());
-			case Var<?> v -> redirectionMinus(v.unwrap());
-			default -> GioviObject.super.redirectionMinus(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionMultiply(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> redirectionMultiply(getGioviType().spawn());
-			case Var<?> v -> redirectionMultiply(v.unwrap());
-			default -> GioviObject.super.redirectionMultiply(right);
-		};
-	}
-
-	default GioviParserVisitResult redirectionDivide(GioviParserVisitResult right) {
-		return switch (right) {
-			case GioviDefault _ -> redirectionDivide(getGioviType().spawn());
-			case Var<?> v -> redirectionDivide(v.unwrap());
-			default -> GioviObject.super.redirectionDivide(right);
-		};
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
 
 	default GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
