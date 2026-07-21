@@ -82,12 +82,49 @@ public sealed class GTuple implements GProduct permits GRecord {
 			var castedField = casted.getField(i).orElseThrow();
 			if (i < this.getFieldsCount()) {
 				this.getField(i).ifPresent(
-					field -> castedField.setValueWithRedirection(field.as(fieldSignature.type()))
+					field -> castedField.setValueWithRedirection(
+						field.as(fieldSignature.type())
+					)
 				);
 			}
 		}
 		return casted;
 	}
+
+	@Override
+	public GRecord as(RecordSignature signature) {
+		var casted = signature.spawn();
+		// var signatureFields = new ArrayList<>(signature.fields().values());
+		for (int i = 0; i < signature.fields().size(); i++) {
+			var castedField = casted.getField(i).orElseThrow();
+			if (i < this.getFieldsCount()) {
+				this.getField(i).ifPresent(
+					field -> castedField.setValueWithRedirection(
+						field.as(castedField.getGioviType())
+					)
+				);
+			}
+		}
+		return casted;
+	}
+
+	@Override
+	public GStruct as(StructSignature signature) {
+		var casted = signature.spawn();
+		// var signatureFields = new ArrayList<>(signature.fields().values());
+		for (int i = 0; i < signature.fields().size(); i++) {
+			var castedField = casted.getField(i).orElseThrow();
+			if (i < this.getFieldsCount()) {
+				this.getField(i).ifPresent(
+					field -> castedField.setValueWithRedirection(
+						field.as(castedField.getGioviType())
+					)
+				);
+			}
+		}
+		return casted;
+	}
+
 
 	public int getFieldsCount() {
 		return fields.size();
