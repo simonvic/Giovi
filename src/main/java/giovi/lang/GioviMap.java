@@ -2,6 +2,7 @@
 package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviMaps.copyOf;
+import static it.simonvic.giovi.util.GioviTypes.widest;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -192,6 +193,53 @@ public record GioviMap(
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+	@Override
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviMap v when v.type.isWidenableTo(this.type) -> {
+				var merged = this.copy();
+				merged.putAll(v.value);
+				yield merged;
+			}
+			// case GioviMap v when widest(this.type, v.type) instanceof GioviTypeMap widestType -> {
+			// 	var merged = new GioviMap(widestType, copyOf(this.value));
+			// 	merged.putAll(v.value);
+			// 	yield merged;
+			// }
+			default -> GioviComposite.super.plus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviMap v when v.type.isWidenableTo(this.type) -> {
+				var intersection = this.copy();
+				intersection.removeAllWidened(v.value);
+				yield intersection;
+			}
+			// case GioviMap v when widest(this.type, v.type) instanceof GioviTypeMap widestType -> {
+			// 	var intersection = new GioviMap(widestType, copyOf(this.value));
+			// 	if (widestType == this.type) {
+			// 		intersection.removeAllWidened(v.value);
+			// 	} else {
+			// 		intersection.removeAll(v.value);
+			// 	}
+			// 	yield intersection;
+			// }
+			case GioviValue<?> v -> {
+				var intersection = this.copy();
+				try {
+					intersection.value.remove(new Var<>(this.type.keyType().widen(v)));
+				} catch (NonWideneable e) {
+					yield GioviComposite.super.minus(right);
+				}
+				yield intersection;
+			}
+			default -> GioviComposite.super.minus(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 
