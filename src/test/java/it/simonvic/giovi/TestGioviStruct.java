@@ -15,10 +15,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import giovi.GFunction;
-import giovi.Range;
-import giovi.RecordFieldSignature;
-import giovi.StructSignature;
+import giovi.*;
 import giovi.lang.*;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NoSuchField;
@@ -26,10 +23,10 @@ import it.simonvic.giovi.exceptions.RedirectionException;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
 import it.simonvic.giovi.lang.FunctionSignature;
+import it.simonvic.giovi.util.GStructs;
 import it.simonvic.giovi.util.GioviLists;
 import it.simonvic.giovi.util.GioviRecords;
 import it.simonvic.giovi.util.GioviStructs;
-import it.simonvic.giovi.util.GStructs;
 
 public class TestGioviStruct {
 
@@ -754,72 +751,89 @@ public class TestGioviStruct {
 		class Casting {
 
 			@Test
-			void testCastingToSameType() {
-				var visitor = visit("""
-					Color <r Int, g Int, b Int>
-					""");
-				assertThat(visitExpression(visitor, """
-					Color.<1 2 3> as Color
-					"""))
-					.isEqualTo(
-						GioviStructs.of(
-							"Color",
-							"r", VarD.of(1),
-							"g", VarD.of(2),
-							"b", VarD.of(3)
-						)
-					);
+			void casting_toStruct_sameType() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Int, b Int, c Int>
+							"""),
+						"""
+						Foo.<1 2 3> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", 1,
+						"b", 2,
+						"c", 3
+					)
+				);
 			}
 
 			@Test
-			@Disabled("Not implemented yet")
-			void testCastingToCompatibleType() {
-				var visitor = visit("""
-					Color <r Int, g Int, b Int>
-					RGB <r Int, g Int, b Int>
-					""");
-				assertThat(visitExpression(visitor, """
-					Color.<1 2 3> as RGB
-					"""))
-					.isEqualTo(
-						GioviStructs.of(
-							"RGB",
-							"r", VarD.of(1),
-							"g", VarD.of(2),
-							"b", VarD.of(3)
-						)
-					);
+			void casting_toStruct_withEqualSignature_butDifferentTypename() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Int, b Int, c Int>
+							struct Bar <a Int, b Int, c Int>
+							"""),
+						"""
+						Foo.<1 2 3> as Bar
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Bar",
+						"a", 1,
+						"b", 2,
+						"c", 3
+					)
+				);
 			}
 
 			@Test
-			@Disabled("Needs requirements clarification")
-			void testCastingToSupersetType() {
-				var visitor = visit("""
-					RGB <r Int, g Int, b Int>
-					RGBA <r Int, g Int, b Int, a Int>
-					""");
-				assertThat(visitExpression(visitor, """
-					RGB.<1 2 3> as RGBA
-					"""))
-					.isEqualTo(
-						GioviStructs.of(
-							"RGBA",
-							"r", VarD.of(1),
-							"g", VarD.of(2),
-							"b", VarD.of(3),
-							"a", VarD.of(0)
-						)
-					);
+			void casting_toStruct_withWiderSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Int>
+							struct Bar <a Int, b Real, c Text>
+							"""),
+						"""
+						Foo.<1n 2> as Bar
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Bar",
+						"a", 1,
+						"b", 2d,
+						"c", ""
+					)
+				);
 			}
 
-			@Disabled("Clarify reqirements")
 			@Test
-			void whenCastingToSubsetType_shouldThrow() {
-				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-					RGB <r Int, g Int, b Int>
-					RGBA <r Int, g Int, b Int, a Int>
-					RGBA.<> as RGB -> rgb RGB
-					"""));
+			void casting_toStruct_withNarrowerSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Real, b Int, c Natural>
+							struct Bar <a Int, b Natural>
+							"""),
+						"""
+						Foo.<a:1r b:2i c:3n> as Bar
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Bar",
+						"a", 1,
+						"b", new Natural(2)
+					)
+				);
 			}
 
 		}
