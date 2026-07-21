@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,6 +12,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.Natural;
 import giovi.Range;
 import giovi.lang.GioviTuple;
 import it.simonvic.giovi.util.GioviTuples;
@@ -58,8 +58,63 @@ public class TestGioviTuple {
 		//////////////////////////////////////////////////////////////////////////////////////////// casting
 
 		@Nested
-		@Disabled("not implemented yet")
 		class Casting {
+
+			@Test
+			void casting_toSameType() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n "hello" true> as tuple<Natural, Text, Bool>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(69), "hello", true)
+				);
+			}
+
+			@Test
+			void casting_toWiderType() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n "hello" 420i> as tuple<Int, Text, Real>
+						""")
+				).isEqualTo(
+					GioviTuples.of(69, "hello", 420d)
+				);
+			}
+
+			@Test
+			void casting_toType_withWiderSignature() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n 420i> as tuple<Real, Real, Real>
+						""")
+				).isEqualTo(
+					GioviTuples.of(69d, 420d, 0d)
+				);
+			}
+
+			@Test
+			void casting_toNarrowerType() {
+				assertThat(
+					visitExpression("""
+						tuple.<1i 2r> as tuple<Natural, Int>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(1), 2)
+				);
+			}
+
+			@Test
+			void casting_toType_withNarrowerSignature() {
+				assertThat(
+					visitExpression("""
+						tuple.<1r 2r 3r> as tuple<Natural, Int>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(1), 2)
+				);
+			}
+
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
