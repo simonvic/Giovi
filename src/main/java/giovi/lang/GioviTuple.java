@@ -37,6 +37,14 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// cast
 
+	@Override
+	public GioviParserVisitResult as(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviTypeTuple v -> new GioviTuple(v, this.value.as(v.signature()));
+			default -> GioviProduct.super.as(right);
+		};
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
 	@Override
