@@ -57,4 +57,20 @@ public class GioviTypes {
 		return inferred;
 	}
 
+	public static GioviType<?> widest(GioviType<?>... entries) {
+		GioviType<?> widest = GioviType.VOID;
+		for (var next : entries) {
+			// if next <: widest then skip
+			if (next.equals(widest) || next.isWidenableTo(widest)) {
+				continue;
+			}
+			// if widest <: next then update
+			if (widest.isWidenableTo(next)) {
+				widest = next;
+				continue;
+			}
+		}
+		return widest;
+	}
+
 }
