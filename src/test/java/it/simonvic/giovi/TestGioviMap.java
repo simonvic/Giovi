@@ -494,8 +494,120 @@ public class TestGioviMap {
 		//////////////////////////////////////////////////////////////////////////////////////////// arithmetic
 
 		@Nested
-		@Disabled("Candidate not implemented yet")
 		class Arithmetic {
+
+			@Test
+			void plus_map_shouldMerge() {
+				assertThat(visitExpression("""
+					["a":1 "b":2 "c":3] + ["b":69 "d":420]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							"a", 1,
+							"b", 69,
+							"c", 3,
+							"d", 420
+						)
+					);
+			}
+
+			@Test
+			void plus_narrowerMap_shouldMerge() {
+				assertThat(visitExpression("""
+					[1i:1r 2i:2r 3i:3r] + [2n:69i 4n:420i]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							1, 1d,
+							2, 69d,
+							3, 3d,
+							4, 420d
+						)
+					);
+			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void plus_widerMap_shouldMerge() {
+				assertThat(visitExpression("""
+					[1n:1i 2n:2i 3n:3i] + [2i:69r 4i:420r]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							1, 1d,
+							2, 69d,
+							3, 3d,
+							4, 420d
+						)
+					);
+			}
+
+			@Test
+			void minus_map_shouldIntersecate() {
+				assertThat(visitExpression("""
+					["a":1 "b":2 "c":3] - ["b":2 "d":420]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							"a", 1,
+							"c", 3
+						)
+					);
+			}
+
+			@Test
+			void minus_narrowerMap_shouldIntersecate() {
+				assertThat(visitExpression("""
+					[1i:1r 2i:2r 3i:3r] - [2n:2i 4n:4i]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							1, 1d,
+							3, 3d
+						)
+					);
+			}
+
+			@Disabled("Clarify requirements")
+			@Test
+			void minus_widerMap_shouldIntersecate() {
+				assertThat(visitExpression("""
+					[1n:1i 2n:2i 3n:3i] - [2i:2r 4i:4r]
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							1, 1d,
+							3, 3d
+						)
+					);
+			}
+
+			@Test
+			void minus_key_shouldRemove() {
+				assertThat(visitExpression("""
+					["a":1 "b":2 "c":3] - "b"
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							"a", 1,
+							"c", 3
+						)
+					);
+			}
+
+			@Test
+			void minus_narrowerKey_shouldRemove() {
+				assertThat(visitExpression("""
+					[1r:1 2r:2 3r:3] - 2n
+					"""))
+					.isEqualTo(
+						GioviMaps.of(
+							1d, 1,
+							3d, 3
+						)
+					);
+			}
+
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// boolean
