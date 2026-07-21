@@ -77,13 +77,17 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	}
 
 	private void removeAllWidened(List<? extends Var<?>> entries) {
-		try {
-			for (var entry : entries) {
-				value.remove(entry.widenTo(type.entryType()));
-			}
-		} catch (NonWideneable ex) {
-			throw new IllegalArgumentException(ex);
-		}
+		this.value.removeAll(
+			entries.stream()
+				.map(entry -> {
+					try {
+						return new Var<>(entry.unwrap().widenTo(this.type.entryType()));
+					} catch (NonWideneable ex) {
+						throw new IllegalArgumentException(ex);
+					}
+				})
+				.toList()
+		);
 	}
 
 	@Override
