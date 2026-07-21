@@ -171,7 +171,98 @@ public class TestGioviRecord {
 				);
 			}
 
-			// TODO: to records and structs
+			@Test
+			void casting_toRecord_withWiderSignature() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:420i> as record<a Int, b Real, c Real>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", 69,
+						"b", 420d,
+						"c", 0d
+					)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withNarrowerSignature() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:420i c:6.9> as record<b Natural, c Int>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"b", new Natural(420),
+						"c", 6
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withEqualSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Text, c Bool>
+							"""),
+						"""
+						record.<a:69n b:"hello" c:true> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", new Natural(69),
+						"b", "hello",
+						"c", true
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withWiderSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Real, b Real, c Real>
+							"""),
+						"""
+						record.<a:69n b:420i> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", 69d,
+						"b", 420d,
+						"c", 0d
+					)
+				);
+			}
+
+
+			@Test
+			void casting_toStruct_withNarrowerSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Int>
+							"""),
+						"""
+						record.<a:1r b:2r c:3r> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", new Natural(1),
+						"b", 2
+					)
+				);
+			}
+
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
