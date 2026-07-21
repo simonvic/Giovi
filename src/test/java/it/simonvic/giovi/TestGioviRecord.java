@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,11 +12,10 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import giovi.Natural;
 import giovi.Range;
 import giovi.lang.GioviRecord;
-import it.simonvic.giovi.util.GioviRecords;
-import it.simonvic.giovi.util.GRecords;
-import it.simonvic.giovi.util.GTuples;
+import it.simonvic.giovi.util.*;
 
 public class TestGioviRecord {
 
@@ -101,8 +99,79 @@ public class TestGioviRecord {
 		//////////////////////////////////////////////////////////////////////////////////////////// casting
 
 		@Nested
-		@Disabled("not implemented yet")
 		class Casting {
+
+			@Test
+			void casting_toTuple_withEqualTypes() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:"hello" c:true> as tuple<Natural, Text, Bool>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(69), "hello", true)
+				);
+			}
+
+			@Test
+			void casting_toTuple_withWiderTypes() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:"hello" c:420i> as tuple<Int, Text, Real>
+						""")
+				).isEqualTo(
+					GioviTuples.of(69, "hello", 420d)
+				);
+			}
+
+			@Test
+			void casting_toTuple_withWiderSignature() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:420i> as tuple<Real, Real, Real>
+						""")
+				).isEqualTo(
+					GioviTuples.of(69d, 420d, 0d)
+				);
+			}
+
+			@Test
+			void casting_toTuple_withNarrowerTypes() {
+				assertThat(
+					visitExpression("""
+						record.<a:1i b:2r> as tuple<Natural, Int>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(1), 2)
+				);
+			}
+
+			@Test
+			void casting_toTuple_withNarrowerSignature() {
+				assertThat(
+					visitExpression("""
+						record.<a:1r b:2r c:3r> as tuple<Natural, Int>
+						""")
+				).isEqualTo(
+					GioviTuples.of(new Natural(1), 2)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withEqualSignature() {
+				assertThat(
+					visitExpression("""
+						record.<a:69n b:"hello" c:true> as record<a Natural, b Text, c Bool>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", new Natural(69),
+						"b", "hello",
+						"c", true
+					)
+				);
+			}
+
+			// TODO: to records and structs
 		}
 
 		//////////////////////////////////////////////////////////////////////////////////////////// redirection
