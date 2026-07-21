@@ -81,6 +81,32 @@ public sealed class GRecord extends GTuple permits GStruct {
 	}
 
 	@Override
+	public GRecord as(RecordSignature signature) {
+		var casted = signature.spawn();
+		casted.forEach((fieldName, castedField) -> {
+			this.getField(fieldName).ifPresent(
+				field -> castedField.setValueWithRedirection(
+					field.as(castedField.getGioviType())
+				)
+			);
+		});
+		return casted;
+	}
+
+	@Override
+	public GStruct as(StructSignature signature) {
+		var casted = signature.spawn();
+		casted.forEach((fieldName, castedField) -> {
+			this.getField(fieldName).ifPresent(
+				field -> castedField.setValueWithRedirection(
+					field.as(castedField.getGioviType())
+				)
+			);
+		});
+		return casted;
+	}
+
+	@Override
 	public boolean equal(GRecord other) {
 		if (this.fields.size() != other.fields.size()) return false;
 		for (var entry : this.fields.entrySet()) {

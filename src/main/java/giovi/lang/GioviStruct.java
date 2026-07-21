@@ -34,7 +34,9 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 	@Override
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviTypeStruct t when t.equals(this.type) -> this;
+			case GioviTypeStruct v -> new GioviStruct(v, this.value.as(v.signature()));
+			case GioviTypeRecord v -> new GioviRecord(v, this.value.as(v.signature()));
+			case GioviTypeTuple v -> new GioviTuple(v, this.value.as(v.signature()));
 			default -> GioviProduct.super.as(right);
 		};
 	}

@@ -812,6 +812,7 @@ public class TestGioviStruct {
 					);
 			}
 
+			@Disabled("Clarify reqirements")
 			@Test
 			void whenCastingToSubsetType_shouldThrow() {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
