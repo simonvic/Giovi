@@ -15,6 +15,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import giovi.Natural;
 import giovi.Range;
 import giovi.lang.GioviTuple;
+import it.simonvic.giovi.util.GioviRecords;
+import it.simonvic.giovi.util.GioviStructs;
 import it.simonvic.giovi.util.GioviTuples;
 
 public class TestGioviTuple {
@@ -112,6 +114,182 @@ public class TestGioviTuple {
 						""")
 				).isEqualTo(
 					GioviTuples.of(new Natural(1), 2)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withEqualTypes() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n "hello" true> as record<a Natural, b Text, c Bool>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", new Natural(69),
+						"b", "hello",
+						"c", true
+					)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withWiderTypes() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n "hello" 420i> as record<a Int, b Text, c Real>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", 69,
+						"b", "hello",
+						"c", 420d
+					)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withWiderSignature() {
+				assertThat(
+					visitExpression("""
+						tuple.<69n 420i> as record<a Real, b Real, c Real>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", 69d,
+						"b", 420d,
+						"c", 0d
+					)
+				);
+			}
+
+			@Test
+			void casting_toNarrowerRecord() {
+				assertThat(
+					visitExpression("""
+						tuple.<1i 2r> as record<a Natural, b Int>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", new Natural(1),
+						"b", 2
+					)
+				);
+			}
+
+			@Test
+			void casting_toRecord_withNarrowerSignature() {
+				assertThat(
+					visitExpression("""
+						tuple.<1r 2r 3r> as record<a Natural, b Int>
+						""")
+				).isEqualTo(
+					GioviRecords.of(
+						"a", new Natural(1),
+						"b", 2
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withEqualTypes() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Text, c Bool>
+							"""),
+						"""
+						tuple.<69n "hello" true> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", new Natural(69),
+						"b", "hello",
+						"c", true
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withWiderTypes() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Int, b Text, c Real>
+							"""),
+						"""
+						tuple.<69n "hello" 420i> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", 69,
+						"b", "hello",
+						"c", 420d
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withWiderSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Real, b Real, c Real>
+							"""),
+						"""
+						tuple.<69n 420i> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", 69d,
+						"b", 420d,
+						"c", 0d
+					)
+				);
+			}
+
+			@Test
+			void casting_toNarrowerStruct() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Int>
+							"""),
+						"""
+						tuple.<1i 2r> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", new Natural(1),
+						"b", 2
+					)
+				);
+			}
+
+			@Test
+			void casting_toStruct_withNarrowerSignature() {
+				assertThat(
+					visitExpression(
+						visit("""
+							struct Foo <a Natural, b Int>
+							"""),
+						"""
+						tuple.<1r 2r 3r> as Foo
+						"""
+					)
+				).isEqualTo(
+					GioviStructs.ofNative(
+						"Foo",
+						"a", new Natural(1),
+						"b", 2
+					)
 				);
 			}
 
