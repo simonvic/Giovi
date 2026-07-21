@@ -5,11 +5,13 @@ import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
@@ -168,6 +170,95 @@ public record GioviList(GioviTypeList type, List<Var<?>> value)
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// arithmetic
+
+	@Override
+	public GioviParserVisitResult plus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviList v when v.type.entryType().equals(this.type.entryType())
+				-> new GioviList(
+					this.type,
+					Stream.concat(
+						copyOf(this.value).stream(),
+						copyOf(v.value).stream()
+					).toList()
+				);
+			case GioviList v when v.type.entryType().isWidenableTo(type.entryType())
+				-> new GioviList(
+					this.type,
+					Stream.concat(
+						copyOf(this.value).stream(),
+						v.value.stream().map(entry -> {
+							try {
+								return new Var<>(
+									entry.unwrap()
+										.copy()
+										.widenTo(this.type.entryType())
+								);
+							} catch (NonWideneable e) {
+								throw new GioviException(e);
+							}
+						})
+					).toList()
+				);
+			// case GioviList v when widest(this.type, v.type) instanceof GioviTypeList widestType -> {
+			// 	var concat = copyOf(this.value);
+			// 	concat.addAll(copyOf(v.value));
+			// 	yield new GioviList(widestType, concat);
+			// }
+			case GioviValue<?> v -> {
+				try {
+					v = this.type.entryType().widen(v);
+				} catch (NonWideneable e) {
+					yield GioviComposite.super.plus(right);
+				}
+				var concat = copyOf(this.value);
+				concat.add(new Var<>(v));
+				yield new GioviList(this.type, concat);
+			}
+			default -> GioviComposite.super.plus(right);
+		};
+	}
+
+	@Override
+	public GioviParserVisitResult minus(GioviParserVisitResult right) {
+		return switch (right) {
+			case GioviList v when v.type.entryType().equals(this.type.entryType()) -> {
+				var intersection = this.copy();
+				intersection.removeAll(v.value);
+				yield intersection;
+			}
+			case GioviList v when v.type.entryType().isWidenableTo(this.type.entryType()) -> {
+				var intersection = this.copy();
+				intersection.removeAllWidened(v.value);
+				yield intersection;
+			}
+			// case GioviList v when widest(this.type, v.type) instanceof GioviTypeList widestType -> {
+			// 	var intersection = copyOf(this.value);
+			// 	try {
+			// 		if (widestType == this.type) {
+			// 			var widened = v.widenTo(this.type);
+			// 			intersection.removeAll(widened.value);
+			// 		} else {
+			// 			intersection = this.widenTo(widestType).value;
+			// 			intersection.removeAll(v.value);
+			// 		}
+			// 	} catch (NonWideneable e) {
+			// 		throw new IllegalArgumentException(e);
+			// 	}
+			// 	yield new GioviList(widestType, intersection);
+			// }
+			case GioviValue<?> v -> {
+				var intersection = copyOf(this.value);
+				try {
+					intersection.remove(new Var<>(this.type.entryType().widen(v)));
+				} catch (NonWideneable e) {
+					yield GioviComposite.super.minus(right);
+				}
+				yield new GioviList(this.type, intersection);
+			}
+			default -> GioviComposite.super.minus(right);
+		};
+	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// boolean
 
