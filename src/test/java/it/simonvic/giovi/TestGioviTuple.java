@@ -63,7 +63,7 @@ public class TestGioviTuple {
 		class Casting {
 
 			@Test
-			void casting_toSameType() {
+			void casting_toTuple_withEqualTypes() {
 				assertThat(
 					visitExpression("""
 						tuple.<69n "hello" true> as tuple<Natural, Text, Bool>
@@ -74,7 +74,7 @@ public class TestGioviTuple {
 			}
 
 			@Test
-			void casting_toWiderType() {
+			void casting_toTuple_withWiderTypes() {
 				assertThat(
 					visitExpression("""
 						tuple.<69n "hello" 420i> as tuple<Int, Text, Real>
@@ -85,7 +85,7 @@ public class TestGioviTuple {
 			}
 
 			@Test
-			void casting_toType_withWiderSignature() {
+			void casting_toTuple_withWiderSignature() {
 				assertThat(
 					visitExpression("""
 						tuple.<69n 420i> as tuple<Real, Real, Real>
@@ -96,7 +96,7 @@ public class TestGioviTuple {
 			}
 
 			@Test
-			void casting_toNarrowerType() {
+			void casting_toTuple_withNarrowerTypes() {
 				assertThat(
 					visitExpression("""
 						tuple.<1i 2r> as tuple<Natural, Int>
@@ -107,7 +107,7 @@ public class TestGioviTuple {
 			}
 
 			@Test
-			void casting_toType_withNarrowerSignature() {
+			void casting_toTuple_withNarrowerSignature() {
 				assertThat(
 					visitExpression("""
 						tuple.<1r 2r 3r> as tuple<Natural, Int>
