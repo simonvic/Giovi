@@ -21,20 +21,40 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 
 	}
 
+	/**
+	 * Iterate on the range and invoke the callback on each iteration
+	 * @param callback
+	 */
 	public void iterate(Consumer<T> callback) {
 		iterationStrategy.iterate(this, callback);
 	}
 
+	/**
+	 * Expand the range to a list.
+	 * For example 0..3 becomes List.of(0,1,2,3)
+	 * @return list of values
+	 * @see Range#expand()
+	 */
 	public List<T> expand() {
 		var expansion = new ArrayList<T>();
 		iterate(expansion::add);
 		return expansion;
 	}
 
+	/**
+	 * Expand the range to a list of giovi values
+	 * @return list of giovi values
+	 * @see Range#expand()
+	 */
 	public List<? extends GioviValue<?>> expandAsGioviValues() {
 		return expand().stream().map(this::toGioviValue).toList();
 	}
 
+	/**
+	 * Expand the range to a list of Var of giovi values
+	 * @return list of Var
+	 * @see Range#expand()
+	 */
 	public List<? extends Var<?>> expandAsVar() {
 		return expand().stream().map(this::toGioviValue).map(Var::new).toList();
 	}
@@ -49,6 +69,11 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 		};
 	}
 
+	/**
+	 * Expand the range to a giovi list
+	 * @return giovi list
+	 * @see Range#expand()
+	 */
 	public GioviList expandAsGioviList() {
 		var gioviList = new ArrayList<Var<?>>(
 			expand().stream().map(Var::of).toList()
