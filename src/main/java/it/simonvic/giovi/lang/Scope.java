@@ -10,6 +10,7 @@ import giovi.Module;
 import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.lang.*;
+import it.simonvic.giovi.Const;
 import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.*;
 
@@ -110,13 +111,13 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Constants
 
-	protected final Map<String, GioviValue<?>> constants = new HashMap<>();
+	protected final Map<String, Const<?>> constants = new HashMap<>();
 
 	public void declareConstant(String identifier, GioviValue<?> value) {
 		if (constants.containsKey(identifier)) {
 			throw new ConstantAlreadyDeclared(identifier);
 		}
-		constants.put(identifier, value);
+		constants.put(identifier, new Const<>(value));
 	}
 
 	public boolean isDeclaredConstant(String identifier) {
@@ -124,7 +125,7 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredConstant(identifier));
 	}
 
-	public Optional<GioviValue<?>> getConstantValue(String identifier) {
+	public Optional<Const<?>> getConstantValue(String identifier) {
 		if (constants.containsKey(identifier)) {
 			return Optional.of(constants.get(identifier));
 		}
