@@ -114,10 +114,14 @@ public class Scope {
 	protected final Map<String, Const<?>> constants = new HashMap<>();
 
 	public void declareConstant(String identifier, GioviValue<?> value) {
+		declareConstant(identifier, new Const<>(value));
+	}
+
+	public void declareConstant(String identifier, Const<?> constant) {
 		if (constants.containsKey(identifier)) {
 			throw new ConstantAlreadyDeclared(identifier);
 		}
-		constants.put(identifier, new Const<>(value));
+		constants.put(identifier, constant);
 	}
 
 	public boolean isDeclaredConstant(String identifier) {
