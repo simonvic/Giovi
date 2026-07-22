@@ -6,7 +6,7 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class Const<T extends GioviValue<?>> extends Var<T> {
+public final class Const<T extends GioviValue<?>> extends UnaryValueWrapper<T> {
 
 	public Const(T value) {
 		super(value);

@@ -747,7 +747,7 @@ public class TestGioviMap {
 					visitExpression("""
 						[1:"a" 2:"b" 3:"c"]@2
 						""")
-						.asVar()
+						.asUnaryValueWrapper()
 						.unwrap()
 						.value()
 				).isEqualTo("b");

@@ -5,7 +5,7 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class VarEntry<T extends GioviValue<?>> extends Var<T> {
+public final class VarEntry<T extends GioviValue<?>> extends UnaryValueWrapper<T> {
 
 	public static <T> VarEntry<? extends GioviValue<?>> of(T value) {
 		return new VarEntry<>(GioviValue.of(value));

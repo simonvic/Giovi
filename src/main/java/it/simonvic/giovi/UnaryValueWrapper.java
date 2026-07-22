@@ -10,7 +10,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 // TODO: what if we implement GioviValue<T>
 // TODO: we could do the same for constants (will allow to throw in redirections)
-public abstract sealed class Var<T extends GioviValue<?>>
+public abstract sealed class UnaryValueWrapper<T extends GioviValue<?>>
 	implements ValueWrapper<T>
 	permits VarEntry, Const {
 
@@ -19,7 +19,7 @@ public abstract sealed class Var<T extends GioviValue<?>>
 	/**
 	 * @param value
 	 */
-	public Var(T value) {
+	public UnaryValueWrapper(T value) {
 		this.value = value;
 	}
 
@@ -48,13 +48,13 @@ public abstract sealed class Var<T extends GioviValue<?>>
 		if (this == obj) return true;
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
-		Var<?> other = (Var<?>) obj;
+		UnaryValueWrapper<?> other = (UnaryValueWrapper<?>) obj;
 		return Objects.equals(value, other.value);
 	}
 
-	public abstract Var<?> copy();
+	public abstract UnaryValueWrapper<?> copy();
 
 	@Deprecated
-	public abstract Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable;
+	public abstract UnaryValueWrapper<?> widenTo(GioviType<?> gioviType) throws NonWideneable;
 
 }

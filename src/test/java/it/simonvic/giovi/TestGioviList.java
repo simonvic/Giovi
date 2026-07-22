@@ -706,7 +706,7 @@ public class TestGioviList {
 				[0 1 2 3 4]@4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
-				assertThat(visitExpression(expression).asVar().unwrap().value())
+				assertThat(visitExpression(expression).asUnaryValueWrapper().unwrap().value())
 					.isEqualTo(expected);
 			}
 
@@ -722,7 +722,7 @@ public class TestGioviList {
 				String expression,
 				Integer expected
 			) {
-				assertThat(visitExpression(expression).asVar().unwrap().value())
+				assertThat(visitExpression(expression).asUnaryValueWrapper().unwrap().value())
 					.isEqualTo(expected);
 			}
 
