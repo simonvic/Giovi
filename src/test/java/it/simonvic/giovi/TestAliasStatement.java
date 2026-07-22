@@ -6,8 +6,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import giovi.lang.GioviInt;
-
 public class TestAliasStatement {
 
 	@Test
@@ -29,8 +27,8 @@ public class TestAliasStatement {
 			alias 180 * 2 as NO_SCOPE
 			""")
 			.getCurrentScope();
-		assertThat(scope.getConstantValue("NO_SCOPE").orElseThrow())
-			.isEqualTo(new GioviInt(360));
+		assertThat(scope.getConstantValue("NO_SCOPE"))
+			.contains(Const.of(360));
 	}
 
 	@Test

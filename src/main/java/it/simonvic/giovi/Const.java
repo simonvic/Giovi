@@ -8,6 +8,10 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Const<T extends GioviValue<?>> extends UnaryValueWrapper<T> {
 
+	public static <T> Const<? extends GioviValue<?>> of(T value) {
+		return new Const<>(GioviValue.of(value));
+	}
+
 	public Const(T value) {
 		super(value);
 	}
