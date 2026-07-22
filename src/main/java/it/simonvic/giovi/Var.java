@@ -11,11 +11,7 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 
 // TODO: what if we implement GioviValue<T>
 // TODO: we could do the same for constants (will allow to throw in redirections)
-public class Var<T extends GioviValue<?>> implements ValueWrapper<T> {
-
-	public static <T> Var<? extends GioviValue<?>> of(T value) {
-		return new Var<>(GioviValue.of(value));
-	}
+public abstract class Var<T extends GioviValue<?>> implements ValueWrapper<T> {
 
 	protected T value;
 
@@ -55,14 +51,10 @@ public class Var<T extends GioviValue<?>> implements ValueWrapper<T> {
 		return Objects.equals(value, other.value);
 	}
 
-	public Var<?> copy() {
-		return new Var<>(value.copy());
-	}
+	public abstract Var<?> copy();
 
 	@Deprecated
-	public Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
-		return new Var<>(gioviType.widen(value));
-	}
+	public abstract Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable;
 
 	// TODO: setting the value in a redirection is different than the GioviValue
 	// implementation and might lead to a double setting of the value

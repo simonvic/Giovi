@@ -6,11 +6,10 @@ import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 import java.util.Collections;
 import java.util.Map;
 
-import giovi.Range;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
@@ -55,7 +54,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 			case GioviList v -> {
 				var widened = new GioviList(this);
 				for (var entry : v.value()) {
-					widened.value().add(new Var<>(this.entryType.widen(entry.unwrap())));
+					widened.value().add(new VarEntry<>(this.entryType.widen(entry.unwrap())));
 				}
 				yield widened;
 			}
@@ -71,7 +70,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		// it should be handled by the visitor appropriately
 		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
-			rawList.add(new Var<>(this.entryType.spawn()));
+			rawList.add(new VarEntry<>(this.entryType.spawn()));
 		}
 		return list;
 	}
@@ -110,7 +109,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		int idx = index.value();
 		self.value().add(
 			idx >= 0 ? idx : nativeIndexOf(idx, self.value().size()) + 1,
-			new Var<>(self.getGioviType().entryType.widen(element.value()))
+			new VarEntry<>(self.getGioviType().entryType.widen(element.value()))
 		);
 		return self;
 	}
@@ -123,7 +122,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	) throws NonWideneable {
 		self.value().set(
 			nativeIndexOf(index.value(), self.value().size()),
-			new Var<>(self.getGioviType().entryType.widen(element))
+			new VarEntry<>(self.getGioviType().entryType.widen(element))
 		);
 		return self;
 	}

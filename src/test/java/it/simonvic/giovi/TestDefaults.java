@@ -117,8 +117,8 @@ public class TestDefaults {
 					.value()
 			).isEqualTo(
 				Map.of(
-					Var.of(1), Var.of(true),
-					Var.of(2), Var.of(false)
+					VarEntry.of(1), VarEntry.of(true),
+					VarEntry.of(2), VarEntry.of(false)
 				)
 			);
 		}

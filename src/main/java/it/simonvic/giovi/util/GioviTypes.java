@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import giovi.lang.GioviType;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.exceptions.GioviException;
 
 public class GioviTypes {
@@ -28,7 +29,7 @@ public class GioviTypes {
 
 	// TODO: should we allow record widening to be a disjoint union instead?
 
-	public static GioviType<?> inferGioviType(Collection<Var<?>> entries) {
+	public static GioviType<?> inferGioviType(Collection<VarEntry<?>> entries) {
 		if (entries.isEmpty()) return GioviType.VOID; // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;

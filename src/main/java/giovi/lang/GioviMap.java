@@ -2,7 +2,6 @@
 package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviMaps.copyOf;
-import static it.simonvic.giovi.util.GioviTypes.widest;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -10,7 +9,7 @@ import java.util.Map;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
@@ -18,8 +17,8 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 @DescribedBy(GioviTypeMap.class)
 public record GioviMap(
 	GioviTypeMap type,
-	LinkedHashMap<Var<?>, Var<?>> value
-) implements GioviComposite<LinkedHashMap<Var<?>, Var<?>>> {
+	LinkedHashMap<VarEntry<?>, VarEntry<?>> value
+) implements GioviComposite<LinkedHashMap<VarEntry<?>, VarEntry<?>>> {
 
 	public GioviMap(GioviTypeMap type) {
 		this(type, new LinkedHashMap<>());
@@ -27,7 +26,7 @@ public record GioviMap(
 
 	public GioviMap(
 		GioviTypeMap type,
-		LinkedHashMap<Var<?>, Var<?>> value
+		LinkedHashMap<VarEntry<?>, VarEntry<?>> value
 	) {
 		this.type = type;
 		this.value = new LinkedHashMap<>();
@@ -49,7 +48,7 @@ public record GioviMap(
 	 * @param element
 	 * @throws IllegalArgumentException
 	 */
-	private void put(Var<?> key, Var<?> element) throws IllegalArgumentException {
+	private void put(VarEntry<?> key, VarEntry<?> element) throws IllegalArgumentException {
 		// TODO: remove widening here and handle manually
 		try {
 			value.put(
@@ -61,25 +60,25 @@ public record GioviMap(
 		}
 	}
 
-	private void putAll(Map<Var<?>, Var<?>> map) throws IllegalArgumentException {
+	private void putAll(Map<VarEntry<?>, VarEntry<?>> map) throws IllegalArgumentException {
 		map.forEach(this::put);
 	}
 
 	// TODO: return optional or default value (@candidate) (or maybe Void for better performance)
-	public Var<?> get(Var<?> key) {
+	public VarEntry<?> get(VarEntry<?> key) {
 		if (!value.containsKey(key)) {
-			// return new Var<>(new GioviVoid());
-			// return new Var<>(elementType.spawn());
+			// return new VarEntry<>(new GioviVoid());
+			// return new VarEntry<>(elementType.spawn());
 			throw new KeyNotPresent(this, key.unwrap());
 		}
 		return value.get(key);
 	}
 
-	private void removeAll(Map<Var<?>, Var<?>> entries) {
+	private void removeAll(Map<VarEntry<?>, VarEntry<?>> entries) {
 		entries.forEach(value::remove);
 	}
 
-	private void removeAllWidened(Map<Var<?>, Var<?>> entries) {
+	private void removeAllWidened(Map<VarEntry<?>, VarEntry<?>> entries) {
 		try {
 			for (var entry : entries.entrySet()) {
 				value.remove(
@@ -141,8 +140,8 @@ public record GioviMap(
 			var map = new GioviMap(type);
 			this.value.forEach(
 				(k, e) -> map.value.put(
-					new Var<>(k.as(t.getKeyType()).asGioviValue()),
-					new Var<>(e.as(t.getElementType()).asGioviValue())
+					new VarEntry<>(k.as(t.getKeyType()).asGioviValue()),
+					new VarEntry<>(e.as(t.getElementType()).asGioviValue())
 				)
 			);
 			return map;
@@ -204,7 +203,7 @@ public record GioviMap(
 			case GioviValue<?> v -> {
 				var intersection = this.copy();
 				try {
-					intersection.value.remove(new Var<>(this.type.keyType().widen(v)));
+					intersection.value.remove(new VarEntry<>(this.type.keyType().widen(v)));
 				} catch (NonWideneable e) {
 					yield GioviComposite.super.minus(right);
 				}
@@ -285,7 +284,7 @@ public record GioviMap(
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case GioviValue<?> gioviValue -> get(new Var<>(gioviValue));
+			case GioviValue<?> gioviValue -> get(new VarEntry<>(gioviValue));
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value().size());
 				case KEYS -> new GioviList(

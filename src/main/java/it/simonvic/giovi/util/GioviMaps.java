@@ -5,13 +5,13 @@ import java.util.Map;
 
 import giovi.lang.GioviMap;
 import giovi.lang.GioviTypeMap;
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 
 public class GioviMaps {
 
 	public static <K, V> GioviMap of(Map<K, V> map) {
-		var entries = new LinkedHashMap<Var<?>, Var<?>>();
-		map.forEach((k, v) -> entries.put(Var.of(k), Var.of(v)));
+		var entries = new LinkedHashMap<VarEntry<?>, VarEntry<?>>();
+		map.forEach((k, v) -> entries.put(VarEntry.of(k), VarEntry.of(v)));
 		return new GioviMap(
 			new GioviTypeMap(
 				GioviTypes.inferGioviType(entries.keySet()),
@@ -111,8 +111,10 @@ public class GioviMaps {
 		);
 	}
 
-	public static LinkedHashMap<Var<?>, Var<?>> copyOf(LinkedHashMap<Var<?>, Var<?>> map) {
-		var copied = new LinkedHashMap<Var<?>, Var<?>>();
+	public static LinkedHashMap<VarEntry<?>, VarEntry<?>> copyOf(
+		LinkedHashMap<VarEntry<?>, VarEntry<?>> map
+	) {
+		var copied = new LinkedHashMap<VarEntry<?>, VarEntry<?>>();
 		map.forEach((k, v) -> copied.put(k.copy(), v.copy()));
 		return copied;
 	}

@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
 @DescribedBy(GioviTypeText.class)
@@ -168,7 +168,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				case KEYS -> Range.of(0, value.length() - 1, 1);
 				case VALUES -> new GioviList(
 					GioviType.LIST_OF_TEXT,
-					new ArrayList<>(value.chars().boxed().map(this::toVar).toList())
+					new ArrayList<>(value.chars().boxed().map(this::toVarEntry).toList())
 				);
 			};
 			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
@@ -184,12 +184,12 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 		};
 	}
 
-	Var<GioviText> toVar(Integer c) {
-		return new Var<>(new GioviText(Character.toString(c)));
+	VarEntry<GioviText> toVarEntry(Integer c) {
+		return new VarEntry<>(new GioviText(Character.toString(c)));
 	}
 
-	Var<GioviText> toVar(String s) {
-		return new Var<>(new GioviText(s));
+	VarEntry<GioviText> toVar(String s) {
+		return new VarEntry<>(new GioviText(s));
 	}
 
 }

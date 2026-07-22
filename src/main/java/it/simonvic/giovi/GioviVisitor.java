@@ -735,13 +735,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitListCreation(ListCreationContext ctx) {
-		var entries = new ArrayList<Var<?>>(ctx.listEntries().listEntry().size());
+		var entries = new ArrayList<VarEntry<?>>(ctx.listEntries().listEntry().size());
 		for (var entryCtx : ctx.listEntries().listEntry()) {
 			var entry = visit(entryCtx);
 			switch (entry) {
-				case Range<?> range -> entries.addAll(range.expandAsVar());
-				case GioviValue<?> v -> entries.add(new Var<>(v));
-				case Var<?> v -> entries.add(new Var<>(v.unwrap().copy()));
+				case Range<?> range -> entries.addAll(range.expandAsVarEntries());
+				case GioviValue<?> v -> entries.add(new VarEntry<>(v));
+				case ValueWrapper<?> v -> entries.add(new VarEntry<>(v.unwrap().copy()));
 				default -> throw new GioviException(
 					"Incompatible type for list creation: " + entry.getClass()
 				);
@@ -753,14 +753,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
-		var map = new LinkedHashMap<Var<?>, Var<?>>();
+		var map = new LinkedHashMap<VarEntry<?>, VarEntry<?>>();
 		if (ctx.mapEntries() == null) {
 			return new GioviMap(new GioviTypeMap(GioviType.VOID, GioviType.VOID), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
 			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
-			map.put(new Var<>(key), new Var<>(element));
+			map.put(new VarEntry<>(key), new VarEntry<>(element));
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());

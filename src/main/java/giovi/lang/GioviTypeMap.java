@@ -1,10 +1,8 @@
 package giovi.lang;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.SequencedCollection;
 
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
@@ -109,8 +107,8 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 		@Optional GioviAny value
 	) throws NonWideneable {
 		self.value().put(
-			new Var<>(self.getGioviType().keyType.widen(key.value())),
-			new Var<>(self.getGioviType().elementType.widen(value.value()))
+			new VarEntry<>(self.getGioviType().keyType.widen(key.value())),
+			new VarEntry<>(self.getGioviType().elementType.widen(value.value()))
 		);
 		return self;
 	}
