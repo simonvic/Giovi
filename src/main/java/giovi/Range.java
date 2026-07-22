@@ -26,7 +26,7 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	}
 
 	public List<T> expand() {
-		List<T> expansion = new ArrayList<>();
+		var expansion = new ArrayList<T>();
 		iterate(expansion::add);
 		return expansion;
 	}
