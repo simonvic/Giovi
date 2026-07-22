@@ -1175,7 +1175,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		try {
 			defaultValue = ctx.defaultDefinition() == null
 				? type.spawn()
-				: type.widen(visit(ctx.defaultDefinition()).asGioviValue());
+				: type.widen(visit(ctx.defaultDefinition()).unwrapAsGioviValue());
 		} catch (NonWideneable e) {
 			throw new GioviException(e, "Incompatible default definition");
 		}
@@ -1330,7 +1330,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			? new TupleFieldSignature(type)
 			: new TupleFieldSignature(
 				type,
-				visit(ctx.defaultDefinition().expression()).asGioviValue()
+				visit(ctx.defaultDefinition().expression()).unwrapAsGioviValue()
 			);
 	}
 
