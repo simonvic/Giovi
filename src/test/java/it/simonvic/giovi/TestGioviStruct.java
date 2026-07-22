@@ -1142,7 +1142,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, code)
-						.asVar()
+						.asVarD()
 						.unwrap()
 						.value()
 				).isEqualTo(expected);
@@ -1164,7 +1164,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, code)
-						.asVar()
+						.asVarD()
 						.unwrap()
 						.value()
 				).isEqualTo(expected);

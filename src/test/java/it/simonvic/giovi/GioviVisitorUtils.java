@@ -51,6 +51,10 @@ public class GioviVisitorUtils {
 		return visitExpression(code).asVar();
 	}
 
+	public static VarD<?> visitVarD(String code) {
+		return visitExpression(code).asVarD();
+	}
+
 	public static TestsVisitor visit(TestsVisitor visitor, String code) {
 		visitor.visit(parserOf(code).begin());
 		return visitor;

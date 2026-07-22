@@ -54,18 +54,6 @@ public interface ValueWrapper<T extends GioviValue<?>> extends GioviParserVisitR
 	}
 
 
-	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
-
-	// TODO: setting the value in a redirection is different than the GioviValue
-	// implementation and might lead to a double setting of the value
-
-	@SuppressWarnings("unchecked")
-	@Override
-	default GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		setValue((T) unwrap().redirection(content));
-		return unwrap();
-	}
-
 	//////////////////////////////////////////////////////////////////////////////////////////////// bitwise
 
 	@Override

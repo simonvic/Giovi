@@ -351,7 +351,7 @@ public class TestGioviRecord {
 				<a:0 b:1 c:2 d:3>@3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
-				assertThat(visitVar(code).unwrap().value()).isEqualTo(expected);
+				assertThat(visitVarD(code).unwrap().value()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -365,7 +365,7 @@ public class TestGioviRecord {
 				String code,
 				Integer expected
 			) {
-				assertThat(visitVar(code).unwrap().value()).isEqualTo(expected);
+				assertThat(visitVarD(code).unwrap().value()).isEqualTo(expected);
 			}
 
 

@@ -5,7 +5,9 @@ import java.util.List;
 
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.ValueWrapper;
 import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public interface GioviParserVisitResult {
@@ -102,6 +104,7 @@ public interface GioviParserVisitResult {
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return asGioviFunction().value(); }
 	default Var<?> asVar() { return (Var<?>) this; }
+	default VarD<?> asVarD() { return (VarD<?>) this; }
 
 	/**
 	 * Get the underlying GioviValue.
@@ -110,7 +113,7 @@ public interface GioviParserVisitResult {
 	 */
 	default GioviValue<?> unwrapAsGioviValue() {
 		return switch (this) {
-			case Var<?> v -> v.unwrap();
+			case ValueWrapper<?> v -> v.unwrap();
 			default -> (GioviValue<?>) this;
 		};
 	}

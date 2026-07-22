@@ -2,6 +2,7 @@ package it.simonvic.giovi;
 
 import java.util.Objects;
 
+import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -62,5 +63,16 @@ public class Var<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public Var<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
 		return new Var<>(gioviType.widen(value));
 	}
+
+	// TODO: setting the value in a redirection is different than the GioviValue
+	// implementation and might lead to a double setting of the value
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
+		this.value = (T) this.value.redirection(content);
+		return this.value;
+	}
+
 
 }

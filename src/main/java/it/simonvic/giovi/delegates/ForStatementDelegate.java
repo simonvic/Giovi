@@ -10,6 +10,7 @@ import giovi.lang.GioviList;
 import giovi.lang.GioviMap;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
+import it.simonvic.giovi.ValueWrapper;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
@@ -36,7 +37,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		this.bodyCtx = ctx.statementOrBlock();
 		this.iteratorPatternCtx = ctx.iteratorPattern();
 		var iterated = gioviVisitor.visit(ctx.iterable());
-		this.iterated = (iterated instanceof Var<?> v) // TODO: figure out a better way to handle vars
+		this.iterated = (iterated instanceof ValueWrapper<?> v) // TODO: figure out a better way to handle vars
 			? v.unwrap()
 			: iterated;
 	}
