@@ -5,7 +5,6 @@ import java.util.Map;
 
 import giovi.*;
 import it.simonvic.giovi.ValueWrapper;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
@@ -75,7 +74,7 @@ public sealed interface GioviValue<T>
 
 	default GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
-			case Var<?> v -> as(v.unwrap());
+			case ValueWrapper<?> v -> as(v.unwrap());
 			default -> GioviObject.super.as(right);
 		};
 	}
