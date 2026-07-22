@@ -107,8 +107,6 @@ public class Var<T extends GioviValue<?>> implements GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// redirection
 
-	// TODO: eventually remove redirection handling of default values from giovi values
-
 	// TODO: setting the value in a redirection is different than the GioviValue
 	// implementation and might lead to a double setting of the value
 
