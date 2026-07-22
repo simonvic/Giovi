@@ -3,7 +3,6 @@ package it.simonvic.giovi.util;
 import java.util.Collection;
 
 import giovi.lang.GioviType;
-import it.simonvic.giovi.Var;
 import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.exceptions.GioviException;
 
@@ -33,7 +32,7 @@ public class GioviTypes {
 		if (entries.isEmpty()) return GioviType.VOID; // TODO: emh... lol
 		GioviType<?> inferred = null;
 		GioviType<?> next;
-		for (Var<?> entry : entries) {
+		for (var entry : entries) {
 			next = entry.getGioviType();
 			if (inferred == null) {
 				inferred = next;

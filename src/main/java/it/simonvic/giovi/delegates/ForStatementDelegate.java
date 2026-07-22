@@ -11,7 +11,7 @@ import giovi.lang.GioviMap;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.ValueWrapper;
-import it.simonvic.giovi.Var;
+import it.simonvic.giovi.VarEntry;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
 import it.simonvic.giovi.exceptions.UnsupportedPattern;
@@ -129,7 +129,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 * @param patternCtx
 	 */
 	private void forEach(GioviList list, PatternContext patternCtx) {
-		Consumer<Var<?>> iterationStrategy = switch (patternCtx) {
+		Consumer<VarEntry<?>> iterationStrategy = switch (patternCtx) {
 
 			case PatternPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
@@ -174,7 +174,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 * @param patternMapCtx
 	 */
 	private void forEach(GioviMap map, PatternMapNakedContext patternMapCtx) {
-		Consumer<Var<?>> keyIterationStrategy = switch (patternMapCtx.key) {
+		Consumer<VarEntry<?>> keyIterationStrategy = switch (patternMapCtx.key) {
 
 			case PatternMapKeyPlaceholderContext _ -> (_) -> {
 				// noop
@@ -195,7 +195,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 			default -> throw new UnsupportedDeconstruction(map, patternMapCtx.key);
 		};
 
-		Consumer<Var<?>> valueIterationStrategy = switch (patternMapCtx.value) {
+		Consumer<VarEntry<?>> valueIterationStrategy = switch (patternMapCtx.value) {
 
 			case PatternPlaceholderContext _ -> (_) -> {
 				gioviVisitor.visit(bodyCtx);
@@ -307,7 +307,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(
 		Range<?> range,
-		Consumer<Var<?>> loopBody
+		Consumer<VarEntry<?>> loopBody
 	) {
 		// TODO: hacky way of iterating range
 		for (var entry : range.expandAsGioviList().value()) {
@@ -332,7 +332,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(
 		GioviList list,
-		Consumer<Var<?>> loopBody
+		Consumer<VarEntry<?>> loopBody
 	) {
 		for (var entry : list.value()) {
 			enterLoopScope();
@@ -356,7 +356,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 */
 	private void forEach(
 		GioviMap map,
-		BiConsumer<Var<?>, Var<?>> loopBody
+		BiConsumer<VarEntry<?>, VarEntry<?>> loopBody
 	) {
 		for (var entry : map.value().entrySet()) {
 			enterLoopScope();
