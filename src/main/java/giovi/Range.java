@@ -32,11 +32,21 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	}
 
 	public List<? extends GioviValue<?>> expandAsGioviValues() {
-		return expand().stream().map(GioviValue::of).toList();
+		return expand().stream().map(this::toGioviValue).toList();
 	}
 
 	public List<? extends Var<?>> expandAsVar() {
-		return expand().stream().map(Var::of).toList();
+		return expand().stream().map(this::toGioviValue).map(Var::new).toList();
+	}
+
+	private GioviValue<?> toGioviValue(T value) {
+		return switch (value) {
+			case Natural v -> new GioviNatural(v);
+			case Integer v -> new GioviInt(v);
+			case Double v -> new GioviReal(v);
+			case String v -> new GioviText(v);
+			default -> throw new GioviException("Unsupported value " + value + " in ranges");
+		};
 	}
 
 	public GioviList expandAsGioviList() {
