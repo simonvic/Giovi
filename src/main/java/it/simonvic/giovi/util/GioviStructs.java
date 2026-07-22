@@ -6,7 +6,7 @@ import giovi.GStruct;
 import giovi.RecordFieldSignature;
 import giovi.StructSignature;
 import giovi.lang.*;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
@@ -41,9 +41,9 @@ public class GioviStructs {
 
 	public static GioviStruct of(
 		String typename,
-		String i1, VarD<?> v1
+		String i1, Member<?> v1
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
+		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, v1);
 		var value = new GStruct(typename, s);
 		return new GioviStruct(typeFrom(value), value);
@@ -51,10 +51,10 @@ public class GioviStructs {
 
 	public static GioviStruct of(
 		String typename,
-		String i1, VarD<?> v1,
-		String i2, VarD<?> v2
+		String i1, Member<?> v1,
+		String i2, Member<?> v2
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
+		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, v1);
 		s.put(i2, v2);
 		var value = new GStruct(typename, s);
@@ -63,11 +63,11 @@ public class GioviStructs {
 
 	public static GioviStruct of(
 		String typename,
-		String i1, VarD<?> v1,
-		String i2, VarD<?> v2,
-		String i3, VarD<?> v3
+		String i1, Member<?> v1,
+		String i2, Member<?> v2,
+		String i3, Member<?> v3
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
+		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, v1);
 		s.put(i2, v2);
 		s.put(i3, v3);
@@ -77,12 +77,12 @@ public class GioviStructs {
 
 	public static GioviStruct of(
 		String typename,
-		String i1, VarD<?> v1,
-		String i2, VarD<?> v2,
-		String i3, VarD<?> v3,
-		String i4, VarD<?> v4
+		String i1, Member<?> v1,
+		String i2, Member<?> v2,
+		String i3, Member<?> v3,
+		String i4, Member<?> v4
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
+		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, v1);
 		s.put(i2, v2);
 		s.put(i3, v3);
@@ -95,8 +95,8 @@ public class GioviStructs {
 		String typename,
 		String i1, T v1
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
-		s.put(i1, VarD.of(v1));
+		var s = new LinkedHashMap<String, Member<?>>();
+		s.put(i1, Members.of(v1));
 		var value = new GStruct(typename, s);
 		return new GioviStruct(typeFrom(value), value);
 	}
@@ -106,9 +106,9 @@ public class GioviStructs {
 		String i1, T v1,
 		String i2, T v2
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
-		s.put(i1, VarD.of(v1));
-		s.put(i2, VarD.of(v2));
+		var s = new LinkedHashMap<String, Member<?>>();
+		s.put(i1, Members.of(v1));
+		s.put(i2, Members.of(v2));
 		var value = new GStruct(typename, s);
 		return new GioviStruct(typeFrom(value), value);
 	}
@@ -119,10 +119,10 @@ public class GioviStructs {
 		String i2, T v2,
 		String i3, T v3
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
-		s.put(i1, VarD.of(v1));
-		s.put(i2, VarD.of(v2));
-		s.put(i3, VarD.of(v3));
+		var s = new LinkedHashMap<String, Member<?>>();
+		s.put(i1, Members.of(v1));
+		s.put(i2, Members.of(v2));
+		s.put(i3, Members.of(v3));
 		var value = new GStruct(typename, s);
 		return new GioviStruct(typeFrom(value), value);
 	}
@@ -134,11 +134,11 @@ public class GioviStructs {
 		String i3, T v3,
 		String i4, T v4
 	) {
-		var s = new LinkedHashMap<String, VarD<?>>();
-		s.put(i1, VarD.of(v1));
-		s.put(i2, VarD.of(v2));
-		s.put(i3, VarD.of(v3));
-		s.put(i4, VarD.of(v4));
+		var s = new LinkedHashMap<String, Member<?>>();
+		s.put(i1, Members.of(v1));
+		s.put(i2, Members.of(v2));
+		s.put(i3, Members.of(v3));
+		s.put(i4, Members.of(v4));
 		var value = new GStruct(typename, s);
 		return new GioviStruct(typeFrom(value), value);
 	}

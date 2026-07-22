@@ -27,6 +27,7 @@ import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
 import it.simonvic.giovi.util.Natives;
+import it.simonvic.giovi.utils.Vars;
 
 public class TestNative {
 
@@ -343,7 +344,7 @@ public class TestNative {
 					() -> Natives.lookupMethod(
 						Foo.class,
 						new FunctionSignature("simple"),
-						List.of(VarD.of("foo"))
+						List.of(Vars.of("foo"))
 					)
 				);
 			}
@@ -372,8 +373,8 @@ public class TestNative {
 							)
 						),
 						List.of(
-							VarD.of(69),
-							VarD.of("hello")
+							Vars.of(69),
+							Vars.of("hello")
 						)
 					)
 				).isEqualTo(Foo._simpleWithParams);
@@ -386,9 +387,9 @@ public class TestNative {
 						Foo.class,
 						Foo.overloaded,
 						List.of(
-							VarD.of(2),
-							VarD.of(20),
-							VarD.of(200)
+							Vars.of(2),
+							Vars.of(20),
+							Vars.of(200)
 						)
 					)
 				).isEqualTo(Foo._overloaded);
@@ -401,8 +402,8 @@ public class TestNative {
 						Foo.class,
 						Foo.overloaded,
 						List.of(
-							VarD.of(2),
-							VarD.of(20)
+							Vars.of(2),
+							Vars.of(20)
 						)
 					)
 				).isEqualTo(Foo._overloaded);
@@ -426,9 +427,9 @@ public class TestNative {
 
 			@Test
 			void test_lookup_simpleWithParams() throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("a", VarD.of(69));
-				actualParams.put("b", VarD.of("hello"));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("a", Vars.of(69));
+				actualParams.put("b", Vars.of("hello"));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,
@@ -447,9 +448,9 @@ public class TestNative {
 			@Test
 			void test_lookup_simpleWithParams_disorganizedActual()
 				throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("b", VarD.of("hello"));
-				actualParams.put("a", VarD.of(69));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("b", Vars.of("hello"));
+				actualParams.put("a", Vars.of(69));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,
@@ -468,8 +469,8 @@ public class TestNative {
 			@Test
 			void test_lookup_simpleWithParams_subsetWithNoDefault_shouldFail()
 				throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("a", VarD.of(69));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("a", Vars.of(69));
 				assertThatExceptionOfType(NoSuchMethodException.class).isThrownBy(
 					() -> Natives.lookupMethod(
 						Foo.class,
@@ -487,10 +488,10 @@ public class TestNative {
 
 			@Test
 			void test_lookup_overloaded_allParams() throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("a", VarD.of(2));
-				actualParams.put("b", VarD.of(20));
-				actualParams.put("c", VarD.of(200));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("a", Vars.of(2));
+				actualParams.put("b", Vars.of(20));
+				actualParams.put("c", Vars.of(200));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,
@@ -502,10 +503,10 @@ public class TestNative {
 
 			@Test
 			void test_lookup_overloaded_allParamsDisorganized() throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("b", VarD.of(20));
-				actualParams.put("a", VarD.of(2));
-				actualParams.put("c", VarD.of(200));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("b", Vars.of(20));
+				actualParams.put("a", Vars.of(2));
+				actualParams.put("c", Vars.of(200));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,
@@ -517,9 +518,9 @@ public class TestNative {
 
 			@Test
 			void test_lookup_overloaded_subsetParams() throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("a", VarD.of(2));
-				actualParams.put("b", VarD.of(20));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("a", Vars.of(2));
+				actualParams.put("b", Vars.of(20));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,
@@ -531,9 +532,9 @@ public class TestNative {
 
 			@Test
 			void test_lookup_overloaded_subsetAndDisorganizedParams() throws NoSuchMethodException {
-				var actualParams = new LinkedHashMap<String, VarD<?>>();
-				actualParams.put("c", VarD.of(200));
-				actualParams.put("b", VarD.of(20));
+				var actualParams = new LinkedHashMap<String, Var<?>>();
+				actualParams.put("c", Vars.of(200));
+				actualParams.put("b", Vars.of(20));
 				assertThat(
 					Natives.lookupMethod(
 						Foo.class,

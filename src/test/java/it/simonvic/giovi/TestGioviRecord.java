@@ -57,8 +57,8 @@ public class TestGioviRecord {
 					"a", 69,
 					"b", true,
 					"c", GRecords.of(
-						"foo", VarD.of("foo"),
-						"bar", VarD.of("bar")
+						"foo", Members.of("foo"),
+						"bar", Members.of("bar")
 					)
 				)
 			);
@@ -81,8 +81,8 @@ public class TestGioviRecord {
 					"a", 69,
 					"b", true,
 					"c", GRecords.of(
-						"foo", VarD.of("foo"),
-						"bar", VarD.of("bar")
+						"foo", Members.of("foo"),
+						"bar", Members.of("bar")
 					),
 					"d", GTuples.ofNative(1, 2, 3)
 				)
@@ -351,7 +351,7 @@ public class TestGioviRecord {
 				<a:0 b:1 c:2 d:3>@3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
-				assertThat(visitVarD(code).unwrap().value()).isEqualTo(expected);
+				assertThat(visitExpression(code).unwrapAsGioviValue().value()).isEqualTo(expected);
 			}
 
 			@ParameterizedTest
@@ -365,7 +365,7 @@ public class TestGioviRecord {
 				String code,
 				Integer expected
 			) {
-				assertThat(visitVarD(code).unwrap().value()).isEqualTo(expected);
+				assertThat(visitExpression(code).unwrapAsGioviValue().value()).isEqualTo(expected);
 			}
 
 

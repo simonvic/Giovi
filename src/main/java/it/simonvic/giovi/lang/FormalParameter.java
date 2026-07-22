@@ -3,7 +3,7 @@ package it.simonvic.giovi.lang;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Var;
 
 public record FormalParameter(
 	String label,
@@ -50,8 +50,8 @@ public record FormalParameter(
 		return new FormalParameter(label, identifier, type.copy(), defaultValue.copy(), isOptional);
 	}
 
-	public VarD<?> spawn() {
-		return new VarD<>(defaultValue.copy(), defaultValue.copy());
+	public Var<?> spawn() {
+		return new Var<>(defaultValue.copy(), defaultValue.copy());
 	}
 
 }

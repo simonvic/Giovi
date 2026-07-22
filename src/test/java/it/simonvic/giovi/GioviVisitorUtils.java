@@ -47,14 +47,6 @@ public class GioviVisitorUtils {
 		return visitExpression(visitor, code).asGioviValue();
 	}
 
-	public static UnaryValueWrapper<?> visitUnaryValueWrapper(String code) {
-		return visitExpression(code).asUnaryValueWrapper();
-	}
-
-	public static VarD<?> visitVarD(String code) {
-		return visitExpression(code).asVarD();
-	}
-
 	public static TestsVisitor visit(TestsVisitor visitor, String code) {
 		visitor.visit(parserOf(code).begin());
 		return visitor;

@@ -1,7 +1,8 @@
 package it.simonvic.giovi;
 
 import static it.simonvic.giovi.GioviVisitorUtils.visit;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.junit.jupiter.api.Disabled;
@@ -11,6 +12,7 @@ import giovi.GioviParserVisitResult;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
 import it.simonvic.giovi.antlr.GioviParser.IfStatementContext;
 import it.simonvic.giovi.utils.TestsVisitor;
+import it.simonvic.giovi.utils.Vars;
 
 public class TestExpressionPatternMatching {
 
@@ -27,7 +29,7 @@ public class TestExpressionPatternMatching {
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
 					assertThat(lookup("i"))
-						.hasValue(VarD.of(69));
+						.hasValue(Vars.of(69));
 					return super.visitBlock(ctx);
 				}
 
@@ -108,8 +110,8 @@ public class TestExpressionPatternMatching {
 				@Override
 				public GioviParserVisitResult visitBlock(BlockContext ctx) {
 					assertAll(
-						() -> assertThat(lookup("a")).hasValue(VarD.of(69)),
-						() -> assertThat(lookup("b")).hasValue(VarD.of("foo"))
+						() -> assertThat(lookup("a")).hasValue(Vars.of(69)),
+						() -> assertThat(lookup("b")).hasValue(Vars.of("foo"))
 					);
 					return super.visitBlock(ctx);
 				}

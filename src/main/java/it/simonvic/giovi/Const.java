@@ -6,14 +6,16 @@ import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public final class Const<T extends GioviValue<?>> extends UnaryValueWrapper<T> {
+public record Const<T extends GioviValue<?>>(T value) implements ValueWrapper<T> {
 
-	public static <T> Const<? extends GioviValue<?>> of(T value) {
-		return new Const<>(GioviValue.of(value));
+	@Override
+	public T unwrap() {
+		return value;
 	}
 
-	public Const(T value) {
-		super(value);
+	@Override
+	public void setValue(T value) {
+		throw new GioviException("Can't mutate constant");
 	}
 
 	@Override

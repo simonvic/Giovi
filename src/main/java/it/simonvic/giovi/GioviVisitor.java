@@ -338,24 +338,24 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitVarDeclaration(VarDeclarationContext ctx) {
-		var var = spawnType(ctx.type(), ctx.defaultDefinition());
+		var var = spawnVar(ctx.type(), ctx.defaultDefinition());
 		getCurrentScope().declare(ctx.identifier().getText(), var);
 		return var;
 	}
 
-	private VarD<?> spawnType(
+	private Var<?> spawnVar(
 		TypeContext typeCtx,
 		DefaultDefinitionContext defaultDefinitionCtx
 	) {
-		return spawnType(visit(typeCtx).asGioviType(), defaultDefinitionCtx);
+		return spawnVar(visit(typeCtx).asGioviType(), defaultDefinitionCtx);
 	}
 
-	private VarD<?> spawnType(
+	private Var<?> spawnVar(
 		GioviType<?> type,
 		DefaultDefinitionContext defaultDefinitionCtx
 	) {
 		if (defaultDefinitionCtx == null) {
-			return new VarD<>(type.spawn(), type.spawn());
+			return new Var<>(type.spawn(), type.spawn());
 		}
 		var defaultValue = visit(defaultDefinitionCtx).unwrapAsGioviValue();
 		try {
@@ -363,7 +363,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		} catch (NonWideneable e) {
 			throw new GioviException(e, "Incompatible default value");
 		}
-		return new VarD<>(defaultValue.copy(), defaultValue);
+		return new Var<>(defaultValue.copy(), defaultValue);
 	}
 
 	@Override
@@ -736,13 +736,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitListCreation(ListCreationContext ctx) {
-		var entries = new ArrayList<VarEntry<?>>(ctx.listEntries().listEntry().size());
+		var entries = new ArrayList<Entry<?>>(ctx.listEntries().listEntry().size());
 		for (var entryCtx : ctx.listEntries().listEntry()) {
 			var entry = visit(entryCtx);
 			switch (entry) {
 				case Range<?> range -> entries.addAll(range.expandAsVarEntries());
-				case GioviValue<?> v -> entries.add(new VarEntry<>(v));
-				case ValueWrapper<?> v -> entries.add(new VarEntry<>(v.unwrap().copy()));
+				case GioviValue<?> v -> entries.add(new Entry<>(v));
+				case ValueWrapper<?> v -> entries.add(new Entry<>(v.unwrap().copy()));
 				default -> throw new GioviException(
 					"Incompatible type for list creation: " + entry.getClass()
 				);
@@ -754,14 +754,14 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	@Override
 	public GioviParserVisitResult visitMapCreation(MapCreationContext ctx) {
-		var map = new LinkedHashMap<VarEntry<?>, VarEntry<?>>();
+		var map = new LinkedHashMap<Entry<?>, Entry<?>>();
 		if (ctx.mapEntries() == null) {
 			return new GioviMap(new GioviTypeMap(GioviType.VOID, GioviType.VOID), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
 			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
-			map.put(new VarEntry<>(key), new VarEntry<>(element));
+			map.put(new Entry<>(key), new Entry<>(element));
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());
@@ -813,7 +813,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			? ctx.label.getText()
 			: identifier;
 		var type = visit(ctx.type()).asGioviType();
-		var param = spawnType(type, ctx.defaultDefinition());
+		var param = spawnVar(type, ctx.defaultDefinition());
 		boolean isOptional = ctx.defaultDefinition() != null;
 		return new FormalParameter(label, identifier, type, param.unwrap(), isOptional);
 	}
@@ -854,7 +854,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			actualParamsCtx.addFirst(new ActualParameterContext(null, -1));
 		}
 		enterFunctionScope();
-		LinkedHashMap<String, VarD<?>> actualParams;
+		LinkedHashMap<String, Var<?>> actualParams;
 		try {
 			actualParams = (isPositional)
 				? setupFunctionParametersIteratively(actualParamsCtx, function.signature())
@@ -868,7 +868,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			// Clarify requirements
 			// TODO: self can be null when invoking a self function via alias. Eventually spawn self
 			// type default value (once the self type wraps the struct type)
-			actualParams.putFirst("self", new VarD<>(instance.unwrapAsGioviValue()));
+			actualParams.putFirst("self", new Var<>(instance.unwrapAsGioviValue()));
 		}
 		var returnValue = switch (function) {
 			case JFunction jFunction -> {
@@ -909,7 +909,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param signature Function signature
 	 * @throws NonWideneable
 	 */
-	private LinkedHashMap<String, VarD<?>> setupFunctionParametersIteratively(
+	private LinkedHashMap<String, Var<?>> setupFunctionParametersIteratively(
 		List<ActualParameterContext> actualParamCtxList,
 		FunctionSignature signature
 	) throws NonWideneable {
@@ -921,7 +921,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				"Expecting at most " + formalParamsCount + " but instead got " + actualParamsCount
 			);
 		}
-		var params = new LinkedHashMap<String, VarD<?>>();
+		var params = new LinkedHashMap<String, Var<?>>();
 		for (int i = 0; i < formalParamsCount; i++) {
 			var formalParam = formalParamsArray.get(i);
 			var formalParamIdentifier = formalParam.identifier();
@@ -967,7 +967,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	 * @param signature Function signature
 	 * @throws NonWideneable
 	 */
-	private LinkedHashMap<String, VarD<?>> setupNamedFunctionParameters(
+	private LinkedHashMap<String, Var<?>> setupNamedFunctionParameters(
 		List<ActualParameterContext> actualParamCtxList,
 		FunctionSignature signature
 	) throws NonWideneable {
@@ -982,7 +982,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			cachedCtxs.put(actualParamCtx.label.getText(), actualParamCtx);
 		}
 
-		var params = new LinkedHashMap<String, VarD<?>>();
+		var params = new LinkedHashMap<String, Var<?>>();
 		var undeclaredParameters = new LinkedHashMap<>(signature.parameters().byLabel());
 		for (var cachedCtxEntry : cachedCtxs.entrySet()) {
 			var actualParamLabel = cachedCtxEntry.getKey();
@@ -1241,7 +1241,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private void doInitStructField(
 		GioviTypeStruct structType,
-		VarD<?> field,
+		Member<?> field,
 		GioviParserVisitResult newFieldValue
 	) throws NonWideneable {
 		if (field.unwrap() instanceof GioviSelf) {
@@ -1258,12 +1258,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitTupleCreationBody(TupleCreationBodyContext ctx) {
 		int size = ctx.expression().size();
-		var fields = new ArrayList<VarD<?>>(size);
+		var fields = new ArrayList<Member<?>>(size);
 		var fieldsSignature = new ArrayList<TupleFieldSignature>(size);
 		for (var expressionCtx : ctx.expression()) {
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
-			fields.add(new VarD<>(fieldValue, fieldType.spawn()));
+			fields.add(new Member<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.add(new TupleFieldSignature(fieldType));
 		}
 		return new GioviTuple(
@@ -1276,13 +1276,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRecordCreationBody(RecordCreationBodyContext ctx) {
 		int size = ctx.recordEntry().size();
-		var fields = new LinkedHashMap<String, VarD<?>>(size);
+		var fields = new LinkedHashMap<String, Member<?>>(size);
 		var fieldsSignature = new LinkedHashMap<String, RecordFieldSignature>(size);
 		for (var entryCtx : ctx.recordEntry()) {
 			var fieldValue = visit(entryCtx.expression()).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
 			String identifier = entryCtx.identifier().getText();
-			fields.put(identifier, new VarD<>(fieldValue, fieldType.spawn()));
+			fields.put(identifier, new Member<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.put(identifier, new RecordFieldSignature(identifier, fieldType));
 		}
 		return new GioviRecord(

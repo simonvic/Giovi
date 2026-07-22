@@ -215,9 +215,11 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
 					new GTuple(
-						VarD.of(69),
-						VarD.of(69d),
-						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL))
+						Members.of(69),
+						Members.of(69d),
+						new Member<>(
+							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
+						)
 					)
 				);
 		}
@@ -238,10 +240,12 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
 					new GTuple(
-						VarD.of(69),
-						VarD.of(69d),
-						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)),
-						VarD.of(false)
+						Members.of(69),
+						Members.of(69d),
+						new Member<>(
+							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
+						),
+						Members.of(false)
 					)
 				);
 		}
@@ -279,9 +283,9 @@ public class TestWidening {
 			);
 			assertThat(narrow.widenTo(type).value()).isEqualTo(
 				GRecords.of(
-					"n", new VarD<>(new GioviNatural(new Natural(69))),
-					"i", new VarD<>(new GioviInt(69)),
-					"li", new VarD<>(GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT))
+					"n", new Member<>(new GioviNatural(new Natural(69))),
+					"i", new Member<>(new GioviInt(69)),
+					"li", new Member<>(GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT))
 				)
 			);
 		}
@@ -303,10 +307,11 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"i", new VarD<>(new GioviInt(69)),
-						"r", new VarD<>(new GioviReal(69d)),
-						"lr",
-						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL))
+						"i", new Member<>(new GioviInt(69)),
+						"r", new Member<>(new GioviReal(69d)),
+						"lr", new Member<>(
+							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
+						)
 					)
 				)
 			);
@@ -330,11 +335,12 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"i", new VarD<>(new GioviInt(69)),
-						"r", new VarD<>(new GioviReal(69d)),
-						"lr",
-						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)),
-						"b", new VarD<>(GioviBool.FALSE)
+						"i", new Member<>(new GioviInt(69)),
+						"r", new Member<>(new GioviReal(69d)),
+						"lr", new Member<>(
+							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
+						),
+						"b", new Member<>(GioviBool.FALSE)
 					)
 				)
 			);
@@ -379,10 +385,11 @@ public class TestWidening {
 				new GioviStruct(
 					type, GStructs.of(
 						"Foo",
-						"n", new VarD<>(new GioviNatural(new Natural(69))),
-						"i", new VarD<>(new GioviInt(69)),
-						"li",
-						new VarD<>(GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT))
+						"n", new Member<>(new GioviNatural(new Natural(69))),
+						"i", new Member<>(new GioviInt(69)),
+						"li", new Member<>(
+							GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT)
+						)
 					)
 				)
 			);
@@ -409,10 +416,9 @@ public class TestWidening {
 						type,
 						GStructs.of(
 							"Foo",
-							"i", new VarD<>(new GioviInt(69)),
-							"r", new VarD<>(new GioviReal(69d)),
-							"lr",
-							new VarD<>(
+							"i", new Member<>(new GioviInt(69)),
+							"r", new Member<>(new GioviReal(69d)),
+							"lr", new Member<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							)
@@ -442,13 +448,13 @@ public class TestWidening {
 					new GioviStruct(
 						type, GStructs.of(
 							"Foo",
-							"i", new VarD<>(new GioviInt(69)),
-							"r", new VarD<>(new GioviReal(69d)),
-							"lr", new VarD<>(
+							"i", new Member<>(new GioviInt(69)),
+							"r", new Member<>(new GioviReal(69d)),
+							"lr", new Member<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"b", new VarD<>(GioviBool.FALSE)
+							"b", new Member<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -514,9 +520,9 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"a", new VarD<>(new GioviNatural(new Natural(69))),
-						"b", new VarD<>(new GioviInt(69)),
-						"c", new VarD<>(
+						"a", new Member<>(new GioviNatural(new Natural(69))),
+						"b", new Member<>(new GioviInt(69)),
+						"c", new Member<>(
 							GioviLists.of(69, 420),
 							new GioviList(GioviType.LIST_OF_INT)
 						)
@@ -564,13 +570,13 @@ public class TestWidening {
 					new GioviRecord(
 						type,
 						GRecords.of(
-							"a", new VarD<>(new GioviNatural(new Natural(69))),
-							"b", new VarD<>(new GioviInt(69)),
-							"c", new VarD<>(
+							"a", new Member<>(new GioviNatural(new Natural(69))),
+							"b", new Member<>(new GioviInt(69)),
+							"c", new Member<>(
 								GioviLists.of(69, 420),
 								new GioviList(GioviType.LIST_OF_INT)
 							),
-							"d", new VarD<>(GioviBool.FALSE)
+							"d", new Member<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -596,10 +602,11 @@ public class TestWidening {
 					type,
 					GStructs.of(
 						"Foo",
-						"a", new VarD<>(new GioviInt(69)),
-						"b", new VarD<>(new GioviReal(69d)),
-						"c",
-						new VarD<>(GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL))
+						"a", new Member<>(new GioviInt(69)),
+						"b", new Member<>(new GioviReal(69d)),
+						"c", new Member<>(
+							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
+						)
 					)
 				)
 			);
@@ -647,13 +654,13 @@ public class TestWidening {
 						type,
 						GStructs.of(
 							"Foo",
-							"a", new VarD<>(new GioviInt(69)),
-							"b", new VarD<>(new GioviReal(69d)),
-							"c", new VarD<>(
+							"a", new Member<>(new GioviInt(69)),
+							"b", new Member<>(new GioviReal(69d)),
+							"c", new Member<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"d", new VarD<>(GioviBool.FALSE)
+							"d", new Member<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -678,13 +685,13 @@ public class TestWidening {
 					new GioviRecord(
 						type,
 						GRecords.of(
-							"a", new VarD<>(new GioviInt(69)),
-							"b", new VarD<>(
+							"a", Members.of(new GioviInt(69)),
+							"b", Members.of(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_INT)
 							),
-							"c", new VarD<>(new GioviReal()),
-							"d", new VarD<>(GioviBool.FALSE)
+							"c", Members.of(new GioviReal()),
+							"d", Members.of(GioviBool.FALSE)
 						)
 					)
 				);
@@ -707,13 +714,13 @@ public class TestWidening {
 				new GioviRecord(
 					type,
 					GRecords.of(
-						"a", new VarD<>(new GioviNatural(new Natural(69))),
-						"b", new VarD<>(
+						"a", Members.of(new GioviNatural(new Natural(69))),
+						"b", Members.of(
 							GioviLists.of(69d, 420d),
 							new GioviList(GioviType.LIST_OF_INT)
 						),
-						"c", new VarD<>(new GioviReal()),
-						"d", new VarD<>(GioviBool.FALSE)
+						"c", Members.of(new GioviReal()),
+						"d", Members.of(GioviBool.FALSE)
 					)
 				)
 			);
@@ -778,9 +785,9 @@ public class TestWidening {
 					type,
 					GStructs.of(
 						"Foo",
-						"a", new VarD<>(new GioviNatural(new Natural(69))),
-						"b", new VarD<>(new GioviInt(69)),
-						"c", new VarD<>(
+						"a", new Member<>(new GioviNatural(new Natural(69))),
+						"b", new Member<>(new GioviInt(69)),
+						"c", new Member<>(
 							GioviLists.of(69, 420),
 							new GioviList(GioviType.LIST_OF_INT)
 						)

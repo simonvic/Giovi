@@ -11,7 +11,7 @@ import giovi.Module.InnerModule;
 import giovi.Module.NativeModule;
 import giovi.lang.*;
 import it.simonvic.giovi.Const;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.*;
 
 // TODO: add StructScope? Especially when we'll implement nested structs definition
@@ -84,9 +84,9 @@ public class Scope {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// Variables
 
-	protected final Map<String, VarD<?>> variables = new HashMap<>();
+	protected final Map<String, Var<?>> variables = new HashMap<>();
 
-	public void declare(String identifier, VarD<?> var) {
+	public void declare(String identifier, Var<?> var) {
 		if (variables.containsKey(identifier)) {
 			throw new VariableAlreadyDeclared(identifier);
 		}
@@ -98,7 +98,7 @@ public class Scope {
 			|| (parent != null && parent.isDeclaredVariable(identifier));
 	}
 
-	public Optional<VarD<?>> getVariable(String identifier) {
+	public Optional<Var<?>> getVariable(String identifier) {
 		if (variables.containsKey(identifier)) {
 			return Optional.of(variables.get(identifier));
 		}

@@ -3,29 +3,22 @@ package it.simonvic.giovi;
 import java.util.Objects;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.*;
-import it.simonvic.giovi.exceptions.NonWideneable;
+import giovi.lang.GioviDefault;
+import giovi.lang.GioviType;
+import giovi.lang.GioviValue;
 
-// TODO: extend with Member, FunctionParam?
-public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
+public sealed abstract class DefaultableValueWrapper<T extends GioviValue<?>>
+	extends MutableValueWrapper<T>
+	permits Var, Member {
 
-	public static <T> VarD<? extends GioviValue<?>> of(T value) {
-		return new VarD<>(GioviValue.of(value));
-	}
-
-	public static <T> VarD<? extends GioviValue<?>> of(T value, T defaultValue) {
-		return new VarD<>(GioviValue.of(value), GioviValue.of(defaultValue));
-	}
-
-	private T value;
 	private final T defaultValue; // TODO: eventually, it could be lazily initialized only if it is overriden
 
 	/**
 	 * @param value
 	 * @param defaultValue
 	 */
-	public VarD(T value, T defaultValue) {
-		this.value = value;
+	public DefaultableValueWrapper(T value, T defaultValue) {
+		super(value);
 		this.defaultValue = defaultValue;
 	}
 
@@ -34,19 +27,13 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")
-	public VarD(T value) {
+	public DefaultableValueWrapper(T value) {
 		this(value, (T) value.getGioviType().spawn());
 	}
 
 
-	@Override
-	public T unwrap() {
-		return value;
-	}
-
-	@Override
-	public void setValue(T value) {
-		this.value = value;
+	public T unwrapDefault() {
+		return defaultValue;
 	}
 
 	/**
@@ -67,26 +54,20 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(value, defaultValue);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(defaultValue);
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null) return false;
+		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
-		VarD<?> other = (VarD<?>) obj;
-		return Objects.equals(value, other.value)
-			&& Objects.equals(defaultValue, other.defaultValue);
-	}
-
-	public VarD<?> copy() {
-		return new VarD<>(value.copy(), defaultValue.copy());
-	}
-
-	@Deprecated
-	public VarD<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
-		return new VarD<>(gioviType.widen(value), gioviType.widen(defaultValue));
+		var other = (DefaultableValueWrapper<?>) obj;
+		return Objects.equals(defaultValue, other.defaultValue);
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
@@ -98,7 +79,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult as(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviType<?> t -> value.as(t);
-			default -> ValueWrapper.super.as(right);
+			default -> super.as(right);
 		};
 	}
 
@@ -120,7 +101,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseAnd(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseAnd(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseAnd(right);
+			default -> super.bitwiseAnd(right);
 		};
 	}
 
@@ -129,7 +110,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseOr(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseOr(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseOr(right);
+			default -> super.bitwiseOr(right);
 		};
 	}
 
@@ -138,7 +119,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseXor(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseXor(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseXor(right);
+			default -> super.bitwiseXor(right);
 		};
 	}
 
@@ -147,7 +128,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseLeftShift(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseLeftShift(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseLeftShift(right);
+			default -> super.bitwiseLeftShift(right);
 		};
 	}
 
@@ -156,7 +137,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseRightShift(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseRightShift(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseRightShift(right);
+			default -> super.bitwiseRightShift(right);
 		};
 	}
 
@@ -165,7 +146,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult bitwiseRightUnsignedShift(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.bitwiseRightUnsignedShift(this.defaultValue);
-			default -> ValueWrapper.super.bitwiseRightUnsignedShift(right);
+			default -> super.bitwiseRightUnsignedShift(right);
 		};
 	}
 
@@ -176,7 +157,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult plus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.plus(this.defaultValue);
-			default -> ValueWrapper.super.plus(right);
+			default -> super.plus(right);
 		};
 	}
 
@@ -184,7 +165,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult minus(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.minus(this.defaultValue);
-			default -> ValueWrapper.super.minus(right);
+			default -> super.minus(right);
 		};
 	}
 
@@ -192,7 +173,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult multiply(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.multiply(this.defaultValue);
-			default -> ValueWrapper.super.multiply(right);
+			default -> super.multiply(right);
 		};
 	}
 
@@ -200,7 +181,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult divide(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.divide(this.defaultValue);
-			default -> ValueWrapper.super.divide(right);
+			default -> super.divide(right);
 		};
 	}
 
@@ -208,7 +189,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult modulo(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.modulo(this.defaultValue);
-			default -> ValueWrapper.super.modulo(right);
+			default -> super.modulo(right);
 		};
 	}
 
@@ -216,7 +197,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult power(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.power(this.defaultValue);
-			default -> ValueWrapper.super.power(right);
+			default -> super.power(right);
 		};
 	}
 
@@ -227,7 +208,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult and(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.and(this.defaultValue);
-			default -> ValueWrapper.super.and(right);
+			default -> super.and(right);
 		};
 	}
 
@@ -235,7 +216,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult or(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.or(this.defaultValue);
-			default -> ValueWrapper.super.or(right);
+			default -> super.or(right);
 		};
 	}
 
@@ -245,7 +226,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult equal(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.equal(this.defaultValue);
-			default -> ValueWrapper.super.equal(right);
+			default -> super.equal(right);
 		};
 	}
 
@@ -253,7 +234,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult notEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.notEqual(this.defaultValue);
-			default -> ValueWrapper.super.notEqual(right);
+			default -> super.notEqual(right);
 		};
 	}
 
@@ -261,7 +242,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult less(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.less(this.defaultValue);
-			default -> ValueWrapper.super.less(right);
+			default -> super.less(right);
 		};
 	}
 
@@ -269,7 +250,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult lessEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.lessEqual(this.defaultValue);
-			default -> ValueWrapper.super.lessEqual(right);
+			default -> super.lessEqual(right);
 		};
 	}
 
@@ -277,7 +258,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult greater(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.greater(this.defaultValue);
-			default -> ValueWrapper.super.greater(right);
+			default -> super.greater(right);
 		};
 	}
 
@@ -285,7 +266,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult greaterEqual(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.greaterEqual(this.defaultValue);
-			default -> ValueWrapper.super.greaterEqual(right);
+			default -> super.greaterEqual(right);
 		};
 	}
 
@@ -293,7 +274,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult contains(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.contains(this.defaultValue);
-			default -> ValueWrapper.super.contains(right);
+			default -> super.contains(right);
 		};
 	}
 
@@ -301,7 +282,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult isContained(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.value.isContained(this.defaultValue);
-			default -> ValueWrapper.super.isContained(right);
+			default -> super.isContained(right);
 		};
 	}
 
@@ -311,7 +292,7 @@ public class VarD<T extends GioviValue<?>> implements ValueWrapper<T> {
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> this.defaultValue;
-			default -> ValueWrapper.super.dot(right);
+			default -> super.dot(right);
 		};
 	}
 

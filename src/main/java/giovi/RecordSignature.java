@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields)
@@ -110,14 +110,14 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param signatureFields
 	 * @return spanwed fields
 	 */
-	public static LinkedHashMap<String, VarD<?>> spawn(
+	public static LinkedHashMap<String, Member<?>> spawn(
 		LinkedHashMap<String, RecordFieldSignature> signatureFields
 	) {
-		var fields = new LinkedHashMap<String, VarD<?>>();
+		var fields = new LinkedHashMap<String, Member<?>>();
 		for (var field : signatureFields.values()) {
 			fields.put(
 				field.identifier(),
-				new VarD<>(field.defaultValue().copy(), field.defaultValue().copy())
+				new Member<>(field.defaultValue().copy(), field.defaultValue().copy())
 			);
 		}
 		return fields;
@@ -184,14 +184,14 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @param narrow
 	 * @return widened tuple
 	 */
-	public static LinkedHashMap<String, VarD<?>> widenTuple(
+	public static LinkedHashMap<String, Member<?>> widenTuple(
 		GTuple narrow,
 		LinkedHashMap<String, RecordFieldSignature> wide
 	) throws NonWideneable {
 		if (narrow.getFieldsCount() > wide.size()) {
 			throw new NonWideneable("Tuple is wider than signature");
 		}
-		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		var widenedFields = new LinkedHashMap<String, Member<?>>();
 		var iter = wide.values().iterator();
 		for (int i = 0; i < narrow.getFieldsCount(); i++) {
 			var narrowField = narrow.getField(i).orElseThrow();
@@ -199,7 +199,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			// we widen the field, but use the default value of the wider field
 			widenedFields.put(
 				widerFieldSignature.identifier(),
-				new VarD<>(
+				new Member<>(
 					widerFieldSignature.type().widen(narrowField.unwrap()),
 					widerFieldSignature.defaultValue().copy()
 				)
@@ -210,7 +210,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			var widerFieldSignature = iter.next();
 			widenedFields.put(
 				widerFieldSignature.identifier(),
-				new VarD<>(
+				new Member<>(
 					widerFieldSignature.defaultValue().copy(),
 					widerFieldSignature.defaultValue().copy()
 				)
@@ -252,7 +252,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 	 * @return
 	 * @throws NonWideneable
 	 */
-	public static LinkedHashMap<String, VarD<?>> widenRecord(
+	public static LinkedHashMap<String, Member<?>> widenRecord(
 		GRecord narrow,
 		LinkedHashMap<String, RecordFieldSignature> wide
 	) throws NonWideneable {
@@ -262,7 +262,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 		if (!wide.keySet().containsAll(narrow.fields.keySet())) {
 			throw new NonWideneable("Record has field not contained in widening target signature");
 		}
-		var widenedFields = new LinkedHashMap<String, VarD<?>>();
+		var widenedFields = new LinkedHashMap<String, Member<?>>();
 		for (var widerField : wide.values()) {
 			GioviValue<?> widenedValue;
 			GioviValue<?> widenedDefaultValue = widerField.defaultValue().copy();
@@ -274,7 +274,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			}
 			widenedFields.put(
 				widerField.identifier(),
-				new VarD<>(widenedValue, widenedDefaultValue)
+				new Member<>(widenedValue, widenedDefaultValue)
 			);
 		}
 		return widenedFields;

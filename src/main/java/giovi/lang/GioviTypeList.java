@@ -8,8 +8,8 @@ import java.util.Map;
 
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
-import it.simonvic.giovi.VarD;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Member;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
@@ -54,7 +54,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 			case GioviList v -> {
 				var widened = new GioviList(this);
 				for (var entry : v.value()) {
-					widened.value().add(new VarEntry<>(this.entryType.widen(entry.unwrap())));
+					widened.value().add(new Entry<>(this.entryType.widen(entry.unwrap())));
 				}
 				yield widened;
 			}
@@ -70,7 +70,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		// it should be handled by the visitor appropriately
 		var rawList = list.value();
 		for (int i = 0; i < this.initSize; i++) {
-			rawList.add(new VarEntry<>(this.entryType.spawn()));
+			rawList.add(new Entry<>(this.entryType.spawn()));
 		}
 		return list;
 	}
@@ -109,7 +109,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 		int idx = index.value();
 		self.value().add(
 			idx >= 0 ? idx : nativeIndexOf(idx, self.value().size()) + 1,
-			new VarEntry<>(self.getGioviType().entryType.widen(element.value()))
+			new Entry<>(self.getGioviType().entryType.widen(element.value()))
 		);
 		return self;
 	}
@@ -122,7 +122,7 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 	) throws NonWideneable {
 		self.value().set(
 			nativeIndexOf(index.value(), self.value().size()),
-			new VarEntry<>(self.getGioviType().entryType.widen(element))
+			new Entry<>(self.getGioviType().entryType.widen(element))
 		);
 		return self;
 	}
@@ -177,8 +177,8 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 				return new GioviRecord(
 					find_returnType,
 					GRecords.of(
-						"found", new VarD<>(GioviBool.of(true)),
-						"index", new VarD<>(new GioviInt(i))
+						"found", new Member<>(GioviBool.of(true)),
+						"index", new Member<>(new GioviInt(i))
 					)
 				);
 			}

@@ -166,9 +166,9 @@ public class TestGioviStruct {
 						new GioviStruct(
 							rgbType, GStructs.of(
 								"RGB",
-								"r", VarD.of(255, 0),
-								"g", VarD.of(250, 0),
-								"b", VarD.of(200, 0)
+								"r", Members.of(255, 0),
+								"g", Members.of(250, 0),
+								"b", Members.of(200, 0)
 							)
 						)
 					)
@@ -511,9 +511,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(0),
-					"t", VarD.of(""),
-					"b", VarD.of(false)
+					"i", Members.of(0),
+					"t", Members.of(""),
+					"b", Members.of(false)
 				)
 			);
 		}
@@ -538,9 +538,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(69),
-					"t", VarD.of("hello"),
-					"b", VarD.of(true)
+					"i", Members.of(69),
+					"t", Members.of("hello"),
+					"b", Members.of(true)
 				)
 			);
 		}
@@ -565,9 +565,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(69),
-					"t", VarD.of("hello"),
-					"b", VarD.of(true)
+					"i", Members.of(69),
+					"t", Members.of("hello"),
+					"b", Members.of(true)
 				)
 			);
 		}
@@ -592,9 +592,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(69),
-					"t", VarD.of("hello"),
-					"b", VarD.of(true)
+					"i", Members.of(69),
+					"t", Members.of("hello"),
+					"b", Members.of(true)
 				)
 			);
 		}
@@ -661,9 +661,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(69),
-					"t", VarD.of(""),
-					"b", VarD.of(true)
+					"i", Members.of(69),
+					"t", Members.of(""),
+					"b", Members.of(true)
 				)
 			);
 		}
@@ -691,11 +691,11 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(420, 69),
-					"t", VarD.of("foo", "foo"),
-					"s", VarD.of(
-						GStructs.of("Bar", "r", VarD.of(6.9, 4.20)),
-						GStructs.of("Bar", "r", VarD.of(6.9, 4.20))
+					"i", Members.of(420, 69),
+					"t", Members.of("foo", "foo"),
+					"s", Members.of(
+						GStructs.of("Bar", "r", Members.of(6.9, 4.20)),
+						GStructs.of("Bar", "r", Members.of(6.9, 4.20))
 					)
 				)
 			);
@@ -725,11 +725,11 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", VarD.of(420, 69),
-					"t", VarD.of("foo", "foo"),
-					"s", VarD.of(
-						GStructs.of("Bar", "r", VarD.of(6.9, 4.20)),
-						GStructs.of("Bar", "r", VarD.of(6.9, 4.20))
+					"i", Members.of(420, 69),
+					"t", Members.of("foo", "foo"),
+					"s", Members.of(
+						GStructs.of("Bar", "r", Members.of(6.9, 4.20)),
+						GStructs.of("Bar", "r", Members.of(6.9, 4.20))
 					)
 				)
 			);
@@ -756,7 +756,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:"hello" c:true> as tuple<Natural, Text, Bool>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviTuples.of(new Natural(69), "hello", true)
 				);
@@ -771,7 +772,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:"hello" c:420i> as tuple<Int, Text, Real>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviTuples.of(69, "hello", 420d)
 				);
@@ -786,7 +788,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:420i> as tuple<Real, Real, Real>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviTuples.of(69d, 420d, 0d)
 				);
@@ -801,7 +804,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:1i b:2r> as tuple<Natural, Int>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviTuples.of(new Natural(1), 2)
 				);
@@ -816,7 +820,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:1r b:2r c:3r> as tuple<Natural, Int>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviTuples.of(new Natural(1), 2)
 				);
@@ -831,7 +836,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:"hello" c:true> as record<a Natural, b Text, c Bool>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviRecords.of(
 						"a", new Natural(69),
@@ -850,7 +856,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:420i> as record<a Int, b Real, c Real>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviRecords.of(
 						"a", 69,
@@ -869,7 +876,8 @@ public class TestGioviStruct {
 							"""),
 						"""
 						Foo.<a:69n b:420i c:6.9> as record<b Natural, c Int>
-						""")
+						"""
+					)
 				).isEqualTo(
 					GioviRecords.of(
 						"b", new Natural(420),
@@ -986,9 +994,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", VarD.of(69),
-						"t", VarD.of("hello"),
-						"b", VarD.of(true)
+						"i", Members.of(69),
+						"t", Members.of("hello"),
+						"b", Members.of(true)
 					)
 				);
 			}
@@ -1026,9 +1034,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", VarD.of(69),
-						"t", VarD.of("hello"),
-						"b", VarD.of(true)
+						"i", Members.of(69),
+						"t", Members.of("hello"),
+						"b", Members.of(true)
 					)
 				);
 			}
@@ -1049,9 +1057,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", VarD.of(69),
-						"t", VarD.of(""),
-						"b", VarD.of(true)
+						"i", Members.of(69),
+						"t", Members.of(""),
+						"b", Members.of(true)
 					)
 				);
 			}
@@ -1082,9 +1090,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", VarD.of(69),
-						"t", VarD.of("hello"),
-						"b", VarD.of(true)
+						"i", Members.of(69),
+						"t", Members.of("hello"),
+						"b", Members.of(true)
 					)
 				);
 			}
@@ -1104,9 +1112,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", VarD.of(69),
-						"t", VarD.of("hello"),
-						"b", VarD.of(true)
+						"i", Members.of(69),
+						"t", Members.of("hello"),
+						"b", Members.of(true)
 					)
 				);
 			}
@@ -1142,8 +1150,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, code)
-						.asVarD()
-						.unwrap()
+						.unwrapAsGioviValue()
 						.value()
 				).isEqualTo(expected);
 			}
@@ -1164,8 +1171,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, code)
-						.asVarD()
-						.unwrap()
+						.unwrapAsGioviValue()
 						.value()
 				).isEqualTo(expected);
 			}

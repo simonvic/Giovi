@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import giovi.*;
 import giovi.Module;
 import giovi.lang.*;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.lang.FormalParameter;
 import it.simonvic.giovi.lang.FormalParameters;
@@ -419,7 +419,7 @@ public class Natives {
 	public static Method lookupMethod(
 		Class<?> clazz,
 		FunctionSignature signature,
-		List<VarD<?>> actualParams
+		List<Var<?>> actualParams
 	) throws NoSuchMethodException {
 		String identifier = signature.identifier();
 		method_loop: for (var method : clazz.getMethods()) {
@@ -481,7 +481,7 @@ public class Natives {
 	public static Method lookupMethod(
 		Class<?> clazz,
 		FunctionSignature signature,
-		LinkedHashMap<String, VarD<?>> actualParams
+		LinkedHashMap<String, Var<?>> actualParams
 	) throws NoSuchMethodException {
 		String identifier = signature.identifier();
 		method_loop: for (var method : clazz.getMethods()) {
@@ -553,7 +553,7 @@ public class Natives {
 	public static GioviValue<?> invoke(
 		Method method,
 		FunctionSignature signature,
-		LinkedHashMap<String, VarD<?>> actualParams
+		LinkedHashMap<String, Var<?>> actualParams
 	) throws IllegalAccessException, InvocationTargetException {
 		Parameter[] nativeParams = method.getParameters();
 		var args = new Object[nativeParams.length];
@@ -582,7 +582,7 @@ public class Natives {
 	 */
 	public static GioviValue<?> invoke(
 		Method method,
-		List<VarD<?>> actualParams
+		List<Var<?>> actualParams
 	) throws IllegalAccessException, InvocationTargetException {
 		Parameter[] nativeParams = method.getParameters();
 		var args = new Object[nativeParams.length];

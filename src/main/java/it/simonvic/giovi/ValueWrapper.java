@@ -4,37 +4,22 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
-import it.simonvic.giovi.exceptions.OperatorNotSupported;
-import it.simonvic.giovi.exceptions.RedirectionException;
 
-public interface ValueWrapper<T extends GioviValue<?>> extends GioviParserVisitResult {
+public sealed interface ValueWrapper<T extends GioviValue<?>>
+	extends GioviParserVisitResult
+	permits Const, MutableValueWrapper {
 
 	/**
 	 * @return the value
 	 */
 	T unwrap();
 
+	ValueWrapper<?> copy();
+
+	@Deprecated
+	ValueWrapper<?> widenTo(GioviType<?> gioviType) throws NonWideneable;
+
 	void setValue(T value);
-
-	@SuppressWarnings("unchecked")
-	default void setValueUnsafe(GioviValue<?> value) {
-		setValue((T) value);
-	}
-
-	@SuppressWarnings("unchecked")
-	default void setValueWithWidening(GioviValue<?> value) throws NonWideneable {
-		setValue((T) value.widenTo(getGioviType()));
-	}
-
-	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
-	default void setValueWithRedirection(GioviParserVisitResult value) {
-		// NOTE: if this.value is recursive, we can assume it is already initialized
-		try {
-			redirection(value);
-		} catch (OperatorNotSupported ex) {
-			throw new RedirectionException(ex);
-		}
-	}
 
 	default GioviType<?> getGioviType() {
 		return unwrap().getGioviType();
@@ -260,6 +245,7 @@ public interface ValueWrapper<T extends GioviValue<?>> extends GioviParserVisitR
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
+
 	@Override
 	default GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {

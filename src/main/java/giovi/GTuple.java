@@ -4,13 +4,13 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class GTuple implements GProduct permits GRecord {
 
-	private final List<VarD<?>> fields;
+	private final List<Member<?>> fields;
 	// TODO: should we use Var instead? Same for record?
 	// Probably not. What about when we'll implement Tuple type?
 	// A function might return => <Int default 69, Int default 420> for example
@@ -19,11 +19,11 @@ public sealed class GTuple implements GProduct permits GRecord {
 		fields = new ArrayList<>();
 	}
 
-	public GTuple(List<VarD<?>> fields) {
+	public GTuple(List<Member<?>> fields) {
 		this.fields = fields;
 	}
 
-	public GTuple(VarD<?>... fields) {
+	public GTuple(Member<?>... fields) {
 		this.fields = new ArrayList<>(Arrays.asList(fields));
 	}
 
@@ -57,13 +57,13 @@ public sealed class GTuple implements GProduct permits GRecord {
 
 	@Override
 	public GTuple copy() {
-		var a = new ArrayList<VarD<?>>(fields.size());
+		var a = new ArrayList<Member<?>>(fields.size());
 		this.fields.forEach(value -> a.add(value.copy()));
 		return new GTuple(a);
 	}
 
 	public GTuple copy(Range<Integer> range) {
-		var list = new ArrayList<VarD<?>>();
+		var list = new ArrayList<Member<?>>();
 		range.iterate(
 			index -> list.add(
 				getField(index)
@@ -127,15 +127,15 @@ public sealed class GTuple implements GProduct permits GRecord {
 		return fields.size();
 	}
 
-	public Optional<VarD<?>> getField(int index) {
+	public Optional<Member<?>> getField(int index) {
 		return Optional.ofNullable(fields.get(index));
 	}
 
-	public void forEach(Consumer<VarD<?>> valueConsumer) {
+	public void forEach(Consumer<Member<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 
-	public void forEachIndexed(BiConsumer<Integer, VarD<?>> valueConsumer) {
+	public void forEachIndexed(BiConsumer<Integer, Member<?>> valueConsumer) {
 		for (int i = 0; i < fields.size(); i++) {
 			valueConsumer.accept(i, fields.get(i));
 		}

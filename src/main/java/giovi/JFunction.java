@@ -6,7 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.util.Natives;
 
@@ -39,7 +39,7 @@ public record JFunction(
 	 * @throws NoSuchMethodException
 	 */
 	public GioviValue<?> invoke(
-		List<VarD<?>> actualParams
+		List<Var<?>> actualParams
 	) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		// Method method = Natives.lookupMethod(clazz, signature, actualParams);
 		return Natives.invoke(method, actualParams);
@@ -54,7 +54,7 @@ public record JFunction(
 	 * @throws NoSuchMethodException
 	 */
 	public GioviValue<?> invoke(
-		LinkedHashMap<String, VarD<?>> actualParams
+		LinkedHashMap<String, Var<?>> actualParams
 	) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		// Method method = Natives.lookupMethod(clazz, signature, actualParams);
 		return Natives.invoke(method, signature, actualParams);

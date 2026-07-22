@@ -5,20 +5,20 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public sealed class GRecord extends GTuple permits GStruct {
 
-	protected final LinkedHashMap<String, VarD<?>> fields;
+	protected final LinkedHashMap<String, Member<?>> fields;
 
 	public GRecord() {
 		super();
 		this.fields = new LinkedHashMap<>();
 	}
 
-	public GRecord(LinkedHashMap<String, VarD<?>> fields) {
+	public GRecord(LinkedHashMap<String, Member<?>> fields) {
 		super(new ArrayList<>(fields.values()));
 		this.fields = fields;
 	}
@@ -63,17 +63,17 @@ public sealed class GRecord extends GTuple permits GStruct {
 
 	@Override
 	public GRecord copy() {
-		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
+		var a = new LinkedHashMap<String, Member<?>>(fields.size());
 		this.fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new GRecord(a);
 	}
 
 	@Override
 	public GRecord copy(Range<Integer> range) {
-		var a = new LinkedHashMap<String, VarD<?>>();
+		var a = new LinkedHashMap<String, Member<?>>();
 		var fieldNames = new ArrayList<>(this.fields.keySet());
 		range.iterate(i -> {
-			VarD<?> fieldValue = getField(i).orElseThrow(() -> new NoSuchField(i));
+			Member<?> fieldValue = getField(i).orElseThrow(() -> new NoSuchField(i));
 			String fieldName = fieldNames.get(i);
 			a.put(fieldName, fieldValue);
 		});
@@ -129,30 +129,30 @@ public sealed class GRecord extends GTuple permits GStruct {
 		return fields.containsKey(identifier);
 	}
 
-	public Optional<VarD<?>> getField(String identifier) {
+	public Optional<Member<?>> getField(String identifier) {
 		return Optional.ofNullable(fields.get(identifier));
 	}
 
 	@SuppressWarnings("unchecked")
-	public <G extends GioviValue<?>> Optional<VarD<G>> getField(String identifier, Class<G> clazz) {
+	public <G extends GioviValue<?>> Optional<Member<G>> getField(String identifier, Class<G> clazz) {
 		var field = fields.get(identifier);
 		if (field == null) {
 			return Optional.empty();
 		}
 		clazz.cast(field.unwrap());
 		// TODO: return empty if class cast exception?
-		return Optional.of((VarD<G>) field);
+		return Optional.of((Member<G>) field);
 	}
 
 	public List<String> getFieldNames() {
 		return new ArrayList<>(fields.keySet());
 	}
 
-	public void forEach(BiConsumer<String, VarD<?>> valueConsumer) {
+	public void forEach(BiConsumer<String, Member<?>> valueConsumer) {
 		fields.forEach(valueConsumer);
 	}
 
-	public Set<Entry<String, VarD<?>>> entrySet() {
+	public Set<Entry<String, Member<?>>> entrySet() {
 		return this.fields.entrySet();
 	}
 

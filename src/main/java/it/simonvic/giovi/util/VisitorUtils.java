@@ -10,7 +10,8 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
+import it.simonvic.giovi.Var;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.*;
 import it.simonvic.giovi.lang.Scope;
@@ -268,7 +269,7 @@ public class VisitorUtils {
 				throw new UnsupportedDeconstruction(content, patternCtx, e);
 			}
 		}
-		targetScope.declare(identifier, new VarD<>(value));
+		targetScope.declare(identifier, new Var<>(value));
 	}
 
 	/**
@@ -439,7 +440,7 @@ public class VisitorUtils {
 	public static void deconstruct(
 		GioviVisitor visitor,
 		Scope targetScope,
-		VarD<?> field,
+		Member<?> field,
 		PatternMemberContext patternCtx
 	) {
 		switch (patternCtx) {

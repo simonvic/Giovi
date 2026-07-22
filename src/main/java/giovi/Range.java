@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import giovi.lang.*;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
@@ -55,8 +55,8 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	 * @return list of VarEntry
 	 * @see Range#expand()
 	 */
-	public List<? extends VarEntry<?>> expandAsVarEntries() {
-		return expand().stream().map(this::toGioviValue).map(VarEntry::new).toList();
+	public List<? extends Entry<?>> expandAsVarEntries() {
+		return expand().stream().map(this::toGioviValue).map(Entry::new).toList();
 	}
 
 	private GioviValue<?> toGioviValue(T value) {
@@ -75,7 +75,7 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	 * @see Range#expand()
 	 */
 	public GioviList expandAsGioviList() {
-		var gioviList = new ArrayList<VarEntry<?>>(expandAsVarEntries());
+		var gioviList = new ArrayList<Entry<?>>(expandAsVarEntries());
 		return new GioviList(new GioviTypeList(GioviTypes.inferGioviType(gioviList)), gioviList);
 	}
 

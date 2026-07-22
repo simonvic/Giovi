@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record TupleSignature(List<TupleFieldSignature> fields)
@@ -37,9 +37,9 @@ public record TupleSignature(List<TupleFieldSignature> fields)
 	 * @return tuple
 	 */
 	public GTuple spawn() {
-		var f = new ArrayList<VarD<?>>(fields.size());
+		var f = new ArrayList<Member<?>>(fields.size());
 		for (var field : fields) {
-			f.add(new VarD<>(field.defaultValue().copy(), field.defaultValue().copy()));
+			f.add(new Member<>(field.defaultValue().copy(), field.defaultValue().copy()));
 		}
 		return new GTuple(f);
 	}
@@ -100,13 +100,13 @@ public record TupleSignature(List<TupleFieldSignature> fields)
 		if (narrow.getFieldsCount() > this.fields.size()) {
 			throw new NonWideneable("Widening target tuple signature has less fields");
 		}
-		var widenedFields = new ArrayList<VarD<?>>(this.fields.size());
+		var widenedFields = new ArrayList<Member<?>>(this.fields.size());
 		for (int i = 0; i < narrow.getFieldsCount(); i++) {
 			var narrowField = narrow.getField(i).orElseThrow();
 			var thisFieldSignature = this.fields.get(i);
 			// we widen the field, but use the default value of the wider field
 			widenedFields.add(
-				new VarD<>(
+				new Member<>(
 					thisFieldSignature.type().widen(narrowField.unwrap()),
 					thisFieldSignature.defaultValue().copy()
 				)
@@ -116,7 +116,7 @@ public record TupleSignature(List<TupleFieldSignature> fields)
 		for (int i = narrow.getFieldsCount(); i < this.fields.size(); i++) {
 			var thisFieldSignature = this.fields.get(i);
 			widenedFields.add(
-				new VarD<>(
+				new Member<>(
 					thisFieldSignature.defaultValue().copy(),
 					thisFieldSignature.defaultValue().copy()
 				)

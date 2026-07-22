@@ -7,7 +7,7 @@ import giovi.lang.GioviList;
 import giovi.lang.GioviText;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeText;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Type;
@@ -25,7 +25,7 @@ public class Files {
 			GioviType.LIST_OF_TEXT, java.nio.file.Files
 				.lines(Path.of(path.value()))
 				.map(GioviText::new)
-				.<VarEntry<?>>map(VarEntry::new)
+				.<Entry<?>>map(Entry::new)
 				.toList()
 		);
 	}

@@ -2,7 +2,7 @@ package giovi.lang;
 
 import java.util.ArrayList;
 
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
@@ -107,8 +107,8 @@ public record GioviTypeMap(GioviType<?> keyType, GioviType<?> elementType)
 		@Optional GioviAny value
 	) throws NonWideneable {
 		self.value().put(
-			new VarEntry<>(self.getGioviType().keyType.widen(key.value())),
-			new VarEntry<>(self.getGioviType().elementType.widen(value.value()))
+			new Entry<>(self.getGioviType().keyType.widen(key.value())),
+			new Entry<>(self.getGioviType().elementType.widen(value.value()))
 		);
 		return self;
 	}

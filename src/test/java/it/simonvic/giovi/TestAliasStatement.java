@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import it.simonvic.giovi.utils.Consts;
+
 public class TestAliasStatement {
 
 	@Test
@@ -28,7 +30,7 @@ public class TestAliasStatement {
 			""")
 			.getCurrentScope();
 		assertThat(scope.getConstantValue("NO_SCOPE"))
-			.contains(Const.of(360));
+			.contains(Consts.of(360));
 	}
 
 	@Test

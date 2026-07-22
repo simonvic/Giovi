@@ -6,8 +6,6 @@ import java.util.List;
 import giovi.lang.*;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.ValueWrapper;
-import it.simonvic.giovi.UnaryValueWrapper;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.exceptions.OperatorNotSupported;
 
 public interface GioviParserVisitResult {
@@ -103,8 +101,6 @@ public interface GioviParserVisitResult {
 	default List<?> asNativeList() { return asGioviList().value(); }
 	default LinkedHashMap<?, ?> asNativeMap() { return asGioviMap().value(); }
 	default Function asNativeFunction() { return asGioviFunction().value(); }
-	default UnaryValueWrapper<?> asUnaryValueWrapper() { return (UnaryValueWrapper<?>) this; }
-	default VarD<?> asVarD() { return (VarD<?>) this; }
 
 	/**
 	 * Get the underlying GioviValue.

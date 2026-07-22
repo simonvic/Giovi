@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
 @DescribedBy(GioviTypeText.class)
@@ -184,12 +184,12 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 		};
 	}
 
-	VarEntry<GioviText> toVarEntry(Integer c) {
-		return new VarEntry<>(new GioviText(Character.toString(c)));
+	Entry<GioviText> toVarEntry(Integer c) {
+		return new Entry<>(new GioviText(Character.toString(c)));
 	}
 
-	VarEntry<GioviText> toVar(String s) {
-		return new VarEntry<>(new GioviText(s));
+	Entry<GioviText> toVar(String s) {
+		return new Entry<>(new GioviText(s));
 	}
 
 }

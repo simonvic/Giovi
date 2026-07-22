@@ -4,7 +4,7 @@ import giovi.lang.GioviInt;
 import giovi.lang.GioviList;
 import giovi.lang.GioviType;
 import giovi.lang.GioviTypeList;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.lang.annotation.Native.Func;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Type;
@@ -23,7 +23,7 @@ public class ListUtils {
 		var list = new GioviList(new GioviTypeList(t));
 		var rawList = list.value();
 		for (int i = 0; i < initSize.value(); i++) {
-			rawList.add(new VarEntry<>(t.spawn()));
+			rawList.add(new Entry<>(t.spawn()));
 		}
 		return list;
 	}

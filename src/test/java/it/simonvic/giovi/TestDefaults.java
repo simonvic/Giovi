@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import giovi.Natural;
 import giovi.lang.*;
 import it.simonvic.giovi.util.*;
+import it.simonvic.giovi.utils.Vars;
 
 public class TestDefaults {
 
@@ -117,8 +118,8 @@ public class TestDefaults {
 					.value()
 			).isEqualTo(
 				Map.of(
-					VarEntry.of(1), VarEntry.of(true),
-					VarEntry.of(2), VarEntry.of(false)
+					Entry.of(1), Entry.of(true),
+					Entry.of(2), Entry.of(false)
 				)
 			);
 		}
@@ -151,20 +152,20 @@ public class TestDefaults {
 				.isEqualTo(
 					GStructs.of(
 						"Foo",
-						"foo", VarD.of("foo"),
-						"bar", VarD.of(
+						"foo", Members.of("foo"),
+						"bar", Members.of(
 							GStructs.of(
 								"Bar",
-								"baz", VarD.of("baz"),
-								"foobar", new VarD<>(
+								"baz", Members.of("baz"),
+								"foobar", new Member<>(
 									GioviLists.of(1, 2, 3),
 									new GioviList(GioviType.LIST_OF_INT)
 								)
 							),
 							GStructs.of(
 								"Bar",
-								"baz", VarD.of(""),
-								"foobar", new VarD<>(
+								"baz", Members.of(""),
+								"foobar", new Member<>(
 									new GioviList(GioviType.LIST_OF_INT),
 									new GioviList(GioviType.LIST_OF_INT)
 								)
@@ -205,17 +206,17 @@ public class TestDefaults {
 				.isEqualTo(
 					GStructs.of(
 						"Foo",
-						"foo", VarD.of("foo", "foodefault"),
-						"bar", VarD.of(
+						"foo", Members.of("foo", "foodefault"),
+						"bar", Members.of(
 							GStructs.of(
 								"Bar",
-								"baz", VarD.of("baz", "bazdefault"),
-								"foobar", VarD.of(List.of(1, 2, 3), List.of(69))
+								"baz", Members.of("baz", "bazdefault"),
+								"foobar", Members.of(List.of(1, 2, 3), List.of(69))
 							),
 							GStructs.of(
 								"Bar",
-								"baz", VarD.of("overriden bazdefault", "bazdefault"),
-								"foobar", VarD.of(List.of(420), List.of(69))
+								"baz", Members.of("overriden bazdefault", "bazdefault"),
+								"foobar", Members.of(List.of(420), List.of(69))
 							)
 						)
 					)
@@ -238,7 +239,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-			).isEqualTo(VarD.of(new Natural(69), new Natural(69)));
+			).isEqualTo(Vars.of(new Natural(69), new Natural(69)));
 		}
 
 		@Test
@@ -252,7 +253,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-			).isEqualTo(VarD.of(69, 69));
+			).isEqualTo(Vars.of(69, 69));
 		}
 
 		@Test
@@ -266,7 +267,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-			).isEqualTo(VarD.of(6.9, 6.9));
+			).isEqualTo(Vars.of(6.9, 6.9));
 		}
 
 		@Test
@@ -280,7 +281,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-			).isEqualTo(VarD.of(true, true));
+			).isEqualTo(Vars.of(true, true));
 		}
 
 		@Test
@@ -294,7 +295,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-			).isEqualTo(VarD.of("foo", "foo"));
+			).isEqualTo(Vars.of("foo", "foo"));
 		}
 
 		@Test
@@ -324,7 +325,7 @@ public class TestDefaults {
 					.getVariable("x")
 					.orElseThrow()
 			).isEqualTo(
-				VarD.of(
+				Vars.of(
 					Map.of(
 						1, true,
 						2, false
@@ -373,20 +374,20 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", VarD.of("foo"),
-					"bar", VarD.of(
+					"foo", Members.of("foo"),
+					"bar", Members.of(
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of("baz"),
-							"foobar", new VarD<>(
+							"baz", Members.of("baz"),
+							"foobar", new Member<>(
 								GioviLists.of(1, 2, 3),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of(""),
-							"foobar", new VarD<>(
+							"baz", Members.of(""),
+							"foobar", new Member<>(
 								new GioviList(GioviType.LIST_OF_INT),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
@@ -489,9 +490,9 @@ public class TestDefaults {
 				).asGioviValue().value()
 			).isEqualTo(
 				GRecords.of(
-					"a", VarD.of(0),
-					"b", VarD.of(false),
-					"c", VarD.of("")
+					"a", Members.of(0),
+					"b", Members.of(false),
+					"c", Members.of("")
 				)
 			);
 		}
@@ -608,20 +609,20 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", VarD.of("foo"),
-					"bar", VarD.of(
+					"foo", Members.of("foo"),
+					"bar", Members.of(
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of("baz"),
-							"foobar", new VarD<>(
+							"baz", Members.of("baz"),
+							"foobar", new Member<>(
 								GioviLists.of(1, 2, 3),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of(""),
-							"foobar", new VarD<>(
+							"baz", Members.of(""),
+							"foobar", new Member<>(
 								new GioviList(GioviType.LIST_OF_INT),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
@@ -727,24 +728,24 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", VarD.of("foo", "foo"),
-					"bar", VarD.of(
+					"foo", Members.of("foo", "foo"),
+					"bar", Members.of(
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of("baz", "baz"),
-							"foobar", VarD.of(List.of(1, 2, 3), List.of(1, 2, 3))
+							"baz", Members.of("baz", "baz"),
+							"foobar", Members.of(List.of(1, 2, 3), List.of(1, 2, 3))
 						)
 					),
-					"foobar", VarD.of(
+					"foobar", Members.of(
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of("BAZ", "baz"),
-							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))
+							"baz", Members.of("BAZ", "baz"),
+							"foobar", Members.of(List.of(69, 420), List.of(1, 2, 3))
 						),
 						GStructs.of(
 							"Bar",
-							"baz", VarD.of("BAZ", "baz"),
-							"foobar", VarD.of(List.of(69, 420), List.of(1, 2, 3))
+							"baz", Members.of("BAZ", "baz"),
+							"foobar", Members.of(List.of(69, 420), List.of(1, 2, 3))
 						)
 					)
 				)

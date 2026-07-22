@@ -3,13 +3,13 @@ package giovi;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 
-import it.simonvic.giovi.VarD;
+import it.simonvic.giovi.Member;
 
 public final class GStruct extends GRecord {
 
 	private final String typename;
 
-	public GStruct(String typename, LinkedHashMap<String, VarD<?>> fields) {
+	public GStruct(String typename, LinkedHashMap<String, Member<?>> fields) {
 		super(fields);
 		this.typename = typename;
 	}
@@ -47,7 +47,7 @@ public final class GStruct extends GRecord {
 
 	@Override
 	public GStruct copy() {
-		var a = new LinkedHashMap<String, VarD<?>>(fields.size());
+		var a = new LinkedHashMap<String, Member<?>>(fields.size());
 		fields.forEach((identifier, value) -> a.put(identifier, value.copy()));
 		return new GStruct(typename, a);
 	}

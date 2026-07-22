@@ -11,16 +11,16 @@ import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
 import it.simonvic.giovi.ValueWrapper;
-import it.simonvic.giovi.VarEntry;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
 @DescribedBy(GioviTypeList.class)
-public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
-	implements GioviComposite<List<VarEntry<?>>> {
+public record GioviList(GioviTypeList type, List<Entry<?>> value)
+	implements GioviComposite<List<Entry<?>>> {
 
-	public GioviList(GioviTypeList type, List<VarEntry<?>> value) {
+	public GioviList(GioviTypeList type, List<Entry<?>> value) {
 		this.type = type;
 		this.value = new ArrayList<>();
 		try {
@@ -59,7 +59,7 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 	 * Add entry to list. The entry will be widened if necessary
 	 * @param entry
 	 */
-	private void add(VarEntry<?> entry) {
+	private void add(Entry<?> entry) {
 		try {
 			value.add(entry.widenTo(type.entryType()));
 		} catch (NonWideneable ex) {
@@ -67,24 +67,24 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 		}
 	}
 
-	private void addAll(List<? extends VarEntry<?>> entries) {
+	private void addAll(List<? extends Entry<?>> entries) {
 		entries.forEach(this::add);
 	}
 
-	private void remove(VarEntry<?> entry) {
+	private void remove(Entry<?> entry) {
 		value.remove(entry);
 	}
 
-	private void removeAll(List<? extends VarEntry<?>> entries) {
+	private void removeAll(List<? extends Entry<?>> entries) {
 		value.removeAll(entries);
 	}
 
-	private void removeAllWidened(List<? extends VarEntry<?>> entries) {
+	private void removeAllWidened(List<? extends Entry<?>> entries) {
 		this.value.removeAll(
 			entries.stream()
 				.map(entry -> {
 					try {
-						return new VarEntry<>(entry.unwrap().widenTo(this.type.entryType()));
+						return new Entry<>(entry.unwrap().widenTo(this.type.entryType()));
 					} catch (NonWideneable ex) {
 						throw new IllegalArgumentException(ex);
 					}
@@ -112,7 +112,7 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 		if (right instanceof GioviTypeList t) {
 			var newGioviList = t.spawn();
 			for (var entry : this.value) {
-				newGioviList.value.add(new VarEntry<>(entry.as(t.entryType()).asGioviValue()));
+				newGioviList.value.add(new Entry<>(entry.as(t.entryType()).asGioviValue()));
 			}
 			return newGioviList;
 		}
@@ -152,7 +152,7 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 						copyOf(this.value).stream(),
 						v.value.stream().map(entry -> {
 							try {
-								return new VarEntry<>(
+								return new Entry<>(
 									entry.unwrap()
 										.copy()
 										.widenTo(this.type.entryType())
@@ -175,7 +175,7 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 					yield GioviComposite.super.plus(right);
 				}
 				var concat = copyOf(this.value);
-				concat.add(new VarEntry<>(v));
+				concat.add(new Entry<>(v));
 				yield new GioviList(this.type, concat);
 			}
 			default -> GioviComposite.super.plus(right);
@@ -213,7 +213,7 @@ public record GioviList(GioviTypeList type, List<VarEntry<?>> value)
 			case GioviValue<?> v -> {
 				var intersection = copyOf(this.value);
 				try {
-					intersection.remove(new VarEntry<>(this.type.entryType().widen(v)));
+					intersection.remove(new Entry<>(this.type.entryType().widen(v)));
 				} catch (NonWideneable e) {
 					yield GioviComposite.super.minus(right);
 				}
