@@ -75,9 +75,7 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	 * @see Range#expand()
 	 */
 	public GioviList expandAsGioviList() {
-		var gioviList = new ArrayList<Var<?>>(
-			expand().stream().map(Var::of).toList()
-		);
+		var gioviList = new ArrayList<Var<?>>(expandAsVar());
 		return new GioviList(new GioviTypeList(GioviTypes.inferGioviType(gioviList)), gioviList);
 	}
 
