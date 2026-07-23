@@ -2,6 +2,7 @@ package giovi.lang;
 
 import giovi.Function;
 import giovi.GFunction;
+import giovi.JFunction;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.lang.annotation.Native.Describes;
@@ -42,8 +43,8 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 				-> new GioviFunction(new GFunction(this.signature.widen(signature), bodyCtx));
 
 			// TODO: how to handle widening with native functions?
-			// case GioviFunction(JFunction(var method, var signature))
-			// 	-> new GioviFunction(new JFunction(method, this.signature.widen(signature)));
+			// case GioviFunction(JFunction(var signature, var method))
+			// 	-> new GioviFunction(new JFunction(this.signature.widen(signature), method));
 
 			default -> GioviType.super.widen(value);
 		};

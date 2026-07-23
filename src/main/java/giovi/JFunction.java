@@ -11,12 +11,12 @@ import it.simonvic.giovi.lang.FunctionSignature;
 import it.simonvic.giovi.util.Natives;
 
 public record JFunction(
-	Method method,
-	FunctionSignature signature
+	FunctionSignature signature,
+	Method method
 ) implements Function {
 
 	public JFunction(Method body) {
-		this(body, Natives.functionSignatureFrom(body));
+		this(Natives.functionSignatureFrom(body), body);
 	}
 
 	@Override
