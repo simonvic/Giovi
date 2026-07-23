@@ -5,7 +5,7 @@ import it.simonvic.giovi.Const;
 
 public class Consts {
 
-	public static <T> Const<? extends GioviValue<?>> of(T value) {
+	public static <J> Const<? extends GioviValue<?>> of(J value) {
 		return new Const<>(GioviValue.of(value));
 	}
 

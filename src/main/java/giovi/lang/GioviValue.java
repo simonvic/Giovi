@@ -10,13 +10,13 @@ import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.*;
 
-public sealed interface GioviValue<T>
+public sealed interface GioviValue<J>
 	extends GioviObject
 	permits GioviAny, GioviPrimitive, GioviComposite, GioviProduct, GioviSelf, GioviFunction {
 
 	// TODO: cache primitive instances (e.g. Void)
 
-	public static <U> GioviValue<?> of(U value) {
+	public static <J> GioviValue<?> of(J value) {
 		return switch (value) {
 			case Natural v -> new GioviNatural(v);
 			case Integer v -> new GioviInt(v);
@@ -38,13 +38,13 @@ public sealed interface GioviValue<T>
 	/**
 	 * @return the native value
 	 */
-	T value();
+	J value();
 
 	/**
 	 * Get the Type (in Giovi space) of this value
 	 * @return Type
 	 */
-	GioviType<? extends GioviValue<T>> getGioviType();
+	GioviType<? extends GioviValue<J>> getGioviType();
 
 	/**
 	 * Widen the value to the specified type if it's wider (e.g. {@code Natural <= Int <= Real})
@@ -63,8 +63,8 @@ public sealed interface GioviValue<T>
 	 * Perform a <b>deep copy</b>
 	 * @return copy of the object
 	 */
-	GioviValue<T> copy();
-	//public abstract <U extends GioviValue<T>> U copy();
+	GioviValue<J> copy();
+	//public abstract <G extends GioviValue<J>> G copy();
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// OPERATIONS
 

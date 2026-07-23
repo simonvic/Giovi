@@ -5,11 +5,11 @@ import it.simonvic.giovi.Var;
 
 public class Vars {
 
-	public static <T> Var<? extends GioviValue<?>> of(T value) {
+	public static <J> Var<? extends GioviValue<?>> of(J value) {
 		return new Var<>(GioviValue.of(value));
 	}
 
-	public static <T> Var<? extends GioviValue<?>> of(T value, T defaultValue) {
+	public static <J> Var<? extends GioviValue<?>> of(J value, J defaultValue) {
 		return new Var<>(GioviValue.of(value), GioviValue.of(defaultValue));
 	}
 

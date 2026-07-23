@@ -1,7 +1,7 @@
 package giovi.lang;
 
-public sealed interface GioviTypePrimitive<T extends GioviPrimitive<?>>
-	extends GioviType<T>
+public sealed interface GioviTypePrimitive<G extends GioviPrimitive<?>>
+	extends GioviType<G>
 	permits GioviTypeVoid, GioviTypeBool, GioviTypeNumber, GioviTypeText, GioviTypeType {
 
 }

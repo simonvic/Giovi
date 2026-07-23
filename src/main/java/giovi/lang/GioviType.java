@@ -15,8 +15,8 @@ import it.simonvic.giovi.lang.annotation.Native.Func;
 // TODO: is generic needed? Why not just extends GioviPrimitive<Class<? extends GioviValue<?>>>
 // TODO: better integrate types with values instead of having two separate hierarchies (maybe with nested Annotated classes?)
 //@DescribedBy(GioviTypeType.class)
-public sealed interface GioviType<T extends GioviValue<?>>
-	extends GioviPrimitive<Class<? extends T>>
+public sealed interface GioviType<G extends GioviValue<?>>
+	extends GioviPrimitive<Class<? extends G>>
 	permits GioviTypeAny, GioviTypePrimitive, GioviTypeComposite, GioviTypeProduct, GioviTypeSelf,
 	GioviTypeFunction {
 
@@ -41,7 +41,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	}
 
 	@Override
-	default GioviTypeType<T> getGioviType() {
+	default GioviTypeType<G> getGioviType() {
 		return new GioviTypeType<>(this);
 	}
 
@@ -62,7 +62,7 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	 * @return widened value
 	 * @throws NonWideneable
 	 */
-	default T widen(GioviValue<?> value) throws NonWideneable {
+	default G widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
 			case GioviAny(var anyValue) -> widen(anyValue);
 			default -> throw new NonWideneable(value, this);
@@ -74,10 +74,10 @@ public sealed interface GioviType<T extends GioviValue<?>>
 	 * The value should be equal to the "zero" value of the type
 	 * @return zero value
 	 */
-	T spawn();
+	G spawn();
 
 	@Override
-	GioviType<T> copy();
+	GioviType<G> copy();
 
 	@Override
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {

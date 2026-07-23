@@ -9,56 +9,56 @@ import it.simonvic.giovi.Entry;
 
 public class GioviLists {
 
-	public static <T> GioviList of(List<T> values) {
+	public static <J> GioviList of(List<J> values) {
 		var entries = new ArrayList<Entry<?>>();
-		for (T value : values) {
+		for (J value : values) {
 			entries.add(Entry.of(value));
 		}
 		return new GioviList(new GioviTypeList(GioviTypes.inferGioviType(entries)), entries);
 	}
 
-	public static <T> GioviList of(T v) {
+	public static <J> GioviList of(J v) {
 		return GioviLists.of(List.of(v));
 	}
 
-	public static <T> GioviList of(T v, T v2) {
+	public static <J> GioviList of(J v, J v2) {
 		return GioviLists.of(List.of(v, v2));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3) {
+	public static <J> GioviList of(J v, J v2, J v3) {
 		return GioviLists.of(List.of(v, v2, v3));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4) {
 		return GioviLists.of(List.of(v, v2, v3, v4));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5, J v6) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6, T v7) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5, J v6, J v7) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5, J v6, J v7, J v8) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5, J v6, J v7, J v8, J v9) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v8));
 	}
 
-	public static <T> GioviList of(T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10) {
+	public static <J> GioviList of(J v, J v2, J v3, J v4, J v5, J v6, J v7, J v8, J v9, J v10) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v9, v10));
 	}
 
-	public static <T> GioviList of(
-		T v, T v2, T v3, T v4, T v5, T v6, T v7, T v8, T v9, T v10, T v11
+	public static <J> GioviList of(
+		J v, J v2, J v3, J v4, J v5, J v6, J v7, J v8, J v9, J v10, J v11
 	) {
 		return GioviLists.of(List.of(v, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11));
 	}

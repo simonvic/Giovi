@@ -2,20 +2,20 @@ package it.simonvic.giovi;
 
 import giovi.lang.GioviValue;
 
-public final class Entry<T extends GioviValue<?>> extends MutableValueWrapper<T> {
+public final class Entry<G extends GioviValue<?>> extends MutableValueWrapper<G> {
 
-	public static <T> Entry<? extends GioviValue<?>> of(T value) {
+	public static <J> Entry<? extends GioviValue<?>> of(J value) {
 		return new Entry<>(GioviValue.of(value));
 	}
 
-	public Entry(T value) {
+	public Entry(G value) {
 		super(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Entry<T> copy() {
-		return new Entry<T>((T) unwrap().copy());
+	public Entry<G> copy() {
+		return new Entry<G>((G) unwrap().copy());
 	}
 
 }

@@ -2,8 +2,8 @@ package giovi.lang;
 
 import giovi.GioviParserVisitResult;
 
-public sealed interface GioviNumber<T extends Number>
-	extends GioviPrimitive<T>
+public sealed interface GioviNumber<J extends Number>
+	extends GioviPrimitive<J>
 	permits GioviNatural, GioviInt, GioviReal {
 
 	GioviNatural naturalValue();

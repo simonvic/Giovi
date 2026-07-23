@@ -7,17 +7,17 @@ import giovi.lang.GioviDefault;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 
-public sealed abstract class DefaultableValueWrapper<T extends GioviValue<?>>
-	extends MutableValueWrapper<T>
+public sealed abstract class DefaultableValueWrapper<G extends GioviValue<?>>
+	extends MutableValueWrapper<G>
 	permits Var, Member {
 
-	private final T defaultValue; // TODO: eventually, it could be lazily initialized only if it is overriden
+	private final G defaultValue; // TODO: eventually, it could be lazily initialized only if it is overriden
 
 	/**
 	 * @param value
 	 * @param defaultValue
 	 */
-	public DefaultableValueWrapper(T value, T defaultValue) {
+	public DefaultableValueWrapper(G value, G defaultValue) {
 		super(value);
 		this.defaultValue = defaultValue;
 	}
@@ -27,12 +27,12 @@ public sealed abstract class DefaultableValueWrapper<T extends GioviValue<?>>
 	 * @param value
 	 */
 	@SuppressWarnings("unchecked")
-	public DefaultableValueWrapper(T value) {
-		this(value, (T) value.getGioviType().spawn());
+	public DefaultableValueWrapper(G value) {
+		this(value, (G) value.getGioviType().spawn());
 	}
 
 
-	public T unwrapDefault() {
+	public G unwrapDefault() {
 		return defaultValue;
 	}
 
@@ -40,8 +40,8 @@ public sealed abstract class DefaultableValueWrapper<T extends GioviValue<?>>
 	 * @return the defaultValue
 	 */
 	@SuppressWarnings("unchecked")
-	public T defaultValue() {
-		return (T) defaultValue.copy(); // return copy to ensure immutability
+	public G defaultValue() {
+		return (G) defaultValue.copy(); // return copy to ensure immutability
 	}
 
 	@Override
@@ -88,7 +88,7 @@ public sealed abstract class DefaultableValueWrapper<T extends GioviValue<?>>
 	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		this.value = (T) switch (content) {
+		this.value = (G) switch (content) {
 			case GioviDefault _ -> this.value.redirection(this.defaultValue);
 			default -> this.value.redirection(content);
 		};

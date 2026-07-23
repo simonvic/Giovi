@@ -5,11 +5,11 @@ import it.simonvic.giovi.Member;
 
 public class Members {
 
-	public static <T> Member<? extends GioviValue<?>> of(T value) {
+	public static <J> Member<? extends GioviValue<?>> of(J value) {
 		return new Member<>(GioviValue.of(value));
 	}
 
-	public static <T> Member<? extends GioviValue<?>> of(T value, T defaultValue) {
+	public static <J> Member<? extends GioviValue<?>> of(J value, J defaultValue) {
 		return new Member<>(GioviValue.of(value), GioviValue.of(defaultValue));
 	}
 

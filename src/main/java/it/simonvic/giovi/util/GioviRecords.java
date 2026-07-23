@@ -31,8 +31,8 @@ public class GioviRecords {
 		return new RecordSignature(fields);
 	}
 
-	public static <T> GioviRecord of(
-		String i1, T v1
+	public static <J> GioviRecord of(
+		String i1, J v1
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -40,9 +40,9 @@ public class GioviRecords {
 		return new GioviRecord(typeFrom(value), value);
 	}
 
-	public static <T> GioviRecord of(
-		String i1, T v1,
-		String i2, T v2
+	public static <J> GioviRecord of(
+		String i1, J v1,
+		String i2, J v2
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -51,10 +51,10 @@ public class GioviRecords {
 		return new GioviRecord(typeFrom(value), value);
 	}
 
-	public static <T> GioviRecord of(
-		String i1, T v1,
-		String i2, T v2,
-		String i3, T v3
+	public static <J> GioviRecord of(
+		String i1, J v1,
+		String i2, J v2,
+		String i3, J v3
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -64,11 +64,11 @@ public class GioviRecords {
 		return new GioviRecord(typeFrom(value), value);
 	}
 
-	public static <T> GioviRecord of(
-		String i1, T v1,
-		String i2, T v2,
-		String i3, T v3,
-		String i4, T v4
+	public static <J> GioviRecord of(
+		String i1, J v1,
+		String i2, J v2,
+		String i3, J v3,
+		String i4, J v4
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -79,12 +79,12 @@ public class GioviRecords {
 		return new GioviRecord(typeFrom(value), value);
 	}
 
-	public static <T> GioviRecord of(
-		String i1, T v1,
-		String i2, T v2,
-		String i3, T v3,
-		String i4, T v4,
-		String i5, T v5
+	public static <J> GioviRecord of(
+		String i1, J v1,
+		String i2, J v2,
+		String i3, J v3,
+		String i4, J v4,
+		String i5, J v5
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));

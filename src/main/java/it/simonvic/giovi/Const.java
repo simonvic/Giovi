@@ -4,20 +4,20 @@ import giovi.GioviParserVisitResult;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
 
-public record Const<T extends GioviValue<?>>(T value) implements ValueWrapper<T> {
+public record Const<G extends GioviValue<?>>(G value) implements ValueWrapper<G> {
 
 	@Override
-	public T unwrap() {
+	public G unwrap() {
 		return value;
 	}
 
 	@Override
-	public void setValue(T value) {
+	public void setValue(G value) {
 		throw new GioviException("Can't mutate constant");
 	}
 
 	@Override
-	public Const<T> copy() {
+	public Const<G> copy() {
 		return this;
 	}
 

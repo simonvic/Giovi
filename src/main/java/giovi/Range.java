@@ -11,7 +11,7 @@ import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
 // TODO: implements iterable
-public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterationStrategy)
+public record Range<J>(J begin, J end, Number step, IterationStrategy<J> iterationStrategy)
 	implements GioviParserVisitResult {
 
 	@FunctionalInterface
@@ -25,7 +25,7 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	 * Iterate on the range and invoke the callback on each iteration
 	 * @param callback
 	 */
-	public void iterate(Consumer<T> callback) {
+	public void iterate(Consumer<J> callback) {
 		iterationStrategy.iterate(this, callback);
 	}
 
@@ -35,8 +35,8 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 	 * @return list of values
 	 * @see Range#expand()
 	 */
-	public List<T> expand() {
-		var expansion = new ArrayList<T>();
+	public List<J> expand() {
+		var expansion = new ArrayList<J>();
 		iterate(expansion::add);
 		return expansion;
 	}
@@ -59,7 +59,7 @@ public record Range<T>(T begin, T end, Number step, IterationStrategy<T> iterati
 		return expand().stream().map(this::toGioviValue).map(Entry::new).toList();
 	}
 
-	private GioviValue<?> toGioviValue(T value) {
+	private GioviValue<?> toGioviValue(J value) {
 		return switch (value) {
 			case Natural v -> new GioviNatural(v);
 			case Integer v -> new GioviInt(v);

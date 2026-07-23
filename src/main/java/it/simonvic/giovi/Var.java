@@ -2,22 +2,22 @@ package it.simonvic.giovi;
 
 import giovi.lang.GioviValue;
 
-public final class Var<T extends GioviValue<?>> extends DefaultableValueWrapper<T> {
+public final class Var<G extends GioviValue<?>> extends DefaultableValueWrapper<G> {
 
-	public Var(T value, T defaultValue) {
+	public Var(G value, G defaultValue) {
 		super(value, defaultValue);
 	}
 
-	public Var(T value) {
+	public Var(G value) {
 		super(value);
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Var<T> copy() {
+	public Var<G> copy() {
 		return new Var<>(
-			(T) unwrap().copy(),
-			(T) unwrapDefault().copy()
+			(G) unwrap().copy(),
+			(G) unwrapDefault().copy()
 		);
 	}
 

@@ -5,19 +5,19 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-// TODO: what if we implement GioviValue<T>
-public sealed interface ValueWrapper<T extends GioviValue<?>>
+// TODO: what if we implement GioviValue<J>
+public sealed interface ValueWrapper<G extends GioviValue<?>>
 	extends GioviParserVisitResult
 	permits Const, MutableValueWrapper {
 
 	/**
 	 * @return the value
 	 */
-	T unwrap();
+	G unwrap();
 
 	ValueWrapper<?> copy();
 
-	void setValue(T value);
+	void setValue(G value);
 
 	default GioviType<?> getGioviType() {
 		return unwrap().getGioviType();

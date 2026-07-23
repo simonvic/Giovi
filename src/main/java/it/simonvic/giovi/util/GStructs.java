@@ -76,19 +76,19 @@ public class GStructs {
 		return new GStruct(typename, s);
 	}
 
-	public static <T> GStruct ofNative(
+	public static <J> GStruct ofNative(
 		String typename,
-		String f1, T v1
+		String f1, J v1
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(f1, Members.of(v1));
 		return new GStruct(typename, s);
 	}
 
-	public static <T> GStruct ofNative(
+	public static <J> GStruct ofNative(
 		String typename,
-		String f1, T v1,
-		String f2, T v2
+		String f1, J v1,
+		String f2, J v2
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(f1, Members.of(v1));
@@ -96,11 +96,11 @@ public class GStructs {
 		return new GStruct(typename, s);
 	}
 
-	public static <T> GStruct ofNative(
+	public static <J> GStruct ofNative(
 		String typename,
-		String f1, T v1,
-		String f2, T v2,
-		String f3, T v3
+		String f1, J v1,
+		String f2, J v2,
+		String f3, J v3
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(f1, Members.of(v1));
@@ -109,12 +109,12 @@ public class GStructs {
 		return new GStruct(typename, s);
 	}
 
-	public static <T> GStruct ofNative(
+	public static <J> GStruct ofNative(
 		String typename,
-		String f1, T v1,
-		String f2, T v2,
-		String f3, T v3,
-		String f4, T v4
+		String f1, J v1,
+		String f2, J v2,
+		String f3, J v3,
+		String f4, J v4
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(f1, Members.of(v1));
@@ -124,13 +124,13 @@ public class GStructs {
 		return new GStruct(typename, s);
 	}
 
-	public static <T> GStruct ofNative(
+	public static <J> GStruct ofNative(
 		String typename,
-		String f1, T v1,
-		String f2, T v2,
-		String f3, T v3,
-		String f4, T v4,
-		String f5, T v5
+		String f1, J v1,
+		String f2, J v2,
+		String f3, J v3,
+		String f4, J v4,
+		String f5, J v5
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(f1, Members.of(v1));

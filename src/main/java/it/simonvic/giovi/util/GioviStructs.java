@@ -91,9 +91,9 @@ public class GioviStructs {
 		return new GioviStruct(typeFrom(value), value);
 	}
 
-	public static <T> GioviStruct ofNative(
+	public static <J> GioviStruct ofNative(
 		String typename,
-		String i1, T v1
+		String i1, J v1
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -101,10 +101,10 @@ public class GioviStructs {
 		return new GioviStruct(typeFrom(value), value);
 	}
 
-	public static <T> GioviStruct ofNative(
+	public static <J> GioviStruct ofNative(
 		String typename,
-		String i1, T v1,
-		String i2, T v2
+		String i1, J v1,
+		String i2, J v2
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -113,11 +113,11 @@ public class GioviStructs {
 		return new GioviStruct(typeFrom(value), value);
 	}
 
-	public static <T> GioviStruct ofNative(
+	public static <J> GioviStruct ofNative(
 		String typename,
-		String i1, T v1,
-		String i2, T v2,
-		String i3, T v3
+		String i1, J v1,
+		String i2, J v2,
+		String i3, J v3
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));
@@ -127,12 +127,12 @@ public class GioviStructs {
 		return new GioviStruct(typeFrom(value), value);
 	}
 
-	public static <T> GioviStruct ofNative(
+	public static <J> GioviStruct ofNative(
 		String typename,
-		String i1, T v1,
-		String i2, T v2,
-		String i3, T v3,
-		String i4, T v4
+		String i1, J v1,
+		String i2, J v2,
+		String i3, J v3,
+		String i4, J v4
 	) {
 		var s = new LinkedHashMap<String, Member<?>>();
 		s.put(i1, Members.of(v1));

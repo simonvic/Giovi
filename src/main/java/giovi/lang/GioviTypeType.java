@@ -2,8 +2,8 @@ package giovi.lang;
 
 import it.simonvic.giovi.exceptions.NonWideneable;
 
-public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
-	implements GioviTypePrimitive<GioviType<T>> {
+public record GioviTypeType<G extends GioviValue<?>>(GioviType<G> describedType)
+	implements GioviTypePrimitive<GioviType<G>> {
 
 	@Override
 	public String toString() {
@@ -11,8 +11,8 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 	}
 
 	@Override
-	public Class<? extends GioviType<T>> value() {
-		return (Class<? extends GioviType<T>>) describedType.getClass();
+	public Class<? extends GioviType<G>> value() {
+		return (Class<? extends GioviType<G>>) describedType.getClass();
 	}
 
 	@Override
@@ -35,21 +35,21 @@ public record GioviTypeType<T extends GioviValue<?>>(GioviType<T> describedType)
 	}
 
 	@Override
-	public GioviType<T> widen(GioviValue<?> value) throws NonWideneable {
+	public GioviType<G> widen(GioviValue<?> value) throws NonWideneable {
 		return switch (value) {
-			case GioviType<?> v -> (GioviType<T>) v;
+			case GioviType<?> v -> (GioviType<G>) v;
 			default -> GioviTypePrimitive.super.widen(value);
 			// TODO: more robust
 		};
 	}
 
 	@Override
-	public GioviType<T> spawn() {
+	public GioviType<G> spawn() {
 		return describedType;
 	}
 
 	@Override
-	public GioviTypeType<T> copy() {
+	public GioviTypeType<G> copy() {
 		return this;
 	}
 

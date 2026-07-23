@@ -28,7 +28,7 @@ public class TestFunctions {
 		return new FormalParameter(identifier, type);
 	}
 
-	private static <T> FormalParameter paramOf(String identifier, T defaultValue) {
+	private static <J> FormalParameter paramOf(String identifier, J defaultValue) {
 		var defaultParamValue = GioviValue.of(defaultValue);
 		return new FormalParameter(identifier, defaultParamValue);
 	}

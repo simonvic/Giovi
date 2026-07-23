@@ -9,13 +9,13 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 
 // TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
-public abstract sealed class MutableValueWrapper<T extends GioviValue<?>>
-	implements ValueWrapper<T>
+public abstract sealed class MutableValueWrapper<G extends GioviValue<?>>
+	implements ValueWrapper<G>
 	permits Entry, DefaultableValueWrapper {
 
-	protected T value;
+	protected G value;
 
-	public MutableValueWrapper(T value) {
+	public MutableValueWrapper(G value) {
 		this.value = value;
 	}
 
@@ -39,23 +39,23 @@ public abstract sealed class MutableValueWrapper<T extends GioviValue<?>>
 	}
 
 	@Override
-	public T unwrap() {
+	public G unwrap() {
 		return value;
 	}
 
 	@Override
-	public void setValue(T value) {
+	public void setValue(G value) {
 		this.value = value;
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setValueUnsafe(GioviValue<?> value) {
-		setValue((T) value);
+		setValue((G) value);
 	}
 
 	@SuppressWarnings("unchecked")
 	public void setValueWithWidening(GioviValue<?> value) throws NonWideneable {
-		setValue((T) value.widenTo(getGioviType()));
+		setValue((G) value.widenTo(getGioviType()));
 	}
 
 	// TODO: temporary shorthand. Eventually remove and handle manually the redirection/widening
@@ -74,7 +74,7 @@ public abstract sealed class MutableValueWrapper<T extends GioviValue<?>>
 	@SuppressWarnings("unchecked")
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		this.value = (T) this.value.redirection(content);
+		this.value = (G) this.value.redirection(content);
 		return this.value;
 	}
 
