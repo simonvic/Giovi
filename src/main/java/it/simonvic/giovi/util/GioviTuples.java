@@ -26,7 +26,7 @@ public class GioviTuples {
 			field -> fields.add(
 				new TupleFieldSignature(
 					field.unwrap().getGioviType(),
-					field.defaultValue()
+					field.unwrapDefault().copy()
 				)
 			)
 		);

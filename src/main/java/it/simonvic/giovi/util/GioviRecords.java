@@ -24,7 +24,7 @@ public class GioviRecords {
 				new RecordFieldSignature(
 					identifier,
 					field.unwrap().getGioviType(),
-					field.defaultValue()
+					field.unwrapDefault().copy()
 				)
 			)
 		);

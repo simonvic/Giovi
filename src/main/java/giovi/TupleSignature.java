@@ -39,7 +39,7 @@ public record TupleSignature(List<TupleFieldSignature> fields)
 	public GTuple spawn() {
 		var f = new ArrayList<Member<?>>(fields.size());
 		for (var field : fields) {
-			f.add(new Member<>(field.defaultValue().copy(), field.defaultValue().copy()));
+			f.add(field.spawn());
 		}
 		return new GTuple(f);
 	}
@@ -114,13 +114,7 @@ public record TupleSignature(List<TupleFieldSignature> fields)
 		}
 		// "surplus" fields will be set to the wider field default value
 		for (int i = narrow.getFieldsCount(); i < this.fields.size(); i++) {
-			var thisFieldSignature = this.fields.get(i);
-			widenedFields.add(
-				new Member<>(
-					thisFieldSignature.defaultValue().copy(),
-					thisFieldSignature.defaultValue().copy()
-				)
-			);
+			widenedFields.add(this.fields.get(i).spawn());
 		}
 		return new GTuple(widenedFields);
 	}

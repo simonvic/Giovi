@@ -30,7 +30,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(new Natural(69));
 		}
@@ -44,7 +44,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(69);
 		}
@@ -58,7 +58,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(6.9);
 		}
@@ -72,7 +72,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(true);
 		}
@@ -86,7 +86,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo("foo");
 		}
@@ -100,7 +100,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(GioviLists.of(1, 2, 3).value());
 		}
@@ -114,7 +114,7 @@ public class TestDefaults {
 					.getCurrentScope()
 					.getVariable("x")
 					.orElseThrow()
-					.defaultValue()
+					.unwrapDefault()
 					.value()
 			).isEqualTo(
 				Map.of(
@@ -146,7 +146,7 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.orElseThrow()
-				.defaultValue()
+				.unwrapDefault()
 				.value();
 			assertThat(def)
 				.isEqualTo(
@@ -200,7 +200,7 @@ public class TestDefaults {
 				.getCurrentScope()
 				.getVariable("x")
 				.orElseThrow()
-				.defaultValue()
+				.unwrapDefault()
 				.value();
 			assertThat(def)
 				.isEqualTo(

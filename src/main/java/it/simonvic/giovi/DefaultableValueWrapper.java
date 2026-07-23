@@ -31,17 +31,11 @@ public sealed abstract class DefaultableValueWrapper<G extends GioviValue<?>>
 		this(value, (G) value.getGioviType().spawn());
 	}
 
-
+	/**
+	 * @return the default value
+	 */
 	public G unwrapDefault() {
 		return defaultValue;
-	}
-
-	/**
-	 * @return the defaultValue
-	 */
-	@SuppressWarnings("unchecked")
-	public G defaultValue() {
-		return (G) defaultValue.copy(); // return copy to ensure immutability
 	}
 
 	@Override

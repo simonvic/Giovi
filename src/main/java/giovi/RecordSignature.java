@@ -117,7 +117,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 		for (var field : signatureFields.values()) {
 			fields.put(
 				field.identifier(),
-				new Member<>(field.defaultValue().copy(), field.defaultValue().copy())
+				field.spawn()
 			);
 		}
 		return fields;
@@ -210,10 +210,7 @@ public record RecordSignature(LinkedHashMap<String, RecordFieldSignature> fields
 			var widerFieldSignature = iter.next();
 			widenedFields.put(
 				widerFieldSignature.identifier(),
-				new Member<>(
-					widerFieldSignature.defaultValue().copy(),
-					widerFieldSignature.defaultValue().copy()
-				)
+				widerFieldSignature.spawn()
 			);
 		}
 		return widenedFields;
