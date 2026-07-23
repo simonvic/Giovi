@@ -37,9 +37,6 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 
 	@Override
 	public GioviParserVisitResult redirection(GioviParserVisitResult content) {
-		if (this.value instanceof JFunction) {
-			return GioviValue.super.redirection(content);
-		}
 		return switch (content) {
 			case GioviFunction(Function f) when f.signature().equals(this.value.signature())
 				-> new GioviFunction(f.copy());
@@ -50,6 +47,16 @@ public record GioviFunction(Function value) implements GioviValue<Function> {
 				try {
 					yield new GioviFunction(
 						new GFunction(this.value.signature().widen(signature), bodyCtx)
+					);
+				} catch (NonWideneable e) {
+					yield GioviValue.super.redirection(content);
+				}
+			}
+
+			case GioviFunction(JFunction(var signature, var method)) -> {
+				try {
+					yield new GioviFunction(
+						new JFunction(this.value.signature().widen(signature), method)
 					);
 				} catch (NonWideneable e) {
 					yield GioviValue.super.redirection(content);

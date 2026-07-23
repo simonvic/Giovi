@@ -42,9 +42,8 @@ public record GioviTypeFunction(FunctionSignature signature) implements GioviTyp
 			case GioviFunction(GFunction(var signature, var bodyCtx))
 				-> new GioviFunction(new GFunction(this.signature.widen(signature), bodyCtx));
 
-			// TODO: how to handle widening with native functions?
-			// case GioviFunction(JFunction(var signature, var method))
-			// 	-> new GioviFunction(new JFunction(this.signature.widen(signature), method));
+			case GioviFunction(JFunction(var signature, var method))
+				-> new GioviFunction(new JFunction(this.signature.widen(signature), method));
 
 			default -> GioviType.super.widen(value);
 		};
