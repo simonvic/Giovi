@@ -9,8 +9,6 @@ import it.simonvic.giovi.exceptions.OperatorNotSupported;
 import it.simonvic.giovi.exceptions.RedirectionException;
 
 // TODO: what if we invert? Make GioviValues mutable and use immutable view when needed
-
-// TODO: what if we implement GioviValue<T>
 public abstract sealed class MutableValueWrapper<T extends GioviValue<?>>
 	implements ValueWrapper<T>
 	permits Entry, DefaultableValueWrapper {

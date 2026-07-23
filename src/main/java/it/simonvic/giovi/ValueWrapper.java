@@ -5,6 +5,7 @@ import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.NonWideneable;
 
+// TODO: what if we implement GioviValue<T>
 public sealed interface ValueWrapper<T extends GioviValue<?>>
 	extends GioviParserVisitResult
 	permits Const, MutableValueWrapper {
