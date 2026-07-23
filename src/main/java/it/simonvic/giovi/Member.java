@@ -1,8 +1,6 @@
 package it.simonvic.giovi;
 
-import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public final class Member<T extends GioviValue<?>> extends DefaultableValueWrapper<T> {
 
@@ -22,15 +20,6 @@ public final class Member<T extends GioviValue<?>> extends DefaultableValueWrapp
 			(T) unwrapDefault().copy()
 		);
 	}
-
-	@Override
-	public Member<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
-		return new Member<>(
-			gioviType.widen(this.unwrap()),
-			gioviType.widen(this.unwrapDefault())
-		);
-	}
-
 
 }
 

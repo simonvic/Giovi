@@ -1,10 +1,8 @@
 package it.simonvic.giovi;
 
 import giovi.GioviParserVisitResult;
-import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
 import it.simonvic.giovi.exceptions.GioviException;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 public record Const<T extends GioviValue<?>>(T value) implements ValueWrapper<T> {
 
@@ -21,11 +19,6 @@ public record Const<T extends GioviValue<?>>(T value) implements ValueWrapper<T>
 	@Override
 	public Const<T> copy() {
 		return this;
-	}
-
-	@Override
-	public Const<?> widenTo(GioviType<?> gioviType) throws NonWideneable {
-		return new Const<>(gioviType.widen(this.unwrap()));
 	}
 
 	@Override

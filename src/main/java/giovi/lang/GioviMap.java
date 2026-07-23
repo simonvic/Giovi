@@ -33,8 +33,8 @@ public record GioviMap(
 		try {
 			for (var entry : value.entrySet()) {
 				this.value.put(
-					entry.getKey().widenTo(this.type.keyType()),
-					entry.getValue().widenTo(this.type.elementType())
+					new Entry<>(entry.getKey().unwrap().widenTo(this.type.keyType())),
+					new Entry<>(entry.getValue().unwrap().widenTo(this.type.elementType()))
 				);
 			}
 		} catch (NonWideneable ex) {
@@ -52,8 +52,8 @@ public record GioviMap(
 		// TODO: remove widening here and handle manually
 		try {
 			value.put(
-				key.widenTo(type.keyType()),
-				element.widenTo(type.elementType())
+				new Entry<>(key.unwrap().widenTo(type.keyType())),
+				new Entry<>(element.unwrap().widenTo(type.elementType()))
 			);
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
@@ -82,8 +82,8 @@ public record GioviMap(
 		try {
 			for (var entry : entries.entrySet()) {
 				value.remove(
-					entry.getKey().widenTo(type.keyType()),
-					entry.getValue().widenTo(type.elementType())
+					new Entry<>(entry.getKey().unwrap().widenTo(type.keyType())),
+					new Entry<>(entry.getValue().unwrap().widenTo(type.elementType()))
 				);
 			}
 		} catch (NonWideneable ex) {

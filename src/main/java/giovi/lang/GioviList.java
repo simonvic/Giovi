@@ -25,7 +25,7 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 		this.value = new ArrayList<>();
 		try {
 			for (var entry : value) {
-				this.value.add(entry.widenTo(this.type.entryType()));
+				this.value.add(new Entry<>(entry.unwrap().widenTo(this.type.entryType())));
 			}
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
@@ -61,7 +61,7 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 	 */
 	private void add(Entry<?> entry) {
 		try {
-			value.add(entry.widenTo(type.entryType()));
+			value.add(new Entry<>(entry.unwrap().widenTo(type.entryType())));
 		} catch (NonWideneable ex) {
 			throw new IllegalArgumentException(ex);
 		}

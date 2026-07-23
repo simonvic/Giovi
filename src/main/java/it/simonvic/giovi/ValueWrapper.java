@@ -17,9 +17,6 @@ public sealed interface ValueWrapper<T extends GioviValue<?>>
 
 	ValueWrapper<?> copy();
 
-	@Deprecated
-	ValueWrapper<?> widenTo(GioviType<?> gioviType) throws NonWideneable;
-
 	void setValue(T value);
 
 	default GioviType<?> getGioviType() {
