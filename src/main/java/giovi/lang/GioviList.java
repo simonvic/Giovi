@@ -278,9 +278,6 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		if (right instanceof ValueWrapper<?> v) {
-			right = v.unwrap();
-		}
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt(var index)
