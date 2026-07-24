@@ -8,10 +8,12 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.lang.GioviList;
 import giovi.lang.GioviMap;
+import giovi.lang.GioviValue;
+import giovi.lang.GioviValue;
+import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.ValueWrapper;
-import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.UnsupportedDeconstruction;
 import it.simonvic.giovi.exceptions.UnsupportedPattern;
@@ -309,10 +311,9 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 		Range<?> range,
 		Consumer<Entry<?>> loopBody
 	) {
-		// TODO: hacky way of iterating range
-		for (var entry : range.expandAsGioviList().value()) {
+		for (var entry : range) {
 			enterLoopScope();
-			loopBody.accept(entry);
+			loopBody.accept(new Entry<>(Range.toGioviValue(entry)));
 			if (getCurrentScope().shouldBreak() || getCurrentScope().shouldReturn()) {
 				exitScope();
 				break;

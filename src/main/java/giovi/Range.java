@@ -30,7 +30,7 @@ public record Range<J>(J begin, J end, Number step)
 	 * @see Range#expand()
 	 */
 	public List<? extends GioviValue<?>> expandAsGioviValues() {
-		return expand().stream().map(this::toGioviValue).toList();
+		return expand().stream().map(Range::toGioviValue).toList();
 	}
 
 	/**
@@ -39,10 +39,10 @@ public record Range<J>(J begin, J end, Number step)
 	 * @see Range#expand()
 	 */
 	public List<? extends Entry<?>> expandAsVarEntries() {
-		return expand().stream().map(this::toGioviValue).map(Entry::new).toList();
+		return expand().stream().map(Range::toGioviValue).map(Entry::new).toList();
 	}
 
-	private GioviValue<?> toGioviValue(J value) {
+	public static <J> GioviValue<?> toGioviValue(J value) {
 		return switch (value) {
 			case Natural v -> new GioviNatural(v);
 			case Integer v -> new GioviInt(v);
