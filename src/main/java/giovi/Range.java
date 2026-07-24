@@ -3,7 +3,6 @@ package giovi;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
 
 import giovi.lang.*;
 import it.simonvic.giovi.Entry;
@@ -12,15 +11,6 @@ import it.simonvic.giovi.util.GioviTypes;
 
 public record Range<J>(J begin, J end, Number step)
 	implements GioviParserVisitResult, Iterable<J> {
-
-	/**
-	 * Iterate on the range and invoke the callback on each iteration
-	 * @param callback
-	 */
-	@Deprecated
-	public void iterate(Consumer<J> callback) {
-		forEach(callback);
-	}
 
 	/**
 	 * Expand the range to a list.

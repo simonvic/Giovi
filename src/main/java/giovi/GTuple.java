@@ -64,13 +64,13 @@ public sealed class GTuple implements GProduct permits GRecord {
 
 	public GTuple copy(Range<Integer> range) {
 		var list = new ArrayList<Member<?>>();
-		range.iterate(
-			index -> list.add(
+		for (var index : range) {
+			list.add(
 				getField(index)
 					.orElseThrow(() -> new NoSuchField(index))
 					.copy()
-			)
-		);
+			);
+		}
 		return new GTuple(list);
 	}
 

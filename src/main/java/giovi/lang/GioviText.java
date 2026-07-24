@@ -173,7 +173,9 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var sb = new StringBuilder();
-				range.iterate(index -> sb.append(this.value.charAt((int) index)));
+				for (var index : (Range<Integer>) range) {
+					sb.append(this.value.charAt(index));
+				}
 				yield new GioviText(sb.toString());
 			}
 			case GioviInt(var index)

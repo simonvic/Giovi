@@ -72,11 +72,11 @@ public sealed class GRecord extends GTuple permits GStruct {
 	public GRecord copy(Range<Integer> range) {
 		var a = new LinkedHashMap<String, Member<?>>();
 		var fieldNames = new ArrayList<>(this.fields.keySet());
-		range.iterate(i -> {
+		for (var i : range) {
 			Member<?> fieldValue = getField(i).orElseThrow(() -> new NoSuchField(i));
 			String fieldName = fieldNames.get(i);
 			a.put(fieldName, fieldValue);
-		});
+		}
 		return new GRecord(a);
 	}
 

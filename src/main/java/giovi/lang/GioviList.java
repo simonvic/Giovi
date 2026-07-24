@@ -291,7 +291,9 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var gioviList = new GioviList(this.type);
-				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
+				for (var index : (Range<Integer>) range) {
+					gioviList.value.add(this.value.get((int) index).copy());
+				}
 				yield gioviList;
 			}
 			default -> GioviComposite.super.access(right);
