@@ -88,7 +88,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				default -> GioviProduct.super.access(right);
 			};
-			case Range(Integer _, _, _, _)
+			case Range(Integer _, _, _)
 				-> new GioviTuple(
 					new GioviTypeTuple(this.type.signature().copy((Range<Integer>) right)),
 					this.value.copy((Range<Integer>) right)

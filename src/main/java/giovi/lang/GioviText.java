@@ -171,7 +171,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 					new ArrayList<>(value.chars().boxed().map(this::toVarEntry).toList())
 				);
 			};
-			case Range<?> range when range instanceof Range(Integer start, Integer end, _, _) -> {
+			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var sb = new StringBuilder();
 				range.iterate(index -> sb.append(this.value.charAt((int) index)));
 				yield new GioviText(sb.toString());

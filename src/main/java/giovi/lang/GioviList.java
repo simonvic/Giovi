@@ -289,7 +289,7 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> GioviComposite.super.access(right);
 			};
-			case Range<?> range when range instanceof Range(Integer _, _, _, _) -> {
+			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var gioviList = new GioviList(this.type);
 				range.iterate(index -> gioviList.value.add(this.value.get((int) index).copy()));
 				yield gioviList;

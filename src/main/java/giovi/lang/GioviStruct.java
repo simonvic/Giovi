@@ -104,7 +104,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
 			};
-			case Range(Integer _, _, _, _)
+			case Range(Integer _, _, _)
 				-> new GioviRecord(
 					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
 					this.value.copy((Range<Integer>) right)
