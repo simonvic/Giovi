@@ -1,6 +1,7 @@
 package giovi;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -10,9 +11,8 @@ import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.util.GioviTypes;
 
-// TODO: implements iterable
 public record Range<J>(J begin, J end, Number step, IterationStrategy<J> iterationStrategy)
-	implements GioviParserVisitResult {
+	implements GioviParserVisitResult, Iterable<J> {
 
 	@FunctionalInterface
 	public interface IterationStrategy<V> {
@@ -225,5 +225,150 @@ public record Range<J>(J begin, J end, Number step, IterationStrategy<J> iterati
 		return String.format("%s..%s..%s", begin, end, step);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Iterator<J> iterator() {
+		return (Iterator<J>) switch (begin) {
+			case String _ -> new IteratorText();
+			case Natural _ -> new IteratorNatural();
+			case Integer _ -> new IteratorInt();
+			case Double _ -> new IteratorReal();
+			default -> throw new GioviException("Unsupported iterator");
+		};
+
+	}
+
+	private class IteratorText implements Iterator<String> {
+
+		private final char begin;
+		private final char end;
+		private final int step;
+		private final boolean reverse;
+		private char cursor;
+
+		public IteratorText() {
+			this.begin = ((String) begin()).toCharArray()[0];
+			this.end = ((String) end()).toCharArray()[0];
+			this.step = step().intValue();
+			this.reverse = (end < begin);
+			this.cursor = (reverse) // range is inclusive, so we start one step behind
+				? (char) (begin + step)
+				: (char) (begin - step);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (reverse)
+				? (cursor >= (end + step))
+				: (cursor <= (end - step));
+		}
+
+		@Override
+		public String next() {
+			cursor += (reverse) ? -step : step;
+			return String.valueOf(cursor);
+		}
+
+	}
+
+	private class IteratorNatural implements Iterator<Natural> {
+
+		private final int begin;
+		private final int end;
+		private final int step;
+		private final boolean reverse;
+		private int cursor;
+
+		public IteratorNatural() {
+			this.begin = ((Natural) begin()).intValue();
+			this.end = ((Natural) end()).intValue();
+			this.step = step().intValue();
+			this.reverse = (end < begin);
+			this.cursor = (reverse) // range is inclusive, so we start one step behind
+				? (begin + step)
+				: (begin - step);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (reverse)
+				? (cursor >= (end + step))
+				: (cursor <= (end - step));
+		}
+
+		@Override
+		public Natural next() {
+			cursor += (reverse) ? -step : step;
+			return new Natural(cursor);
+		}
+
+
+	}
+
+	private class IteratorInt implements Iterator<Integer> {
+
+		private final int begin;
+		private final int end;
+		private final int step;
+		private final boolean reverse;
+		private int cursor;
+
+		public IteratorInt() {
+			this.begin = (int) begin();
+			this.end = (int) end();
+			this.step = step().intValue();
+			this.reverse = (end < begin);
+			this.cursor = (reverse) // range is inclusive, so we start one step behind
+				? (begin + step)
+				: (begin - step);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (reverse)
+				? (cursor >= (end + step))
+				: (cursor <= (end - step));
+		}
+
+		@Override
+		public Integer next() {
+			cursor += (reverse) ? -step : step;
+			return cursor;
+		}
+
+	}
+
+	private class IteratorReal implements Iterator<Double> {
+
+		private final double begin;
+		private final double end;
+		private final double step;
+		private final boolean reverse;
+		private double cursor;
+
+		public IteratorReal() {
+			this.begin = (double) begin();
+			this.end = (double) end();
+			this.step = step().doubleValue();
+			this.reverse = (end < begin);
+			this.cursor = (reverse) // range is inclusive, so we start one step behind
+				? (begin + step)
+				: (begin - step);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return (reverse)
+				? (cursor >= (end + step))
+				: (cursor <= (end - step));
+		}
+
+		@Override
+		public Double next() {
+			cursor += (reverse) ? -step : step;
+			return cursor;
+		}
+
+	}
 
 }
