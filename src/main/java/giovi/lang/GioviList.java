@@ -4,13 +4,13 @@ import static it.simonvic.giovi.util.GioviLists.copyOf;
 import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
-import it.simonvic.giovi.ValueWrapper;
 import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.GioviException;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -18,7 +18,7 @@ import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 
 @DescribedBy(GioviTypeList.class)
 public record GioviList(GioviTypeList type, List<Entry<?>> value)
-	implements GioviComposite<List<Entry<?>>> {
+	implements GioviComposite<List<Entry<?>>>, Iterable<Entry<?>> {
 
 	public GioviList(GioviTypeList type, List<Entry<?>> value) {
 		this.type = type;
@@ -298,6 +298,11 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 			}
 			default -> GioviComposite.super.access(right);
 		};
+	}
+
+	@Override
+	public Iterator<Entry<?>> iterator() {
+		return this.value.iterator();
 	}
 
 }
