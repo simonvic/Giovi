@@ -7,7 +7,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -677,22 +676,18 @@ public class TestDefaults {
 				.isEqualTo(new GioviText());
 		}
 
-		// FIXME: [Int] not parsed as list Type, but as a list of Types
-
 		@Test
-		@Disabled
 		void testTypeDefaultList() {
 			assertThat(visitExpression("""
-				[Int].default
+				type.[Int].default
 				"""))
 				.isEqualTo(new GioviList(GioviType.LIST_OF_INT));
 		}
 
 		@Test
-		@Disabled
 		void testTypeDefaultMaps() {
 			assertThat(visitExpression("""
-				[Text:Int].default
+				type.[Text:Int].default
 				"""))
 				.isEqualTo(
 					new GioviMap(
