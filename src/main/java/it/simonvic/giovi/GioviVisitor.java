@@ -374,12 +374,11 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			throw new GioviException(e, "Incompatible constant type");
 		}
 		getCurrentScope().declareConstant(ctx.identifier().getText(), constant);
-		// FIXME: copy! Otherwise we might mutate some other variable (e.g. FOO.someField <- 69)
 		return constant;
 	}
 
 	private GioviValue<?> doVisitConstant(ConstantDeclarationContext ctx) throws NonWideneable {
-		var constant = visit(ctx.expression()).unwrapAsGioviValue();
+		var constant = visit(ctx.expression()).unwrapAsGioviValue().copy();
 		if (ctx.type() != null) {
 			var type = visit(ctx.type()).asGioviType();
 			constant = constant.widenTo(type);
