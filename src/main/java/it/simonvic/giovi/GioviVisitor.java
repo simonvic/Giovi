@@ -174,10 +174,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		switch (expression) {
 			case GioviFunction function -> scope.declare(alias, function.value());
 			case GioviTypeStruct typeStruct -> scope.define(alias, typeStruct);
-			// TODO: this could create some funny behavior (e.g. with struct fields)
-			// case VarD<?> variable -> scope.declare(alias, variable);
-			case GioviValue<?> constant -> scope.declareConstant(alias, constant);
 			case Const<?> constant -> scope.declareConstant(alias, constant);
+			case Var<?> variable -> scope.declare(alias, variable);
+			case GioviValue<?> constant -> scope.declareConstant(alias, constant);
 			case Module module -> scope.declare(alias, module);
 			default -> throw new GioviException("Can't create alias for " + expression);
 		}
