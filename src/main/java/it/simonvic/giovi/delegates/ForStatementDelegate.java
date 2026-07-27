@@ -8,8 +8,6 @@ import giovi.GioviParserVisitResult;
 import giovi.Range;
 import giovi.lang.GioviList;
 import giovi.lang.GioviMap;
-import giovi.lang.GioviValue;
-import giovi.lang.GioviValue;
 import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;

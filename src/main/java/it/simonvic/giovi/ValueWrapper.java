@@ -3,7 +3,6 @@ package it.simonvic.giovi;
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.exceptions.NonWideneable;
 
 // TODO: what if we implement GioviValue<J>
 public sealed interface ValueWrapper<G extends GioviValue<?>>
