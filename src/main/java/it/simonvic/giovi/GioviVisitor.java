@@ -387,28 +387,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitRedirectionToIdentifier(RedirectionToIdentifierContext ctx) {
-		VisitorUtils.redirection(
-			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
-			visit(ctx.dest)
-		);
-		return null;
-	}
-
-	@Override
-	public GioviParserVisitResult visitRedirectionToIdentifierRTL(
-		RedirectionToIdentifierRTLContext ctx
-	) {
-		VisitorUtils.redirection(
-			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
-			visit(ctx.dest)
-		);
-		return null;
-	}
-
-	@Override
 	public GioviParserVisitResult visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
 		VisitorUtils.redirection(
 			visit(ctx.content),
