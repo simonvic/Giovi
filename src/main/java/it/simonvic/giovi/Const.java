@@ -7,6 +7,11 @@ import it.simonvic.giovi.exceptions.GioviException;
 public record Const<G extends GioviValue<?>>(G value) implements ValueWrapper<G> {
 
 	@Override
+	public String toString() {
+		return value.toString();
+	}
+
+	@Override
 	public G unwrap() {
 		return value;
 	}
