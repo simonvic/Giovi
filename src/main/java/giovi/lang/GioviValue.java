@@ -53,7 +53,7 @@ public sealed interface GioviValue<J>
 	 * @return widened value
 	 * @throws NonWideneable
 	 */
-	default <V extends GioviValue<?>> V widenTo(GioviType<V> type) throws NonWideneable {
+	default <G extends GioviValue<?>> G widenTo(GioviType<G> type) throws NonWideneable {
 		return type.widen(this);
 	}
 
