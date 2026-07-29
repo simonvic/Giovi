@@ -289,7 +289,7 @@ public class VisitorUtils {
 			targetScope,
 			content,
 			Optional.ofNullable(patternCtx.whole),
-			patternCtx.patternProductMembers()
+			patternCtx.patternProductFields()
 		);
 	}
 
@@ -306,7 +306,7 @@ public class VisitorUtils {
 		Scope targetScope,
 		GioviParserVisitResult content,
 		Optional<UnaryPatternContext> optWholeCtx,
-		PatternProductMembersContext patternCtx
+		PatternProductFieldsContext patternCtx
 	) {
 		var value = content.unwrapAsGioviValue();
 		optWholeCtx.ifPresent(wholeCtx -> deconstruct(visitor, targetScope, value, wholeCtx));
@@ -318,21 +318,21 @@ public class VisitorUtils {
 							visitor,
 							targetScope,
 							struct.value(),
-							pCtx.patternMember()
+							pCtx.patternField()
 						);
 					case GioviRecord record
 						-> deconstructPositional(
 							visitor,
 							targetScope,
 							record.value(),
-							pCtx.patternMember()
+							pCtx.patternField()
 						);
 					case GioviTuple tuple
 						-> deconstructPositional(
 							visitor,
 							targetScope,
 							tuple.value(),
-							pCtx.patternMember()
+							pCtx.patternField()
 						);
 					default
 						-> throw new UnsupportedDeconstruction(value, patternCtx);
@@ -345,14 +345,14 @@ public class VisitorUtils {
 							visitor,
 							targetScope,
 							struct.value(),
-							nCtx.patternMemberNamed()
+							nCtx.patternFieldNamed()
 						);
 					case GioviRecord record
 						-> deconstructNamed(
 							visitor,
 							targetScope,
 							record.value(),
-							nCtx.patternMemberNamed()
+							nCtx.patternFieldNamed()
 						);
 					default
 						-> throw new UnsupportedDeconstruction(value, patternCtx);
@@ -373,11 +373,11 @@ public class VisitorUtils {
 		GioviVisitor visitor,
 		Scope targetScope,
 		GRecord record,
-		List<PatternMemberNamedContext> patternsCtx
+		List<PatternFieldNamedContext> patternsCtx
 	) {
 		for (var patternCtx : patternsCtx) {
 			switch (patternCtx) {
-				case PatternMemberNamedExplicitContext explicitCtx -> {
+				case PatternFieldNamedExplicitContext explicitCtx -> {
 					String fieldIdentifier = explicitCtx.name.getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
@@ -387,9 +387,9 @@ public class VisitorUtils {
 								new NoSuchField(fieldIdentifier)
 							)
 						);
-					deconstruct(visitor, targetScope, field, explicitCtx.patternMember());
+					deconstruct(visitor, targetScope, field, explicitCtx.patternField());
 				}
-				case PatternMemberNamedImplicitContext implicitCtx -> {
+				case PatternFieldNamedImplicitContext implicitCtx -> {
 					var unaryCtx = implicitCtx.unaryPattern();
 					String fieldIdentifier = unaryCtx.identifier().getText();
 					var field = record.getField(fieldIdentifier)
@@ -419,7 +419,7 @@ public class VisitorUtils {
 		GioviVisitor visitor,
 		Scope targetScope,
 		GTuple tuple,
-		List<PatternMemberContext> patternsCtx
+		List<PatternFieldContext> patternsCtx
 	) {
 		for (int i = 0; i < patternsCtx.size(); i++) {
 			final int j = i;
@@ -430,7 +430,7 @@ public class VisitorUtils {
 	}
 
 	/**
-	 * Deconstruct a product member
+	 * Deconstruct a product field
 	 * @param visitor
 	 * @param targetScope
 	 * @param field
@@ -440,14 +440,14 @@ public class VisitorUtils {
 		GioviVisitor visitor,
 		Scope targetScope,
 		GField<?> field,
-		PatternMemberContext patternCtx
+		PatternFieldContext patternCtx
 	) {
 		switch (patternCtx) {
-			case PatternMemberPlaceholderContext _
+			case PatternFieldPlaceholderContext _
 				-> {/* noop */}
-			case PatternMemberUnaryContext pCtx
+			case PatternFieldUnaryContext pCtx
 				-> deconstruct(visitor, targetScope, field, pCtx.unaryPattern());
-			case PatternMemberProductContext pCtx
+			case PatternFieldProductContext pCtx
 				-> deconstruct(visitor, targetScope, field, pCtx.productPattern());
 			default -> throw new UnsupportedDeconstruction(field, patternCtx);
 		}

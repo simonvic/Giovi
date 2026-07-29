@@ -87,7 +87,7 @@ public class TestPatterns {
 	}
 
 
-	// TODO(opsem): how should the members be deconstructed?
+	// TODO(opsem): how should the fields be deconstructed?
 	// From the whole (possibly widened/narrowed from the deconstruction)?
 	// Or from the original value?
 	@Test

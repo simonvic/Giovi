@@ -82,7 +82,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 						-> forEach(
 							list,
 							Optional.ofNullable(pCtx.productPattern().whole),
-							pCtx.productPattern().patternProductMembers()
+							pCtx.productPattern().patternProductFields()
 						);
 
 					case PatternMapContext pCtx when iterated instanceof GioviMap map
@@ -104,12 +104,12 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 	 * Iterator over list with product pattern
 	 * @param list
 	 * @param wholeOpt
-	 * @param patternMembers
+	 * @param patternFields
 	 */
 	private void forEach(
 		GioviList list,
 		Optional<UnaryPatternContext> wholeOpt,
-		PatternProductMembersContext patternMembers
+		PatternProductFieldsContext patternFields
 	) {
 		forEach(list, (i) -> {
 			VisitorUtils.deconstruct(
@@ -117,7 +117,7 @@ public class ForStatementDelegate extends GioviVisitorDelegate {
 				gioviVisitor.getCurrentScope(),
 				i,
 				wholeOpt,
-				patternMembers
+				patternFields
 			);
 			gioviVisitor.visit(bodyCtx);
 		});

@@ -281,11 +281,11 @@ public class Natives {
 	}
 
 	private static RecordFieldSignature recordFieldSignatureFrom(
-		TypeRecord.Field memberAnnotation
+		TypeRecord.Field fieldAnnotation
 	) {
 		return new RecordFieldSignature(
-			memberAnnotation.name(),
-			gioviTypeFrom(memberAnnotation.type())
+			fieldAnnotation.name(),
+			gioviTypeFrom(fieldAnnotation.type())
 		);
 	}
 
