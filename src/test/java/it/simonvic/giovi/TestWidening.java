@@ -215,9 +215,9 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
 					new GTuple(
-						Members.of(69),
-						Members.of(69d),
-						new Member<>(
+						GFields.of(69),
+						GFields.of(69d),
+						new GField<>(
 							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
 						)
 					)
@@ -240,12 +240,12 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type).value())
 				.isEqualTo(
 					new GTuple(
-						Members.of(69),
-						Members.of(69d),
-						new Member<>(
+						GFields.of(69),
+						GFields.of(69d),
+						new GField<>(
 							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
 						),
-						Members.of(false)
+						GFields.of(false)
 					)
 				);
 		}
@@ -283,9 +283,9 @@ public class TestWidening {
 			);
 			assertThat(narrow.widenTo(type).value()).isEqualTo(
 				GRecords.of(
-					"n", new Member<>(new GioviNatural(new Natural(69))),
-					"i", new Member<>(new GioviInt(69)),
-					"li", new Member<>(GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT))
+					"n", new GField<>(new GioviNatural(new Natural(69))),
+					"i", new GField<>(new GioviInt(69)),
+					"li", new GField<>(GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT))
 				)
 			);
 		}
@@ -307,9 +307,9 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"i", new Member<>(new GioviInt(69)),
-						"r", new Member<>(new GioviReal(69d)),
-						"lr", new Member<>(
+						"i", new GField<>(new GioviInt(69)),
+						"r", new GField<>(new GioviReal(69d)),
+						"lr", new GField<>(
 							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
 						)
 					)
@@ -335,12 +335,12 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"i", new Member<>(new GioviInt(69)),
-						"r", new Member<>(new GioviReal(69d)),
-						"lr", new Member<>(
+						"i", new GField<>(new GioviInt(69)),
+						"r", new GField<>(new GioviReal(69d)),
+						"lr", new GField<>(
 							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
 						),
-						"b", new Member<>(GioviBool.FALSE)
+						"b", new GField<>(GioviBool.FALSE)
 					)
 				)
 			);
@@ -385,9 +385,9 @@ public class TestWidening {
 				new GioviStruct(
 					type, GStructs.of(
 						"Foo",
-						"n", new Member<>(new GioviNatural(new Natural(69))),
-						"i", new Member<>(new GioviInt(69)),
-						"li", new Member<>(
+						"n", new GField<>(new GioviNatural(new Natural(69))),
+						"i", new GField<>(new GioviInt(69)),
+						"li", new GField<>(
 							GioviLists.of(69, 420), new GioviList(GioviType.LIST_OF_INT)
 						)
 					)
@@ -416,9 +416,9 @@ public class TestWidening {
 						type,
 						GStructs.of(
 							"Foo",
-							"i", new Member<>(new GioviInt(69)),
-							"r", new Member<>(new GioviReal(69d)),
-							"lr", new Member<>(
+							"i", new GField<>(new GioviInt(69)),
+							"r", new GField<>(new GioviReal(69d)),
+							"lr", new GField<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							)
@@ -448,13 +448,13 @@ public class TestWidening {
 					new GioviStruct(
 						type, GStructs.of(
 							"Foo",
-							"i", new Member<>(new GioviInt(69)),
-							"r", new Member<>(new GioviReal(69d)),
-							"lr", new Member<>(
+							"i", new GField<>(new GioviInt(69)),
+							"r", new GField<>(new GioviReal(69d)),
+							"lr", new GField<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"b", new Member<>(GioviBool.FALSE)
+							"b", new GField<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -520,9 +520,9 @@ public class TestWidening {
 			assertThat(narrow.widenTo(type)).isEqualTo(
 				new GioviRecord(
 					type, GRecords.of(
-						"a", new Member<>(new GioviNatural(new Natural(69))),
-						"b", new Member<>(new GioviInt(69)),
-						"c", new Member<>(
+						"a", new GField<>(new GioviNatural(new Natural(69))),
+						"b", new GField<>(new GioviInt(69)),
+						"c", new GField<>(
 							GioviLists.of(69, 420),
 							new GioviList(GioviType.LIST_OF_INT)
 						)
@@ -570,13 +570,13 @@ public class TestWidening {
 					new GioviRecord(
 						type,
 						GRecords.of(
-							"a", new Member<>(new GioviNatural(new Natural(69))),
-							"b", new Member<>(new GioviInt(69)),
-							"c", new Member<>(
+							"a", new GField<>(new GioviNatural(new Natural(69))),
+							"b", new GField<>(new GioviInt(69)),
+							"c", new GField<>(
 								GioviLists.of(69, 420),
 								new GioviList(GioviType.LIST_OF_INT)
 							),
-							"d", new Member<>(GioviBool.FALSE)
+							"d", new GField<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -602,9 +602,9 @@ public class TestWidening {
 					type,
 					GStructs.of(
 						"Foo",
-						"a", new Member<>(new GioviInt(69)),
-						"b", new Member<>(new GioviReal(69d)),
-						"c", new Member<>(
+						"a", new GField<>(new GioviInt(69)),
+						"b", new GField<>(new GioviReal(69d)),
+						"c", new GField<>(
 							GioviLists.of(69d, 420d), new GioviList(GioviType.LIST_OF_REAL)
 						)
 					)
@@ -654,13 +654,13 @@ public class TestWidening {
 						type,
 						GStructs.of(
 							"Foo",
-							"a", new Member<>(new GioviInt(69)),
-							"b", new Member<>(new GioviReal(69d)),
-							"c", new Member<>(
+							"a", new GField<>(new GioviInt(69)),
+							"b", new GField<>(new GioviReal(69d)),
+							"c", new GField<>(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_REAL)
 							),
-							"d", new Member<>(GioviBool.FALSE)
+							"d", new GField<>(GioviBool.FALSE)
 						)
 					)
 				);
@@ -685,13 +685,13 @@ public class TestWidening {
 					new GioviRecord(
 						type,
 						GRecords.of(
-							"a", Members.of(new GioviInt(69)),
-							"b", Members.of(
+							"a", GFields.of(new GioviInt(69)),
+							"b", GFields.of(
 								GioviLists.of(69d, 420d),
 								new GioviList(GioviType.LIST_OF_INT)
 							),
-							"c", Members.of(new GioviReal()),
-							"d", Members.of(GioviBool.FALSE)
+							"c", GFields.of(new GioviReal()),
+							"d", GFields.of(GioviBool.FALSE)
 						)
 					)
 				);
@@ -714,13 +714,13 @@ public class TestWidening {
 				new GioviRecord(
 					type,
 					GRecords.of(
-						"a", Members.of(new GioviNatural(new Natural(69))),
-						"b", Members.of(
+						"a", GFields.of(new GioviNatural(new Natural(69))),
+						"b", GFields.of(
 							GioviLists.of(69d, 420d),
 							new GioviList(GioviType.LIST_OF_INT)
 						),
-						"c", Members.of(new GioviReal()),
-						"d", Members.of(GioviBool.FALSE)
+						"c", GFields.of(new GioviReal()),
+						"d", GFields.of(GioviBool.FALSE)
 					)
 				)
 			);
@@ -785,9 +785,9 @@ public class TestWidening {
 					type,
 					GStructs.of(
 						"Foo",
-						"a", new Member<>(new GioviNatural(new Natural(69))),
-						"b", new Member<>(new GioviInt(69)),
-						"c", new Member<>(
+						"a", new GField<>(new GioviNatural(new Natural(69))),
+						"b", new GField<>(new GioviInt(69)),
+						"c", new GField<>(
 							GioviLists.of(69, 420),
 							new GioviList(GioviType.LIST_OF_INT)
 						)

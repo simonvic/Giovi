@@ -57,8 +57,8 @@ public class TestGioviRecord {
 					"a", 69,
 					"b", true,
 					"c", GRecords.of(
-						"foo", Members.of("foo"),
-						"bar", Members.of("bar")
+						"foo", GFields.of("foo"),
+						"bar", GFields.of("bar")
 					)
 				)
 			);
@@ -81,8 +81,8 @@ public class TestGioviRecord {
 					"a", 69,
 					"b", true,
 					"c", GRecords.of(
-						"foo", Members.of("foo"),
-						"bar", Members.of("bar")
+						"foo", GFields.of("foo"),
+						"bar", GFields.of("bar")
 					),
 					"d", GTuples.ofNative(1, 2, 3)
 				)

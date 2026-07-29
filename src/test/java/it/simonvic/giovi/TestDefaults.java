@@ -151,20 +151,20 @@ public class TestDefaults {
 				.isEqualTo(
 					GStructs.of(
 						"Foo",
-						"foo", Members.of("foo"),
-						"bar", Members.of(
+						"foo", GFields.of("foo"),
+						"bar", GFields.of(
 							GStructs.of(
 								"Bar",
-								"baz", Members.of("baz"),
-								"foobar", new Member<>(
+								"baz", GFields.of("baz"),
+								"foobar", new GField<>(
 									GioviLists.of(1, 2, 3),
 									new GioviList(GioviType.LIST_OF_INT)
 								)
 							),
 							GStructs.of(
 								"Bar",
-								"baz", Members.of(""),
-								"foobar", new Member<>(
+								"baz", GFields.of(""),
+								"foobar", new GField<>(
 									new GioviList(GioviType.LIST_OF_INT),
 									new GioviList(GioviType.LIST_OF_INT)
 								)
@@ -205,17 +205,17 @@ public class TestDefaults {
 				.isEqualTo(
 					GStructs.of(
 						"Foo",
-						"foo", Members.of("foo", "foodefault"),
-						"bar", Members.of(
+						"foo", GFields.of("foo", "foodefault"),
+						"bar", GFields.of(
 							GStructs.of(
 								"Bar",
-								"baz", Members.of("baz", "bazdefault"),
-								"foobar", Members.of(List.of(1, 2, 3), List.of(69))
+								"baz", GFields.of("baz", "bazdefault"),
+								"foobar", GFields.of(List.of(1, 2, 3), List.of(69))
 							),
 							GStructs.of(
 								"Bar",
-								"baz", Members.of("overriden bazdefault", "bazdefault"),
-								"foobar", Members.of(List.of(420), List.of(69))
+								"baz", GFields.of("overriden bazdefault", "bazdefault"),
+								"foobar", GFields.of(List.of(420), List.of(69))
 							)
 						)
 					)
@@ -373,20 +373,20 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", Members.of("foo"),
-					"bar", Members.of(
+					"foo", GFields.of("foo"),
+					"bar", GFields.of(
 						GStructs.of(
 							"Bar",
-							"baz", Members.of("baz"),
-							"foobar", new Member<>(
+							"baz", GFields.of("baz"),
+							"foobar", new GField<>(
 								GioviLists.of(1, 2, 3),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
 						GStructs.of(
 							"Bar",
-							"baz", Members.of(""),
-							"foobar", new Member<>(
+							"baz", GFields.of(""),
+							"foobar", new GField<>(
 								new GioviList(GioviType.LIST_OF_INT),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
@@ -489,9 +489,9 @@ public class TestDefaults {
 				).asGioviValue().value()
 			).isEqualTo(
 				GRecords.of(
-					"a", Members.of(0),
-					"b", Members.of(false),
-					"c", Members.of("")
+					"a", GFields.of(0),
+					"b", GFields.of(false),
+					"c", GFields.of("")
 				)
 			);
 		}
@@ -608,20 +608,20 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", Members.of("foo"),
-					"bar", Members.of(
+					"foo", GFields.of("foo"),
+					"bar", GFields.of(
 						GStructs.of(
 							"Bar",
-							"baz", Members.of("baz"),
-							"foobar", new Member<>(
+							"baz", GFields.of("baz"),
+							"foobar", new GField<>(
 								GioviLists.of(1, 2, 3),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
 						),
 						GStructs.of(
 							"Bar",
-							"baz", Members.of(""),
-							"foobar", new Member<>(
+							"baz", GFields.of(""),
+							"foobar", new GField<>(
 								new GioviList(GioviType.LIST_OF_INT),
 								new GioviList(GioviType.LIST_OF_INT)
 							)
@@ -723,24 +723,24 @@ public class TestDefaults {
 			).isEqualTo(
 				GStructs.of(
 					"Foo",
-					"foo", Members.of("foo", "foo"),
-					"bar", Members.of(
+					"foo", GFields.of("foo", "foo"),
+					"bar", GFields.of(
 						GStructs.of(
 							"Bar",
-							"baz", Members.of("baz", "baz"),
-							"foobar", Members.of(List.of(1, 2, 3), List.of(1, 2, 3))
+							"baz", GFields.of("baz", "baz"),
+							"foobar", GFields.of(List.of(1, 2, 3), List.of(1, 2, 3))
 						)
 					),
-					"foobar", Members.of(
+					"foobar", GFields.of(
 						GStructs.of(
 							"Bar",
-							"baz", Members.of("BAZ", "baz"),
-							"foobar", Members.of(List.of(69, 420), List.of(1, 2, 3))
+							"baz", GFields.of("BAZ", "baz"),
+							"foobar", GFields.of(List.of(69, 420), List.of(1, 2, 3))
 						),
 						GStructs.of(
 							"Bar",
-							"baz", Members.of("BAZ", "baz"),
-							"foobar", Members.of(List.of(69, 420), List.of(1, 2, 3))
+							"baz", GFields.of("BAZ", "baz"),
+							"foobar", GFields.of(List.of(69, 420), List.of(1, 2, 3))
 						)
 					)
 				)

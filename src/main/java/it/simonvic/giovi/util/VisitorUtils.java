@@ -8,9 +8,9 @@ import giovi.GRecord;
 import giovi.GTuple;
 import giovi.GioviParserVisitResult;
 import giovi.lang.*;
+import it.simonvic.giovi.GField;
 import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
-import it.simonvic.giovi.Member;
 import it.simonvic.giovi.Var;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.exceptions.*;
@@ -439,7 +439,7 @@ public class VisitorUtils {
 	public static void deconstruct(
 		GioviVisitor visitor,
 		Scope targetScope,
-		Member<?> field,
+		GField<?> field,
 		PatternMemberContext patternCtx
 	) {
 		switch (patternCtx) {

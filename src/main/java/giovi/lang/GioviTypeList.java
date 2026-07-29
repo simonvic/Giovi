@@ -8,8 +8,8 @@ import java.util.Map;
 
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
-import it.simonvic.giovi.Member;
 import it.simonvic.giovi.Entry;
+import it.simonvic.giovi.GField;
 import it.simonvic.giovi.exceptions.NonWideneable;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
@@ -177,8 +177,8 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 				return new GioviRecord(
 					find_returnType,
 					GRecords.of(
-						"found", new Member<>(GioviBool.of(true)),
-						"index", new Member<>(new GioviInt(i))
+						"found", new GField<>(GioviBool.of(true)),
+						"index", new GField<>(new GioviInt(i))
 					)
 				);
 			}

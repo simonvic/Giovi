@@ -9,7 +9,7 @@ import giovi.lang.GioviValue;
 
 public sealed abstract class DefaultableValueWrapper<G extends GioviValue<?>>
 	extends MutableValueWrapper<G>
-	permits Var, Member {
+	permits Var, GField {
 
 	private final G defaultValue; // TODO: eventually, it could be lazily initialized only if it is overriden
 

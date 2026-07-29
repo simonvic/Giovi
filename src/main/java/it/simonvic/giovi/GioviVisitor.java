@@ -1228,7 +1228,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	private void doInitStructField(
 		GioviTypeStruct structType,
-		Member<?> field,
+		GField<?> field,
 		GioviParserVisitResult newFieldValue
 	) throws NonWideneable {
 		if (field.unwrap() instanceof GioviSelf) {
@@ -1245,12 +1245,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitTupleCreationBody(TupleCreationBodyContext ctx) {
 		int size = ctx.expression().size();
-		var fields = new ArrayList<Member<?>>(size);
+		var fields = new ArrayList<GField<?>>(size);
 		var fieldsSignature = new ArrayList<TupleFieldSignature>(size);
 		for (var expressionCtx : ctx.expression()) {
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
-			fields.add(new Member<>(fieldValue, fieldType.spawn()));
+			fields.add(new GField<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.add(new TupleFieldSignature(fieldType));
 		}
 		return new GioviTuple(
@@ -1263,13 +1263,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitRecordCreationBody(RecordCreationBodyContext ctx) {
 		int size = ctx.recordEntry().size();
-		var fields = new LinkedHashMap<String, Member<?>>(size);
+		var fields = new LinkedHashMap<String, GField<?>>(size);
 		var fieldsSignature = new LinkedHashMap<String, RecordFieldSignature>(size);
 		for (var entryCtx : ctx.recordEntry()) {
 			var fieldValue = visit(entryCtx.expression()).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
 			String identifier = entryCtx.identifier().getText();
-			fields.put(identifier, new Member<>(fieldValue, fieldType.spawn()));
+			fields.put(identifier, new GField<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.put(identifier, new RecordFieldSignature(identifier, fieldType));
 		}
 		return new GioviRecord(

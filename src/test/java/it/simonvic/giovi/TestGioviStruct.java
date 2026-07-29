@@ -166,9 +166,9 @@ public class TestGioviStruct {
 						new GioviStruct(
 							rgbType, GStructs.of(
 								"RGB",
-								"r", Members.of(255, 0),
-								"g", Members.of(250, 0),
-								"b", Members.of(200, 0)
+								"r", GFields.of(255, 0),
+								"g", GFields.of(250, 0),
+								"b", GFields.of(200, 0)
 							)
 						)
 					)
@@ -511,9 +511,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(0),
-					"t", Members.of(""),
-					"b", Members.of(false)
+					"i", GFields.of(0),
+					"t", GFields.of(""),
+					"b", GFields.of(false)
 				)
 			);
 		}
@@ -538,9 +538,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(69),
-					"t", Members.of("hello"),
-					"b", Members.of(true)
+					"i", GFields.of(69),
+					"t", GFields.of("hello"),
+					"b", GFields.of(true)
 				)
 			);
 		}
@@ -565,9 +565,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(69),
-					"t", Members.of("hello"),
-					"b", Members.of(true)
+					"i", GFields.of(69),
+					"t", GFields.of("hello"),
+					"b", GFields.of(true)
 				)
 			);
 		}
@@ -592,9 +592,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(69),
-					"t", Members.of("hello"),
-					"b", Members.of(true)
+					"i", GFields.of(69),
+					"t", GFields.of("hello"),
+					"b", GFields.of(true)
 				)
 			);
 		}
@@ -661,9 +661,9 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(69),
-					"t", Members.of(""),
-					"b", Members.of(true)
+					"i", GFields.of(69),
+					"t", GFields.of(""),
+					"b", GFields.of(true)
 				)
 			);
 		}
@@ -691,11 +691,11 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(420, 69),
-					"t", Members.of("foo", "foo"),
-					"s", Members.of(
-						GStructs.of("Bar", "r", Members.of(6.9, 4.20)),
-						GStructs.of("Bar", "r", Members.of(6.9, 4.20))
+					"i", GFields.of(420, 69),
+					"t", GFields.of("foo", "foo"),
+					"s", GFields.of(
+						GStructs.of("Bar", "r", GFields.of(6.9, 4.20)),
+						GStructs.of("Bar", "r", GFields.of(6.9, 4.20))
 					)
 				)
 			);
@@ -725,11 +725,11 @@ public class TestGioviStruct {
 			).isEqualTo(
 				GioviStructs.of(
 					"Foo",
-					"i", Members.of(420, 69),
-					"t", Members.of("foo", "foo"),
-					"s", Members.of(
-						GStructs.of("Bar", "r", Members.of(6.9, 4.20)),
-						GStructs.of("Bar", "r", Members.of(6.9, 4.20))
+					"i", GFields.of(420, 69),
+					"t", GFields.of("foo", "foo"),
+					"s", GFields.of(
+						GStructs.of("Bar", "r", GFields.of(6.9, 4.20)),
+						GStructs.of("Bar", "r", GFields.of(6.9, 4.20))
 					)
 				)
 			);
@@ -994,9 +994,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", Members.of(69),
-						"t", Members.of("hello"),
-						"b", Members.of(true)
+						"i", GFields.of(69),
+						"t", GFields.of("hello"),
+						"b", GFields.of(true)
 					)
 				);
 			}
@@ -1034,9 +1034,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", Members.of(69),
-						"t", Members.of("hello"),
-						"b", Members.of(true)
+						"i", GFields.of(69),
+						"t", GFields.of("hello"),
+						"b", GFields.of(true)
 					)
 				);
 			}
@@ -1057,9 +1057,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", Members.of(69),
-						"t", Members.of(""),
-						"b", Members.of(true)
+						"i", GFields.of(69),
+						"t", GFields.of(""),
+						"b", GFields.of(true)
 					)
 				);
 			}
@@ -1090,9 +1090,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", Members.of(69),
-						"t", Members.of("hello"),
-						"b", Members.of(true)
+						"i", GFields.of(69),
+						"t", GFields.of("hello"),
+						"b", GFields.of(true)
 					)
 				);
 			}
@@ -1112,9 +1112,9 @@ public class TestGioviStruct {
 				).isEqualTo(
 					GioviStructs.of(
 						"Foo",
-						"i", Members.of(69),
-						"t", Members.of("hello"),
-						"b", Members.of(true)
+						"i", GFields.of(69),
+						"t", GFields.of("hello"),
+						"b", GFields.of(true)
 					)
 				);
 			}

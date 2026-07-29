@@ -2,7 +2,7 @@ package giovi;
 
 import giovi.lang.GioviType;
 import giovi.lang.GioviValue;
-import it.simonvic.giovi.Member;
+import it.simonvic.giovi.GField;
 
 // TODO: add generic? or just ensure type safety (widening) in constructor?
 public sealed interface ProductFieldSignature
@@ -13,8 +13,8 @@ public sealed interface ProductFieldSignature
 
 	GioviValue<?> defaultValue();
 
-	default Member<?> spawn() {
-		return new Member<>(defaultValue().copy(), defaultValue().copy());
+	default GField<?> spawn() {
+		return new GField<>(defaultValue().copy(), defaultValue().copy());
 	}
 
 }

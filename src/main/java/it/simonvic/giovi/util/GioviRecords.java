@@ -6,7 +6,7 @@ import giovi.GRecord;
 import giovi.RecordFieldSignature;
 import giovi.RecordSignature;
 import giovi.lang.*;
-import it.simonvic.giovi.Member;
+import it.simonvic.giovi.GField;
 import it.simonvic.giovi.exceptions.IncompatibleFieldsCount;
 import it.simonvic.giovi.exceptions.NoSuchField;
 
@@ -34,8 +34,8 @@ public class GioviRecords {
 	public static <J> GioviRecord of(
 		String i1, J v1
 	) {
-		var s = new LinkedHashMap<String, Member<?>>();
-		s.put(i1, Members.of(v1));
+		var s = new LinkedHashMap<String, GField<?>>();
+		s.put(i1, GFields.of(v1));
 		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
@@ -44,9 +44,9 @@ public class GioviRecords {
 		String i1, J v1,
 		String i2, J v2
 	) {
-		var s = new LinkedHashMap<String, Member<?>>();
-		s.put(i1, Members.of(v1));
-		s.put(i2, Members.of(v2));
+		var s = new LinkedHashMap<String, GField<?>>();
+		s.put(i1, GFields.of(v1));
+		s.put(i2, GFields.of(v2));
 		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
@@ -56,10 +56,10 @@ public class GioviRecords {
 		String i2, J v2,
 		String i3, J v3
 	) {
-		var s = new LinkedHashMap<String, Member<?>>();
-		s.put(i1, Members.of(v1));
-		s.put(i2, Members.of(v2));
-		s.put(i3, Members.of(v3));
+		var s = new LinkedHashMap<String, GField<?>>();
+		s.put(i1, GFields.of(v1));
+		s.put(i2, GFields.of(v2));
+		s.put(i3, GFields.of(v3));
 		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
@@ -70,11 +70,11 @@ public class GioviRecords {
 		String i3, J v3,
 		String i4, J v4
 	) {
-		var s = new LinkedHashMap<String, Member<?>>();
-		s.put(i1, Members.of(v1));
-		s.put(i2, Members.of(v2));
-		s.put(i3, Members.of(v3));
-		s.put(i4, Members.of(v4));
+		var s = new LinkedHashMap<String, GField<?>>();
+		s.put(i1, GFields.of(v1));
+		s.put(i2, GFields.of(v2));
+		s.put(i3, GFields.of(v3));
+		s.put(i4, GFields.of(v4));
 		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}
@@ -86,12 +86,12 @@ public class GioviRecords {
 		String i4, J v4,
 		String i5, J v5
 	) {
-		var s = new LinkedHashMap<String, Member<?>>();
-		s.put(i1, Members.of(v1));
-		s.put(i2, Members.of(v2));
-		s.put(i3, Members.of(v3));
-		s.put(i4, Members.of(v4));
-		s.put(i5, Members.of(v5));
+		var s = new LinkedHashMap<String, GField<?>>();
+		s.put(i1, GFields.of(v1));
+		s.put(i2, GFields.of(v2));
+		s.put(i3, GFields.of(v3));
+		s.put(i4, GFields.of(v4));
+		s.put(i5, GFields.of(v5));
 		var value = new GRecord(s);
 		return new GioviRecord(typeFrom(value), value);
 	}

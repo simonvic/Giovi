@@ -55,7 +55,7 @@ public class TestUtils {
 				Arguments.of(ArrayList.class, GioviValue.of(List.of(69))),
 				Arguments.of(LinkedHashMap.class, GioviValue.of(Map.of(0, "a"))),
 				Arguments.of(GTuple.class, GioviValue.of(GTuples.ofNative("a", "a"))),
-				Arguments.of(GRecord.class, GioviValue.of(GRecords.of("a", Members.of("a"))))
+				Arguments.of(GRecord.class, GioviValue.of(GRecords.of("a", GFields.of("a"))))
 			);
 		}
 
@@ -250,12 +250,12 @@ public class TestUtils {
 		void testEquals() {
 			assertEquals(
 				GRecords.of(
-					"foo", Members.of("lol"),
-					"bar", Members.of(true)
+					"foo", GFields.of("lol"),
+					"bar", GFields.of(true)
 				),
 				GRecords.of(
-					"foo", Members.of("lol"),
-					"bar", Members.of(true)
+					"foo", GFields.of("lol"),
+					"bar", GFields.of(true)
 				)
 			);
 		}
@@ -264,22 +264,22 @@ public class TestUtils {
 		void testEqualsNested() {
 			assertEquals(
 				GRecords.of(
-					"foo", Members.of(69),
-					"bar", Members.of(true),
-					"foobar", Members.of(
+					"foo", GFields.of(69),
+					"bar", GFields.of(true),
+					"foobar", GFields.of(
 						GRecords.of(
-							"x", Members.of(0),
-							"y", Members.of(0)
+							"x", GFields.of(0),
+							"y", GFields.of(0)
 						)
 					)
 				),
 				GRecords.of(
-					"foo", Members.of(69),
-					"bar", Members.of(true),
-					"foobar", Members.of(
+					"foo", GFields.of(69),
+					"bar", GFields.of(true),
+					"foobar", GFields.of(
 						GRecords.of(
-							"x", Members.of(0),
-							"y", Members.of(0)
+							"x", GFields.of(0),
+							"y", GFields.of(0)
 						)
 					)
 				)
