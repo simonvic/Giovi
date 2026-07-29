@@ -333,13 +333,13 @@ public interface Native {
 	@Documented
 	public @interface TypeRecord {
 
-		Member[] value();
+		Field[] value();
 
 
 		@Retention(RetentionPolicy.RUNTIME)
 		@Target({ ElementType.PARAMETER })
 		@Documented
-		public @interface Member {
+		public @interface Field {
 
 			String name();
 

@@ -165,8 +165,8 @@ public record GioviTypeList(GioviType<?> entryType, Integer initSize)
 
 	@Func
 	@TypeRecord({
-		@TypeRecord.Member(name = "found", type = @Type(GioviTypeBool.class)),
-		@TypeRecord.Member(name = "index", type = @Type(GioviTypeInt.class))
+		@TypeRecord.Field(name = "found", type = @Type(GioviTypeBool.class)),
+		@TypeRecord.Field(name = "index", type = @Type(GioviTypeInt.class))
 	})
 	public static GioviRecord find(
 		@Self GioviList self,

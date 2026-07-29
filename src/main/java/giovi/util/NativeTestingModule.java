@@ -8,7 +8,6 @@ import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Module;
 import it.simonvic.giovi.lang.annotation.Native.Struct.Field;
-import it.simonvic.giovi.lang.annotation.Native.TypeRecord.Member;
 import it.simonvic.giovi.util.*;
 
 @Module
@@ -51,8 +50,8 @@ public class NativeTestingModule {
 		@TypeType(@Type) GioviType<?> type,
 		@TypeTuple({ @Type(GioviTypeReal.class), @Type(GioviTypeBool.class) }) GioviTuple tuple,
 		@TypeRecord({
-			@Member(name = "foo", type = @Type(GioviTypeReal.class)),
-			@Member(name = "bar", type = @Type(GioviTypeBool.class)),
+			@TypeRecord.Field(name = "foo", type = @Type(GioviTypeReal.class)),
+			@TypeRecord.Field(name = "bar", type = @Type(GioviTypeBool.class)),
 		}) GioviRecord record
 	) {
 		System.out.println(integer);
@@ -91,8 +90,8 @@ public class NativeTestingModule {
 
 	@Func
 	@TypeRecord({
-		@Member(name = "foo", type = @Type(GioviTypeReal.class)),
-		@Member(name = "bar", type = @Type(GioviTypeBool.class))
+		@TypeRecord.Field(name = "foo", type = @Type(GioviTypeReal.class)),
+		@TypeRecord.Field(name = "bar", type = @Type(GioviTypeBool.class))
 	})
 	public static GioviRecord getRecord() {
 		return GioviRecords.of(

@@ -19,7 +19,6 @@ import it.simonvic.giovi.lang.annotation.Native;
 import it.simonvic.giovi.lang.annotation.Native.*;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Label;
 import it.simonvic.giovi.lang.annotation.Native.Func.Param.Optional;
-import it.simonvic.giovi.lang.annotation.Native.TypeRecord.Member;
 
 public class Natives {
 
@@ -281,7 +280,9 @@ public class Natives {
 		return new GioviTypeRecord(new RecordSignature(fields));
 	}
 
-	private static RecordFieldSignature recordFieldSignatureFrom(Member memberAnnotation) {
+	private static RecordFieldSignature recordFieldSignatureFrom(
+		TypeRecord.Field memberAnnotation
+	) {
 		return new RecordFieldSignature(
 			memberAnnotation.name(),
 			gioviTypeFrom(memberAnnotation.type())
