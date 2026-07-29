@@ -401,7 +401,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitRedirectionToExpression(RedirectionToExpressionContext ctx) {
 		VisitorUtils.redirection(
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop.getStart(),
 			visit(ctx.dest)
 		);
 		return null;
@@ -413,7 +413,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirection(
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop.getStart(),
 			visit(ctx.dest)
 		);
 		return null;
@@ -425,7 +425,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop.getStart(),
 			ctx.reservedIdentifier().getText()
 		);
 		return null;
@@ -437,7 +437,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		VisitorUtils.redirectionToPrimitive(
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop.getStart(),
 			ctx.reservedIdentifier().getText()
 		);
 		return null;
@@ -448,7 +448,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		VisitorUtils.redirectionToPattern(
 			this,
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			ctx.dest
 		);
 		return null;
@@ -459,7 +459,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		VisitorUtils.redirectionToPattern(
 			this,
 			visit(ctx.content),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			ctx.dest
 		);
 		return null;
@@ -515,7 +515,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionBitwiseBool(ExpressionBitwiseBoolContext ctx) {
 		return VisitorUtils.bitwiseBool(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -529,7 +529,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionBitwiseShift(ExpressionBitwiseShiftContext ctx) {
 		return VisitorUtils.bitwiseShift(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -537,7 +537,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	@Override
 	public GioviParserVisitResult visitExpressionPrefixed(ExpressionPrefixedContext ctx) {
 		return VisitorUtils.prefixed(
-			GioviToken.of(ctx.prefix.getText()),
+			ctx.prefix,
 			visit(ctx.expression())
 		);
 	}
@@ -546,7 +546,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionAdditive(ExpressionAdditiveContext ctx) {
 		return VisitorUtils.additive(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -557,7 +557,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	) {
 		return VisitorUtils.multiplicative(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -592,7 +592,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionRelational(ExpressionRelationalContext ctx) {
 		return VisitorUtils.relational(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -606,7 +606,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionBool(ExpressionBoolContext ctx) {
 		return VisitorUtils.bool(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			() -> visit(ctx.expression(1))
 		);
 	}
@@ -615,7 +615,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionEquality(ExpressionEqualityContext ctx) {
 		return VisitorUtils.equality(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 	}
@@ -624,7 +624,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	public GioviParserVisitResult visitExpressionContainment(ExpressionContainmentContext ctx) {
 		var containment = VisitorUtils.containment(
 			visit(ctx.expression(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			visit(ctx.expression(1))
 		);
 		if (ctx.NOT() != null) {

@@ -1,24 +1,54 @@
 package it.simonvic.giovi.exceptions;
 
+import org.antlr.v4.runtime.Token;
+
 import giovi.GioviParserVisitResult;
-import it.simonvic.giovi.GioviToken;
+import it.simonvic.giovi.antlr.GioviLexer;
 
 public class OperatorNotSupported extends GioviException {
 
 	public OperatorNotSupported(
 		GioviParserVisitResult lhs,
-		GioviToken op,
+		Token token,
 		GioviParserVisitResult rhs
 	) {
-		super("""
+		this(lhs, token.getType(), rhs);
+	}
+
+	public OperatorNotSupported(GioviParserVisitResult operand, Token token) {
+		this(operand, token.getType());
+	}
+
+	public OperatorNotSupported(
+		GioviParserVisitResult lhs,
+		int tokenType,
+		GioviParserVisitResult rhs
+	) {
+		super(
+			"""
 			Operator %s (%s) not supported
 				by:   %s
 				with: %s
-			""".formatted(op, op.label, lhs, rhs));
+			""".formatted(
+				GioviLexer.VOCABULARY.getSymbolicName(tokenType),
+				GioviLexer.VOCABULARY.getDisplayName(tokenType),
+				lhs,
+				rhs
+			)
+		);
 	}
 
-	public OperatorNotSupported(GioviParserVisitResult r, GioviToken op) {
-		super("The operator '" + op + "(" + op.label + ")" + "' is not supported by " + r);
+	public OperatorNotSupported(GioviParserVisitResult operand, int tokenType) {
+		super(
+			"""
+			Operator %s (%s) not supported
+				by:   %s
+			""".formatted(
+				GioviLexer.VOCABULARY.getSymbolicName(tokenType),
+				GioviLexer.VOCABULARY.getDisplayName(tokenType),
+				operand
+			)
+		);
 	}
 
 }

@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import giovi.GioviParserVisitResult;
 import giovi.lang.GioviBool;
-import it.simonvic.giovi.GioviToken;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.GioviVisitorDelegate;
 import it.simonvic.giovi.antlr.GioviParser.*;
@@ -56,7 +55,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchRelational(CaseMatchRelationalContext ctx) {
 		return VisitorUtils.relational(
 			subject,
-			GioviToken.of(ctx.op.getText()),
+			ctx.op,
 			gioviVisitor.visit(ctx.expression())
 		);
 	}
@@ -65,7 +64,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchEquality(CaseMatchEqualityContext ctx) {
 		return VisitorUtils.equality(
 			subject,
-			GioviToken.of(ctx.op.getText()),
+			ctx.op,
 			gioviVisitor.visit(ctx.expression())
 		);
 	}
@@ -74,7 +73,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchCascade(CaseMatchCascadeContext ctx) {
 		return VisitorUtils.bool(
 			visit(ctx.caseMatch(0)),
-			GioviToken.of(ctx.bop.getText()),
+			ctx.bop,
 			() -> visit(ctx.caseMatch(1))
 		);
 	}
@@ -83,7 +82,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchContainment(CaseMatchContainmentContext ctx) {
 		return VisitorUtils.containment(
 			subject,
-			GioviToken.of(ctx.op.getText()),
+			ctx.op,
 			gioviVisitor.visit(ctx.expression())
 		);
 	}
@@ -92,7 +91,7 @@ public class MultiIfStatementDelegate extends GioviVisitorDelegate {
 	public GioviParserVisitResult visitCaseMatchBoolean(CaseMatchBooleanContext ctx) {
 		return VisitorUtils.bool(
 			subject,
-			GioviToken.of(ctx.op.getText()),
+			ctx.op,
 			() -> gioviVisitor.visit(ctx.expression())
 		);
 	}
