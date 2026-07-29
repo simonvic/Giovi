@@ -342,6 +342,17 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		return var;
 	}
 
+	@Override
+	public GioviParserVisitResult visitVarDeclarationInfer(VarDeclarationInferContext ctx) {
+		var value = visit(ctx.value).unwrapAsGioviValue();
+		var var = (ctx.type() != null)
+			? spawnVar(ctx.type(), ctx.defaultDefinition())
+			: spawnVar(value.getGioviType(), ctx.defaultDefinition());
+		var.setValueWithRedirection(value);
+		getCurrentScope().declare(ctx.identifier().getText(), var);
+		return var;
+	}
+
 	private Var<?> spawnVar(
 		TypeContext typeCtx,
 		DefaultDefinitionContext defaultDefinitionCtx
