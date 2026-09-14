@@ -143,8 +143,8 @@ public class TestForStatement {
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for <:b, :i, :t> in $list" -> _out
-				for <:b, :i, :t> in list do "$b $i $t" -> _out
+				"for <_:b, _:i, _:t> in $list" -> _out
+				for <_:b, _:i, _:t> in list do "$b $i $t" -> _out
 				"""
 			);
 		}
@@ -167,8 +167,8 @@ public class TestForStatement {
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for <b:b1, :i, t:t> in $list" -> _out
-				for <b:b1, :i, t:t> in list do "$b1 $i $t" -> _out
+				"for <b:b1, _:i, t:t> in $list" -> _out
+				for <b:b1, _:i, t:t> in list do "$b1 $i $t" -> _out
 				"""
 			);
 		}
@@ -191,8 +191,8 @@ public class TestForStatement {
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for w <:b, :i, :t> in $list" -> _out
-				for w <:b, :i, :t> in list do "$w    $b $i $t" -> _out
+				"for w <_:b, _:i, _:t> in $list" -> _out
+				for w <_:b, _:i, _:t> in list do "$w    $b $i $t" -> _out
 				"""
 			);
 		}
@@ -227,8 +227,8 @@ public class TestForStatement {
 				"""
 				Foo<b Bool, i Int, t Text>
 				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
-				"for <:t, :b> in $list" -> _out
-				for <:t, :b> in list do "$b $t" -> _out
+				"for <_:t, _:b> in $list" -> _out
+				for <_:t, _:b> in list do "$b $t" -> _out
 				"""
 			);
 		}
@@ -351,8 +351,8 @@ public class TestForStatement {
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
 				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
-				"for <:b, bar:bar<:i, :n>, :t> in $list" -> _out
-				for <:b, bar:bar<:i, :n>, :t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
+				"for <_:b, bar:bar<_:i, _:n>, _:t> in $list" -> _out
+				for <_:b, bar:bar<_:i, _:n>, _:t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
 				"""
 			);
 		}
