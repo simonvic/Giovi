@@ -162,7 +162,7 @@ public class TestPatterns {
 	}
 
 	@Test
-	void record_toNarrowerExplicitNamedPattern() {
+	void record_toNarrowerExplicitNominalPattern() {
 		var scope = visit("""
 			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <b:<b2:y2>>
 			""")
@@ -173,7 +173,7 @@ public class TestPatterns {
 
 
 	@Test
-	void record_toExplicitNamedPattern() {
+	void record_toExplicitNominalPattern() {
 		var scope = visit("""
 			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <a:x, b:y<b1:y1, b2:_, b3:y3>, c:z>
 			""")
@@ -199,7 +199,7 @@ public class TestPatterns {
 	}
 
 	@Test
-	void record_toImplicitNamedPattern() {
+	void record_toImplicitNominalPattern() {
 		var scope = visit("""
 			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <_:a, b:b<_:b1, b2:_, _:b3>, _:c>
 			""")

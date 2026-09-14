@@ -546,7 +546,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingStruct_withNamedFields_shouldCreateStructWithSpecifiedValues() {
+		void whenCreatingStruct_withNominalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
 				Foo <
 					i Int
@@ -573,7 +573,7 @@ public class TestGioviStruct {
 		}
 
 		@Test
-		void whenCreatingStruct_withUnorderedNamedFields_shouldCreateStructWithSpecifiedValues() {
+		void whenCreatingStruct_withUnorderedNominalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
 				Foo <
 					i Int

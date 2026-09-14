@@ -346,21 +346,21 @@ public class VisitorUtils {
 						-> throw new UnsupportedDeconstruction(value, patternCtx);
 				}
 			}
-			case PatternProductNamedContext nCtx -> {
+			case PatternProductNominalContext nCtx -> {
 				switch (value) {
 					case GioviStruct struct
-						-> deconstructNamed(
+						-> deconstructNominal(
 							visitor,
 							targetScope,
 							struct.value(),
-							nCtx.patternFieldNamed()
+							nCtx.patternFieldNominal()
 						);
 					case GioviRecord record
-						-> deconstructNamed(
+						-> deconstructNominal(
 							visitor,
 							targetScope,
 							record.value(),
-							nCtx.patternFieldNamed()
+							nCtx.patternFieldNominal()
 						);
 					default
 						-> throw new UnsupportedDeconstruction(value, patternCtx);
@@ -371,21 +371,21 @@ public class VisitorUtils {
 	}
 
 	/**
-	 * Deconstruct a record using named approach
+	 * Deconstruct a record using nominal approach
 	 * @param visitor
 	 * @param targetScope
 	 * @param record
 	 * @param patternsCtx
 	 */
-	public static void deconstructNamed(
+	public static void deconstructNominal(
 		GioviVisitor visitor,
 		Scope targetScope,
 		GRecord record,
-		List<PatternFieldNamedContext> patternsCtx
+		List<PatternFieldNominalContext> patternsCtx
 	) {
 		for (var patternCtx : patternsCtx) {
 			switch (patternCtx) {
-				case PatternFieldNamedExplicitContext explicitCtx -> {
+				case PatternFieldNominalExplicitContext explicitCtx -> {
 					String fieldIdentifier = explicitCtx.name.getText();
 					var field = record.getField(fieldIdentifier)
 						.orElseThrow(
@@ -397,7 +397,7 @@ public class VisitorUtils {
 						);
 					deconstruct(visitor, targetScope, field, explicitCtx.patternField());
 				}
-				case PatternFieldNamedImplicitContext implicitCtx -> {
+				case PatternFieldNominalImplicitContext implicitCtx -> {
 					var unaryCtx = implicitCtx.unaryPattern();
 					String fieldIdentifier = unaryCtx.identifier().getText();
 					var field = record.getField(fieldIdentifier)
