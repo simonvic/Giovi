@@ -201,7 +201,7 @@ public class TestPatterns {
 	@Test
 	void record_toImplicitNamedPattern() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <:a, b:b<:b1, b2:_, :b3>, :c>
+			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <_:a, b:b<_:b1, b2:_, _:b3>, _:c>
 			""")
 			.getCurrentScope();
 		assertAll(
