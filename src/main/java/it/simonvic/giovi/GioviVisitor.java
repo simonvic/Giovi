@@ -319,6 +319,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// REDIRECTIONS
 
+	// TODO: visit content first to allow variable shadowing in a single statement
+	// x Int <- 69
+	//
+	// foo() {
+	// 	x Int <- x
+	// }
+
 	@Override
 	public GioviParserVisitResult visitRedirectionToVarDeclaration(
 		RedirectionToVarDeclarationContext ctx
