@@ -6,9 +6,9 @@ public sealed interface GProduct permits GTuple {
 
 	GTuple as(TupleSignature signature);
 
-    GRecord as(RecordSignature signature);
+	GRecord as(RecordSignature signature);
 
-    GStruct as(StructSignature signature);
+	GStruct as(StructSignature signature);
 
 }
 
