@@ -37,7 +37,7 @@ public class TestGioviStruct {
 		void testEmptyStruct() {
 			assertThat(
 				visit("""
-					Foo <>
+					struct Foo <>
 					""")
 					.getCurrentScope()
 					.getStructType("Foo").orElseThrow()
@@ -51,7 +51,7 @@ public class TestGioviStruct {
 		void testDefinition() {
 			assertThat(
 				visit("""
-					Foo <
+					struct Foo <
 						foo:Int
 						bar:Bool
 						foobar:Text
@@ -74,7 +74,7 @@ public class TestGioviStruct {
 		void testDefinitionWithDefault() {
 			assertThat(
 				visit("""
-					Foo <
+					struct Foo <
 						i:Int default 69
 						b:Bool default true
 						t:Text default "hello"
@@ -97,12 +97,12 @@ public class TestGioviStruct {
 		void testDefinitionWithNestedStructField() {
 			assertThat(
 				visit("""
-					RGB <
+					struct RGB <
 						r:Int
 						g:Int
 						b:Int
 					>
-					Person <
+					struct Person <
 						name:Text
 						favoriteColor:RGB
 					>
@@ -139,12 +139,12 @@ public class TestGioviStruct {
 			);
 			assertThat(
 				visit("""
-					RGB <
+					struct RGB <
 						r:Int
 						g:Int
 						b:Int
 					>
-					Person <
+					struct Person <
 						name:Text
 						favoriteColor:RGB default RGB.<
 							r=255
@@ -180,7 +180,7 @@ public class TestGioviStruct {
 		void testConstants() {
 			assertThat(
 				visit("""
-					Foo <
+					struct Foo <
 						a:Int
 						b:Int
 						const BAR:Real <- 6.9
@@ -212,7 +212,7 @@ public class TestGioviStruct {
 			expectedType.signature().constants().put("FOO", expectedType.spawn());
 			assertThat(
 				visit("""
-					Foo <
+					struct Foo <
 						a:Int
 						b:Int
 						const FOO Foo <- Foo.<>
@@ -228,7 +228,7 @@ public class TestGioviStruct {
 		void testFunctions() {
 			assertThat(
 				visit("""
-					Foo <
+					struct Foo <
 						foo() {}
 						bar(a:Real, b [Int] default [1 2 3]) => Text {}
 					>
@@ -274,12 +274,12 @@ public class TestGioviStruct {
 		void testInheritance() {
 			assertThat(
 				visit("""
-					RGB <
+					struct RGB <
 						r:Int
 						g:Int
 						b:Int
 					>
-					RGB + RGBA <
+					RGB + struct RGBA <
 						a:Int
 					>
 					""")
@@ -301,12 +301,12 @@ public class TestGioviStruct {
 		void testInheritanceWithDefaults() {
 			assertThat(
 				visit("""
-					RGB <
+					struct RGB <
 						r:Int default 255
 						g:Int default 255
 						b:Int default 255
 					>
-					RGB + RGBA <
+					RGB + struct RGBA <
 						a:Int default 69
 					>
 					""")
@@ -327,12 +327,12 @@ public class TestGioviStruct {
 		@Test
 		void testInheritedFieldsDefaultOverride() {
 			var visitor = visit("""
-				RGB <
+				struct RGB <
 					r:Int default 255
 					g:Int default 255
 					b:Int default 255
 				>
-				RGB + RGBA <
+				RGB + struct RGBA <
 					r:Int default 250
 					g:Int default 200
 					b:Int default 150
@@ -372,7 +372,7 @@ public class TestGioviStruct {
 			@Test
 			void test_instantiation_default() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					Node.<> -> _out
 					""");
 			}
@@ -380,7 +380,7 @@ public class TestGioviStruct {
 			@Test
 			void test_instantiation_withFields() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					Node.<data="root"> -> _out
 					""");
 			}
@@ -388,7 +388,7 @@ public class TestGioviStruct {
 			@Test
 			void test_instantiation_withSelfField() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					Node.<"root", Node.<>> -> _out
 					Node.<data="root", next=Node.<>> -> _out
 					Node.<data="root", next=<data="child">> -> _out
@@ -398,7 +398,7 @@ public class TestGioviStruct {
 			@Test
 			void test_redirection_default() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					root:Node <- Node.<>
 					""");
 			}
@@ -406,7 +406,7 @@ public class TestGioviStruct {
 			@Test
 			void test_redirection_withField() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					root:Node <- Node.<data="root">
 					""");
 			}
@@ -414,7 +414,7 @@ public class TestGioviStruct {
 			@Test
 			void test_redirection_withSelfField() {
 				visit("""
-					Node <data:Text, next:self>
+					struct Node <data:Text, next:self>
 					root:Node <- <
 						data="root",
 						next=<
@@ -431,7 +431,7 @@ public class TestGioviStruct {
 			void recursiveStructs() {
 				visit("""
 
-					Node <
+					struct Node <
 						label:Text
 						next:self
 
@@ -498,7 +498,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withNoFields_shouldCreateStructWithDefaultValues() {
 			var visitor = visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -521,7 +521,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withPositionalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -548,7 +548,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withNominalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -575,7 +575,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withUnorderedNominalFields_shouldCreateStructWithSpecifiedValues() {
 			var visitor = visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -609,7 +609,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withWrongFieldsCount_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -621,7 +621,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withWrongFieldsName_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -633,7 +633,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withSubsetOfFields_shouldNotThrow() {
 			assertThatNoException().isThrownBy(() -> visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -645,7 +645,7 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withSubsetOfFields_shouldOnlyChangeSpecifiedFields() {
 			var visitor = visit("""
-				Foo <
+				struct Foo <
 					i:Int
 					t:Text
 					b:Bool
@@ -671,10 +671,10 @@ public class TestGioviStruct {
 		@Test
 		void whenCreatingStruct_withDefault_shouldUseDefaultValue() {
 			var visitor = visit("""
-				Bar <
+				struct Bar <
 					r:Real default 4.20
 				>
-				Foo <
+				struct Foo <
 					i:Int default 69
 					t:Text default "foo"
 					s:Bar default <6.9>
@@ -708,7 +708,7 @@ public class TestGioviStruct {
 				Bar <
 					r:Real default 4.20
 				>
-				Foo <
+				struct Foo <
 					i:Int default 69
 					t:Text default "foo"
 					s:Bar default <6.9>
@@ -983,7 +983,7 @@ public class TestGioviStruct {
 			void redir_compatibleTuple_shouldChangeField() {
 				assertThat(
 					visit("""
-						Foo <i:Int, t:Text, b:Bool>
+						struct Foo <i:Int, t:Text, b:Bool>
 						x:Foo
 						x <- <69 "hello" true>
 						""")
@@ -1004,7 +1004,7 @@ public class TestGioviStruct {
 			@Test
 			void redir_tupleWithLessFields_shouldThrow() {
 				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
-					Foo <i:Int, t:Text, b:Bool>
+					struct Foo <i:Int, t:Text, b:Bool>
 					x:Foo
 					x <- <69 "hello">
 					"""));
@@ -1013,7 +1013,7 @@ public class TestGioviStruct {
 			@Test
 			void redir_tupleWithMoreFields_shouldThrow() {
 				assertThatExceptionOfType(RedirectionException.class).isThrownBy(() -> visit("""
-					Foo <i:Int, t:Text, b:Bool>
+					struct Foo <i:Int, t:Text, b:Bool>
 					x:Foo
 					x <- <69 "hello" false 420>
 					"""));
@@ -1023,7 +1023,7 @@ public class TestGioviStruct {
 			void redir_compatibleRecord_shouldChangeFields() {
 				assertThat(
 					visit("""
-						Foo <i:Int, t:Text, b:Bool>
+						struct Foo <i:Int, t:Text, b:Bool>
 						x:Foo
 						x <- <i=69 t="hello" b=true>
 						""")
@@ -1046,7 +1046,7 @@ public class TestGioviStruct {
 			void redirPlus_narrowerRecord_shouldChangeFields() {
 				assertThat(
 					visit("""
-						Foo <i:Int, t:Text, b:Bool>
+						struct Foo <i:Int, t:Text, b:Bool>
 						x:Foo
 						x +<- <i=69 t=true>
 						""")
@@ -1067,7 +1067,7 @@ public class TestGioviStruct {
 			@Test
 			void redir_record_withDifferentNames_shouldThrow() {
 				assertThatExceptionOfType(NoSuchField.class).isThrownBy(() -> visit("""
-					Foo <i:Int, t:Text, b:Bool>
+					struct Foo <i:Int, t:Text, b:Bool>
 					x:Foo
 					x <- <foo=69 t="hello" b=true>
 					"""));
@@ -1077,7 +1077,7 @@ public class TestGioviStruct {
 			void redir_toField_shouldChangeValue() {
 				assertThat(
 					visit("""
-						Foo <i:Int, t:Text, b:Bool>
+						struct Foo <i:Int, t:Text, b:Bool>
 						x:Foo
 						x.i <- 69
 						x.t <- "hello"
@@ -1101,7 +1101,7 @@ public class TestGioviStruct {
 			void redir_struct_shouldChangeFields() {
 				assertThat(
 					visit("""
-						Foo <i:Int, t:Text, b:Bool>
+						struct Foo <i:Int, t:Text, b:Bool>
 						x:Foo
 						x <- Foo.<i=69 t="hello" b=true>
 						""")
@@ -1146,7 +1146,7 @@ public class TestGioviStruct {
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
 				var visitor = visit("""
-					Foobar <a:Int, b:Int, c:Int, d:Int>
+					struct Foobar <a:Int, b:Int, c:Int, d:Int>
 					""");
 				assertThat(
 					visitExpression(visitor, code)
@@ -1167,7 +1167,7 @@ public class TestGioviStruct {
 				Integer expected
 			) {
 				var visitor = visit("""
-					Foobar <a:Int, b:Int, c:Int, d:Int>
+					struct Foobar <a:Int, b:Int, c:Int, d:Int>
 					""");
 				assertThat(
 					visitExpression(visitor, code)
@@ -1229,7 +1229,7 @@ public class TestGioviStruct {
 			@MethodSource("produceArgs_access_withRange")
 			void access_withRange_shouldReturnSubset(String code, GioviRecord expected) {
 				var visitor = visit("""
-					Foo <a:Int, b:Int, c:Int, d:Int, e:Int>
+					struct Foo <a:Int, b:Int, c:Int, d:Int, e:Int>
 					""");
 				assertThat(visitValue(visitor, code)).isEqualTo(expected);
 			}
@@ -1237,7 +1237,7 @@ public class TestGioviStruct {
 			@Test
 			void access_withLengthOperator_shouldReturnFieldsCount() {
 				var visitor = visit("""
-					Foobar <a:Int, b:Int, c:Int, d:Int, e:Int>
+					struct Foobar <a:Int, b:Int, c:Int, d:Int, e:Int>
 					""");
 				assertThat(
 					visitExpression(visitor, """
@@ -1251,7 +1251,7 @@ public class TestGioviStruct {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				var visitor = visit("""
-					Foobar <a:Int, b:Int, c:Int, d:Int, e:Int>
+					struct Foobar <a:Int, b:Int, c:Int, d:Int, e:Int>
 					""");
 				assertThat(visitExpression(visitor, """
 					Foobar.<>.@
@@ -1271,7 +1271,7 @@ public class TestGioviStruct {
 		@Test
 		void foo() {
 			visit("""
-			Node <
+			struct Node <
 				data:Text
 				next:self
 			>
@@ -1290,7 +1290,7 @@ public class TestGioviStruct {
 		@Test
 		void bar() {
 			visit("""
-			Node <
+			struct Node <
 				label:Text
 				next:self
 				self foo() => self {

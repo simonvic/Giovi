@@ -126,11 +126,11 @@ public class TestDefaults {
 		@Test
 		void testDefaultOverrideStruct() {
 			var def = visit("""
-				Bar <
+				struct Bar <
 					baz:Text
 					foobar:[Int]
 				>
-				Foo <
+				struct Foo <
 					foo:Text
 					bar:Bar
 				>
@@ -177,11 +177,11 @@ public class TestDefaults {
 		@Test
 		void testNestedDefaultOverrideStruct() {
 			var def = visit("""
-				Bar <
+				struct Bar <
 					baz:Text default "bazdefault"
 					foobar:[Int] default [69]
 				>
-				Foo <
+				struct Foo <
 					foo:Text default "foodefault"
 					bar:Bar default Bar.<
 						baz="overriden bazdefault"
@@ -341,11 +341,11 @@ public class TestDefaults {
 		void testDefaultResetStruct() {
 			assertThat(
 				visit("""
-					Bar <
+					struct Bar <
 						baz:Text
 						foobar:[Int]
 					>
-					Foo <
+					struct Foo <
 						foo:Text
 						bar:Bar
 					>
@@ -581,11 +581,11 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultStruct() {
 			var visitor = visit("""
-				Bar <
+				struct Bar <
 					baz:Text
 					foobar:[Int]
 				>
-				Foo <
+				struct Foo <
 					foo:Text
 					bar:Bar
 				>
@@ -702,11 +702,11 @@ public class TestDefaults {
 		@Test
 		void testTypeDefaultStruct() {
 			var visitor = visit("""
-				Bar <
+				struct Bar <
 					baz:Text default "baz"
 					foobar:[Int] default [1 2 3]
 				>
-				Foo <
+				struct Foo <
 					foo:Text default "foo"
 					bar:Bar
 					foobar:Bar default Bar.<

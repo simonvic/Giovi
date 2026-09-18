@@ -63,7 +63,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testStruct() {
 		var visitor = visit("""
-			Foo <i:Int, t:Text, b:Bool>
+			struct Foo <i:Int, t:Text, b:Bool>
 			x:Foo
 			""");
 		assertTrue(visitExpression(visitor, """
@@ -114,7 +114,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testMapOfStruct() {
 		var visitor = visit("""
-			Foo <i:Int, t:Text, b:Bool>
+			struct Foo <i:Int, t:Text, b:Bool>
 			x:[Text => Foo]
 			""");
 		assertTrue(visitExpression(visitor, """
@@ -126,7 +126,7 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testTupleIsStruct() {
 		var visitor = visit("""
-			Foo <i:Int, t:Text, b:Bool>
+			struct Foo <i:Int, t:Text, b:Bool>
 			""");
 		assertTrue(visitExpression(visitor, """
 			<69 "hello" true> is Foo
@@ -137,7 +137,7 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testEqualStructs() {
 		var visitor = visit("""
-			Foo <i:Int, t:Text, b:Bool>
+			struct Foo <i:Int, t:Text, b:Bool>
 			Bar <i:Int, t:Text, b:Bool>
 			""");
 		assertTrue(visitExpression(visitor, """
@@ -149,7 +149,7 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testStructIsTuple() {
 		var visitor = visit("""
-			Foo <i:Int, t:Text, b:Bool>
+			struct Foo <i:Int, t:Text, b:Bool>
 			x:Foo
 			""");
 		assertTrue(visitExpression(visitor, """

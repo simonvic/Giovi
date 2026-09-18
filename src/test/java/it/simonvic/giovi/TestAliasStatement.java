@@ -88,7 +88,7 @@ public class TestAliasStatement {
 	@Test
 	void test_invokingSelfFunction_fromAlias() {
 		visit("""
-			Color <
+			struct Color <
 				r:Int
 				g:Int
 				b:Int
