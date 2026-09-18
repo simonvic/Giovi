@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
 import giovi.Range;
 import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.GioviException;
@@ -288,6 +289,11 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 				case COUNT -> new GioviInt(value().size());
 				case KEYS -> Range.of(0, value().size() - 1, 1);
 				case VALUES -> GioviComposite.super.access(right);
+			};
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_count" -> this.access(AccessKey.COUNT);
+				case "_range" -> this.access(AccessKey.KEYS);
+				default -> GioviComposite.super.access(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var gioviList = new GioviList(this.type);

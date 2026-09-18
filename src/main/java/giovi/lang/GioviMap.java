@@ -9,6 +9,7 @@ import java.util.Map;
 
 import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
 import it.simonvic.giovi.Entry;
 import it.simonvic.giovi.exceptions.KeyNotPresent;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -295,6 +296,12 @@ public record GioviMap(
 					new GioviTypeList(type.elementType()),
 					new ArrayList<>(value().values())
 				);
+			};
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_count" -> this.access(AccessKey.COUNT);
+				case "_keys" -> this.access(AccessKey.KEYS);
+				case "_values" -> this.access(AccessKey.VALUES);
+				default -> GioviComposite.super.access(right);
 			};
 			default -> GioviComposite.super.access(right);
 		};
