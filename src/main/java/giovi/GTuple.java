@@ -123,6 +123,7 @@ public sealed class GTuple implements GProduct permits GRecord {
 	}
 
 
+	@Override
 	public int getFieldsCount() {
 		return fields.size();
 	}
