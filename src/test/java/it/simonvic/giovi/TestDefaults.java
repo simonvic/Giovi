@@ -108,7 +108,7 @@ public class TestDefaults {
 		void testDefaultOverrideMap() {
 			assertThat(
 				visit("""
-					x [Int:Bool] default [1:true 2:false]
+					x [Int=>Bool] default [1=>true 2=>false]
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -316,8 +316,8 @@ public class TestDefaults {
 		void testDefaultResetMap() {
 			assertThat(
 				visit("""
-					x [Int:Bool] default [1:true 2:false]
-					[69:true 420:true] -> x
+					x [Int=>Bool] default [1=>true 2=>false]
+					[69=>true 420=>true] -> x
 					default -> x
 					""")
 					.getCurrentScope()
@@ -459,7 +459,7 @@ public class TestDefaults {
 		void testDotDefaultMaps() {
 			assertThat(
 				visitExpression("""
-				["a":1, "b":2].default
+				["a"=>1, "b"=>2].default
 				""")
 			).isEqualTo(new GioviMap(new GioviTypeMap(GioviType.TEXT, GioviType.INT)));
 		}
@@ -570,7 +570,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultMaps() {
 			var visitor = visit("""
-				x [Int:Bool] default [1:true 2:false]
+				x [Int=>Bool] default [1=>true 2=>false]
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -687,7 +687,7 @@ public class TestDefaults {
 		@Test
 		void testTypeDefaultMaps() {
 			assertThat(visitExpression("""
-				type.[Text:Int].default
+				type.[Text=>Int].default
 				"""))
 				.isEqualTo(
 					new GioviMap(

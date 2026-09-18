@@ -34,8 +34,8 @@ public class TestForStatement {
 		void onMap() {
 			visit(
 				"""
-				'for _ in ["a":1 "b":2 "c":3]' -> _out
-				for _ in ["a":1 "b":2 "c":3] do "_" -> _out
+				'for _ in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for _ in ["a"=>1 "b"=>2 "c"=>3] do "_" -> _out
 				"""
 			);
 		}
@@ -69,8 +69,8 @@ public class TestForStatement {
 		void onMap() {
 			visit(
 				"""
-				'for k in ["a":1 "b":2 "c":3]' -> _out
-				for k in ["a":1 "b":2 "c":3] do k -> _out
+				'for k in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for k in ["a"=>1 "b"=>2 "c"=>3] do k -> _out
 				"""
 			);
 		}
@@ -84,8 +84,8 @@ public class TestForStatement {
 		void onMap_withPlaceholderKeyAndPlaceholderValue() {
 			visit(
 				"""
-				'for _ : _ in ["a":1 "b":2 "c":3]' -> _out
-				for _ : _ in ["a":1 "b":2 "c":3] do "_ : _" -> _out
+				'for _ => _ in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for _ => _ in ["a"=>1 "b"=>2 "c"=>3] do "_ => _" -> _out
 				"""
 			);
 		}
@@ -94,8 +94,8 @@ public class TestForStatement {
 		void onMap_withKeyAndPlaceholderValue() {
 			visit(
 				"""
-				'for k : _ in ["a":1 "b":2 "c":3]' -> _out
-				for k : _ in ["a":1 "b":2 "c":3] do "$k : _" -> _out
+				'for k => _ in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for k => _ in ["a"=>1 "b"=>2 "c"=>3] do "$k => _" -> _out
 				"""
 			);
 		}
@@ -104,8 +104,8 @@ public class TestForStatement {
 		void onMap_withPlaceholderKeyAndValue() {
 			visit(
 				"""
-				'for _ : v in ["a":1 "b":2 "c":3]' -> _out
-				for _ : v in ["a":1 "b":2 "c":3] do "_ : $v" -> _out
+				'for _ => v in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for _ => v in ["a"=>1 "b"=>2 "c"=>3] do "_ => $v" -> _out
 				"""
 			);
 		}
@@ -114,8 +114,8 @@ public class TestForStatement {
 		void onMap_withKeyValue() {
 			visit(
 				"""
-				'for k : v in ["a":1 "b":2 "c":3]' -> _out
-				for k : v in ["a":1 "b":2 "c":3] do "$k : $v" -> _out
+				'for k => v in ["a"=>1 "b"=>2 "c"=>3]' -> _out
+				for k => v in ["a"=>1 "b"=>2 "c"=>3] do "$k => $v" -> _out
 				"""
 			);
 		}
@@ -284,12 +284,12 @@ public class TestForStatement {
 		void onNestedMaps() {
 			visit(
 				"""
-				graph [Text : [Text : Int]] <- [
-					"a" : ["x":1 "y":2 "z":3]
-					"b" : ["u":10 "v":20 "w":30]
+				graph [Text => [Text => Int]] <- [
+					"a" => ["x"=>1 "y"=>2 "z"=>3]
+					"b" => ["u"=>10 "v"=>20 "w"=>30]
 				]
-				"for u : [v : cost] in $graph" -> _out
-				for u : [v : cost] in graph do "$u --$cost--> $v" -> _out
+				"for u => [v => cost] in $graph" -> _out
+				for u => [v => cost] in graph do "$u --$cost--> $v" -> _out
 				"""
 			);
 		}
@@ -298,14 +298,14 @@ public class TestForStatement {
 		void onMapOfLists() {
 			visit(
 				"""
-				map [Text : [Int]] <- [
-					"a" : [1 2 3]
-					"b" : [10 20 30]
+				map [Text => [Int]] <- [
+					"a" => [1 2 3]
+					"b" => [10 20 30]
 				]
-				"for u : v in $map" -> _out
-				for u : v in map do "$u : $v" -> _out
-				"for u : [v] in $map" -> _out
-				for u : [v] in map do "$u : $v" -> _out
+				"for u => v in $map" -> _out
+				for u => v in map do "$u => $v" -> _out
+				"for u => [v] in $map" -> _out
+				for u => [v] in map do "$u => $v" -> _out
 				"""
 			);
 		}
@@ -315,18 +315,18 @@ public class TestForStatement {
 		void onListOfNestedMaps() {
 			visit(
 				"""
-				graphs [[Text : [Text : Int]]] <- [
+				graphs [[Text => [Text => Int]]] <- [
 					[
-						"a" : ["x":1 "y":2 "z":3]
-						"b" : ["u":10 "v":20 "w":30]
+						"a" => ["x"=>1 "y"=>2 "z"=>3]
+						"b" => ["u"=>10 "v"=>20 "w"=>30]
 					]
 					[
-						"A" : ["X":100 "Y":200 "Z":300]
-						"B" : ["U":1000 "V":2000 "W":3000]
+						"A" => ["X"=>100 "Y"=>200 "Z"=>300]
+						"B" => ["U"=>1000 "V"=>2000 "W"=>3000]
 					]
 				]
-				"for [[u : [v : cost]]] in $graphs" -> _out
-				for [[u : [v : cost]]] in graphs do "$u --$cost--> $v" -> _out
+				"for [[u => [v => cost]]] in $graphs" -> _out
+				for [[u => [v => cost]]] in graphs do "$u --$cost--> $v" -> _out
 				"""
 			);
 		}
@@ -387,12 +387,12 @@ public class TestForStatement {
 				"""
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				map [Foo : Text] <- [
-					<false, <1i, 2n>, "no"> : "a"
-					<true, <10i, 20n>, "yes"> : "b"
+				map [Foo => Text] <- [
+					<false, <1i, 2n>, "no"> => "a"
+					<true, <10i, 20n>, "yes"> => "b"
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
-				for k <b, bar <i, n>, t> : v in map do "$k <$b, $bar <$i, $n>, $t> : $v" -> _out
+				for k <b, bar <i, n>, t> => v in map do "$k <$b, $bar <$i, $n>, $t> => $v" -> _out
 				"""
 			);
 		}
@@ -403,12 +403,12 @@ public class TestForStatement {
 				"""
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				map [Text : Foo] <- [
-					"a" : <false, <1i, 2n>, "no">,
-					"b" : <true, <10i, 20n>, "yes">
+				map [Text => Foo] <- [
+					"a" => <false, <1i, 2n>, "no">,
+					"b" => <true, <10i, 20n>, "yes">
 				]
 				"for <b, bar <i, n>, t> in $map" -> _out
-				for k : v <b, bar <i, n>, t> in map do "$k : $v <$b, $bar <$i, $n>, $t>" -> _out
+				for k => v <b, bar <i, n>, t> in map do "$k => $v <$b, $bar <$i, $n>, $t>" -> _out
 				"""
 			);
 		}
@@ -419,12 +419,12 @@ public class TestForStatement {
 				"""
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				map [Foo : Bar] <- [
-					<false, <1i, 2n>, "no"> : <3i, 4n>
-					<true, <10i, 20n>, "yes"> : <30i, 40n>
+				map [Foo => Bar] <- [
+					<false, <1i, 2n>, "no"> => <3i, 4n>
+					<true, <10i, 20n>, "yes"> => <30i, 40n>
 				]
-				"for <b, bar, t> : <i, n> in $map" -> _out
-				for <b, bar, t> : <i, n> in map do "<$b, $bar, $t> : <$i, $n>" -> _out
+				"for <b, bar, t> => <i, n> in $map" -> _out
+				for <b, bar, t> => <i, n> in map do "<$b, $bar, $t> => <$i, $n>" -> _out
 				"""
 			);
 		}
@@ -436,28 +436,28 @@ public class TestForStatement {
 				# 3d matrix of maps of nested maps of list of foo LMAO
 				Bar<i Int, n Natural>
 				Foo<b Bool, bar Bar, t Text>
-				crazy [[[[Text : [Text : [Foo]]]]]] <- [
+				crazy [[[[Text => [Text => [Foo]]]]]] <- [
 					[
 						[
 							[
-								"a" : [
-									"aa" : [
+								"a" => [
+									"aa" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
-									"ab" : [
+									"ab" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
 								]
 							]
 							[
-								"b" : [
-									"ba" : [
+								"b" => [
+									"ba" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
-									"bb" : [
+									"bb" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
@@ -466,24 +466,24 @@ public class TestForStatement {
 						]
 						[
 							[
-								"A" : [
-									"Aa" : [
+								"A" => [
+									"Aa" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
-									"Ab" : [
+									"Ab" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
 								]
 							]
 							[
-								"B" : [
-									"Ba" : [
+								"B" => [
+									"Ba" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
-									"Bb" : [
+									"Bb" => [
 										<false, <0i, 0n>, "no">,
 										<true, <1i, 1n>, "yes">
 									]
@@ -492,7 +492,7 @@ public class TestForStatement {
 						]
 					]
 				]
-				for [[[[k : [kk : [<b, bar, t>]]]]]] in crazy do "[[[$k : [$kk : [<$b, $bar, $t>]]]]]" -> _out
+				for [[[[k => [kk => [<b, bar, t>]]]]]] in crazy do "[[[$k => [$kk => [<$b, $bar, $t>]]]]]" -> _out
 				"""
 			);
 		}

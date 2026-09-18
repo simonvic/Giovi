@@ -53,11 +53,11 @@ public class TestExpressionEquality {
 	@ParameterizedTest
 	@CsvSource(
 		textBlock = """
-		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:3], true
-		[0:"a" 1:"b" 2:"c" 3:"d"] = [0:"a" 1:"b" 2:"c" 3:"d"], true
-		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:69], false
-		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2 3:3 4:4], false
-		[0:0 1:1 2:2 3:3] = [0:0 1:1 2:2], false
+		[0=>0 1=>1 2=>2 3=>3] = [0=>0 1=>1 2=>2 3=>3], true
+		[0=>"a" 1=>"b" 2=>"c" 3=>"d"] = [0=>"a" 1=>"b" 2=>"c" 3=>"d"], true
+		[0=>0 1=>1 2=>2 3=>3] = [0=>0 1=>1 2=>2 3=>69], false
+		[0=>0 1=>1 2=>2 3=>3] = [0=>0 1=>1 2=>2 3=>3 4=>4], false
+		[0=>0 1=>1 2=>2 3=>3] = [0=>0 1=>1 2=>2], false
 		"""
 	)
 	public void testEquality_Map(String code, boolean expected) {
