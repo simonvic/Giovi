@@ -66,7 +66,7 @@ public class TestFunctions {
 		void testFunctionDeclaration_withRequiredParameter() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int
+					a:Int
 				) {}
 				"""))
 				.isEqualTo(
@@ -82,8 +82,8 @@ public class TestFunctions {
 		void testFunctionDeclaration_withRequiredParameters() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int,
-					b Real
+					a:Int,
+					b:Real
 				) {}
 				"""))
 				.isEqualTo(
@@ -99,7 +99,7 @@ public class TestFunctions {
 		void testFunctionDeclaration_withOptionalParameter() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int default 69,
+					a:Int default 69,
 				) {}
 				"""))
 				.isEqualTo(
@@ -115,7 +115,7 @@ public class TestFunctions {
 		void testFunctionDeclaration_withOptionalParameter_withDefaultPlaceholder() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int default _,
+					a:Int default _,
 				) {}
 				"""))
 				.isEqualTo(
@@ -130,7 +130,7 @@ public class TestFunctions {
 		void functionDeclaration_withOptionalParameterOfWrongType_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				someFunction(
-					a Int default "hello",
+					a:Int default "hello",
 				) {}
 				"""));
 		}
@@ -139,7 +139,7 @@ public class TestFunctions {
 		void functionDeclaration_withOptionalParameterOfDifferentButCompatibleType_shouldNotThrow() {
 			assertThatNoException().isThrownBy(() -> visit("""
 				someFunction(
-					a Real default 69n,
+					a:Real default 69n,
 				) {}
 				"""));
 		}
@@ -148,8 +148,8 @@ public class TestFunctions {
 		void testFunctionDeclaration_withOptionalParameters() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int default 69,
-					b Real default 6.9,
+					a:Int default 69,
+					b:Real default 6.9,
 				) {}
 				"""))
 				.isEqualTo(
@@ -165,9 +165,9 @@ public class TestFunctions {
 		void testFunctionDeclaration_withRequiredParametersAndTerminalOptionalParameters() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int,
-					b Real,
-					c Bool default true,
+					a:Int,
+					b:Real,
+					c:Bool default true,
 				) {}
 				"""))
 				.isEqualTo(
@@ -184,9 +184,9 @@ public class TestFunctions {
 		void testFunctionDeclaration_withMixedRequiredAndOptionalParameters() {
 			assertThat(visitFunctionDeclaration("""
 				someFunction(
-					a Int default 69,
-					b Real,
-					c Bool default true,
+					a:Int default 69,
+					b:Real,
+					c:Bool default true,
 				) {}
 				"""))
 				.isEqualTo(
@@ -296,7 +296,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_withExtraPositionalParams_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				someFunction(x Int) {}
+				someFunction(x:Int) {}
 				someFunction(69, 6.9)
 				"""));
 		}
@@ -304,7 +304,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_withMissingRequiredParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				someFunction(a Int) {}
+				someFunction(a:Int) {}
 				someFunction()
 				"""));
 		}
@@ -312,7 +312,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_withMissingRequiredParams_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				someFunction(a Int, b Real) {}
+				someFunction(a:Int, b:Real) {}
 				someFunction(69)
 				"""));
 		}
@@ -320,7 +320,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_withNamedParams_shouldNotThrow() {
 			assertThatNoException().isThrownBy(() -> visit("""
-				someFunction(a Int, b Real) {}
+				someFunction(a:Int, b:Real) {}
 				someFunction(a=69, b=6.9)
 				"""));
 		}
@@ -328,7 +328,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_usingNamedParam_withMissingRequiredParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				fun(a Int, b Int) {}
+				fun(a:Int, b:Int) {}
 				fun(b=0)
 				"""));
 		}
@@ -336,7 +336,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_usingDuplicateNamedParams_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				fun(a Int, b Int) {}
+				fun(a:Int, b:Int) {}
 				fun(a=0, a=1)
 				"""));
 		}
@@ -344,7 +344,7 @@ public class TestFunctions {
 		@Test
 		void invokingFunction_usingUnkownNamedParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-				fun(a Int, b Int) {}
+				fun(a:Int, b:Int) {}
 				fun(a=0, b=1, z=69)
 				"""));
 		}

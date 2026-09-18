@@ -182,7 +182,7 @@ public class TestGioviList {
 			void redir_shouldChangeValue() {
 				assertThat(
 					visit("""
-						x [Int]
+						x:[Int]
 						[1 2 3] -> x
 						""")
 						.getCurrentScope()
@@ -196,7 +196,7 @@ public class TestGioviList {
 			void redir_wideneableList_shouldWidenEntries() {
 				assertThat(
 					visit("""
-						x [Real]
+						x:[Real]
 						[1 2 3] -> x
 						""")
 						.getCurrentScope()
@@ -210,7 +210,7 @@ public class TestGioviList {
 			void redir_nonWideneableList_shouldThrow() {
 				assertThatExceptionOfType(OperatorNotSupported.class)
 					.isThrownBy(() -> visit("""
-						x [Int]
+						x:[Int]
 						[1r 2r 3r] -> x
 						"""));
 			}
@@ -219,7 +219,7 @@ public class TestGioviList {
 			void redirPlusValue_shouldInsert() {
 				assertThat(
 					visit("""
-						[1 2] -> x [Int]
+						[1 2] -> x:[Int]
 						3 ->+ x
 						""")
 						.getCurrentScope()
@@ -233,7 +233,7 @@ public class TestGioviList {
 			void redirPlus_wideneableValue_shouldWiden() {
 				assertThat(
 					visit("""
-						[1r 2r] -> x [Real]
+						[1r 2r] -> x:[Real]
 						3 ->+ x
 						""")
 						.getCurrentScope()
@@ -247,7 +247,7 @@ public class TestGioviList {
 			void redirPlus_nonWideneableValue_shouldThrow() {
 				assertThatExceptionOfType(OperatorNotSupported.class)
 					.isThrownBy(() -> visit("""
-						x [Int]
+						x:[Int]
 						1r ->+ x
 						"""));
 			}
@@ -256,7 +256,7 @@ public class TestGioviList {
 			void redirMinusValue_shouldRemove() {
 				assertThat(
 					visit("""
-						[1 2 3 4] -> x [Int]
+						[1 2 3 4] -> x:[Int]
 						4 ->- x
 						""")
 						.getCurrentScope()
@@ -270,7 +270,7 @@ public class TestGioviList {
 			void redirMinusValue_shouldRemoveFirstOccurence() {
 				assertThat(
 					visit("""
-						[1 2 4 3 4] -> x [Int]
+						[1 2 4 3 4] -> x:[Int]
 						4 ->- x
 						""")
 						.getCurrentScope()
@@ -284,7 +284,7 @@ public class TestGioviList {
 			void redirMinus_narrowerValue_shouldRemove() {
 				assertThat(
 					visit("""
-						[1 2 3 4] -> x [Int]
+						[1 2 3 4] -> x:[Int]
 						4n ->- x
 						""")
 						.getCurrentScope()
@@ -298,7 +298,7 @@ public class TestGioviList {
 			void redirPlusList_shouldInsertAll() {
 				assertThat(
 					visit("""
-						[1 2 3] -> x [Int]
+						[1 2 3] -> x:[Int]
 						x +<- [4 5 6]
 						""")
 						.getCurrentScope()
@@ -312,7 +312,7 @@ public class TestGioviList {
 			void redirMinusList_shouldRemoveAll() {
 				assertThat(
 					visit("""
-						[1 2 3 4 5 6] -> x [Int]
+						[1 2 3 4 5 6] -> x:[Int]
 						x -<- [4 5 6]
 						""")
 						.getCurrentScope()
@@ -326,7 +326,7 @@ public class TestGioviList {
 			void redirMinus_narrowerList_shouldRemove() {
 				assertThat(
 					visit("""
-						[1 2 3 4] -> x [Int]
+						[1 2 3 4] -> x:[Int]
 						[4n] ->- x
 						""")
 						.getCurrentScope()
@@ -340,7 +340,7 @@ public class TestGioviList {
 			void redirMinusList_shouldRemoveAllOccurences() {
 				assertThat(
 					visit("""
-						[4 5 1 6 5 2 3 4 5 6] -> x [Int]
+						[4 5 1 6 5 2 3 4 5 6] -> x:[Int]
 						[4 5 6] ->- x
 						""")
 						.getCurrentScope()
@@ -354,7 +354,7 @@ public class TestGioviList {
 			void redirMinusValueOfMatrix_shouldRemoveFirstOccurence() {
 				assertThat(
 					visit("""
-						x [[Int]] <- [
+						x:[[Int]] <- [
 							[1 0 0]
 							[1 1 1]
 							[0 1 0]
@@ -379,7 +379,7 @@ public class TestGioviList {
 			void redirMinusMatrix_shouldRemoveAllOccurences() {
 				assertThat(
 					visit("""
-						x [[Int]] <- [
+						x:[[Int]] <- [
 							[1 0 0]
 							[1 1 1]
 							[0 1 0]
@@ -405,7 +405,7 @@ public class TestGioviList {
 			void redirToListAccess_shouldChangeValueAtPosition() {
 				assertThat(
 					visit("""
-						[1 2 3] -> x [Int]
+						[1 2 3] -> x:[Int]
 						69 -> x.1
 						""")
 						.getCurrentScope()
@@ -419,7 +419,7 @@ public class TestGioviList {
 			void redirToOutOfBoundListAccess_shouldThrow() {
 				assertThatExceptionOfType(IndexOutOfBoundsException.class)
 					.isThrownBy(() -> visit("""
-						[1 2 3] -> x [Int]
+						[1 2 3] -> x:[Int]
 						69 -> x.420
 						"""));
 			}
@@ -846,7 +846,7 @@ public class TestGioviList {
 		void test_selfMutatingFunction_shouldMutateSameInstance() {
 			// TODO: clarify requirements
 			var visitor = visit("""
-				l [Int]
+				l:[Int]
 				""");
 			var l = visitor.lookup("l").orElseThrow();
 			visit(visitor, """
@@ -882,7 +882,7 @@ public class TestGioviList {
 		@Test
 		void testThat_add_returnsSameInstance() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				""");
 			var l = visitor.lookup("l").orElseThrow().unwrapAsGioviValue();
 			assertThat(visitExpression(visitor, """
@@ -894,7 +894,7 @@ public class TestGioviList {
 		@Test
 		void testThat_add_shouldAdd_atEnd() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.add(69)
 				""");
 			assertThat(visitor.lookup("l"))
@@ -905,7 +905,7 @@ public class TestGioviList {
 		@Test
 		void testThat_add_shouldAdd_atSpecifiedIndex() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.add(69, 2)
 				l.add(420, -2)
 				""");
@@ -917,7 +917,7 @@ public class TestGioviList {
 		@Test
 		void test_replace() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.replace(index=1, element=69)
 				""");
 			assertThat(visitor.lookup("l"))
@@ -928,7 +928,7 @@ public class TestGioviList {
 		@Test
 		void test_remove() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.remove(1)
 				""");
 			assertThat(visitor.lookup("l"))
@@ -939,7 +939,7 @@ public class TestGioviList {
 		@Test
 		void test_reverse() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.reverse()
 				""");
 			assertThat(visitor.lookup("l"))
@@ -950,7 +950,7 @@ public class TestGioviList {
 		@Test
 		void test_reversed() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				""");
 			var l = visitor.lookup("l").orElseThrow().unwrapAsGioviValue();
 			assertThat(visitExpression(visitor, """
@@ -963,7 +963,7 @@ public class TestGioviList {
 		@Test
 		void test_find() {
 			var visitor = visit("""
-				l [Real] <- [0r 1r 2r 3r 4r]
+				l:[Real] <- [0r 1r 2r 3r 4r]
 				""");
 			assertThat(visitExpression(visitor, """
 				l.find(2n)
@@ -979,7 +979,7 @@ public class TestGioviList {
 		@Test
 		void testThat_find_notEqualElement_returnsFalse() {
 			var visitor = visit("""
-				l [Real] <- [0r 1r 2r 3r 4r]
+				l:[Real] <- [0r 1r 2r 3r 4r]
 				""");
 			assertThat(visitExpression(visitor, """
 				l.find(69)

@@ -72,7 +72,7 @@ public class TestGioviInt {
 			void testRedirection() {
 				assertThat(
 					visit("""
-						x Int
+						x:Int
 						69 -> x
 						""")
 						.getCurrentScope()
@@ -87,7 +87,7 @@ public class TestGioviInt {
 			void testRedirectionPlus() {
 				assertThat(
 					visit("""
-						60 -> x Int
+						60 -> x:Int
 						9 ->+ x
 						""")
 						.getCurrentScope()
@@ -102,7 +102,7 @@ public class TestGioviInt {
 			void testRedirectionMinus() {
 				assertThat(
 					visit("""
-						79 -> x Int
+						79 -> x:Int
 						10 ->- x
 						""")
 						.getCurrentScope()
@@ -117,7 +117,7 @@ public class TestGioviInt {
 			void testRedirectionMultiply() {
 				assertThat(
 					visit("""
-						42 -> x Int
+						42 -> x:Int
 						10 ->* x
 						""")
 						.getCurrentScope()
@@ -133,7 +133,7 @@ public class TestGioviInt {
 			void testRedirectionDivide() {
 				assertThat(
 					visit("""
-						690 -> x Int
+						690 -> x:Int
 						10 ->/ x
 						""")
 						.getCurrentScope()
@@ -276,7 +276,7 @@ public class TestGioviInt {
 			@Test
 			void testAccessDefault() {
 				assertThat(visitExpression(visit("""
-					x Int default 69
+					x:Int default 69
 					"""), """
 					x.default
 					"""))

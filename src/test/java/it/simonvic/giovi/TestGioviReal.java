@@ -65,7 +65,7 @@ public class TestGioviReal {
 			void redirToDeclaration_shouldInitialize() {
 				assertThat(
 					visit("""
-						69r -> x Real
+						69r -> x:Real
 						""")
 						.getCurrentScope()
 						.getVariable("x")
@@ -79,7 +79,7 @@ public class TestGioviReal {
 			void redir_shouldChangeValue() {
 				assertThat(
 					visit("""
-						x Real
+						x:Real
 						69r -> x
 						""")
 						.getCurrentScope()
@@ -94,7 +94,7 @@ public class TestGioviReal {
 			void redirPlus_shouldIncrement() {
 				assertThat(
 					visit("""
-						60r -> x Real
+						60r -> x:Real
 						9r ->+ x
 						""")
 						.getCurrentScope()
@@ -109,7 +109,7 @@ public class TestGioviReal {
 			void redirMinus_shouldDecrement() {
 				assertThat(
 					visit("""
-						79r -> x Real
+						79r -> x:Real
 						10r ->- x
 						""")
 						.getCurrentScope()
@@ -124,7 +124,7 @@ public class TestGioviReal {
 			void redirStar_shouldMultiply() {
 				assertThat(
 					visit("""
-						6.9r -> x Real
+						6.9r -> x:Real
 						10r ->* x
 						""")
 						.getCurrentScope()
@@ -139,7 +139,7 @@ public class TestGioviReal {
 			void redirDiv_shouldDivide() {
 				assertThat(
 					visit("""
-						690r -> x Real
+						690r -> x:Real
 						10r ->/ x
 						""")
 						.getCurrentScope()
@@ -178,7 +178,7 @@ public class TestGioviReal {
 			@Test
 			void testAccessDefault() {
 				assertThat(visitExpression(visit("""
-					x Real default 69r
+					x:Real default 69r
 					"""), """
 					x.default
 					"""))

@@ -121,7 +121,7 @@ public class TestGioviTuple {
 			void casting_toRecord_withEqualTypes() {
 				assertThat(
 					visitExpression("""
-						tuple.<69n "hello" true> as record<a Natural, b Text, c Bool>
+						tuple.<69n "hello" true> as record<a:Natural, b:Text, c:Bool>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -136,7 +136,7 @@ public class TestGioviTuple {
 			void casting_toRecord_withWiderTypes() {
 				assertThat(
 					visitExpression("""
-						tuple.<69n "hello" 420i> as record<a Int, b Text, c Real>
+						tuple.<69n "hello" 420i> as record<a:Int, b:Text, c:Real>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -151,7 +151,7 @@ public class TestGioviTuple {
 			void casting_toRecord_withWiderSignature() {
 				assertThat(
 					visitExpression("""
-						tuple.<69n 420i> as record<a Real, b Real, c Real>
+						tuple.<69n 420i> as record<a:Real, b:Real, c:Real>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -166,7 +166,7 @@ public class TestGioviTuple {
 			void casting_toNarrowerRecord() {
 				assertThat(
 					visitExpression("""
-						tuple.<1i 2r> as record<a Natural, b Int>
+						tuple.<1i 2r> as record<a:Natural, b:Int>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -180,7 +180,7 @@ public class TestGioviTuple {
 			void casting_toRecord_withNarrowerSignature() {
 				assertThat(
 					visitExpression("""
-						tuple.<1r 2r 3r> as record<a Natural, b Int>
+						tuple.<1r 2r 3r> as record<a:Natural, b:Int>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -195,7 +195,7 @@ public class TestGioviTuple {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Natural, b Text, c Bool>
+							struct Foo <a:Natural, b:Text, c:Bool>
 							"""),
 						"""
 						tuple.<69n "hello" true> as Foo
@@ -216,7 +216,7 @@ public class TestGioviTuple {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Int, b Text, c Real>
+							struct Foo <a:Int, b:Text, c:Real>
 							"""),
 						"""
 						tuple.<69n "hello" 420i> as Foo
@@ -237,7 +237,7 @@ public class TestGioviTuple {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Real, b Real, c Real>
+							struct Foo <a:Real, b:Real, c:Real>
 							"""),
 						"""
 						tuple.<69n 420i> as Foo
@@ -258,7 +258,7 @@ public class TestGioviTuple {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Natural, b Int>
+							struct Foo <a:Natural, b:Int>
 							"""),
 						"""
 						tuple.<1i 2r> as Foo
@@ -278,7 +278,7 @@ public class TestGioviTuple {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Natural, b Int>
+							struct Foo <a:Natural, b:Int>
 							"""),
 						"""
 						tuple.<1r 2r 3r> as Foo
@@ -303,7 +303,7 @@ public class TestGioviTuple {
 			@Test
 			void redir() {
 				visit("""
-					<1 true "hello"> -> foo tuple<Int, Bool, Text>
+					<1 true "hello"> -> foo:tuple<Int, Bool, Text>
 					""");
 			}
 

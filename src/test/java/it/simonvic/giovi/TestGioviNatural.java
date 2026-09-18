@@ -66,7 +66,7 @@ public class TestGioviNatural {
 			void testRedirection() {
 				assertThat(
 					visit("""
-						x Natural
+						x:Natural
 						69n -> x
 						""")
 						.getCurrentScope()
@@ -81,7 +81,7 @@ public class TestGioviNatural {
 			void testRedirectionPlus() {
 				assertThat(
 					visit("""
-						60n -> x Natural
+						60n -> x:Natural
 						9n ->+ x
 						""")
 						.getCurrentScope()
@@ -96,7 +96,7 @@ public class TestGioviNatural {
 			void testRedirectionMinus() {
 				assertThat(
 					visit("""
-						79n -> x Natural
+						79n -> x:Natural
 						10n ->- x
 						""")
 						.getCurrentScope()
@@ -111,7 +111,7 @@ public class TestGioviNatural {
 			void testRedirectionMultiply() {
 				assertThat(
 					visit("""
-						42n -> x Natural
+						42n -> x:Natural
 						10n ->* x
 						""")
 						.getCurrentScope()
@@ -127,7 +127,7 @@ public class TestGioviNatural {
 			void testRedirectionDivide() {
 				assertThat(
 					visit("""
-						690n -> x Natural
+						690n -> x:Natural
 						10n ->/ x
 						""")
 						.getCurrentScope()
@@ -166,7 +166,7 @@ public class TestGioviNatural {
 			@Test
 			void testAccessDefault() {
 				assertThat(visitExpression(visit("""
-					x Natural default 69n
+					x:Natural default 69n
 					"""), """
 					x.default
 					"""))

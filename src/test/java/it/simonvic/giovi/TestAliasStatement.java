@@ -73,7 +73,7 @@ public class TestAliasStatement {
 	@Test
 	void aliasing_variable() {
 		var scope = visit("""
-			i Int <- 69
+			i:Int <- 69
 			alias i as j
 			j -> _out
 			j <- 420
@@ -89,9 +89,9 @@ public class TestAliasStatement {
 	void test_invokingSelfFunction_fromAlias() {
 		visit("""
 			Color <
-				r Int
-				g Int
-				b Int
+				r:Int
+				g:Int
+				b:Int
 
 				self toText() => Text {
 					=> "$self : ${self.r} ${self.g} ${self.b}"

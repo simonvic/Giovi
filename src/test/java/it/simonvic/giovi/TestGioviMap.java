@@ -229,7 +229,7 @@ public class TestGioviMap {
 			void redir_shouldChangeValue() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						[69=>"foo" 420=>"bar" 69420=>"foobar"] -> x
 						""")
 						.getCurrentScope()
@@ -243,7 +243,7 @@ public class TestGioviMap {
 			void redir_wideneableMap_shouldWiden() {
 				assertThat(
 					visit("""
-						[1r=>1r 2r=>2r 3r=>3r] -> x [Real=>Real]
+						[1r=>1r 2r=>2r 3r=>3r] -> x:[Real=>Real]
 						[1=>10 2=>20 3=>30] -> x
 						""")
 						.getCurrentScope()
@@ -257,7 +257,7 @@ public class TestGioviMap {
 			void redir_nonWideneableMap_shouldThrow() {
 				assertThatExceptionOfType(OperatorNotSupported.class)
 					.isThrownBy(() -> visit("""
-						x [Int=>Int]
+						x:[Int=>Int]
 						[1r=>1r] -> x
 						"""));
 			}
@@ -266,7 +266,7 @@ public class TestGioviMap {
 			void redirPlus_pair_shouldPutPair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						[3=>"foobar"] ->+ x
 						""")
 						.getCurrentScope()
@@ -280,7 +280,7 @@ public class TestGioviMap {
 			void redirPlus_nonExistingPair_shouldPutPair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						[69=>"foobar"] ->+ x
 						""")
 						.getCurrentScope()
@@ -294,7 +294,7 @@ public class TestGioviMap {
 			void redirPlus_multiplePairs_shouldPutAllPairs() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						[3=>"foo" 69=>"bar" 42=>"foobar"] ->+ x
 						""")
 						.getCurrentScope()
@@ -308,7 +308,7 @@ public class TestGioviMap {
 			void redirPlus_wideneableMap_shouldWiden() {
 				assertThat(
 					visit("""
-						[1r=>1r 2r=>2r 3r=>3r] -> x [Real=>Real]
+						[1r=>1r 2r=>2r 3r=>3r] -> x:[Real=>Real]
 						[1=>69 2=>420] ->+ x
 						""")
 						.getCurrentScope()
@@ -322,7 +322,7 @@ public class TestGioviMap {
 			void redirPlus_nonWideneableMap_shouldThrow() {
 				assertThatExceptionOfType(OperatorNotSupported.class)
 					.isThrownBy(() -> visit("""
-						[1=>1 2=>2 3=>3] -> x [Int=>Int]
+						[1=>1 2=>2 3=>3] -> x:[Int=>Int]
 						[1r=>69r 2r=>420r] ->+ x
 						"""));
 			}
@@ -331,7 +331,7 @@ public class TestGioviMap {
 			void redirMinus_existingPair_shouldRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- [2=>"b"]
 						""")
 						.getCurrentScope()
@@ -345,7 +345,7 @@ public class TestGioviMap {
 			void redirMinus_pairWithExistingKeyButWrongValue_shouldNotRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- [2=>"foobar"]
 						""")
 						.getCurrentScope()
@@ -359,7 +359,7 @@ public class TestGioviMap {
 			void redirMinus_pairWithNonExistingKey_shouldNotRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- [222=>"b"]
 						""")
 						.getCurrentScope()
@@ -373,7 +373,7 @@ public class TestGioviMap {
 			void redirMinus_existingKey_shouldRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- 2
 						""")
 						.getCurrentScope()
@@ -387,7 +387,7 @@ public class TestGioviMap {
 			void redirMinus_existingNarrowerKey_shouldRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- 2n
 						""")
 						.getCurrentScope()
@@ -401,7 +401,7 @@ public class TestGioviMap {
 			void redirMinus_nonExistingKey_shouldNotRemovePair() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- 222
 						""")
 						.getCurrentScope()
@@ -415,7 +415,7 @@ public class TestGioviMap {
 			void redirMinus_multipleExistingPairs_shouldRemoveAllPairs() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- [2=>"b" 3=>"c"]
 						""")
 						.getCurrentScope()
@@ -429,7 +429,7 @@ public class TestGioviMap {
 			void redirMinus_multipleExistingNarrowerPairs_shouldRemoveAllPairs() {
 				assertThat(
 					visit("""
-						[1i=>1r 2i=>2r 3i=>3r] -> x [Int=>Real]
+						[1i=>1r 2i=>2r 3i=>3r] -> x:[Int=>Real]
 						x -<- [2n=>2i]
 						""")
 						.getCurrentScope()
@@ -444,7 +444,7 @@ public class TestGioviMap {
 			void redirMinus_multipleKeys_shouldRemoveAllKeys() {
 				assertThat(
 					visit("""
-						[1=>"a" 2=>"b" 3=>"c"] -> x [Int=>Text]
+						[1=>"a" 2=>"b" 3=>"c"] -> x:[Int=>Text]
 						x -<- [2 3]
 						""")
 						.getCurrentScope()
@@ -458,7 +458,7 @@ public class TestGioviMap {
 			void redirMinus_mapAsKey() {
 				assertThat(
 					visit("""
-						x [[Int=>Text]=>Text] <- [
+						x:[[Int=>Text]=>Text] <- [
 							[1=>"a"] => "A"
 							[2=>"b"] => "B"
 							[3=>"c"] => "C"
@@ -480,7 +480,7 @@ public class TestGioviMap {
 			@Test
 			void redirMinus_mapButDifferentFromKeyType_shouldThrow() {
 				assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
-					x [[Int=>Text]=>Text] <- [
+					x:[[Int=>Text]=>Text] <- [
 						[1=>"a"] => "A"
 						[2=>"b"] => "B"
 						[3=>"c"] => "C"
@@ -820,7 +820,7 @@ public class TestGioviMap {
 		@Test
 		void testThat_put_returnsSameInstance() {
 			var visitor = visit("""
-				m [Text=>Int] <- ["a"=>0 "b"=>1 "c"=>2]
+				m:[Text=>Int] <- ["a"=>0 "b"=>1 "c"=>2]
 				""");
 			var m = visitor.lookup("m").orElseThrow().unwrapAsGioviValue();
 			assertThat(visitExpression(visitor, """
@@ -832,7 +832,7 @@ public class TestGioviMap {
 		@Test
 		void test_put() {
 			var visitor = visit("""
-				m [Text=>Int] <- ["a"=>0 "b"=>1 "c"=>2]
+				m:[Text=>Int] <- ["a"=>0 "b"=>1 "c"=>2]
 				m.put("b", 69)
 				""");
 			assertThat(visitor.lookup("m"))
@@ -843,7 +843,7 @@ public class TestGioviMap {
 		@Test
 		void test_replace() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.replace(index=1, element=69)
 				""");
 			assertThat(visitor.lookup("l"))
@@ -854,7 +854,7 @@ public class TestGioviMap {
 		@Test
 		void test_remove() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.remove(1)
 				""");
 			assertThat(visitor.lookup("l"))
@@ -865,7 +865,7 @@ public class TestGioviMap {
 		@Test
 		void test_reverse() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				l.reverse()
 				""");
 			assertThat(visitor.lookup("l"))
@@ -876,7 +876,7 @@ public class TestGioviMap {
 		@Test
 		void test_reversed() {
 			var visitor = visit("""
-				l [Int] <- [0 1 2 3 4]
+				l:[Int] <- [0 1 2 3 4]
 				""");
 			var l = visitor.lookup("l").orElseThrow().unwrapAsGioviValue();
 			assertThat(visitExpression(visitor, """
@@ -889,7 +889,7 @@ public class TestGioviMap {
 		@Test
 		void test_find() {
 			var visitor = visit("""
-				l [Real] <- [0r 1r 2r 3r 4r]
+				l:[Real] <- [0r 1r 2r 3r 4r]
 				""");
 			assertThat(visitExpression(visitor, """
 				l.find(2n)
@@ -905,7 +905,7 @@ public class TestGioviMap {
 		@Test
 		void testThat_find_notEqualElement_returnsFalse() {
 			var visitor = visit("""
-				l [Real] <- [0r 1r 2r 3r 4r]
+				l:[Real] <- [0r 1r 2r 3r 4r]
 				""");
 			assertThat(visitExpression(visitor, """
 				l.find(69)

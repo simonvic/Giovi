@@ -252,7 +252,7 @@ public class TestGioviText {
 			void redir_shouldChangeValue() {
 				assertThat(
 					visit("""
-						x Text
+						x:Text
 						"foo" -> x
 						""")
 						.getCurrentScope()
@@ -267,7 +267,7 @@ public class TestGioviText {
 			void redirPlus_shouldAppend() {
 				assertThat(
 					visit("""
-						"foo" -> x Text
+						"foo" -> x:Text
 						"bar" ->+ x
 						""")
 						.getCurrentScope()
@@ -282,7 +282,7 @@ public class TestGioviText {
 			void redirMinus_shouldRemove() {
 				assertThat(
 					visit("""
-						"foobar" -> x Text
+						"foobar" -> x:Text
 						"foo" ->- x
 						""")
 						.getCurrentScope()
@@ -297,7 +297,7 @@ public class TestGioviText {
 			void redirMinus_shouldRemoveAllOccurences() {
 				assertThat(
 					visit("""
-						"foobarfoo" -> x Text
+						"foobarfoo" -> x:Text
 						"foo" ->- x
 						""")
 						.getCurrentScope()

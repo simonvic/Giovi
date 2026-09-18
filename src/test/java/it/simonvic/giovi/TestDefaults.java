@@ -24,7 +24,7 @@ public class TestDefaults {
 		void testDefaultOverrideNatural() {
 			assertThat(
 				visit("""
-					x Natural default 69n
+					x:Natural default 69n
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -38,7 +38,7 @@ public class TestDefaults {
 		void testDefaultOverrideInt() {
 			assertThat(
 				visit("""
-					x Int default 69
+					x:Int default 69
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -52,7 +52,7 @@ public class TestDefaults {
 		void testDefaultOverrideReal() {
 			assertThat(
 				visit("""
-					x Real default 6.9
+					x:Real default 6.9
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -66,7 +66,7 @@ public class TestDefaults {
 		void testDefaultOverrideBool() {
 			assertThat(
 				visit("""
-					x Bool default true
+					x:Bool default true
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -80,7 +80,7 @@ public class TestDefaults {
 		void testDefaultOverrideText() {
 			assertThat(
 				visit("""
-					x Text default "foo"
+					x:Text default "foo"
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -94,7 +94,7 @@ public class TestDefaults {
 		void testDefaultOverrideList() {
 			assertThat(
 				visit("""
-					x [Int] default [1 2 3]
+					x:[Int] default [1 2 3]
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -108,7 +108,7 @@ public class TestDefaults {
 		void testDefaultOverrideMap() {
 			assertThat(
 				visit("""
-					x [Int=>Bool] default [1=>true 2=>false]
+					x:[Int=>Bool] default [1=>true 2=>false]
 					""")
 					.getCurrentScope()
 					.getVariable("x")
@@ -127,14 +127,14 @@ public class TestDefaults {
 		void testDefaultOverrideStruct() {
 			var def = visit("""
 				Bar <
-					baz Text
-					foobar [Int]
+					baz:Text
+					foobar:[Int]
 				>
 				Foo <
-					foo Text
-					bar Bar
+					foo:Text
+					bar:Bar
 				>
-				x Foo default Foo.<
+				x:Foo default Foo.<
 					foo="foo"
 					bar=Bar.<
 						baz="baz"
@@ -178,17 +178,17 @@ public class TestDefaults {
 		void testNestedDefaultOverrideStruct() {
 			var def = visit("""
 				Bar <
-					baz Text default "bazdefault"
-					foobar [Int] default [69]
+					baz:Text default "bazdefault"
+					foobar:[Int] default [69]
 				>
 				Foo <
-					foo Text default "foodefault"
-					bar Bar default Bar.<
+					foo:Text default "foodefault"
+					bar:Bar default Bar.<
 						baz="overriden bazdefault"
 						foobar=[420]
 					>
 				>
-				x Foo default Foo.<
+				x:Foo default Foo.<
 					foo="foo"
 					bar=Bar.<
 						baz="baz"
@@ -231,7 +231,7 @@ public class TestDefaults {
 		void testDefaultResetNatural() {
 			assertThat(
 				visit("""
-					x Natural default 69n
+					x:Natural default 69n
 					420n -> x
 					default -> x
 					""")
@@ -245,7 +245,7 @@ public class TestDefaults {
 		void testDefaultResetInt() {
 			assertThat(
 				visit("""
-					x Int default 69
+					x:Int default 69
 					420 -> x
 					default -> x
 					""")
@@ -259,7 +259,7 @@ public class TestDefaults {
 		void testDefaultResetReal() {
 			assertThat(
 				visit("""
-					x Real default 6.9
+					x:Real default 6.9
 					420 -> x
 					default -> x
 					""")
@@ -273,7 +273,7 @@ public class TestDefaults {
 		void testDefaultResetBool() {
 			assertThat(
 				visit("""
-					x Bool default true
+					x:Bool default true
 					false -> x
 					default -> x
 					""")
@@ -287,7 +287,7 @@ public class TestDefaults {
 		void testDefaultResetText() {
 			assertThat(
 				visit("""
-					x Text default "foo"
+					x:Text default "foo"
 					"bar" -> x
 					default -> x
 					""")
@@ -301,7 +301,7 @@ public class TestDefaults {
 		void testDefaultResetList() {
 			assertThat(
 				visit("""
-					x [Int] default [1 2 3]
+					x:[Int] default [1 2 3]
 					[69 420] -> x
 					default -> x
 					""")
@@ -316,7 +316,7 @@ public class TestDefaults {
 		void testDefaultResetMap() {
 			assertThat(
 				visit("""
-					x [Int=>Bool] default [1=>true 2=>false]
+					x:[Int=>Bool] default [1=>true 2=>false]
 					[69=>true 420=>true] -> x
 					default -> x
 					""")
@@ -342,14 +342,14 @@ public class TestDefaults {
 			assertThat(
 				visit("""
 					Bar <
-						baz Text
-						foobar [Int]
+						baz:Text
+						foobar:[Int]
 					>
 					Foo <
-						foo Text
-						bar Bar
+						foo:Text
+						bar:Bar
 					>
-					x Foo default Foo.<
+					x:Foo default Foo.<
 						foo="foo"
 						bar=Bar.<
 							baz="baz"
@@ -504,7 +504,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultNatural() {
 			var visitor = visit("""
-				x Natural default 69n
+				x:Natural default 69n
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -515,7 +515,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultInt() {
 			var visitor = visit("""
-				x Int default 69
+				x:Int default 69
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -526,7 +526,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultReal() {
 			var visitor = visit("""
-				x Real default 6.9
+				x:Real default 6.9
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -537,7 +537,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultBool() {
 			var visitor = visit("""
-				x Bool default true
+				x:Bool default true
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -548,7 +548,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultText() {
 			var visitor = visit("""
-				x Text default 'hello'
+				x:Text default 'hello'
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -559,7 +559,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultList() {
 			var visitor = visit("""
-				x [Int] default [1 2 3]
+				x:[Int] default [1 2 3]
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -570,7 +570,7 @@ public class TestDefaults {
 		@Test
 		void testDotDefaultMaps() {
 			var visitor = visit("""
-				x [Int=>Bool] default [1=>true 2=>false]
+				x:[Int=>Bool] default [1=>true 2=>false]
 				""");
 			assertThat(visitExpression(visitor, """
 				x.default
@@ -582,14 +582,14 @@ public class TestDefaults {
 		void testDotDefaultStruct() {
 			var visitor = visit("""
 				Bar <
-					baz Text
-					foobar [Int]
+					baz:Text
+					foobar:[Int]
 				>
 				Foo <
-					foo Text
-					bar Bar
+					foo:Text
+					bar:Bar
 				>
-				x Foo default Foo.<
+				x:Foo default Foo.<
 					foo="foo"
 					bar=Bar.<
 						baz="baz"
@@ -703,13 +703,13 @@ public class TestDefaults {
 		void testTypeDefaultStruct() {
 			var visitor = visit("""
 				Bar <
-					baz Text default "baz"
-					foobar [Int] default [1 2 3]
+					baz:Text default "baz"
+					foobar:[Int] default [1 2 3]
 				>
 				Foo <
-					foo Text default "foo"
-					bar Bar
-					foobar Bar default Bar.<
+					foo:Text default "foo"
+					bar:Bar
+					foobar:Bar default Bar.<
 						baz="BAZ"
 						foobar=[69 420]
 					>
@@ -767,7 +767,7 @@ public class TestDefaults {
 		@Test
 		void testVars() {
 			var visitor = visit("""
-				420 -> foo Int default 69
+				420 -> foo:Int default 69
 				""");
 			assertThat(
 				visitExpression(visitor, """

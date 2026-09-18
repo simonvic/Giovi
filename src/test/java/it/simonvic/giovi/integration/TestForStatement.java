@@ -129,8 +129,8 @@ public class TestForStatement {
 		void positional_onList() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b, i, t> in $list" -> _out
 				for <b, i, t> in list do "$b $i $t" -> _out
 				"""
@@ -141,8 +141,8 @@ public class TestForStatement {
 		void namedImplicit_onList() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <_=b, _=i, _=t> in $list" -> _out
 				for <_=b, _=i, _=t> in list do "$b $i $t" -> _out
 				"""
@@ -153,8 +153,8 @@ public class TestForStatement {
 		void namedExplicit_onList() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b=b1, i=i1, t=t1> in $list" -> _out
 				for <b=b1, i=i1, t=t1> in list do "$b1 $i1 $t1" -> _out
 				"""
@@ -165,8 +165,8 @@ public class TestForStatement {
 		void namedMixed_onList() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b=b1, _=i, t=t> in $list" -> _out
 				for <b=b1, _=i, t=t> in list do "$b1 $i $t" -> _out
 				"""
@@ -177,8 +177,8 @@ public class TestForStatement {
 		void positional_onList_withWhole() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for w <b, i, t> in $list" -> _out
 				for w <b, i, t> in list do "$w    $b $i $t" -> _out
 				"""
@@ -189,8 +189,8 @@ public class TestForStatement {
 		void namedImplicit_onList_withWhole() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for w <_=b, _=i, _=t> in $list" -> _out
 				for w <_=b, _=i, _=t> in list do "$w    $b $i $t" -> _out
 				"""
@@ -201,8 +201,8 @@ public class TestForStatement {
 		void namedExplicit_onList_withWhole() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for w <b=b1, i=i1, t=t1> in $list" -> _out
 				for w <b=b1, i=i1, t=t1> in list do "$w    $b1 $i1 $t1" -> _out
 				"""
@@ -213,8 +213,8 @@ public class TestForStatement {
 		void positional_onList_withSubsetOfFields() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <b, _, t> in $list" -> _out
 				for <b, _, t> in list do "$b $t" -> _out
 				"""
@@ -225,8 +225,8 @@ public class TestForStatement {
 		void named_onList_withSubsetOfFields() {
 			visit(
 				"""
-				Foo<b Bool, i Int, t Text>
-				list [Foo] <- [<false, 1, "no">, <true, 2, "yes">]
+				Foo<b:Bool, i:Int, t:Text>
+				list:[Foo] <- [<false, 1, "no">, <true, 2, "yes">]
 				"for <_=t, _=b> in $list" -> _out
 				for <_=t, _=b> in list do "$b $t" -> _out
 				"""
@@ -237,9 +237,9 @@ public class TestForStatement {
 		void positional_onListOfNestedStructs() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				list [Foo] <- [<false, <1i, 2n>, "no">, <true, <10i, 20n>, "yes">]
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				list:[Foo] <- [<false, <1i, 2n>, "no">, <true, <10i, 20n>, "yes">]
 				"for <b, bar, t> in $list" -> _out
 				for <b, bar, t> in list do "$b $bar $t" -> _out
 				"""
@@ -256,7 +256,7 @@ public class TestForStatement {
 		void onNestedList() {
 			visit(
 				"""
-				nestedList [[[Int]]] <- [
+				nestedList:[[[Int]]] <- [
 					[
 						[1      2      3]
 						[10     20     30]
@@ -284,7 +284,7 @@ public class TestForStatement {
 		void onNestedMaps() {
 			visit(
 				"""
-				graph [Text => [Text => Int]] <- [
+				graph:[Text => [Text => Int]] <- [
 					"a" => ["x"=>1 "y"=>2 "z"=>3]
 					"b" => ["u"=>10 "v"=>20 "w"=>30]
 				]
@@ -298,7 +298,7 @@ public class TestForStatement {
 		void onMapOfLists() {
 			visit(
 				"""
-				map [Text => [Int]] <- [
+				map:[Text => [Int]] <- [
 					"a" => [1 2 3]
 					"b" => [10 20 30]
 				]
@@ -315,7 +315,7 @@ public class TestForStatement {
 		void onListOfNestedMaps() {
 			visit(
 				"""
-				graphs [[Text => [Text => Int]]] <- [
+				graphs:[[Text => [Text => Int]]] <- [
 					[
 						"a" => ["x"=>1 "y"=>2 "z"=>3]
 						"b" => ["u"=>10 "v"=>20 "w"=>30]
@@ -335,9 +335,9 @@ public class TestForStatement {
 		void onListOfNestedStructs_positional() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				list:[Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
 				"for <b, bar <i, n>, t> in $list" -> _out
 				for <b, bar <i, n>, t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
 				"""
@@ -348,9 +348,9 @@ public class TestForStatement {
 		void onListOfNestedStructs_named() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				list [Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				list:[Foo] <- [<false, <0i, 0n>, "no">, <true, <1i, 1n>, "yes">]
 				"for <_=b, bar=bar<_=i, _=n>, _=t> in $list" -> _out
 				for <_=b, bar=bar<_=i, _=n>, _=t> in list do "<$b, $bar <$i, $n>, $t>" -> _out
 				"""
@@ -361,9 +361,9 @@ public class TestForStatement {
 		void onNestedListOfNestedStruct() {
 			visit(
 				"""
-				Foo<a Int, b Int, c Int>
-				Bar<x Int, y Int, z Foo>
-				matrixOfNestedStruct [[Bar]] <- [
+				Foo<a:Int, b:Int, c:Int>
+				Bar<x:Int, y:Int, z:Foo>
+				matrixOfNestedStruct:[[Bar]] <- [
 					[
 						Bar.<1,      2,      Foo.<3,      4,      5>>,
 						Bar.<10,     20,     Foo.<30,     40,     50>>,
@@ -385,9 +385,9 @@ public class TestForStatement {
 		void onMap_withStructKey() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				map [Foo => Text] <- [
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				map:[Foo => Text] <- [
 					<false, <1i, 2n>, "no"> => "a"
 					<true, <10i, 20n>, "yes"> => "b"
 				]
@@ -401,9 +401,9 @@ public class TestForStatement {
 		void onMap_withStructValue() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				map [Text => Foo] <- [
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				map:[Text => Foo] <- [
 					"a" => <false, <1i, 2n>, "no">,
 					"b" => <true, <10i, 20n>, "yes">
 				]
@@ -417,9 +417,9 @@ public class TestForStatement {
 		void onMap_withStructKeyValue() {
 			visit(
 				"""
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				map [Foo => Bar] <- [
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				map:[Foo => Bar] <- [
 					<false, <1i, 2n>, "no"> => <3i, 4n>
 					<true, <10i, 20n>, "yes"> => <30i, 40n>
 				]
@@ -434,9 +434,9 @@ public class TestForStatement {
 			visit(
 				"""
 				# 3d matrix of maps of nested maps of list of foo LMAO
-				Bar<i Int, n Natural>
-				Foo<b Bool, bar Bar, t Text>
-				crazy [[[[Text => [Text => [Foo]]]]]] <- [
+				Bar<i:Int, n:Natural>
+				Foo<b:Bool, bar:Bar, t:Text>
+				crazy:[[[[Text => [Text => [Foo]]]]]] <- [
 					[
 						[
 							[

@@ -13,7 +13,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testNatural() {
 		var visitor = visit("""
-			x Natural
+			x:Natural
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Natural
@@ -23,7 +23,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testInt() {
 		var visitor = visit("""
-			x Int
+			x:Int
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Int
@@ -33,7 +33,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testReal() {
 		var visitor = visit("""
-			x Int
+			x:Int
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Int
@@ -43,7 +43,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testBool() {
 		var visitor = visit("""
-			x Bool
+			x:Bool
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Bool
@@ -53,7 +53,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testText() {
 		var visitor = visit("""
-			x Text
+			x:Text
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Text
@@ -63,8 +63,8 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testStruct() {
 		var visitor = visit("""
-			Foo <i Int, t Text, b Bool>
-			x Foo
+			Foo <i:Int, t:Text, b:Bool>
+			x:Foo
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is Foo
@@ -74,7 +74,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testListOfPrimitive() {
 		var visitor = visit("""
-			x [Int]
+			x:[Int]
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [Int]
@@ -84,7 +84,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testListOfList() {
 		var visitor = visit("""
-			x [[Int]]
+			x:[[Int]]
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [[Int]]
@@ -94,7 +94,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testMapOfPrimitive() {
 		var visitor = visit("""
-			x [Text => Int]
+			x:[Text => Int]
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [Text => Int]
@@ -104,7 +104,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testMapOfList() {
 		var visitor = visit("""
-			x [Text => [Int]]
+			x:[Text => [Int]]
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [Text => [Int]]
@@ -114,8 +114,8 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testMapOfStruct() {
 		var visitor = visit("""
-			Foo <i Int, t Text, b Bool>
-			x [Text => Foo]
+			Foo <i:Int, t:Text, b:Bool>
+			x:[Text => Foo]
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is [Text => Foo]
@@ -126,7 +126,7 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testTupleIsStruct() {
 		var visitor = visit("""
-			Foo <i Int, t Text, b Bool>
+			Foo <i:Int, t:Text, b:Bool>
 			""");
 		assertTrue(visitExpression(visitor, """
 			<69 "hello" true> is Foo
@@ -137,8 +137,8 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testEqualStructs() {
 		var visitor = visit("""
-			Foo <i Int, t Text, b Bool>
-			Bar <i Int, t Text, b Bool>
+			Foo <i:Int, t:Text, b:Bool>
+			Bar <i:Int, t:Text, b:Bool>
 			""");
 		assertTrue(visitExpression(visitor, """
 			Bar.<> is Foo
@@ -149,8 +149,8 @@ public class TestExpressionTypeCheck {
 	@Disabled("Needs requirements clarification")
 	void testStructIsTuple() {
 		var visitor = visit("""
-			Foo <i Int, t Text, b Bool>
-			x Foo
+			Foo <i:Int, t:Text, b:Bool>
+			x:Foo
 			""");
 		assertTrue(visitExpression(visitor, """
 			x is <Int, Text, Bool>
@@ -160,7 +160,7 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testTypecheckNegation() {
 		var visitor = visit("""
-			x Int
+			x:Int
 			""");
 		assertFalse(visitExpression(visitor, """
 			x is not Int

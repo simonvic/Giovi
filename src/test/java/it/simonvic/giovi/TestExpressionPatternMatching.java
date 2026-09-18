@@ -22,7 +22,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_matchedPattern_isDeclared_onlyInTrueBody() {
 		visit(
 			"""
-			if 69 is i Int do { }
+			if 69 is i:Int do { }
 			""",
 			new TestsVisitor() {
 
@@ -49,7 +49,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_negatedMatchedPattern_isNotDeclared() {
 		visit(
 			"""
-			if 69 is not i Int or true do { }
+			if 69 is not i:Int or true do { }
 			""",
 			new TestsVisitor() {
 
@@ -76,7 +76,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_negatedPattern_isNotDeclared() {
 		visit(
 			"""
-			if 69 is not i Text or true do { }
+			if 69 is not i:Text or true do { }
 			""",
 			new TestsVisitor() {
 
@@ -103,7 +103,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_matchedProductPattern_isDeclared() {
 		visit(
 			"""
-			if <69, "foo"> is <a Int, b Text> do { }
+			if <69, "foo"> is <a:Int, b:Text> do { }
 			""",
 			new TestsVisitor() {
 
@@ -124,7 +124,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_partiallyMatchedPattern_isNotDeclared() {
 		visit(
 			"""
-			if <69, "foo"> is <a Int, b Bool> or true do { }
+			if <69, "foo"> is <a:Int, b:Bool> or true do { }
 			""",
 			new TestsVisitor() {
 
@@ -154,7 +154,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_negatedPartiallyMatchedPattern_isNotDeclared() {
 		visit(
 			"""
-			if <69, "foo"> is not <a Int, b Bool> or true do { }
+			if <69, "foo"> is not <a:Int, b:Bool> or true do { }
 			""",
 			new TestsVisitor() {
 
@@ -184,7 +184,7 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_shortCircuited_pattern_isNotDeclared() {
 		visit(
 			"""
-			if true or 69 is i Int do { }
+			if true or 69 is i:Int do { }
 			""",
 			new TestsVisitor() {
 
@@ -204,12 +204,12 @@ public class TestExpressionPatternMatching {
 	void testThat_inIf_negatedPattern_isDeclared_inFalseBody() {
 		assertAll(
 			() -> assertThatNoException().isThrownBy(() -> visit("""
-				if 69 is not i Int do {
+				if 69 is not i:Int do {
 				}
 				i -> _
 				""")),
 			() -> assertThatNoException().isThrownBy(() -> visit("""
-				if 69 is not i Int do {
+				if 69 is not i:Int do {
 				} else {
 					i -> _
 				}

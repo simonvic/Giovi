@@ -41,7 +41,7 @@ public class TestPatterns {
 	@Test
 	void tuple_toPositionalPattern_withWiderTypes() {
 		var scope = visit("""
-			<1n, <2, 3, 4>, 5r> -> <x Int, y <y1 Int, _, y3 Real>, z Real>
+			<1n, <2, 3, 4>, 5r> -> <x:Int, y <y1:Int, _, y3:Real>, z:Real>
 			""")
 			.getCurrentScope();
 		assertAll(
@@ -93,8 +93,8 @@ public class TestPatterns {
 	@Test
 	void tuple_toPositionalPattern_withWiderWhole() {
 		var scope = visit("""
-			struct Foo <a Int, b Real, c Real>
-			<1n, 2i, 3r> -> w Foo <x, y, z>
+			struct Foo <a:Int, b:Real, c:Real>
+			<1n, 2i, 3r> -> w:Foo <x, y, z>
 			""")
 			.getCurrentScope();
 		assertAll(
@@ -138,7 +138,7 @@ public class TestPatterns {
 	@Test
 	void record_toPositionalPattern_withWiderTypes() {
 		var scope = visit("""
-			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <x Int, y <y1 Int, _, y3 Real>, z Real>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <x:Int, y <y1:Int, _, y3:Real>, z:Real>
 			""")
 			.getCurrentScope();
 		assertAll(

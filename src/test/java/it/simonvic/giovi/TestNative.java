@@ -245,7 +245,7 @@ public class TestNative {
 	void test_struct_recursive() {
 		visit(
 			"""
-			root giovi.util.NativeTestingModule.Node
+			root:giovi.util.NativeTestingModule.Node
 			root.data <- "root"
 
 			root.next.next.next -> _out

@@ -38,18 +38,18 @@ public class TestModules {
 
 				module Foo {
 					"hello from Foo" -> _out
-					name Text <- "foo"
+					name:Text <- "foo"
 					module Bar {
 						"hello from Foo.Bar" -> _out
-						name Text <- "bar"
+						name:Text <- "bar"
 						module Qux {
 							"hello from Foo.Bar.Qux" -> _out
-							name Text <- "qux"
+							name:Text <- "qux"
 						}
 					}
 					module Baz {
 						"hello from Foo.Baz" -> _out
-						name Text <- "baz"
+						name:Text <- "baz"
 					}
 				}
 
@@ -65,7 +65,7 @@ public class TestModules {
 				Foo.Bar.Qux -> _out
 				Foo.Bar.Qux.name -> _out
 
-				moduleToImport Text <- "Baz"
+				moduleToImport:Text <- "Baz"
 				import Foo."$moduleToImport"
 				Foo.Baz -> _out
 				Foo.Baz.name -> _out

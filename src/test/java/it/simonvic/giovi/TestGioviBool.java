@@ -41,7 +41,7 @@ public class TestGioviBool {
 			void testRedirection() {
 				assertThat(
 					visit("""
-						x Bool
+						x:Bool
 						true -> x
 						""")
 						.getCurrentScope()
@@ -118,7 +118,7 @@ public class TestGioviBool {
 			@Test
 			void testAccessDefault() {
 				assertThat(visitExpression(visit("""
-					x Bool default true
+					x:Bool default true
 					"""), """
 					x.default
 					"""))

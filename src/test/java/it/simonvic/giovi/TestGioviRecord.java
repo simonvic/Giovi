@@ -160,7 +160,7 @@ public class TestGioviRecord {
 			void casting_toRecord_withEqualSignature() {
 				assertThat(
 					visitExpression("""
-						record.<a=69n b="hello" c=true> as record<a Natural, b Text, c Bool>
+						record.<a=69n b="hello" c=true> as record<a:Natural, b Text, c Bool>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -175,7 +175,7 @@ public class TestGioviRecord {
 			void casting_toRecord_withWiderSignature() {
 				assertThat(
 					visitExpression("""
-						record.<a=69n b=420i> as record<a Int, b Real, c Real>
+						record.<a=69n b=420i> as record<a:Int, b:Real, c:Real>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -190,7 +190,7 @@ public class TestGioviRecord {
 			void casting_toRecord_withNarrowerSignature() {
 				assertThat(
 					visitExpression("""
-						record.<a=69n b=420i c=6.9> as record<b Natural, c Int>
+						record.<a=69n b=420i c=6.9> as record<b:Natural, c:Int>
 						""")
 				).isEqualTo(
 					GioviRecords.of(
@@ -205,7 +205,7 @@ public class TestGioviRecord {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Natural, b Text, c Bool>
+							struct Foo <a:Natural, b:Text, c:Bool>
 							"""),
 						"""
 						record.<a=69n b="hello" c=true> as Foo
@@ -226,7 +226,7 @@ public class TestGioviRecord {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Real, b Real, c Real>
+							struct Foo <a:Real, b:Real, c:Real>
 							"""),
 						"""
 						record.<a=69n b=420i> as Foo
@@ -248,7 +248,7 @@ public class TestGioviRecord {
 				assertThat(
 					visitExpression(
 						visit("""
-							struct Foo <a Natural, b Int>
+							struct Foo <a:Natural, b:Int>
 							"""),
 						"""
 						record.<a=1r b=2r c=3r> as Foo
@@ -273,7 +273,7 @@ public class TestGioviRecord {
 			@Test
 			void redir() {
 				visit("""
-					<a=1 b=true c="hello"> -> foo record<a Int, b Bool, c Text>
+					<a=1 b=true c="hello"> -> foo:record<a:Int, b:Bool, c:Text>
 					""");
 			}
 
