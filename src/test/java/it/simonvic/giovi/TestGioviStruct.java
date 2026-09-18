@@ -279,7 +279,7 @@ public class TestGioviStruct {
 						g Int
 						b Int
 					>
-					RGB : RGBA <
+					RGB + RGBA <
 						a Int
 					>
 					""")
@@ -306,7 +306,7 @@ public class TestGioviStruct {
 						g Int default 255
 						b Int default 255
 					>
-					RGB : RGBA <
+					RGB + RGBA <
 						a Int default 69
 					>
 					""")
@@ -332,7 +332,7 @@ public class TestGioviStruct {
 					g Int default 255
 					b Int default 255
 				>
-				RGB : RGBA <
+				RGB + RGBA <
 					r Int default 250
 					g Int default 200
 					b Int default 150
