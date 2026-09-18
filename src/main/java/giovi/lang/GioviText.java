@@ -162,7 +162,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.length());
@@ -171,12 +171,6 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 					GioviType.LIST_OF_TEXT,
 					new ArrayList<>(value.chars().boxed().map(this::toVarEntry).toList())
 				);
-			};
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_count" -> this.access(AccessKey.COUNT);
-				case "_range" -> this.access(AccessKey.KEYS);
-				case "_chars" -> this.access(AccessKey.VALUES);
-				default -> GioviPrimitive.super.access(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var sb = new StringBuilder();
@@ -189,7 +183,13 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				-> new GioviText(
 					String.valueOf(value.charAt(nativeIndexOf(index, value.length())))
 				);
-			default -> GioviPrimitive.super.access(right);
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_count" -> this.dot(AccessKey.COUNT);
+				case "_range" -> this.dot(AccessKey.KEYS);
+				case "_chars" -> this.dot(AccessKey.VALUES);
+				default -> GioviPrimitive.super.dot(right);
+			};
+			default -> GioviPrimitive.super.dot(right);
 		};
 	}
 

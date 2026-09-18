@@ -406,7 +406,7 @@ public class TestGioviList {
 				assertThat(
 					visit("""
 						[1 2 3] -> x [Int]
-						69 -> x@1
+						69 -> x.1
 						""")
 						.getCurrentScope()
 						.getVariable("x")
@@ -420,7 +420,7 @@ public class TestGioviList {
 				assertThatExceptionOfType(IndexOutOfBoundsException.class)
 					.isThrownBy(() -> visit("""
 						[1 2 3] -> x [Int]
-						69 -> x@420
+						69 -> x.420
 						"""));
 			}
 
@@ -699,11 +699,11 @@ public class TestGioviList {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				[0 1 2 3 4]@0, 0
-				[0 1 2 3 4]@1, 1
-				[0 1 2 3 4]@2, 2
-				[0 1 2 3 4]@3, 3
-				[0 1 2 3 4]@4, 4
+				[0 1 2 3 4].0, 0
+				[0 1 2 3 4].1, 1
+				[0 1 2 3 4].2, 2
+				[0 1 2 3 4].3, 3
+				[0 1 2 3 4].4, 4
 				""")
 			void accessWithInt_shouldReturnElementAtIndex(String expression, Integer expected) {
 				assertThat(visitExpression(expression).unwrapAsGioviValue().value())
@@ -712,11 +712,11 @@ public class TestGioviList {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				[0 1 2 3 4]@{-1}, 4
-				[0 1 2 3 4]@{-2}, 3
-				[0 1 2 3 4]@{-3}, 2
-				[0 1 2 3 4]@{-4}, 1
-				[0 1 2 3 4]@{-5}, 0
+				[0 1 2 3 4].{-1}, 4
+				[0 1 2 3 4].{-2}, 3
+				[0 1 2 3 4].{-3}, 2
+				[0 1 2 3 4].{-4}, 1
+				[0 1 2 3 4].{-5}, 0
 				""")
 			void accessWithNegativeInt_shouldReturnElementAtRearIndex(
 				String expression,
@@ -728,18 +728,18 @@ public class TestGioviList {
 
 			static Stream<Arguments> produceEqualGioviLists_range() {
 				return Stream.of(
-					Arguments.of("[0 1 2 3 4]@0..4", GioviLists.of(0, 1, 2, 3, 4)),
-					Arguments.of("[0 1 2 3 4]@0..3", GioviLists.of(0, 1, 2, 3)),
-					Arguments.of("[0 1 2 3 4]@0..2", GioviLists.of(0, 1, 2)),
-					Arguments.of("[0 1 2 3 4]@0..1", GioviLists.of(0, 1)),
-					Arguments.of("[0 1 2 3 4]@0..0", GioviLists.of(0)),
-					Arguments.of("[0 1 2 3 4]@0..4", GioviLists.of(0, 1, 2, 3, 4)),
-					Arguments.of("[0 1 2 3 4]@1..4", GioviLists.of(1, 2, 3, 4)),
-					Arguments.of("[0 1 2 3 4]@2..4", GioviLists.of(2, 3, 4)),
-					Arguments.of("[0 1 2 3 4]@3..4", GioviLists.of(3, 4)),
-					Arguments.of("[0 1 2 3 4]@4..4", GioviLists.of(4)),
-					Arguments.of("[0 1 2 3 4]@1..3", GioviLists.of(1, 2, 3)),
-					Arguments.of("[0 1 2 3 4]@2..4", GioviLists.of(2, 3, 4))
+					Arguments.of("[0 1 2 3 4].0..4", GioviLists.of(0, 1, 2, 3, 4)),
+					Arguments.of("[0 1 2 3 4].0..3", GioviLists.of(0, 1, 2, 3)),
+					Arguments.of("[0 1 2 3 4].0..2", GioviLists.of(0, 1, 2)),
+					Arguments.of("[0 1 2 3 4].0..1", GioviLists.of(0, 1)),
+					Arguments.of("[0 1 2 3 4].0..0", GioviLists.of(0)),
+					Arguments.of("[0 1 2 3 4].0..4", GioviLists.of(0, 1, 2, 3, 4)),
+					Arguments.of("[0 1 2 3 4].1..4", GioviLists.of(1, 2, 3, 4)),
+					Arguments.of("[0 1 2 3 4].2..4", GioviLists.of(2, 3, 4)),
+					Arguments.of("[0 1 2 3 4].3..4", GioviLists.of(3, 4)),
+					Arguments.of("[0 1 2 3 4].4..4", GioviLists.of(4)),
+					Arguments.of("[0 1 2 3 4].1..3", GioviLists.of(1, 2, 3)),
+					Arguments.of("[0 1 2 3 4].2..4", GioviLists.of(2, 3, 4))
 				);
 			}
 
@@ -751,15 +751,15 @@ public class TestGioviList {
 
 			static Stream<Arguments> produceEqualGioviLists_inverseRange() {
 				return Stream.of(
-					Arguments.of("[0 1 2 3 4]@4..0", GioviLists.of(4, 3, 2, 1, 0)),
-					Arguments.of("[0 1 2 3 4]@3..0", GioviLists.of(3, 2, 1, 0)),
-					Arguments.of("[0 1 2 3 4]@2..0", GioviLists.of(2, 1, 0)),
-					Arguments.of("[0 1 2 3 4]@1..0", GioviLists.of(1, 0)),
-					Arguments.of("[0 1 2 3 4]@4..1", GioviLists.of(4, 3, 2, 1)),
-					Arguments.of("[0 1 2 3 4]@4..2", GioviLists.of(4, 3, 2)),
-					Arguments.of("[0 1 2 3 4]@4..3", GioviLists.of(4, 3)),
-					Arguments.of("[0 1 2 3 4]@3..1", GioviLists.of(3, 2, 1)),
-					Arguments.of("[0 1 2 3 4]@4..2", GioviLists.of(4, 3, 2))
+					Arguments.of("[0 1 2 3 4].4..0", GioviLists.of(4, 3, 2, 1, 0)),
+					Arguments.of("[0 1 2 3 4].3..0", GioviLists.of(3, 2, 1, 0)),
+					Arguments.of("[0 1 2 3 4].2..0", GioviLists.of(2, 1, 0)),
+					Arguments.of("[0 1 2 3 4].1..0", GioviLists.of(1, 0)),
+					Arguments.of("[0 1 2 3 4].4..1", GioviLists.of(4, 3, 2, 1)),
+					Arguments.of("[0 1 2 3 4].4..2", GioviLists.of(4, 3, 2)),
+					Arguments.of("[0 1 2 3 4].4..3", GioviLists.of(4, 3)),
+					Arguments.of("[0 1 2 3 4].3..1", GioviLists.of(3, 2, 1)),
+					Arguments.of("[0 1 2 3 4].4..2", GioviLists.of(4, 3, 2))
 				);
 			}
 
@@ -776,7 +776,7 @@ public class TestGioviList {
 			@Test
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
 				assertThat(visitExpression("""
-					[0 1 2 3 4]@%
+					[0 1 2 3 4].%
 					""").asGioviInt().value())
 					.isEqualTo(5);
 			}
@@ -784,7 +784,7 @@ public class TestGioviList {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					[0 1 2 3 4]@@
+					[0 1 2 3 4].@
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

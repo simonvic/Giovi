@@ -80,6 +80,23 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
+			case AccessKey accessKey -> switch (accessKey) {
+				case COUNT -> new GioviInt(value.getFieldsCount());
+				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
+				case VALUES -> GioviLists.of(value.getFieldNames());
+			};
+			case Range(Integer _, _, _)
+				-> new GioviRecord(
+					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
+					this.value.copy((Range<Integer>) right)
+				);
+			case GioviInt(var index)
+				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
+					.orElseThrow(() -> new NoSuchField(index));
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_fields" -> this.dot(AccessKey.VALUES);
+				default -> GioviProduct.super.dot(right);
+			};
 			case MemberKey(var identifier) when value.containsField(identifier) -> {
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.unwrap() instanceof GioviSelf) {
@@ -93,30 +110,6 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
 				-> type.signature().getFunction(identifier);
 			default -> GioviProduct.super.dot(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(value.getFieldsCount());
-				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				case VALUES -> GioviLists.of(value.getFieldNames());
-			};
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_fields" -> this.access(AccessKey.VALUES);
-				default -> GioviProduct.super.access(right);
-			};
-			case Range(Integer _, _, _)
-				-> new GioviRecord(
-					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
-					this.value.copy((Range<Integer>) right)
-				);
-			case GioviInt(var index)
-				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
-					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviProduct.super.access(right);
 		};
 	}
 

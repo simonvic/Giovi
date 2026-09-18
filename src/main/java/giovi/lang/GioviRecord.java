@@ -82,23 +82,10 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case MemberKey(var identifier)
-				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
-			default -> GioviProduct.super.dot(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
 			case AccessKey accessKey -> switch (accessKey) {
 				case COUNT -> new GioviInt(value.getFieldsCount());
 				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
 				case VALUES -> GioviLists.of(value.getFieldNames());
-			};
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_fields" -> this.access(AccessKey.VALUES);
-				default -> GioviProduct.super.access(right);
 			};
 			case Range(Integer _, _, _)
 				-> new GioviRecord(
@@ -109,7 +96,13 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 			case GioviInt(var index)
 				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviProduct.super.access(right);
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_fields" -> this.dot(AccessKey.VALUES);
+				default -> GioviProduct.super.dot(right);
+			};
+			case MemberKey(var identifier)
+				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 

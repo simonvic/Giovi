@@ -570,11 +570,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitExpressionAccess(ExpressionAccessContext ctx) {
-		return visit(ctx.expression()).access(visit(ctx.accessKey()));
-	}
-
-	@Override
 	public GioviParserVisitResult visitExpressionDot(ExpressionDotContext ctx) {
 		var lhs = visit(ctx.expression());
 		if (ctx.identifier() != null) {
@@ -582,6 +577,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 		if (ctx.DEFAULT() != null) {
 			return lhs.dot(new GioviDefault());
+		}
+		if (ctx.accessKey() != null) {
+			return lhs.dot(visit(ctx.accessKey()));
 		}
 		return doVisitInvocation(
 			lhs,

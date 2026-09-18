@@ -398,11 +398,11 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@0, 0
-				"01234"@1, 1
-				"01234"@2, 2
-				"01234"@3, 3
-				"01234"@4, 4
+				"01234".0, 0
+				"01234".1, 1
+				"01234".2, 2
+				"01234".3, 3
+				"01234".4, 4
 				""")
 			void accessWithInt_shouldReturnCharAtIndex(String expression, String expected) {
 				assertThat(visitExpression(expression).asGioviText().value())
@@ -411,11 +411,11 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@{-1}, 4
-				"01234"@{-2}, 3
-				"01234"@{-3}, 2
-				"01234"@{-4}, 1
-				"01234"@{-5}, 0
+				"01234".{-1}, 4
+				"01234".{-2}, 3
+				"01234".{-3}, 2
+				"01234".{-4}, 1
+				"01234".{-5}, 0
 				""")
 			void accessWithNegativeInt_shouldReturnCharAtRearIndex(
 				String expression,
@@ -427,17 +427,17 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@0..4, 01234
-				"01234"@0..3, 0123
-				"01234"@0..2, 012
-				"01234"@0..1, 01
-				"01234"@0..0, 0
-				"01234"@1..4, 1234
-				"01234"@2..4, 234
-				"01234"@3..4, 34
-				"01234"@4..4, 4
-				"01234"@1..3, 123
-				"01234"@2..4, 234
+				"01234".0..4, 01234
+				"01234".0..3, 0123
+				"01234".0..2, 012
+				"01234".0..1, 01
+				"01234".0..0, 0
+				"01234".1..4, 1234
+				"01234".2..4, 234
+				"01234".3..4, 34
+				"01234".4..4, 4
+				"01234".1..3, 123
+				"01234".2..4, 234
 				""")
 			void accessWithRange_shouldReturnSubstring(String expression, String expected) {
 				assertThat(visitExpression(expression).asGioviText().value())
@@ -446,15 +446,15 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@4..0, 43210
-				"01234"@3..0, 3210
-				"01234"@2..0, 210
-				"01234"@1..0, 10
-				"01234"@4..1, 4321
-				"01234"@4..2, 432
-				"01234"@4..3, 43
-				"01234"@3..1, 321
-				"01234"@4..2, 432
+				"01234".4..0, 43210
+				"01234".3..0, 3210
+				"01234".2..0, 210
+				"01234".1..0, 10
+				"01234".4..1, 4321
+				"01234".4..2, 432
+				"01234".4..3, 43
+				"01234".3..1, 321
+				"01234".4..2, 432
 				""")
 			void accessWithInverseRange_shouldReturnSubstringReversed(
 				String expression,
@@ -466,17 +466,17 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@0..4..2, 024
-				"01234"@0..3..2, 02
-				"01234"@0..2..2, 02
-				"01234"@0..1..2, 0
-				"01234"@0..0..2, 0
-				"01234"@1..4..2, 13
-				"01234"@2..4..2, 24
-				"01234"@3..4..2, 3
-				"01234"@4..4..2, 4
-				"01234"@1..3..2, 13
-				"01234"@2..4..2, 24
+				"01234".0..4..2, 024
+				"01234".0..3..2, 02
+				"01234".0..2..2, 02
+				"01234".0..1..2, 0
+				"01234".0..0..2, 0
+				"01234".1..4..2, 13
+				"01234".2..4..2, 24
+				"01234".3..4..2, 3
+				"01234".4..4..2, 4
+				"01234".1..3..2, 13
+				"01234".2..4..2, 24
 				""")
 			void accessWithStepRange_shouldReturnSubstring(String expression, String expected) {
 				assertThat(visitExpression(expression).asGioviText().value())
@@ -485,14 +485,14 @@ public class TestGioviText {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				"01234"@4..0..2, 420
-				"01234"@3..0..2, 31
-				"01234"@2..0..2, 20
-				"01234"@4..1..2, 42
-				"01234"@4..2..2, 42
-				"01234"@4..3..2, 4
-				"01234"@3..1..2, 31
-				"01234"@4..2..2, 42
+				"01234".4..0..2, 420
+				"01234".3..0..2, 31
+				"01234".2..0..2, 20
+				"01234".4..1..2, 42
+				"01234".4..2..2, 42
+				"01234".4..3..2, 4
+				"01234".3..1..2, 31
+				"01234".4..2..2, 42
 				""")
 			void accessWithInverseStepRange_shouldReturnSubstringReversed(
 				String expression,
@@ -505,7 +505,7 @@ public class TestGioviText {
 			@Test
 			void accessWithLengthOperator_shouldReturnCharactersCount() {
 				assertThat(visitExpression("""
-					"01234"@%
+					"01234".%
 					""").asGioviInt().value())
 					.isEqualTo(5);
 			}
@@ -513,7 +513,7 @@ public class TestGioviText {
 			@Test
 			void accessWithElementsOperator_shouldReturnListOfCharacters() {
 				assertThat(visitExpression("""
-					"01234"@*
+					"01234".*
 					"""))
 					.isEqualTo(GioviLists.of("0", "1", "2", "3", "4"));
 			}
@@ -521,7 +521,7 @@ public class TestGioviText {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					"01234"@@
+					"01234".@
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

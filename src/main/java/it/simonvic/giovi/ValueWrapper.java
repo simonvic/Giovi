@@ -244,14 +244,6 @@ public sealed interface ValueWrapper<G extends GioviValue<?>>
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	default GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
-			case ValueWrapper<?> v -> unwrap().access(v.unwrap());
-			default -> unwrap().access(right);
-		};
-	}
-
-	@Override
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case ValueWrapper<?> v -> unwrap().dot(v.unwrap());
