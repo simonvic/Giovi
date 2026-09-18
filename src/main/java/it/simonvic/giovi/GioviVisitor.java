@@ -684,6 +684,13 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
+	public GioviParserVisitResult visitAccessKeyReservedIdentifier(
+		AccessKeyReservedIdentifierContext ctx
+	) {
+		return new MemberKey(ctx.reservedIdentifier().getText());
+	}
+
+	@Override
 	public GioviParserVisitResult visitAccessKeyLiteral(AccessKeyLiteralContext ctx) {
 		return visit(ctx.literal());
 	}
