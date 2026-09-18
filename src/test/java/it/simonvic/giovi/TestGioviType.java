@@ -279,7 +279,7 @@ public class TestGioviType {
 		@Test
 		void testMapTypeCreation() {
 			assertThat(visitExpression("""
-					type.[Text:Int]
+					type.[Text=>Int]
 					"""))
 				.isEqualTo(new GioviTypeMap(GioviType.TEXT, GioviType.INT));
 		}

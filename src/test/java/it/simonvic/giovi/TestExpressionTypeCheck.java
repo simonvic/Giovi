@@ -94,20 +94,20 @@ public class TestExpressionTypeCheck {
 	@Test
 	void testMapOfPrimitive() {
 		var visitor = visit("""
-			x [Text : Int]
+			x [Text => Int]
 			""");
 		assertTrue(visitExpression(visitor, """
-			x is [Text : Int]
+			x is [Text => Int]
 			""").asNativeBool());
 	}
 
 	@Test
 	void testMapOfList() {
 		var visitor = visit("""
-			x [Text : [Int]]
+			x [Text => [Int]]
 			""");
 		assertTrue(visitExpression(visitor, """
-			x is [Text : [Int]]
+			x is [Text => [Int]]
 			""").asNativeBool());
 	}
 
@@ -115,10 +115,10 @@ public class TestExpressionTypeCheck {
 	void testMapOfStruct() {
 		var visitor = visit("""
 			Foo <i Int, t Text, b Bool>
-			x [Text : Foo]
+			x [Text => Foo]
 			""");
 		assertTrue(visitExpression(visitor, """
-			x is [Text : Foo]
+			x is [Text => Foo]
 			""").asNativeBool());
 	}
 
