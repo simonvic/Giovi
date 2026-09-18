@@ -135,10 +135,10 @@ public class TestDefaults {
 					bar Bar
 				>
 				x Foo default Foo.<
-					foo: "foo"
-					bar: Bar.<
-						baz: "baz"
-						foobar: [1 2 3]
+					foo="foo"
+					bar=Bar.<
+						baz="baz"
+						foobar=[1 2 3]
 					>
 				>
 				""")
@@ -184,15 +184,15 @@ public class TestDefaults {
 				Foo <
 					foo Text default "foodefault"
 					bar Bar default Bar.<
-						baz: "overriden bazdefault"
-						foobar: [420]
+						baz="overriden bazdefault"
+						foobar=[420]
 					>
 				>
 				x Foo default Foo.<
-					foo: "foo"
-					bar: Bar.<
-						baz: "baz"
-						foobar: [1 2 3]
+					foo="foo"
+					bar=Bar.<
+						baz="baz"
+						foobar=[1 2 3]
 					>
 				>
 				""")
@@ -350,17 +350,17 @@ public class TestDefaults {
 						bar Bar
 					>
 					x Foo default Foo.<
-						foo: "foo"
-						bar: Bar.<
-							baz: "baz"
-							foobar: [1 2 3]
+						foo="foo"
+						bar=Bar.<
+							baz="baz"
+							foobar=[1 2 3]
 						>
 					>
 					x <- Foo.<
-						foo: "hello"
-						bar: Bar.<
-							baz: "world"
-							foobar: [69 420]
+						foo="hello"
+						bar=Bar.<
+							baz="world"
+							foobar=[69 420]
 						>
 					>
 					default -> x
@@ -484,7 +484,7 @@ public class TestDefaults {
 			assertThat(
 				visitExpression(
 					"""
-					<a:1 b:true c:"foo">.default
+					<a=1 b=true c="foo">.default
 					"""
 				).asGioviValue().value()
 			).isEqualTo(
@@ -590,10 +590,10 @@ public class TestDefaults {
 					bar Bar
 				>
 				x Foo default Foo.<
-					foo: "foo"
-					bar: Bar.<
-						baz: "baz"
-						foobar: [1 2 3]
+					foo="foo"
+					bar=Bar.<
+						baz="baz"
+						foobar=[1 2 3]
 					>
 				>
 				""");
@@ -710,8 +710,8 @@ public class TestDefaults {
 					foo Text default "foo"
 					bar Bar
 					foobar Bar default Bar.<
-						baz: "BAZ"
-						foobar: [69 420]
+						baz="BAZ"
+						foobar=[69 420]
 					>
 				>
 				""");

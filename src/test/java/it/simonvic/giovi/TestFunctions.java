@@ -321,7 +321,7 @@ public class TestFunctions {
 		void invokingFunction_withNamedParams_shouldNotThrow() {
 			assertThatNoException().isThrownBy(() -> visit("""
 				someFunction(a Int, b Real) {}
-				someFunction(a: 69, b: 6.9)
+				someFunction(a=69, b=6.9)
 				"""));
 		}
 
@@ -329,7 +329,7 @@ public class TestFunctions {
 		void invokingFunction_usingNamedParam_withMissingRequiredParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
-				fun(b: 0)
+				fun(b=0)
 				"""));
 		}
 
@@ -337,7 +337,7 @@ public class TestFunctions {
 		void invokingFunction_usingDuplicateNamedParams_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
-				fun(a: 0, a: 1)
+				fun(a=0, a=1)
 				"""));
 		}
 
@@ -345,11 +345,11 @@ public class TestFunctions {
 		void invokingFunction_usingUnkownNamedParam_shouldThrow() {
 			assertThatExceptionOfType(GioviException.class).isThrownBy(() -> visit("""
 				fun(a Int, b Int) {}
-				fun(a: 0, b: 1, z: 69)
+				fun(a=0, b=1, z=69)
 				"""));
 		}
 
-		// TODO(test): parameters
+		// TODO(test)=parameters
 
 	}
 

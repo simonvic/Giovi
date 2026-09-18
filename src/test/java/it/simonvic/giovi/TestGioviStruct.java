@@ -147,9 +147,9 @@ public class TestGioviStruct {
 					Person <
 						name Text
 						favoriteColor RGB default RGB.<
-							r: 255
-							g: 250
-							b: 200
+							r=255
+							g=250
+							b=200
 						>
 					>
 					""")
@@ -381,7 +381,7 @@ public class TestGioviStruct {
 			void test_instantiation_withFields() {
 				visit("""
 					Node <data Text, next self>
-					Node.<data: "root"> -> _out
+					Node.<data="root"> -> _out
 					""");
 			}
 
@@ -390,8 +390,8 @@ public class TestGioviStruct {
 				visit("""
 					Node <data Text, next self>
 					Node.<"root", Node.<>> -> _out
-					Node.<data: "root", next: Node.<>> -> _out
-					Node.<data: "root", next: <data: "child">> -> _out
+					Node.<data="root", next=Node.<>> -> _out
+					Node.<data="root", next=<data="child">> -> _out
 					""");
 			}
 
@@ -407,7 +407,7 @@ public class TestGioviStruct {
 			void test_redirection_withField() {
 				visit("""
 					Node <data Text, next self>
-					root Node <- Node.<data: "root">
+					root Node <- Node.<data="root">
 					""");
 			}
 
@@ -416,11 +416,11 @@ public class TestGioviStruct {
 				visit("""
 					Node <data Text, next self>
 					root Node <- <
-						data: "root",
-						next: <
-							data: "child1"
-							next: <
-								data: "child2"
+						data="root",
+						next=<
+							data="child1"
+							next=<
+								data="child2"
 							>
 						>
 					>
@@ -459,7 +459,7 @@ public class TestGioviStruct {
 
 					Node -> _out
 					"lazy" -> _out
-					root Node <- Node.<label: "root">
+					root Node <- Node.<label="root">
 					root.next.next.next.next.label <- "foo"
 					root.toTextLazy() -> _out
 					root.next.label <- "a"
@@ -471,7 +471,7 @@ public class TestGioviStruct {
 					"-------" -> _out
 
 					"eager" -> _out
-					root <- Node.<label: "root">
+					root <- Node.<label="root">
 					root.next.next.next.next.label <- "foo"
 					root.toText() -> _out
 					root.next.label <- "a"
@@ -557,9 +557,9 @@ public class TestGioviStruct {
 			assertThat(
 				visitExpression(visitor, """
 					Foo.<
-						i: 69
-						t: "hello"
-						b: true
+						i=69
+						t="hello"
+						b=true
 					>
 					""")
 			).isEqualTo(
@@ -584,9 +584,9 @@ public class TestGioviStruct {
 			assertThat(
 				visitExpression(visitor, """
 					Foo.<
-						b: true
-						i: 69
-						t: "hello"
+						b=true
+						i=69
+						t="hello"
 					>
 					""")
 			).isEqualTo(
@@ -626,7 +626,7 @@ public class TestGioviStruct {
 					t Text
 					b Bool
 				>
-				Foo.<x:1 y:"hello" z:true> -> foo Foo
+				Foo.<x=1 y="hello" z=true> -> foo Foo
 				"""));
 		}
 
@@ -638,7 +638,7 @@ public class TestGioviStruct {
 					t Text
 					b Bool
 				>
-				Foo.<i:69 b:true> -> foo Foo
+				Foo.<i=69 b=true> -> foo Foo
 				"""));
 		}
 
@@ -654,8 +654,8 @@ public class TestGioviStruct {
 			assertThat(
 				visitExpression(visitor, """
 					Foo.<
-						i: 69
-						b: true
+						i=69
+						b=true
 					>
 					""")
 			).isEqualTo(
@@ -683,9 +683,9 @@ public class TestGioviStruct {
 			assertThat(
 				visitExpression(visitor, """
 					Foo.<
-						i: 420
-						t: default
-						s: default
+						i=420
+						t=default
+						s=default
 					>
 					""")
 			).isEqualTo(
@@ -717,9 +717,9 @@ public class TestGioviStruct {
 			assertThat(
 				visitExpression(visitor, """
 					Foo.<
-						i: 420
-						t: _
-						s: _
+						i=420
+						t=_
+						s=_
 					>
 					""")
 			).isEqualTo(
@@ -755,7 +755,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Text, c Bool>
 							"""),
 						"""
-						Foo.<a:69n b:"hello" c:true> as tuple<Natural, Text, Bool>
+						Foo.<a=69n b="hello" c=true> as tuple<Natural, Text, Bool>
 						"""
 					)
 				).isEqualTo(
@@ -771,7 +771,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Text, c Int>
 							"""),
 						"""
-						Foo.<a:69n b:"hello" c:420i> as tuple<Int, Text, Real>
+						Foo.<a=69n b="hello" c=420i> as tuple<Int, Text, Real>
 						"""
 					)
 				).isEqualTo(
@@ -787,7 +787,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Int>
 							"""),
 						"""
-						Foo.<a:69n b:420i> as tuple<Real, Real, Real>
+						Foo.<a=69n b=420i> as tuple<Real, Real, Real>
 						"""
 					)
 				).isEqualTo(
@@ -803,7 +803,7 @@ public class TestGioviStruct {
 							struct Foo <a Int, b Real>
 							"""),
 						"""
-						Foo.<a:1i b:2r> as tuple<Natural, Int>
+						Foo.<a=1i b=2r> as tuple<Natural, Int>
 						"""
 					)
 				).isEqualTo(
@@ -819,7 +819,7 @@ public class TestGioviStruct {
 							struct Foo <a Real, b Real, c Real>
 							"""),
 						"""
-						Foo.<a:1r b:2r c:3r> as tuple<Natural, Int>
+						Foo.<a=1r b=2r c=3r> as tuple<Natural, Int>
 						"""
 					)
 				).isEqualTo(
@@ -835,7 +835,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Text, c Bool>
 							"""),
 						"""
-						Foo.<a:69n b:"hello" c:true> as record<a Natural, b Text, c Bool>
+						Foo.<a=69n b="hello" c=true> as record<a Natural, b Text, c Bool>
 						"""
 					)
 				).isEqualTo(
@@ -855,7 +855,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Int>
 							"""),
 						"""
-						Foo.<a:69n b:420i> as record<a Int, b Real, c Real>
+						Foo.<a=69n b=420i> as record<a Int, b Real, c Real>
 						"""
 					)
 				).isEqualTo(
@@ -875,7 +875,7 @@ public class TestGioviStruct {
 							struct Foo <a Natural, b Int, c Real>
 							"""),
 						"""
-						Foo.<a:69n b:420i c:6.9> as record<b Natural, c Int>
+						Foo.<a=69n b=420i c=6.9> as record<b Natural, c Int>
 						"""
 					)
 				).isEqualTo(
@@ -960,7 +960,7 @@ public class TestGioviStruct {
 							struct Bar <a Int, b Natural>
 							"""),
 						"""
-						Foo.<a:1r b:2i c:3n> as Bar
+						Foo.<a=1r b=2i c=3n> as Bar
 						"""
 					)
 				).isEqualTo(
@@ -1025,7 +1025,7 @@ public class TestGioviStruct {
 					visit("""
 						Foo <i Int, t Text, b Bool>
 						x Foo
-						x <- <i:69 t:"hello" b:true>
+						x <- <i=69 t="hello" b=true>
 						""")
 						.getCurrentScope()
 						.getVariable("x")
@@ -1048,7 +1048,7 @@ public class TestGioviStruct {
 					visit("""
 						Foo <i Int, t Text, b Bool>
 						x Foo
-						x +<- <i:69 t:true>
+						x +<- <i=69 t=true>
 						""")
 						.getCurrentScope()
 						.getVariable("x")
@@ -1069,7 +1069,7 @@ public class TestGioviStruct {
 				assertThatExceptionOfType(NoSuchField.class).isThrownBy(() -> visit("""
 					Foo <i Int, t Text, b Bool>
 					x Foo
-					x <- <foo:69 t:"hello" b:true>
+					x <- <foo=69 t="hello" b=true>
 					"""));
 			}
 
@@ -1103,7 +1103,7 @@ public class TestGioviStruct {
 					visit("""
 						Foo <i Int, t Text, b Bool>
 						x Foo
-						x <- Foo.<i:69 t:"hello" b:true>
+						x <- Foo.<i=69 t="hello" b=true>
 						""")
 						.getCurrentScope()
 						.getVariable("x")
@@ -1179,47 +1179,47 @@ public class TestGioviStruct {
 			static Stream<Arguments> produceArgs_access_withRange() {
 				return Stream.of(
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.0..4",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..3",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.0..3",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..2",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.0..2",
 						GioviRecords.of("a", 0, "b", 1, "c", 2)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..1",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.0..1",
 						GioviRecords.of("a", 0, "b", 1)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..0",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.0..0",
 						GioviRecords.of("a", 0)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.1..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.1..4",
 						GioviRecords.of("b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.2..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.3..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.3..4",
 						GioviRecords.of("d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.4..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.4..4",
 						GioviRecords.of("e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.1..3",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.1..3",
 						GioviRecords.of("b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>.2..4",
+						"Foo.<a=0 b=1 c=2 d=3 e=4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					)
 				);
@@ -1275,7 +1275,7 @@ public class TestGioviStruct {
 				data Text
 				next self
 			>
-			n Node <- <data: "root">
+			n Node <- <data="root">
 			n.next.data <- "1"
 			n.next.next.data <- "2"
 			n.next.next.next.data <- "3"

@@ -844,7 +844,7 @@ public class TestGioviMap {
 		void test_replace() {
 			var visitor = visit("""
 				l [Int] <- [0 1 2 3 4]
-				l.replace(index:1, element:69)
+				l.replace(index=1, element=69)
 				""");
 			assertThat(visitor.lookup("l"))
 				.<GioviValue<?>>map(GioviParserVisitResult::unwrapAsGioviValue)

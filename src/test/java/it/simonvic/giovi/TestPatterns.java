@@ -120,7 +120,7 @@ public class TestPatterns {
 	@Test
 	void record_toPositionalPattern() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <x, <y1, _, y3>, z>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <x, <y1, _, y3>, z>
 			""")
 			.getCurrentScope();
 		assertAll(
@@ -138,7 +138,7 @@ public class TestPatterns {
 	@Test
 	void record_toPositionalPattern_withWiderTypes() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <x Int, y <y1 Int, _, y3 Real>, z Real>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <x Int, y <y1 Int, _, y3 Real>, z Real>
 			""")
 			.getCurrentScope();
 		assertAll(
@@ -164,7 +164,7 @@ public class TestPatterns {
 	@Test
 	void record_toNarrowerExplicitNominalPattern() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <b:<b2:y2>>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <b=<b2=y2>>
 			""")
 			.getCurrentScope();
 		assertThat(scope.getVariable("y2").orElseThrow().unwrap())
@@ -175,7 +175,7 @@ public class TestPatterns {
 	@Test
 	void record_toExplicitNominalPattern() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <a:x, b:y<b1:y1, b2:_, b3:y3>, c:z>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <a=x, b=y<b1=y1, b2=_, b3=y3>, c=z>
 			""")
 			.getCurrentScope();
 		assertAll(
@@ -201,7 +201,7 @@ public class TestPatterns {
 	@Test
 	void record_toImplicitNominalPattern() {
 		var scope = visit("""
-			<a:1n, b:<b1:2, b2:3, b3:4>, c:5r> -> <_:a, b:b<_:b1, b2:_, _:b3>, _:c>
+			<a=1n, b=<b1=2, b2=3, b3=4>, c=5r> -> <_=a, b=b<_=b1, b2=_, _=b3>, _=c>
 			""")
 			.getCurrentScope();
 		assertAll(
