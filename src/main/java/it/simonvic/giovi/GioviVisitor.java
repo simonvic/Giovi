@@ -67,12 +67,12 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			String[] moduleIdentifiers = gioviModuleClass.getName().split("(\\.|\\$)"); // NOTE: $ is used for nested classes
 			for (int i = 1; i < moduleIdentifiers.length; i++) { // NOTE: first module ("giovi") is skipped
 				String moduleIdentifier = moduleIdentifiers[i];
-				var moduleOpt = parentModule.scope().getModule(moduleIdentifier);
+				var moduleOpt = parentModule.getModule(moduleIdentifier);
 				if (moduleOpt.isPresent()) {
 					parentModule = moduleOpt.orElseThrow();
 				} else {
 					var newModule = new NativeModule(moduleIdentifier, parentModule);
-					parentModule.scope().declare(newModule);
+					parentModule.declare(newModule);
 					parentModule = newModule;
 				}
 			}
@@ -87,7 +87,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	static {
 		try {
 			GIOVI_MODULE = scanGioviModule();
-			ROOT_MODULE.scope().declare(GIOVI_MODULE);
+			ROOT_MODULE.declare(GIOVI_MODULE);
 		} catch (URISyntaxException | IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -99,7 +99,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 
 	public GioviVisitor(Module module) {
 		this.module = module;
-		this.currentScope = module.scope();
+		this.currentScope = module;
 		this.currentScope.declare(GIOVI_MODULE);
 	}
 
@@ -159,7 +159,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				innerModuleDeclarationCtx.identifier().getText(),
 				innerModuleDeclarationCtx.body
 			);
-			parentModule.scope().declare(innerModule);
+			parentModule.declare(innerModule);
 			if (recurse) {
 				scanInnerModules(innerModule, recurse);
 			}
@@ -1307,8 +1307,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 			var moduleIdentifierCtx = ctx.identifier(i);
 			String moduleIdentifier = moduleIdentifierCtx.getText();
 			scope = scope.getModule(moduleIdentifier)
-				.orElseThrow(() -> new GioviException("Can't find find module " + moduleIdentifier))
-				.scope();
+				.orElseThrow(
+					() -> new GioviException("Can't find find module " + moduleIdentifier)
+				);
 		}
 		String typename = ctx.typename.getText();
 		return scope.getType(typename)

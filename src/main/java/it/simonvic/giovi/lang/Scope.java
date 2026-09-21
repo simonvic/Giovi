@@ -213,8 +213,8 @@ public class Scope {
 		var declaredModule = modules.get(module.identifier());
 		if (declaredModule != null) {
 			if (
-				declaredModule instanceof InnerModule(_, _, _, var bodyCtx)
-					&& bodyCtx == module.bodyCtx()
+				declaredModule instanceof InnerModule im
+					&& im.bodyCtx() == module.bodyCtx()
 			) {
 				// NOTE: module already declared with early eager inner module scan
 				return;
@@ -284,7 +284,7 @@ public class Scope {
 			.or(() -> Optional.ofNullable(primitiveTypes.get(identifier)))
 			.or(() -> Optional.ofNullable(structDefinitions.get(identifier)))
 			.or(() -> Optional.ofNullable(modules.get(identifier)))
-			.or(() -> parent.getSymbol(identifier));
+			.or(() -> parent == null ? Optional.empty() : parent.getSymbol(identifier));
 	}
 
 	public void merge(Scope scope) {

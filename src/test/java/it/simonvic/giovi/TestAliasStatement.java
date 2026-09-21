@@ -64,8 +64,8 @@ public class TestAliasStatement {
 		assertThat(scope.getModule("Random").orElseThrow())
 			.isSameAs(
 				scope.getModule("giovi").orElseThrow()
-					.scope().getModule("util").orElseThrow()
-					.scope().getModule("Random").orElseThrow()
+					.getModule("util").orElseThrow()
+					.getModule("Random").orElseThrow()
 			);
 	}
 

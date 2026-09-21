@@ -5,18 +5,24 @@ import java.net.URI;
 import giovi.lang.GioviFunction;
 import it.simonvic.giovi.GioviVisitor;
 import it.simonvic.giovi.antlr.GioviParser.BlockContext;
-import it.simonvic.giovi.lang.ModuleScope;
+import it.simonvic.giovi.lang.Scope;
 
-public sealed interface Module extends GioviParserVisitResult {
+public abstract sealed class Module
+	extends Scope
+	implements GioviParserVisitResult {
 
-	Module parent();
+	public Module() {
+		super();
+	}
 
-	ModuleScope scope();
+	public Module(Scope parent) {
+		super(parent);
+	}
 
 	@Override
-	default GioviParserVisitResult dot(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		if (right instanceof MemberKey(var identifier)) {
-			var symbolOpt = scope().getSymbol(identifier);
+			var symbolOpt = this.getSymbol(identifier);
 			if (symbolOpt.isPresent()) {
 				return symbolOpt.orElseThrow();
 			}
@@ -25,9 +31,9 @@ public sealed interface Module extends GioviParserVisitResult {
 	}
 
 	@Override
-	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+	public GioviParserVisitResult dotRef(GioviParserVisitResult right) {
 		if (right instanceof MemberKey(var identifier)) {
-			var symbolOpt = scope().getSymbol(identifier);
+			var symbolOpt = this.getSymbol(identifier);
 			if (
 				symbolOpt.isPresent()
 					&& symbolOpt.orElseThrow() instanceof GioviFunction function
@@ -39,44 +45,42 @@ public sealed interface Module extends GioviParserVisitResult {
 	}
 
 
-	public static record NativeModule(
-		String identifier,
-		Module parent,
-		ModuleScope scope
-	) implements Module {
+	public static final class NativeModule extends Module {
 
-		public NativeModule(String identifier, Module parent) {
-			this(identifier, parent, new ModuleScope(parent.scope()));
+		private final String identifier;
+
+		public NativeModule(String identifier, Scope parent) {
+			super(parent);
+			this.identifier = identifier;
 		}
 
 		public NativeModule(String identifier) {
-			this(identifier, null, new ModuleScope());
+			super();
+			this.identifier = identifier;
+		}
+
+		public String identifier() {
+			return identifier;
 		}
 
 		@Override
 		public String toString() {
-			return (parent() != null ? parent().toString() : "") + "%" + identifier;
+			return (getParent() != null ? getParent().toString() : "") + "%" + identifier;
 		}
 
 	}
 
-	public static record FileModule(
-		URI uri,
-		ModuleScope scope
-	) implements Module {
+	public static final class FileModule extends Module {
+
+		private final URI uri;
 
 		public FileModule(URI uri) {
-			this(uri, new ModuleScope(GioviVisitor.ROOT_MODULE.scope()));
+			super(GioviVisitor.ROOT_MODULE);
+			this.uri = uri;
 		}
 
-		@Override
-		public Module parent() {
-			return GioviVisitor.ROOT_MODULE;
-		}
-
-		@Override
-		public String toString() {
-			return (parent() != null ? parent().toString() : "") + "/" + getPath();
+		public URI uri() {
+			return uri;
 		}
 
 		public String getPath() {
@@ -84,23 +88,36 @@ public sealed interface Module extends GioviParserVisitResult {
 			return uri.toString().replaceFirst("file://", "");
 		}
 
+		@Override
+		public String toString() {
+			return (getParent() != null ? getParent().toString() : "") + "/" + getPath();
+		}
+
 	}
 
 
-	public static record InnerModule(
-		Module parent,
-		ModuleScope scope,
-		String identifier,
-		BlockContext bodyCtx
-	) implements Module {
+	public static final class InnerModule extends Module {
+
+		private final String identifier;
+		private final BlockContext bodyCtx;
 
 		public InnerModule(Module parent, String identifier, BlockContext bodyCtx) {
-			this(parent, new ModuleScope(parent.scope()), identifier, bodyCtx);
+			super(parent);
+			this.identifier = identifier;
+			this.bodyCtx = bodyCtx;
+		}
+
+		public String identifier() {
+			return identifier;
+		}
+
+		public BlockContext bodyCtx() {
+			return bodyCtx;
 		}
 
 		@Override
 		public String toString() {
-			return (parent() != null ? parent().toString() : "") + "$" + identifier;
+			return (getParent() != null ? getParent().toString() : "") + "$" + identifier;
 		}
 
 

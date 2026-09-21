@@ -83,15 +83,14 @@ public class ImportStatementDelegate extends GioviVisitorDelegate {
 									)
 								)
 								.forEach(innerModule -> {
-									m.scope().declare(innerModule);
+									m.declare(innerModule);
 									GioviVisitor.scanInnerModules(innerModule, true);
 								});
 						} catch (IOException e) {
 							throw new GioviException(e);
 						}
 					}
-					yield module.scope()
-						.getModule(uri.toString())
+					yield module.getModule(uri.toString())
 						.orElseThrow(
 							() -> new GioviException("Can't find module " + uri.toString())
 						);

@@ -38,7 +38,7 @@ public class Natives {
 					continue;
 				}
 				if (classField.isAnnotationPresent(Native.Const.class)) {
-					module.scope().declareConstant(classField.getName(), gioviValue);
+					module.declareConstant(classField.getName(), gioviValue);
 				}
 				// TODO: scan @Variable?
 			} catch (IllegalArgumentException | IllegalAccessException e) {
@@ -48,13 +48,13 @@ public class Natives {
 
 		for (Method method : clazz.getMethods()) {
 			if (method.isAnnotationPresent(Native.Func.class)) {
-				module.scope().declare(new JFunction(method));
+				module.declare(new JFunction(method));
 			}
 		}
 
 		for (var nestedClass : clazz.getClasses()) {
 			if (nestedClass.isAnnotationPresent(Native.Struct.class)) {
-				module.scope().define(structTypeOf(nestedClass));
+				module.define(structTypeOf(nestedClass));
 			}
 		}
 	}
