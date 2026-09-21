@@ -844,6 +844,7 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		if (!(invoked.unwrapAsGioviValue() instanceof GioviFunction(Function function))) {
 			throw new GioviException("Invokation error: " + invoked);
 		}
+		// TODO: if instance is Module, change scope, otherwise a variable may not be visible
 		var actualParamsCtx = new ArrayList<>(parametersCtx.actualParameter());
 		// NOTE: if parameters are either positional or named depends on the first callParameter
 		// If no parameters have been specified, positional approach is used
