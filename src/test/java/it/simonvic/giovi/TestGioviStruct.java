@@ -1139,10 +1139,10 @@ public class TestGioviStruct {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				Foobar.<0 1 2 3>@0, 0
-				Foobar.<0 1 2 3>@1, 1
-				Foobar.<0 1 2 3>@2, 2
-				Foobar.<0 1 2 3>@3, 3
+				Foobar.<0 1 2 3>.0, 0
+				Foobar.<0 1 2 3>.1, 1
+				Foobar.<0 1 2 3>.2, 2
+				Foobar.<0 1 2 3>.3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
 				var visitor = visit("""
@@ -1157,10 +1157,10 @@ public class TestGioviStruct {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				Foobar.<0 1 2 3>@{-1}, 3
-				Foobar.<0 1 2 3>@{-2}, 2
-				Foobar.<0 1 2 3>@{-3}, 1
-				Foobar.<0 1 2 3>@{-4}, 0
+				Foobar.<0 1 2 3>.{-1}, 3
+				Foobar.<0 1 2 3>.{-2}, 2
+				Foobar.<0 1 2 3>.{-3}, 1
+				Foobar.<0 1 2 3>.{-4}, 0
 				""")
 			void access_withNegativeInt_shouldReturnFieldAtRearIndex(
 				String code,
@@ -1179,47 +1179,47 @@ public class TestGioviStruct {
 			static Stream<Arguments> produceArgs_access_withRange() {
 				return Stream.of(
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@0..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..4",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@0..3",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..3",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@0..2",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..2",
 						GioviRecords.of("a", 0, "b", 1, "c", 2)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@0..1",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..1",
 						GioviRecords.of("a", 0, "b", 1)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@0..0",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.0..0",
 						GioviRecords.of("a", 0)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@1..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.1..4",
 						GioviRecords.of("b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@2..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@3..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.3..4",
 						GioviRecords.of("d", 3, "e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@4..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.4..4",
 						GioviRecords.of("e", 4)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@1..3",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.1..3",
 						GioviRecords.of("b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"Foo.<a:0 b:1 c:2 d:3 e:4>@2..4",
+						"Foo.<a:0 b:1 c:2 d:3 e:4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					)
 				);
@@ -1241,7 +1241,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, """
-						Foobar.<>@_count
+						Foobar.<>._count
 						""")
 						.asGioviValue()
 						.value()
@@ -1254,7 +1254,7 @@ public class TestGioviStruct {
 					Foobar <a Int, b Int, c Int, d Int, e Int>
 					""");
 				assertThat(visitExpression(visitor, """
-					Foobar.<>@_range
+					Foobar.<>._range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

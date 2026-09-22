@@ -275,13 +275,6 @@ public sealed interface GioviValue<J>
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	default GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
-			case ValueWrapper<?> v -> access(v.unwrap());
-			default -> GioviObject.super.access(right);
-		};
-	}
-
 	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviDefault _ -> getGioviType().spawn();

@@ -80,7 +80,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case Range(Integer _, _, _)
 				-> new GioviTuple(
@@ -90,7 +90,7 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 			case GioviInt(var index)
 				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviProduct.super.access(right);
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 

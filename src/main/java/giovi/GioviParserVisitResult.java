@@ -73,7 +73,6 @@ public interface GioviParserVisitResult {
 
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
-	default GioviParserVisitResult access(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviLexer.AT, right); }
 	default GioviParserVisitResult dot(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviLexer.DOT, right); }
 	default GioviParserVisitResult dotRef(GioviParserVisitResult right) { throw new OperatorNotSupported(this, GioviLexer.REF, right); }
 

@@ -85,19 +85,12 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
-			case MemberKey(var identifier)
-				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
-			default -> GioviProduct.super.dot(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
 				case "_fields" -> GioviLists.of(value.getFieldNames());
-				default -> GioviProduct.super.access(right);
+				default -> GioviProduct.super.dot(right);
 			};
+			case MemberKey(var identifier)
+				-> value.getField(identifier).orElseThrow(() -> new NoSuchField(identifier));
 			case Range(Integer _, _, _)
 				-> new GioviRecord(
 					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
@@ -107,7 +100,7 @@ public record GioviRecord(GioviTypeRecord type, GRecord value)
 			case GioviInt(var index)
 				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviProduct.super.access(right);
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 

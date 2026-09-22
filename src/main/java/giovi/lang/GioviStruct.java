@@ -83,6 +83,10 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 	@Override
 	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_fields" -> GioviLists.of(value.getFieldNames());
+				default -> GioviProduct.super.dot(right);
+			};
 			case MemberKey(var identifier) when value.containsField(identifier) -> {
 				var fieldVar = value.getField(identifier).orElseThrow();
 				if (fieldVar.unwrap() instanceof GioviSelf) {
@@ -95,17 +99,6 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 				-> type.signature().getConstant(identifier);
 			case MemberKey(var identifier) when type.signature().containsFunction(identifier)
 				-> type.signature().getFunction(identifier);
-			default -> GioviProduct.super.dot(right);
-		};
-	}
-
-	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
-		return switch (right) {
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_fields" -> GioviLists.of(value.getFieldNames());
-				default -> GioviProduct.super.access(right);
-			};
 			case Range(Integer _, _, _)
 				-> new GioviRecord(
 					new GioviTypeRecord(this.type.signature().copy((Range<Integer>) right)),
@@ -114,7 +107,7 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 			case GioviInt(var index)
 				-> value.getField(nativeIndexOf(index, value.getFieldsCount()))
 					.orElseThrow(() -> new NoSuchField(index));
-			default -> GioviProduct.super.access(right);
+			default -> GioviProduct.super.dot(right);
 		};
 	}
 

@@ -161,7 +161,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
 				case "_count" -> new GioviInt(value.length());
@@ -170,7 +170,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 					GioviType.LIST_OF_TEXT,
 					new ArrayList<>(value.chars().boxed().map(this::toVarEntry).toList())
 				);
-				default -> GioviPrimitive.super.access(right);
+				default -> GioviPrimitive.super.dot(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var sb = new StringBuilder();
@@ -183,7 +183,7 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 				-> new GioviText(
 					String.valueOf(value.charAt(nativeIndexOf(index, value.length())))
 				);
-			default -> GioviPrimitive.super.access(right);
+			default -> GioviPrimitive.super.dot(right);
 		};
 	}
 

@@ -282,7 +282,7 @@ public record GioviMap(
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(new Entry<>(gioviValue));
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
@@ -295,9 +295,9 @@ public record GioviMap(
 					new GioviTypeList(type.elementType()),
 					new ArrayList<>(value().values())
 				);
-				default -> GioviComposite.super.access(right);
+				default -> GioviComposite.super.dot(right);
 			};
-			default -> GioviComposite.super.access(right);
+			default -> GioviComposite.super.dot(right);
 		};
 	}
 

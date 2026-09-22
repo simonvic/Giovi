@@ -10,14 +10,14 @@ public sealed interface GioviProduct<J extends GProduct>
 	permits GioviTuple, GioviRecord, GioviStruct {
 
 	@Override
-	default GioviParserVisitResult access(GioviParserVisitResult right) {
+	default GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
 				case "_count" -> new GioviInt(value().getFieldsCount());
 				case "_range" -> Range.of(0, value().getFieldsCount() - 1, 1);
-				default -> GioviValue.super.access(right);
+				default -> GioviValue.super.dot(right);
 			};
-			default -> GioviValue.super.access(right);
+			default -> GioviValue.super.dot(right);
 		};
 	}
 

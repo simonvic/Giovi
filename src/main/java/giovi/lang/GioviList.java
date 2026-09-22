@@ -277,17 +277,17 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 	//////////////////////////////////////////////////////////////////////////////////////////////// access
 
 	@Override
-	public GioviParserVisitResult access(GioviParserVisitResult right) {
+	public GioviParserVisitResult dot(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> switch (gioviValue) {
 				case GioviInt(var index)
 					-> value.get(nativeIndexOf(index, value.size()));
-				default -> GioviComposite.super.access(right);
+				default -> GioviComposite.super.dot(right);
 			};
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
 				case "_count" -> new GioviInt(value().size());
 				case "_range" -> Range.of(0, value().size() - 1, 1);
-				default -> GioviComposite.super.access(right);
+				default -> GioviComposite.super.dot(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {
 				var gioviList = new GioviList(this.type);
@@ -296,7 +296,7 @@ public record GioviList(GioviTypeList type, List<Entry<?>> value)
 				}
 				yield gioviList;
 			}
-			default -> GioviComposite.super.access(right);
+			default -> GioviComposite.super.dot(right);
 		};
 	}
 

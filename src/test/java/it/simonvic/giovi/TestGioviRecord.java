@@ -345,10 +345,10 @@ public class TestGioviRecord {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				<a:0 b:1 c:2 d:3>@0, 0
-				<a:0 b:1 c:2 d:3>@1, 1
-				<a:0 b:1 c:2 d:3>@2, 2
-				<a:0 b:1 c:2 d:3>@3, 3
+				<a:0 b:1 c:2 d:3>.0, 0
+				<a:0 b:1 c:2 d:3>.1, 1
+				<a:0 b:1 c:2 d:3>.2, 2
+				<a:0 b:1 c:2 d:3>.3, 3
 				""")
 			void access_withInt_shouldReturnFieldAtIndex(String code, Integer expected) {
 				assertThat(visitExpression(code).unwrapAsGioviValue().value()).isEqualTo(expected);
@@ -356,10 +356,10 @@ public class TestGioviRecord {
 
 			@ParameterizedTest
 			@CsvSource(textBlock = """
-				<a:0 b:1 c:2 d:3>@{-1}, 3
-				<a:0 b:1 c:2 d:3>@{-2}, 2
-				<a:0 b:1 c:2 d:3>@{-3}, 1
-				<a:0 b:1 c:2 d:3>@{-4}, 0
+				<a:0 b:1 c:2 d:3>.{-1}, 3
+				<a:0 b:1 c:2 d:3>.{-2}, 2
+				<a:0 b:1 c:2 d:3>.{-3}, 1
+				<a:0 b:1 c:2 d:3>.{-4}, 0
 				""")
 			void access_withNegativeInt_shouldReturnFieldAtRearIndex(
 				String code,
@@ -372,47 +372,47 @@ public class TestGioviRecord {
 			static Stream<Arguments> produceArgs_access_withRange() {
 				return Stream.of(
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@0..4",
+						"<a:0 b:1 c:2 d:3 e:4>.0..4",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@0..3",
+						"<a:0 b:1 c:2 d:3 e:4>.0..3",
 						GioviRecords.of("a", 0, "b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@0..2",
+						"<a:0 b:1 c:2 d:3 e:4>.0..2",
 						GioviRecords.of("a", 0, "b", 1, "c", 2)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@0..1",
+						"<a:0 b:1 c:2 d:3 e:4>.0..1",
 						GioviRecords.of("a", 0, "b", 1)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@0..0",
+						"<a:0 b:1 c:2 d:3 e:4>.0..0",
 						GioviRecords.of("a", 0)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@1..4",
+						"<a:0 b:1 c:2 d:3 e:4>.1..4",
 						GioviRecords.of("b", 1, "c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@2..4",
+						"<a:0 b:1 c:2 d:3 e:4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@3..4",
+						"<a:0 b:1 c:2 d:3 e:4>.3..4",
 						GioviRecords.of("d", 3, "e", 4)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@4..4",
+						"<a:0 b:1 c:2 d:3 e:4>.4..4",
 						GioviRecords.of("e", 4)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@1..3",
+						"<a:0 b:1 c:2 d:3 e:4>.1..3",
 						GioviRecords.of("b", 1, "c", 2, "d", 3)
 					),
 					Arguments.of(
-						"<a:0 b:1 c:2 d:3 e:4>@2..4",
+						"<a:0 b:1 c:2 d:3 e:4>.2..4",
 						GioviRecords.of("c", 2, "d", 3, "e", 4)
 					)
 				);
@@ -428,7 +428,7 @@ public class TestGioviRecord {
 			void access_withLengthOperator_shouldReturnFieldsCount() {
 				assertThat(
 					visitValue("""
-						<a:0 b:1 c:2 d:3 e:4>@_count
+						<a:0 b:1 c:2 d:3 e:4>._count
 						""")
 						.value()
 				).isEqualTo(5);
@@ -437,7 +437,7 @@ public class TestGioviRecord {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					<a:0 b:1 c:2 d:3 e:4>@_range
+					<a:0 b:1 c:2 d:3 e:4>._range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

@@ -15,8 +15,8 @@ public class TestExpressionBool {
 
 	@ParameterizedTest
 	@CsvSource(textBlock = """
-		false and []@69, false
-		true or []@69, true
+		false and [].69, false
+		true or [].69, true
 		""")
 	void testShortCircuitEvaluation(String code, boolean expected) {
 		assertThat(visitExpression(code).asNativeBool())
@@ -26,8 +26,8 @@ public class TestExpressionBool {
 	@ParameterizedTest
 	@ValueSource(
 		strings = {
-			"if true { | []@69 do {}}",
-			"if false { & []@69 do {}}"
+			"if true { | [].69 do {}}",
+			"if false { & [].69 do {}}"
 		}
 	)
 	void testShortCircuitEvaluationInMultiIf(String code) {
@@ -37,8 +37,8 @@ public class TestExpressionBool {
 	@ParameterizedTest
 	@ValueSource(
 		strings = {
-			"if 'hello' { = 'hello' or = []@69 do {} }",
-			"if 'hello' { != 'hello' and = []@69 do {} }",
+			"if 'hello' { = 'hello' or = [].69 do {} }",
+			"if 'hello' { != 'hello' and = [].69 do {} }",
 		}
 	)
 	void testShortCircuitEvaluationInMultiIfCascade(String code) {
@@ -48,7 +48,7 @@ public class TestExpressionBool {
 	@ParameterizedTest
 	@ValueSource(
 		strings = {
-			"if 'hello' { = 'hello' when false do []@69() }",
+			"if 'hello' { = 'hello' when false do [].69() }",
 		}
 	)
 	void testShortCircuitEvaluationInMultiIfGuarded(String code) {
