@@ -251,6 +251,14 @@ public sealed interface ValueWrapper<G extends GioviValue<?>>
 		};
 	}
 
+	@Override
+	default GioviParserVisitResult dotRef(GioviParserVisitResult right) {
+		return switch (right) {
+			case ValueWrapper<?> v -> unwrap().dotRef(v.unwrap());
+			default -> unwrap().dotRef(right);
+		};
+	}
+
 
 }
 
