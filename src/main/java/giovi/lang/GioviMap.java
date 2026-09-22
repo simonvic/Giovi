@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.MemberKey;
 import it.simonvic.giovi.Entry;
@@ -286,21 +285,16 @@ public record GioviMap(
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
 			case GioviValue<?> gioviValue -> get(new Entry<>(gioviValue));
-			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(value().size());
-				case KEYS -> new GioviList(
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_count" -> new GioviInt(value().size());
+				case "_keys" -> new GioviList(
 					new GioviTypeList(type.keyType()),
 					new ArrayList<>(value().keySet())
 				);
-				case VALUES -> new GioviList(
+				case "_values" -> new GioviList(
 					new GioviTypeList(type.elementType()),
 					new ArrayList<>(value().values())
 				);
-			};
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_count" -> this.access(AccessKey.COUNT);
-				case "_keys" -> this.access(AccessKey.KEYS);
-				case "_values" -> this.access(AccessKey.VALUES);
 				default -> GioviComposite.super.access(right);
 			};
 			default -> GioviComposite.super.access(right);

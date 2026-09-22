@@ -720,7 +720,7 @@ public class TestGioviMap {
 			@Test
 			void accessWithLengthOperator_shouldReturnEntriesCount() {
 				assertThat(visitExpression("""
-					[1:"a" 2:"b" 3:"c"]@%
+					[1:"a" 2:"b" 3:"c"]@_count
 					""").asGioviInt().value())
 					.isEqualTo(3);
 			}
@@ -728,7 +728,7 @@ public class TestGioviMap {
 			@Test
 			void accessWithIndexesOperator_shouldReturnListOfKeys() {
 				assertThat(visitExpression("""
-					[1:"a" 2:"b" 3:"c"]@@
+					[1:"a" 2:"b" 3:"c"]@_keys
 					"""))
 					.isEqualTo(GioviLists.of(1, 2, 3));
 			}
@@ -736,7 +736,7 @@ public class TestGioviMap {
 			@Test
 			void accessWithElementsOperator_shouldReturnListOfElements() {
 				assertThat(visitExpression("""
-					[1:"a" 2:"b" 3:"c"]@*
+					[1:"a" 2:"b" 3:"c"]@_values
 					"""))
 					.isEqualTo(GioviLists.of("a", "b", "c"));
 			}

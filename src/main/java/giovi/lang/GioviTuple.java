@@ -2,7 +2,6 @@ package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 
-import giovi.AccessKey;
 import giovi.GTuple;
 import giovi.GioviParserVisitResult;
 import giovi.Range;
@@ -83,11 +82,6 @@ public record GioviTuple(GioviTypeTuple type, GTuple value)
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(value.getFieldsCount());
-				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				default -> GioviProduct.super.access(right);
-			};
 			case Range(Integer _, _, _)
 				-> new GioviTuple(
 					new GioviTypeTuple(this.type.signature().copy((Range<Integer>) right)),

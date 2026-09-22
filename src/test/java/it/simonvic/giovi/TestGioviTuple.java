@@ -485,7 +485,7 @@ public class TestGioviTuple {
 			void access_withLengthOperator_shouldReturnFieldsCount() {
 				assertThat(
 					visitValue("""
-						<0 1 2 3 4>@%
+						<0 1 2 3 4>@_count
 						""")
 						.value()
 				).isEqualTo(5);
@@ -494,7 +494,7 @@ public class TestGioviTuple {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					<0 1 2 3 4>@@
+					<0 1 2 3 4>@_range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

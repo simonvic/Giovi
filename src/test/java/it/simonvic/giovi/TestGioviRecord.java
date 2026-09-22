@@ -428,7 +428,7 @@ public class TestGioviRecord {
 			void access_withLengthOperator_shouldReturnFieldsCount() {
 				assertThat(
 					visitValue("""
-						<a:0 b:1 c:2 d:3 e:4>@%
+						<a:0 b:1 c:2 d:3 e:4>@_count
 						""")
 						.value()
 				).isEqualTo(5);
@@ -437,7 +437,7 @@ public class TestGioviRecord {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					<a:0 b:1 c:2 d:3 e:4>@@
+					<a:0 b:1 c:2 d:3 e:4>@_range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

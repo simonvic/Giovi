@@ -5,7 +5,6 @@ import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import giovi.AccessKey;
 import giovi.GioviParserVisitResult;
 import giovi.MemberKey;
 import giovi.Range;
@@ -164,18 +163,13 @@ public record GioviText(String value) implements GioviPrimitive<String> {
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(value.length());
-				case KEYS -> Range.of(0, value.length() - 1, 1);
-				case VALUES -> new GioviList(
+			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
+				case "_count" -> new GioviInt(value.length());
+				case "_range" -> Range.of(0, value.length() - 1, 1);
+				case "_chars" -> new GioviList(
 					GioviType.LIST_OF_TEXT,
 					new ArrayList<>(value.chars().boxed().map(this::toVarEntry).toList())
 				);
-			};
-			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_count" -> this.access(AccessKey.COUNT);
-				case "_range" -> this.access(AccessKey.KEYS);
-				case "_chars" -> this.access(AccessKey.VALUES);
 				default -> GioviPrimitive.super.access(right);
 			};
 			case Range<?> range when range instanceof Range(Integer _, _, _) -> {

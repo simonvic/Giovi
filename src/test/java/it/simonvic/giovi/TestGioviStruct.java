@@ -1241,7 +1241,7 @@ public class TestGioviStruct {
 					""");
 				assertThat(
 					visitExpression(visitor, """
-						Foobar.<>@%
+						Foobar.<>@_count
 						""")
 						.asGioviValue()
 						.value()
@@ -1254,7 +1254,7 @@ public class TestGioviStruct {
 					Foobar <a Int, b Int, c Int, d Int, e Int>
 					""");
 				assertThat(visitExpression(visitor, """
-					Foobar.<>@@
+					Foobar.<>@_range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

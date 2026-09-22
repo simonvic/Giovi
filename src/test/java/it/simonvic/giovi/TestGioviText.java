@@ -505,7 +505,7 @@ public class TestGioviText {
 			@Test
 			void accessWithLengthOperator_shouldReturnCharactersCount() {
 				assertThat(visitExpression("""
-					"01234"@%
+					"01234"@_count
 					""").asGioviInt().value())
 					.isEqualTo(5);
 			}
@@ -513,7 +513,7 @@ public class TestGioviText {
 			@Test
 			void accessWithElementsOperator_shouldReturnListOfCharacters() {
 				assertThat(visitExpression("""
-					"01234"@*
+					"01234"@_chars
 					"""))
 					.isEqualTo(GioviLists.of("0", "1", "2", "3", "4"));
 			}
@@ -521,7 +521,7 @@ public class TestGioviText {
 			@Test
 			void accessWithIndexesOperator_shouldReturnRange() {
 				assertThat(visitExpression("""
-					"01234"@@
+					"01234"@_range
 					"""))
 					.isEqualTo(Range.of(0, 4, 1));
 			}

@@ -2,7 +2,10 @@ package giovi.lang;
 
 import static it.simonvic.giovi.util.GioviUtils.nativeIndexOf;
 
-import giovi.*;
+import giovi.GStruct;
+import giovi.GioviParserVisitResult;
+import giovi.MemberKey;
+import giovi.Range;
 import it.simonvic.giovi.exceptions.NoSuchField;
 import it.simonvic.giovi.lang.annotation.Native.DescribedBy;
 import it.simonvic.giovi.util.GioviLists;
@@ -99,13 +102,8 @@ public record GioviStruct(GioviTypeStruct type, GStruct value)
 	@Override
 	public GioviParserVisitResult access(GioviParserVisitResult right) {
 		return switch (right) {
-			case AccessKey accessKey -> switch (accessKey) {
-				case COUNT -> new GioviInt(value.getFieldsCount());
-				case KEYS -> Range.of(0, value.getFieldsCount() - 1, 1);
-				case VALUES -> GioviLists.of(value.getFieldNames());
-			};
 			case MemberKey(var identifier) when identifier.startsWith("_") -> switch (identifier) {
-				case "_fields" -> this.access(AccessKey.VALUES);
+				case "_fields" -> GioviLists.of(value.getFieldNames());
 				default -> GioviProduct.super.access(right);
 			};
 			case Range(Integer _, _, _)

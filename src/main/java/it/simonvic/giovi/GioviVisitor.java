@@ -679,11 +679,6 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 	}
 
 	@Override
-	public GioviParserVisitResult visitAccessKeySpecial(AccessKeySpecialContext ctx) {
-		return AccessKey.of(ctx.key.getText());
-	}
-
-	@Override
 	public GioviParserVisitResult visitAccessKeyReservedIdentifier(
 		AccessKeyReservedIdentifierContext ctx
 	) {
