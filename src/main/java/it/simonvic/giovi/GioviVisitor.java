@@ -1076,15 +1076,9 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		String typename = ctx.typename.getText();
 
-		if (ctx.parentType != null) {
-			var parentType = visit(ctx.parentType);
-			if (parentType instanceof GioviTypeStruct parentTypeStruct) {
-				for (var inheritedField : parentTypeStruct.signature().fields().values()) {
-					fields.put(inheritedField.identifier(), inheritedField);
-				}
-			} else {
-				throw new GioviException("Can't inherit from " + parentType);
-			}
+
+		if (ctx.preAggregates != null) {
+			aggregate(fields, ctx.preAggregates.typeQualified());
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().fieldDeclaration()) {
@@ -1099,6 +1093,10 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 				}
 			}
 			fields.put(field.identifier(), field);
+		}
+
+		if (ctx.postAggregates != null) {
+			aggregate(fields, ctx.postAggregates.typeQualified());
 		}
 
 		// TODO: define before fields visit, but define it as larval type so all future references can be replaced by a Self
@@ -1157,6 +1155,27 @@ public class GioviVisitor extends GioviParserBaseVisitor<GioviParserVisitResult>
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param fields
+	 * @param aggregatesTypesCtx
+	 */
+	private void aggregate(
+		LinkedHashMap<String, RecordFieldSignature> fields,
+		List<TypeQualifiedContext> aggregatesTypesCtx
+	) {
+		for (var aggregateTypeCtx : aggregatesTypesCtx) {
+			var aggregateType = visit(aggregateTypeCtx);
+			if (aggregateType instanceof GioviTypeStruct aggregateTypeStruct) {
+				for (var inheritedField : aggregateTypeStruct.signature().fields().values()) {
+					// TODO: clarify requirements!
+					fields.put(inheritedField.identifier(), inheritedField);
+				}
+			} else {
+				throw new GioviException("Can't aggregate with " + aggregateType);
+			}
+		}
 	}
 
 	@Override
