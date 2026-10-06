@@ -12,10 +12,11 @@ import org.eclipse.lsp4j.DocumentSymbol;
 
 import giovi.*;
 import giovi.Module;
-import giovi.Record;
 import giovi.lang.*;
+import it.simonvic.giovi.Entry;
+import it.simonvic.giovi.GField;
+import it.simonvic.giovi.ValueWrapper;
 import it.simonvic.giovi.Var;
-import it.simonvic.giovi.VarD;
 import it.simonvic.giovi.antlr.GioviParser.*;
 import it.simonvic.giovi.antlr.GioviParserBaseVisitor;
 import it.simonvic.giovi.exceptions.NonWideneable;
@@ -33,7 +34,7 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
 	public LSVisitor(Module module) {
 		this.module = module;
-		this.currentScope = module.scope();
+		this.currentScope = module;
 	}
 
 	public List<Diagnostic> getDiagnostics() {
@@ -98,15 +99,8 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 		var fields = new LinkedHashMap<String, RecordFieldSignature>();
 		String typename = ctx.typename.getText();
 
-		if (ctx.parentType != null) {
-			var parentType = visit(ctx.parentType);
-			if (parentType instanceof GioviTypeStruct parentTypeStruct) {
-				for (var inheritedField : parentTypeStruct.signature().fields().values()) {
-					fields.put(inheritedField.identifier(), inheritedField);
-				}
-			} else {
-				diagnostics.add(new Diagnostic(LSPUtils.range(ctx.parentType), "Unknown type"));
-			}
+		if (ctx.preAggregates != null) {
+			aggregate(fields, ctx.preAggregates.typeQualified());
 		}
 
 		for (var fieldCtx : ctx.structBodyDefinition().fieldDeclaration()) {
@@ -125,6 +119,10 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 				}
 			}
 			fields.put(field.identifier(), field);
+		}
+
+		if (ctx.postAggregates != null) {
+			aggregate(fields, ctx.postAggregates.typeQualified());
 		}
 
 		var constants = new HashMap<String, GioviValue<?>>();
@@ -181,6 +179,26 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @param fields
+	 * @param aggregatesTypesCtx
+	 */
+	private void aggregate(
+		LinkedHashMap<String, RecordFieldSignature> fields,
+		List<TypeQualifiedContext> aggregatesTypesCtx
+	) {
+		for (var aggregateTypeCtx : aggregatesTypesCtx) {
+			var aggregateType = visit(aggregateTypeCtx);
+			if (aggregateType instanceof GioviTypeStruct aggregateTypeStruct) {
+				for (var inheritedField : aggregateTypeStruct.signature().fields().values()) {
+					fields.put(inheritedField.identifier(), inheritedField);
+				}
+			} else {
+				diagnostics.add(new Diagnostic(LSPUtils.range(aggregateTypeCtx), "Unknown type"));
+			}
+		}
 	}
 
 	@Override
@@ -245,15 +263,15 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 			? ctx.label.getText()
 			: identifier;
 		var type = visitType(ctx.type());
-		VarD<?> param;
+		Var<?> param;
 		try {
-			param = spawnType(type, ctx.defaultDefinition());
+			param = spawnVar(type, ctx.defaultDefinition());
 		} catch (NonWideneable e) {
 			diagnostics.add(new Diagnostic(LSPUtils.range(ctx), e.getMessage()));
-			param = new VarD<>(type.spawn());
+			param = new Var<>(type.spawn());
 		}
 		boolean isOptional = ctx.defaultDefinition() != null;
-		return new FormalParameter(label, identifier, type, param, isOptional);
+		return new FormalParameter(label, identifier, type, param.unwrap(), isOptional);
 	}
 
 	@Override
@@ -266,16 +284,23 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 		return new GioviVoid();
 	}
 
-	private VarD<?> spawnType(
+	private Var<?> spawnVar(
+		TypeContext typeCtx,
+		DefaultDefinitionContext defaultDefinitionCtx
+	) throws NonWideneable {
+		return spawnVar(visit(typeCtx).asGioviType(), defaultDefinitionCtx);
+	}
+
+	private Var<?> spawnVar(
 		GioviType<?> type,
 		DefaultDefinitionContext defaultDefinitionCtx
 	) throws NonWideneable {
 		if (defaultDefinitionCtx == null) {
-			return new VarD<>(type.spawn(), type.spawn());
+			return new Var<>(type.spawn(), type.spawn());
 		}
 		var defaultValue = visit(defaultDefinitionCtx).unwrapAsGioviValue();
 		defaultValue = type.widen(defaultValue);
-		return new VarD<>(defaultValue.copy(), defaultValue);
+		return new Var<>(defaultValue.copy(), defaultValue);
 	}
 
 	@Override
@@ -294,7 +319,7 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 				diagnostics
 					.add(new Diagnostic(LSPUtils.range(moduleIdentifierCtx), "Can't find module"));
 			} else {
-				scope = optModule.orElseThrow().scope();
+				scope = optModule.orElseThrow();
 			}
 		}
 		String typename = ctx.typename.getText();
@@ -318,7 +343,7 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 	}
 
 	@Override
-	public VarD<?> visitVarDeclaration(VarDeclarationContext ctx) {
+	public Var<?> visitVarDeclaration(VarDeclarationContext ctx) {
 		try {
 			var type = visitType(ctx.type());
 			var value = type.spawn();
@@ -326,9 +351,25 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 			defaultValue = (ctx.defaultDefinition() != null)
 				? type.widen(visit(ctx.defaultDefinition()).asGioviValue())
 				: type.spawn();
-			var variable = new VarD<>(value, defaultValue);
+			var variable = new Var<>(value, defaultValue);
 			getCurrentScope().declare(ctx.identifier().getText(), variable);
 			return variable;
+		} catch (Exception e) {
+			diagnostics.add(new Diagnostic(LSPUtils.range(ctx), e.getMessage()));
+		}
+		return null;
+	}
+
+	@Override
+	public GioviParserVisitResult visitVarDeclarationInfer(VarDeclarationInferContext ctx) {
+		try {
+			var value = visit(ctx.value).unwrapAsGioviValue();
+			var var = (ctx.type() != null)
+				? spawnVar(ctx.type(), ctx.defaultDefinition())
+				: spawnVar(value.getGioviType(), ctx.defaultDefinition());
+			var.setValueWithRedirection(value);
+			getCurrentScope().declare(ctx.identifier().getText(), var);
+			return var;
 		} catch (Exception e) {
 			diagnostics.add(new Diagnostic(LSPUtils.range(ctx), e.getMessage()));
 		}
@@ -379,17 +420,17 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 	@Override
 	public GioviParserVisitResult visitTupleCreationBody(TupleCreationBodyContext ctx) {
 		int size = ctx.expression().size();
-		var fields = new ArrayList<VarD<?>>(size);
+		var fields = new ArrayList<GField<?>>(size);
 		var fieldsSignature = new ArrayList<TupleFieldSignature>(size);
 		for (var expressionCtx : ctx.expression()) {
 			var fieldValue = visit(expressionCtx).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
-			fields.add(new VarD<>(fieldValue, fieldType.spawn()));
+			fields.add(new GField<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.add(new TupleFieldSignature(fieldType));
 		}
 		return new GioviTuple(
 			new GioviTypeTuple(new TupleSignature(fieldsSignature)),
-			new Tuple(fields)
+			new GTuple(fields)
 		);
 
 	}
@@ -397,18 +438,18 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 	@Override
 	public GioviParserVisitResult visitRecordCreationBody(RecordCreationBodyContext ctx) {
 		int size = ctx.recordEntry().size();
-		var fields = new LinkedHashMap<String, VarD<?>>(size);
+		var fields = new LinkedHashMap<String, GField<?>>(size);
 		var fieldsSignature = new LinkedHashMap<String, RecordFieldSignature>(size);
 		for (var entryCtx : ctx.recordEntry()) {
 			var fieldValue = visit(entryCtx.expression()).unwrapAsGioviValue();
 			var fieldType = fieldValue.getGioviType();
 			String identifier = entryCtx.identifier().getText();
-			fields.put(identifier, new VarD<>(fieldValue, fieldType.spawn()));
+			fields.put(identifier, new GField<>(fieldValue, fieldType.spawn()));
 			fieldsSignature.put(identifier, new RecordFieldSignature(identifier, fieldType));
 		}
 		return new GioviRecord(
 			new GioviTypeRecord(new RecordSignature(fieldsSignature)),
-			new Record(fields)
+			new GRecord(fields)
 		);
 	}
 
@@ -442,13 +483,13 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
 	@Override
 	public GioviList visitListCreation(ListCreationContext ctx) {
-		var entries = new ArrayList<Var<?>>(ctx.listEntries().listEntry().size());
+		var entries = new ArrayList<Entry<?>>(ctx.listEntries().listEntry().size());
 		for (var entryCtx : ctx.listEntries().listEntry()) {
 			var entry = visit(entryCtx);
 			switch (entry) {
-				case Range<?> range -> entries.addAll(range.expandAsVar());
-				case GioviValue<?> v -> entries.add(new Var<>(v));
-				case Var<?> v -> entries.add(new Var<>(v.unwrap().copy()));
+				case Range<?> range -> entries.addAll(range.expandAsVarEntries());
+				case GioviValue<?> v -> entries.add(new Entry<>(v));
+				case ValueWrapper<?> v -> entries.add(new Entry<>(v.unwrap().copy()));
 				case null -> {}
 				default -> diagnostics.add(
 					new Diagnostic(
@@ -464,14 +505,14 @@ public class LSVisitor extends GioviParserBaseVisitor<GioviParserVisitResult> {
 
 	@Override
 	public GioviMap visitMapCreation(MapCreationContext ctx) {
-		var map = new LinkedHashMap<Var<?>, Var<?>>();
+		var map = new LinkedHashMap<Entry<?>, Entry<?>>();
 		if (ctx.mapEntries() == null) {
 			return new GioviMap(new GioviTypeMap(GioviType.VOID, GioviType.VOID), map);
 		}
 		for (var entryCtx : ctx.mapEntries().mapEntry()) {
 			var key = visit(entryCtx.mapKey).unwrapAsGioviValue();
 			var element = visit(entryCtx.mapValue).unwrapAsGioviValue();
-			map.put(new Var<>(key), new Var<>(element));
+			map.put(new Entry<>(key), new Entry<>(element));
 		}
 		var keyType = GioviTypes.inferGioviType(map.keySet());
 		var elementType = GioviTypes.inferGioviType(map.values());
