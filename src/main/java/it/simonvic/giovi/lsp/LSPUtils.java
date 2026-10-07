@@ -38,7 +38,8 @@ public class LSPUtils {
 		}
 		return new Range(
 			new Position(from.getStart().getLine() - 1, from.getStart().getCharPositionInLine()),
-			new Position(to.getStop().getLine() - 1, to.getStop().getCharPositionInLine()));
+			new Position(to.getStop().getLine() - 1, to.getStop().getCharPositionInLine())
+		);
 	}
 
 	/**
@@ -49,7 +50,8 @@ public class LSPUtils {
 	public static Range range(ParserRuleContext ctx) {
 		return new Range(
 			new Position(ctx.getStart().getLine() - 1, ctx.getStart().getCharPositionInLine()),
-			new Position(ctx.getStop().getLine() - 1, ctx.getStop().getCharPositionInLine()));
+			new Position(ctx.getStop().getLine() - 1, ctx.getStop().getCharPositionInLine())
+		);
 	}
 
 	/**
@@ -105,7 +107,8 @@ public class LSPUtils {
 			hiddenTokens.reversed()
 				.stream()
 				.map(Token::getText)
-				.collect(Collectors.joining("")));
+				.collect(Collectors.joining(""))
+		);
 	}
 
 	/**
@@ -169,8 +172,10 @@ public class LSPUtils {
 				if (ctx.getStart().getLine() - 1 > position.getLine()) {
 					yield Optional.empty();
 				}
-				if (ctx.getStart().getLine() - 1 == position.getLine()
-					&& position.getCharacter() < ctx.getStart().getCharPositionInLine()) {
+				if (
+					ctx.getStart().getLine() - 1 == position.getLine()
+						&& position.getCharacter() < ctx.getStart().getCharPositionInLine()
+				) {
 					yield Optional.empty();
 				}
 				int childCount = ctx.getChildCount();

@@ -29,7 +29,8 @@ public class GioviLSSocket {
 			) {
 				Future<Void> future = GioviLS.launch(
 					clientSocket.getInputStream(),
-					clientSocket.getOutputStream());
+					clientSocket.getOutputStream()
+				);
 				try {
 					System.out.println("futureget: " + future.get());
 				} catch (InterruptedException | ExecutionException e) {

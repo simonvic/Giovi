@@ -44,7 +44,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 		var doc = new GioviDocument(
 			lspDoc.getUri(),
 			lspDoc.getVersion(),
-			lspDoc.getText());
+			lspDoc.getText()
+		);
 		documents.put(lspDoc.getUri(), doc);
 	}
 
@@ -113,7 +114,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 			return List.of(
 				Either.forRight(new CodeAction("Flip redirection")),
 				Either.forRight(new CodeAction("Fix imports")),
-				Either.forRight(new CodeAction("Extract")));
+				Either.forRight(new CodeAction("Extract"))
+			);
 		});
 	}
 
@@ -125,7 +127,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 
 		Optional<TerminalNode> matchedNodeOpt = LSPUtils.findLeaf(
 			parser.begin(),
-			params.getPosition());
+			params.getPosition()
+		);
 		Hover hover;
 		if (matchedNodeOpt.isEmpty()) {
 			hover = null;
@@ -147,7 +150,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 			closestAncestorStatement.ifPresent(
 				statementCtx -> sb.append("- Statement ancestor: `")
 					.append(statementCtx.getChild(0).getClass().getSimpleName())
-					.append("`\n"));
+					.append("`\n")
+			);
 			sb.append("- Hierarchy :\n```scheme\n");
 			List<ParseTree> hierarchy = LSPUtils.getHierarchy(matchedNode).reversed();
 			for (int i = 0; i < hierarchy.size(); i++) {
@@ -160,12 +164,18 @@ public class GioviTextDocumentService implements TextDocumentService {
 				.repeat(")", hierarchy.size())
 				.append("```\n");
 
-			closestAncestorStatement.ifPresent(statementCtx -> sb
-				.append("---\n")
-				.append(LSPUtils
-					.findDocumentation(statementCtx, (CommonTokenStream) parser.getTokenStream())
-					.orElse("No documentation found"))
-				.append("\n"));
+			closestAncestorStatement.ifPresent(
+				statementCtx -> sb
+					.append("---\n")
+					.append(
+						LSPUtils
+							.findDocumentation(
+								statementCtx, (CommonTokenStream) parser.getTokenStream()
+							)
+							.orElse("No documentation found")
+					)
+					.append("\n")
+			);
 			// sb.append("""
 			// 	---
 			// 	left:
@@ -208,7 +218,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 		log.info("inlayHint()");
 		return CompletableFutures.computeAsync(_ -> {
 			return List.of(
-				new InlayHint(new Position(0, 0), Either.forLeft("This is a sample inlay hint")));
+				new InlayHint(new Position(0, 0), Either.forLeft("This is a sample inlay hint"))
+			);
 		});
 	}
 
@@ -242,7 +253,8 @@ public class GioviTextDocumentService implements TextDocumentService {
 			GioviDocument doc = documents.get(params.getTextDocument().getUri());
 			cancel.checkCanceled();
 			return new DocumentDiagnosticReport(
-				new RelatedFullDocumentDiagnosticReport(doc.getDiagnostics()));
+				new RelatedFullDocumentDiagnosticReport(doc.getDiagnostics())
+			);
 		});
 	}
 

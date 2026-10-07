@@ -49,33 +49,42 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 
 	@Override
 	public void exitVarDeclaration(VarDeclarationContext ctx) {
-		add(new DocumentSymbol(
-			ctx.identifier().getText(),
-			SymbolKind.Variable,
-			range(ctx),
-			range(ctx.identifier()),
-			LSPUtils.findDocumentation(ctx, tokens).orElse(null)));
+		add(
+			new DocumentSymbol(
+				ctx.identifier().getText(),
+				SymbolKind.Variable,
+				range(ctx),
+				range(ctx.identifier()),
+				LSPUtils.findDocumentation(ctx, tokens).orElse(null)
+			)
+		);
 	}
 
 	@Override
 	public void exitConstantDeclaration(ConstantDeclarationContext ctx) {
-		add(new DocumentSymbol(
-			ctx.name.getText(),
-			SymbolKind.Constant,
-			range(ctx),
-			range(ctx.name),
-			LSPUtils.findDocumentation(ctx, tokens).orElse(null)));
+		add(
+			new DocumentSymbol(
+				ctx.name.getText(),
+				SymbolKind.Constant,
+				range(ctx),
+				range(ctx.name),
+				LSPUtils.findDocumentation(ctx, tokens).orElse(null)
+			)
+		);
 	}
 
 	@Override
 	public void exitImportEntry(ImportEntryContext ctx) {
 		if (ctx.alias == null) return;
-		add(new DocumentSymbol(
-			ctx.alias.getText(),
-			SymbolKind.Namespace,
-			range(ctx),
-			range(ctx.alias),
-			ctx.importURI().stream().map(c -> c.getText()).collect(Collectors.joining("."))));
+		add(
+			new DocumentSymbol(
+				ctx.alias.getText(),
+				SymbolKind.Namespace,
+				range(ctx),
+				range(ctx.alias),
+				ctx.importURI().stream().map(c -> c.getText()).collect(Collectors.joining("."))
+			)
+		);
 	}
 
 	@Override
@@ -107,7 +116,8 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setSelectionRange(range(ctx.functionSignature().identifier()));
 		symbol.setDetail(
 			LSPUtils.findDocumentation(ctx, tokens)
-				.orElse(ctx.functionSignature().getText()));
+				.orElse(ctx.functionSignature().getText())
+		);
 	}
 
 	@Override
@@ -124,7 +134,8 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 		symbol.setSelectionRange(range(ctx.selfFunctionSignature().identifier()));
 		symbol.setDetail(
 			LSPUtils.findDocumentation(ctx, tokens)
-				.orElse(ctx.selfFunctionSignature().getText()));
+				.orElse(ctx.selfFunctionSignature().getText())
+		);
 	}
 
 	@Override
@@ -144,11 +155,14 @@ public class SymbolsListener extends GioviExtendedParserBaseListener {
 
 	@Override
 	public void exitFieldDeclaration(FieldDeclarationContext ctx) {
-		add(new DocumentSymbol(
-			ctx.identifier().getText(),
-			SymbolKind.Field,
-			range(ctx),
-			range(ctx.identifier())));
+		add(
+			new DocumentSymbol(
+				ctx.identifier().getText(),
+				SymbolKind.Field,
+				range(ctx),
+				range(ctx.identifier())
+			)
+		);
 	}
 
 

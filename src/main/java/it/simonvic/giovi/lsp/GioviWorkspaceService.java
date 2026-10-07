@@ -25,10 +25,16 @@ public class GioviWorkspaceService implements WorkspaceService {
 		WorkspaceSymbolParams params
 	) {
 		return CompletableFutures.computeAsync(_ -> {
-			return Either.forRight(List.of(
-				new WorkspaceSymbol(
-					"_out", SymbolKind.Namespace,
-					Either.forRight(new WorkspaceSymbolLocation("file:///home/simonvic/README.md")))));
+			return Either.forRight(
+				List.of(
+					new WorkspaceSymbol(
+						"_out", SymbolKind.Namespace,
+						Either.forRight(
+							new WorkspaceSymbolLocation("file:///home/simonvic/README.md")
+						)
+					)
+				)
+			);
 		});
 	}
 

@@ -29,7 +29,7 @@ public class GioviLS {
 		launch(System.in, System.out);
 	}
 
-	 public static Future<Void> launch(InputStream in, OutputStream out) {
+	public static Future<Void> launch(InputStream in, OutputStream out) {
 		var server = new GioviLanguageServer();
 		var serverLauncher = LSPLauncher.createServerLauncher(server, in, out);
 		server.connect(serverLauncher.getRemoteProxy());

@@ -28,9 +28,12 @@ public class SyntaxErrorListener extends BaseErrorListener {
 		var token = (CommonToken) offendingSymbol;
 		int startLine = token.getLine();
 		int startCol = token.getCharPositionInLine();
-		diagnostics.add(new Diagnostic(
-			new Range(new Position(startLine, startCol), new Position(startLine, startCol)),
-			msg));
+		diagnostics.add(
+			new Diagnostic(
+				new Range(new Position(startLine, startCol), new Position(startLine, startCol)),
+				msg
+			)
+		);
 	}
 
 	public List<? extends Diagnostic> getDiagnostics() {

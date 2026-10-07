@@ -33,14 +33,16 @@ public class GioviLSProxy {
 			var proxyClientLauncher = LSPLauncher.createClientLauncher(
 				proxyClient,
 				socket.getInputStream(),
-				socket.getOutputStream());
+				socket.getOutputStream()
+			);
 
 			log.info("Starting proxy server");
 			var proxyServer = new ProxyServer(proxyClientLauncher.getRemoteProxy());
 			var proxyServerLauncher = LSPLauncher.createServerLauncher(
 				proxyServer,
 				System.in,
-				System.out);
+				System.out
+			);
 			proxyClient.setActualClient(proxyServerLauncher.getRemoteProxy());
 			proxyServer.connect(proxyClient);
 
