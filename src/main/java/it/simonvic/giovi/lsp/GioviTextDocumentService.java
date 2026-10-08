@@ -6,7 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -16,6 +15,7 @@ import org.eclipse.lsp4j.jsonrpc.CompletableFutures;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
+import it.simonvic.giovi.antlr.GioviExtendedParser.IdentifierContext;
 import it.simonvic.giovi.antlr.GioviExtendedParser.StatementContext;
 
 public class GioviTextDocumentService implements TextDocumentService {
@@ -93,14 +93,20 @@ public class GioviTextDocumentService implements TextDocumentService {
 		return CompletableFutures.computeAsync(_ -> {
 			var completionItems = new ArrayList<CompletionItem>();
 			completionItems.addAll(Snippets.snippets);
-			completionItems.add(Snippets.snippet(
-				"foo",
-				"debug snippet",
-				"""
-				for ${1:i} in ${2:0}..${3:n} do {
-					$0
-				}
-				"""));
+			completionItems.add(
+				Snippets.snippet(
+					"foo",
+					"debug snippet",
+					"""
+					hello world
+					"""
+				)
+			);
+			documents.get(completionParams.getTextDocument().getUri())
+				.getVisitor()
+				.getRootEnv()
+				.query(completionParams.getPosition())
+				.ifPresent(env -> completionItems.addAll(env.lookupAll().values()));
 			return Either.forLeft(completionItems);
 		});
 	}

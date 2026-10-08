@@ -2,6 +2,8 @@ package it.simonvic.giovi.lsp;
 
 import java.util.*;
 
+import org.eclipse.lsp4j.CompletionItem;
+import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
 
@@ -92,6 +94,46 @@ public sealed class Environment {
 			}
 		}
 		return Optional.of(this);
+	}
+
+	public Map<String, CompletionItem> lookupAll() {
+		var items = new HashMap<String, CompletionItem>();
+		// we get values in reverse lookup order, so we get shadowing for free
+		// TODO: no, that's stupid, just start from bottom and check if contained already
+		if (parent != null) {
+			items.putAll(parent.lookupAll());
+		}
+		modules.forEach((k, v) -> {
+			var item = new CompletionItem();
+			item.setKind(CompletionItemKind.Module);
+			item.setLabel(k);
+			items.put(k, item);
+		});
+		types.forEach((k, v) -> {
+			var item = new CompletionItem();
+			item.setKind(CompletionItemKind.Class);
+			item.setLabel(k);
+			items.put(k, item);
+		});
+		functions.forEach((k, v) -> {
+			var item = new CompletionItem();
+			item.setKind(CompletionItemKind.Function);
+			item.setLabel(k);
+			items.put(k, item);
+		});
+		constants.forEach((k, v) -> {
+			var item = new CompletionItem();
+			item.setKind(CompletionItemKind.Constant);
+			item.setLabel(k);
+			items.put(k, item);
+		});
+		variables.forEach((k, v) -> {
+			var item = new CompletionItem();
+			item.setKind(CompletionItemKind.Variable);
+			item.setLabel(k);
+			items.put(k, item);
+		});
+		return items;
 	}
 
 	public boolean declare(
