@@ -3,10 +3,8 @@ package it.simonvic.giovi.lsp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.lsp4j.CodeAction;
-import org.eclipse.lsp4j.Diagnostic;
-import org.eclipse.lsp4j.DiagnosticSeverity;
-import org.eclipse.lsp4j.DocumentSymbol;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.eclipse.lsp4j.*;
 
 import giovi.Module;
 import it.simonvic.giovi.antlr.GioviParser.*;
@@ -39,11 +37,13 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 	private final List<DocumentSymbol> symbols = new ArrayList<>();
 
 	private Environment env;
+	private final Environment rootEnv;
 	private Module module;
 
-	public LSVisitor(Module module) {
+	public LSVisitor(Module module, Range range) {
 		this.module = module;
-		this.env = new Environment();
+		this.rootEnv = new Environment(range);
+		this.env = this.rootEnv;
 	}
 
 	public List<Diagnostic> getDiagnostics() {
@@ -58,6 +58,10 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 		return symbols;
 	}
 
+	public Environment getRootEnv() {
+		return rootEnv;
+	}
+
 	public Environment getCurrentEnv() {
 		return env;
 	}
@@ -66,16 +70,16 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 		this.env = env;
 	}
 
-	private void enterScope() {
-		setCurrentEnv(new Environment(getCurrentEnv()));
+	private void enterScope(ParserRuleContext ctx) {
+		setCurrentEnv(new Environment(getCurrentEnv(), LSPUtils.range(ctx)));
 	}
 
-	private void enterFunctionScope() {
-		setCurrentEnv(new EnvironmentFunction(getCurrentEnv()));
+	private void enterFunctionScope(ParserRuleContext ctx) {
+		setCurrentEnv(new EnvironmentFunction(getCurrentEnv(), LSPUtils.range(ctx)));
 	}
 
-	private void enterLoopScope() {
-		setCurrentEnv(new EnvironmentLoop(getCurrentEnv()));
+	private void enterLoopScope(ParserRuleContext ctx) {
+		setCurrentEnv(new EnvironmentLoop(getCurrentEnv(), LSPUtils.range(ctx)));
 	}
 
 	private void exitScope() {
@@ -83,7 +87,7 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 	}
 
 
-	/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////
 
 	@Override
 	public Nothing visitImportStatement(ImportStatementContext ctx) {
@@ -96,15 +100,15 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 	@Override
 	public Nothing visitImportEntry(ImportEntryContext ctx) {
 		// TODO: ...
-		if (ctx.alias != null) {
-			getCurrentEnv().declareModule(
-				ctx.identifier().getText(), new TypeModule(new Environment(this.env))
-			);
-		}
+		// if (ctx.alias != null) {
+		// 	getCurrentEnv().declareModule(
+		// 		ctx.identifier().getText(), new TypeModule(new Environment(this.env))
+		// 	);
+		// }
 		return NOTHING;
 	}
 
-	/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////
 
 	@Override
 	public Nothing visitAliasStatement(AliasStatementContext ctx) {
@@ -127,12 +131,12 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 	}
 
 
-	/////////////////////////////////////////////////////
+	/////////////////////////////////////////////////
 
 
 	@Override
 	public Nothing visitIfStatement(IfStatementContext ctx) {
-		enterScope(); // needed for pattern matching?
+		enterScope(ctx.consequence); // needed for pattern matching?
 		if (!(visit(ctx.condition) instanceof TypeBool)) {
 			diagnostics.add(
 				new Diagnostic(
@@ -144,7 +148,7 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 		visitStatementOrBlock(ctx.consequence);
 		exitScope();
 		if (ctx.alternative != null) {
-			enterScope();
+			enterScope(ctx.alternative);
 			visitStatementOrBlock(ctx.alternative);
 			exitScope();
 		}
@@ -183,7 +187,7 @@ public class LSVisitor extends GioviParserBaseVisitor<LSVisitResult> {
 				);
 			}
 		}
-		enterLoopScope();
+		enterLoopScope(ctx.statementOrBlock());
 		visit(ctx.statementOrBlock());
 		exitScope();
 		return NOTHING;

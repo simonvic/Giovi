@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.eclipse.lsp4j.CodeAction;
 import org.eclipse.lsp4j.Diagnostic;
 import org.eclipse.lsp4j.DocumentSymbol;
+import org.eclipse.lsp4j.Position;
 
 import giovi.Module.FileModule;
 
@@ -113,7 +114,9 @@ public class GioviDocument {
 		diagnostics.addAll(syntaxErrorsListener.getDiagnostics());
 		diagnostics.addAll(functionsBodyListener.getDiagnostics());
 
-		visitor = new LSVisitor(new FileModule(URI.create(uri)));
+		var range = LSPUtils.range(parser.begin());
+		range.setStart(new Position(0, 0)); // HACK: why is start wrong?
+		visitor = new LSVisitor(new FileModule(URI.create(uri)), range);
 		visitor.visit(ast);
 		diagnostics.addAll(visitor.getDiagnostics());
 

@@ -54,6 +54,30 @@ public class LSPUtils {
 		);
 	}
 
+
+	/**
+	 * Check if the given position is within the range
+	 * @param position
+	 * @param range
+	 * @return
+	 */
+	public static boolean isInRange(Position position, Range range) {
+		return compare(position, range.getStart()) >= 0
+			&& compare(position, range.getEnd()) <= 0;
+	}
+
+	/**
+	 * Compare two positions
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static int compare(Position x, Position y) {
+		return (x.getLine() != y.getLine())
+			? x.getLine() - y.getLine()
+			: x.getCharacter() - y.getCharacter();
+	}
+
 	/**
 	 * Get hidden tokens to the left of the given node up until we see a token on
 	 * DEFAULT_TOKEN_CHANNEL.

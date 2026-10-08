@@ -176,6 +176,19 @@ public class GioviTextDocumentService implements TextDocumentService {
 					)
 					.append("\n")
 			);
+
+			if (matchedNode.getParent() instanceof IdentifierContext idCtx) {
+				var visitor = doc.getVisitor();
+				var optEnv = visitor.getRootEnv().query(params.getPosition());
+				if (optEnv.isPresent()) {
+					var env = optEnv.orElseThrow();
+					var optSymbol = env.lookup(idCtx.getText());
+					if (optSymbol.isPresent()) {
+						sb.append(optSymbol.orElseThrow().toString());
+					}
+				}
+			}
+
 			// sb.append("""
 			// 	---
 			// 	left:

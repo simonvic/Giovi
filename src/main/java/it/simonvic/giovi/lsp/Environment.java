@@ -1,8 +1,9 @@
 package it.simonvic.giovi.lsp;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
 
 import it.simonvic.giovi.lsp.LSVisitResult.Type;
 import it.simonvic.giovi.lsp.LSVisitResult.Type.TypePrimitive;
@@ -11,40 +12,86 @@ public sealed class Environment {
 
 	public static final class EnvironmentFunction extends Environment {
 
-		public EnvironmentFunction(Environment parent) {
-			super(parent);
+		public EnvironmentFunction(Environment parent, Range range) {
+			super(parent, range);
 		}
 
-		public EnvironmentFunction() {
-			super();
+		public EnvironmentFunction(Range range) {
+			super(range);
 		}
 
 	}
 
 	public static final class EnvironmentLoop extends Environment {
 
-		public EnvironmentLoop(Environment parent) {
-			super(parent);
+		public EnvironmentLoop(Environment parent, Range range) {
+			super(parent, range);
 		}
 
-		public EnvironmentLoop() {
-			super();
+		public EnvironmentLoop(Range range) {
+			super(range);
 		}
 
 	}
 
 	private final Environment parent;
+	private final Range range;
+	private final List<Environment> children = new ArrayList<>();
 
-	public Environment(Environment parent) {
+	public Environment(Environment parent, Range range) {
 		this.parent = parent;
+		this.range = range;
+		parent.children.add(this);
 	}
 
-	public Environment() {
+	public Environment(Range range) {
 		this.parent = null;
+		this.range = range;
 	}
 
 	public Environment parent() {
 		return parent;
+	}
+
+	public Range range() {
+		return range;
+	}
+
+	public List<Environment> children() {
+		return children;
+	}
+
+	/**
+	 * Query the smallest environment that contains the given position
+	 *
+	 * <pre><code>
+	 *  -----------------------------
+	 *  |                           |
+	 *  |    ______                 |
+	 *  |   |_____|                 |
+	 *  |     ______________        |
+	 *  |    |  ____  ____ |        |
+	 *  |    | |___| |___| |        |
+	 *  |    |_____________|        |
+	 *  |                           |
+	 *  -----------------------------
+	 *  </code></pre>
+	 *
+	 * @param position
+	 * @return
+	 */
+	public Optional<Environment> query(Position position) {
+		// TODO: convert to non-recursive
+		if (!LSPUtils.isInRange(position, this.range)) {
+			return Optional.empty();
+		}
+		for (var child : this.children) {
+			var optEnv = child.query(position);
+			if (optEnv.isPresent()) {
+				return optEnv.orElseThrow().query(position);
+			}
+		}
+		return Optional.of(this);
 	}
 
 	public boolean declare(
